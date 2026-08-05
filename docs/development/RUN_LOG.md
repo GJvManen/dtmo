@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-003 — CI workflow contract guard](runs/RUN-20260806-003.md) — `BLOCKED`: implementation committed; automated execution evidence absent
 - [RUN-20260805-002 — Secured intelligence ingestion and search API](runs/RUN-20260805-002.md)
 - RUN-20260805-001 — Continuous development bootstrap (recorded below)
 
