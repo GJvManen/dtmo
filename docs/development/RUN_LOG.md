@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-005 — Diagnose absent GitHub Actions execution evidence](runs/RUN-20260806-005.md) — `BLOCKED`: workflow structure is present, but the latest `main` commit has no observable status context, successful run or artifact
 - [RUN-20260806-004 — Observable CI workflow contract gate](runs/RUN-20260806-004.md) — `BLOCKED`: structural validation and artifact design committed; execution evidence absent
 - [RUN-20260806-003 — CI workflow contract guard](runs/RUN-20260806-003.md) — `BLOCKED`: implementation committed; automated execution evidence absent
 - [RUN-20260805-002 — Secured intelligence ingestion and search API](runs/RUN-20260805-002.md)
