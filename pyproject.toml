@@ -1,0 +1,51 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dtmo"
+version = "16.0.0rc4"
+description = "Education-focused cyber threat intelligence platform"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.116,<1",
+  "uvicorn[standard]>=0.35,<1",
+  "pydantic-settings>=2.10,<3",
+  "httpx>=0.28,<1",
+  "sqlalchemy>=2.0,<3",
+  "psycopg[binary]>=3.2,<4",
+  "redis>=6,<7",
+  "apscheduler>=3.11,<4",
+  "prometheus-client>=0.22,<1",
+  "structlog>=25,<26",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8.4,<9",
+  "pytest-cov>=6,<7",
+  "ruff>=0.12,<1",
+  "mypy>=1.17,<2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend/dtmo"]
+
+[tool.pytest.ini_options]
+pythonpath = ["backend"]
+testpaths = ["backend/tests"]
+addopts = "-q --disable-warnings --maxfail=1"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+ignore = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["dtmo"]
