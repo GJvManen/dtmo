@@ -1,6 +1,7 @@
 name: RC4 Quality Gate
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
@@ -21,13 +22,49 @@ jobs:
       - name: Install
         run: pip install -e '.[test]'
       - name: Lint
-        run: ruff check backend
+        run: ruff check backend database
       - name: Type check
         run: mypy backend/dtmo
       - name: Tests
         run: pytest --cov=dtmo --cov-report=term-missing --cov-fail-under=80
       - name: Compile
-        run: python -m compileall -q backend
+        run: python -m compileall -q backend database
+
+  migrations:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: dtmo
+          POSTGRES_USER: dtmo
+          POSTGRES_PASSWORD: change-me
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dtmo -d dtmo"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DTMO_ENVIRONMENT: test
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: pip install -e '.[test]'
+      - name: Upgrade schema
+        run: alembic upgrade head
+      - name: Validate current revision
+        run: alembic current
+      - name: Downgrade and re-upgrade
+        run: |
+          alembic downgrade base
+          alembic upgrade head
 
   container:
     runs-on: ubuntu-latest
