@@ -30,6 +30,7 @@ test = [
   "pytest-cov>=6,<7",
   "ruff>=0.12,<1",
   "mypy>=1.17,<2",
+  "PyYAML>=6.0,<7",
 ]
 
 [tool.hatch.build.targets.wheel]
