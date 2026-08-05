@@ -9,6 +9,8 @@
 | Separation of review and share approval | `test_rbac_separates_review_and_share_approval` | Yes |
 | Evidence-required reporting | `test_reporting_refuses_evidence_free_claims` | Yes |
 | Production security configuration | `test_production_security.py` | Yes |
+| API-key and role resolution | `test_api_auth.py` | Yes |
+| Secured API route exposure | OpenAPI contract assertion in `test_api_auth.py` | Yes |
 | OpenSearch indexing contract | `test_search_service.py` | Yes |
 | Existing FastAPI core tests | `backend/tests/test_core.py` | Yes |
 | Ruff | GitHub Actions | Yes |
@@ -17,6 +19,23 @@
 | Alembic upgrade/downgrade cycle | GitHub Actions migration job | Yes |
 | Container build and smoke test | GitHub Actions | Yes |
 | Dependency review | GitHub Actions on pull requests | Yes |
+
+## Integrated data flow
+
+The versioned API now orchestrates:
+
+1. API-key authentication;
+2. subject and role resolution;
+3. route-level RBAC;
+4. request and provenance validation;
+5. raw object landing in MinIO/S3 storage;
+6. SHA-256 receipt generation;
+7. candidate persistence in PostgreSQL;
+8. provenance persistence;
+9. OpenSearch indexing;
+10. an explicit response containing review, share-approval and indexing state.
+
+The ingestion contract cannot set `review_status=reviewed` or `share_approved=true`.
 
 ## Sprint QA summary
 
@@ -29,7 +48,7 @@
 | RC4.5 | Graph evidence, confidence and query-depth validation | Implemented |
 | RC4.6 | Responsive SOC workspace | Implemented; browser acceptance pending |
 | RC4.7 | RBAC and evidence-gated reporting | Implemented |
-| RC4.8 | Cross-sprint regression, migrations, search and production config tests | Committed; CI pending |
+| RC4.8 | Cross-sprint regression, migrations, search, security config and secured API routes | Committed; CI pending |
 
 ## Additional implementation completed
 
@@ -38,6 +57,9 @@
 - Asynchronous database session management with rollback on failure.
 - MinIO object-store adapter with explicit TLS configuration.
 - OpenSearch index creation, document indexing and filtered search service.
+- Authenticated principal resolution and route-level RBAC.
+- Versioned ingestion and search API routes.
+- API and architecture documentation.
 - Manual `workflow_dispatch` trigger and PostgreSQL migration validation in CI.
 - `pytest-asyncio` and explicit async test configuration.
 
@@ -49,11 +71,19 @@ No successful status checks are currently exposed for the latest commit. A missi
 
 ## Remaining technical follow-up
 
-- Connect persistence, lake and search services to authenticated FastAPI routes.
+- Add a transactional outbox and retry worker for OpenSearch indexing.
+- Add durable audit events for ingestion, review and share approval.
 - Add browser-based accessibility and end-to-end tests.
 - Add live connector contract tests with controlled credentials.
+- Integrate an enterprise identity provider or identity-aware proxy.
 - Enable OpenSearch security and TLS in staging and production.
 - Add backup and complete restoration automation.
+
+## Documentation evidence
+
+- `docs/api/INTELLIGENCE_API.md`
+- `docs/architecture/ADR-0001-SECURED-INTELLIGENCE-INGESTION.md`
+- `docs/development/runs/RUN-20260805-002.md`
 
 ## External production acceptance
 
