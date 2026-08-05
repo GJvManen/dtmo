@@ -1,6 +1,11 @@
 # DTMO Continuous Development Run Log
 
-This file is the chronological audit record for continuous development runs. New entries are appended with the newest run first.
+This file is the chronological audit record for continuous development runs. Detailed run records are stored under `docs/development/runs/`.
+
+## Runs
+
+- [RUN-20260805-002 — Secured intelligence ingestion and search API](runs/RUN-20260805-002.md)
+- RUN-20260805-001 — Continuous development bootstrap (recorded below)
 
 ---
 
