@@ -11,6 +11,29 @@ permissions:
   security-events: write
 
 jobs:
+  workflow-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install test dependencies
+        run: pip install -e '.[test]'
+      - name: Validate workflow contract
+        run: |
+          mkdir -p artifacts
+          pytest backend/tests/test_ci_workflow_contract.py --junitxml=artifacts/workflow-contracts.xml
+      - name: Upload workflow contract evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflow-contract-evidence
+          path: artifacts/workflow-contracts.xml
+          if-no-files-found: error
+          retention-days: 30
+
   test:
     runs-on: ubuntu-latest
     steps:
