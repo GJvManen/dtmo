@@ -12,6 +12,7 @@
 | API-key and role resolution | `test_api_auth.py` | Yes |
 | Secured API route exposure | OpenAPI contract assertion in `test_api_auth.py` | Yes |
 | OpenSearch indexing contract | `test_search_service.py` | Yes |
+| CI workflow contract | `test_ci_workflow_contract.py` | Yes |
 | Existing FastAPI core tests | `backend/tests/test_core.py` | Yes |
 | Ruff | GitHub Actions | Yes |
 | strict MyPy | GitHub Actions | Yes |
@@ -48,7 +49,7 @@ The ingestion contract cannot set `review_status=reviewed` or `share_approved=tr
 | RC4.5 | Graph evidence, confidence and query-depth validation | Implemented |
 | RC4.6 | Responsive SOC workspace | Implemented; browser acceptance pending |
 | RC4.7 | RBAC and evidence-gated reporting | Implemented |
-| RC4.8 | Cross-sprint regression, migrations, search, security config and secured API routes | Committed; CI pending |
+| RC4.8 | Cross-sprint regression, migrations, search, security config, secured API routes and CI workflow contract | Committed; CI pending |
 
 ## Additional implementation completed
 
@@ -61,16 +62,22 @@ The ingestion contract cannot set `review_status=reviewed` or `share_approved=tr
 - Versioned ingestion and search API routes.
 - API and architecture documentation.
 - Manual `workflow_dispatch` trigger and PostgreSQL migration validation in CI.
+- Regression protection for release-critical workflow triggers, jobs and commands.
 - `pytest-asyncio` and explicit async test configuration.
+
+## Latest PDCA gate outcome
+
+`RUN-20260806-003` added `backend/tests/test_ci_workflow_contract.py` and committed the implementation. The run remains `BLOCKED` because the latest inspected commit exposed neither status checks nor workflow runs. The committed test is therefore not represented as executed or passing.
 
 ## Release status
 
 **CI VALIDATION PENDING**
 
-No successful status checks are currently exposed for the latest commit. A missing status is not a pass. GitHub Actions must be enabled and complete successfully before `RC_READY` can be assigned.
+No successful status checks are currently exposed for the latest inspected commit. A missing status is not a pass. GitHub Actions must be enabled and complete successfully before `RC_READY` can be assigned.
 
 ## Remaining technical follow-up
 
+- Diagnose why GitHub Actions runs are absent and restore observable CI execution on `main`.
 - Add a transactional outbox and retry worker for OpenSearch indexing.
 - Add durable audit events for ingestion, review and share approval.
 - Add browser-based accessibility and end-to-end tests.
@@ -84,6 +91,7 @@ No successful status checks are currently exposed for the latest commit. A missi
 - `docs/api/INTELLIGENCE_API.md`
 - `docs/architecture/ADR-0001-SECURED-INTELLIGENCE-INGESTION.md`
 - `docs/development/runs/RUN-20260805-002.md`
+- `docs/development/runs/RUN-20260806-003.md`
 
 ## External production acceptance
 
