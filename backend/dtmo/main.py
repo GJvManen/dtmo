@@ -6,6 +6,7 @@ from uuid import uuid4
 from fastapi import FastAPI, Request, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
+from dtmo.api.routes import close_services, router as intelligence_router
 from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
 from dtmo.logging import configure_logging, correlation_id, get_logger
@@ -50,6 +51,7 @@ async def lifespan(_: FastAPI):
         scheduler.start()
     yield
     scheduler.shutdown()
+    await close_services()
 
 
 app = FastAPI(
@@ -58,6 +60,7 @@ app = FastAPI(
     description="Education-focused cyber threat intelligence platform",
     lifespan=lifespan,
 )
+app.include_router(intelligence_router)
 
 
 @app.middleware("http")
@@ -84,6 +87,7 @@ def health() -> dict[str, object]:
         "environment": settings.environment,
         "scheduler": scheduler.status(),
         "publication_gate": "human-approval-required",
+        "authentication": "api-key-and-rbac",
     }
 
 
