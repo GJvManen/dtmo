@@ -1,0 +1,52 @@
+name: RC4 Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: pip install -e '.[test]'
+      - name: Lint
+        run: ruff check backend
+      - name: Type check
+        run: mypy backend/dtmo
+      - name: Tests
+        run: pytest --cov=dtmo --cov-report=term-missing --cov-fail-under=80
+      - name: Compile
+        run: python -m compileall -q backend
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t dtmo:rc4 .
+      - name: Run image smoke test
+        run: |
+          docker run -d --name dtmo -p 8000:8000 --env DTMO_ENVIRONMENT=test dtmo:rc4
+          for i in {1..20}; do curl -fsS http://127.0.0.1:8000/health && exit 0; sleep 2; done
+          docker logs dtmo
+          exit 1
+
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
