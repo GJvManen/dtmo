@@ -16,7 +16,7 @@ class MinioObjectStore:
             cfg.minio_endpoint,
             access_key=cfg.minio_access_key,
             secret_key=cfg.minio_secret_key.get_secret_value(),
-            secure=cfg.production,
+            secure=cfg.minio_secure,
         )
 
     async def ensure_bucket(self, bucket: str) -> None:
@@ -61,5 +61,5 @@ class MinioObjectStore:
         try:
             await asyncio.to_thread(lambda: list(self.client.list_buckets()))
             return True
-        except S3Error:
+        except (S3Error, OSError):
             return False
