@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     minio_access_key: str = "dtmo"
     minio_secret_key: SecretStr = SecretStr("")
     minio_secure: bool = False
+    api_key: SecretStr = SecretStr("")
+    auth_header_name: str = "x-dtmo-api-key"
     connector_poll_seconds: int = Field(default=3600, ge=60)
     connector_timeout_seconds: int = Field(default=30, ge=1, le=300)
     connector_max_attempts: int = Field(default=4, ge=1, le=10)
@@ -45,6 +47,10 @@ class Settings(BaseSettings):
             raise ValueError("production requires TLS for object storage")
         if not self.minio_secret_key.get_secret_value():
             raise ValueError("production requires an object-storage secret")
+        if not self.api_key.get_secret_value():
+            raise ValueError("production requires an API authentication key")
+        if len(self.api_key.get_secret_value()) < 32:
+            raise ValueError("production API authentication key must be at least 32 characters")
         if not self.database_url.startswith("postgresql+psycopg://"):
             raise ValueError("production requires PostgreSQL with the psycopg driver")
         return self
