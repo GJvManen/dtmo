@@ -78,6 +78,25 @@ The following gates apply whenever relevant.
 | Documentation | User, API, operational and architecture documents are updated |
 | Release | Known limitations, blockers and next action are explicit |
 
+## Phase 1 — CI and workflow integrity evidence
+
+The committed presence of a workflow file is not release evidence. Phase 1 requires all of the following:
+
+1. structural regression tests parse the workflow and verify required triggers, permissions, jobs, services, conditions and release-blocking commands;
+2. the workflow contract runs as a dedicated job;
+3. the job produces machine-readable evidence, currently JUnit XML;
+4. the evidence is retained as the named `workflow-contract-evidence` artifact;
+5. the workflow run, jobs, result and artifact are independently observable for the same commit;
+6. absent, skipped, cancelled or failed execution may not be interpreted as success.
+
+Current state after `RUN-20260806-004`:
+
+- structural workflow contract: implemented;
+- dedicated observable job: implemented;
+- retained artifact design: implemented;
+- successful workflow execution evidence: `PENDING`;
+- Phase 1 completion: `BLOCKED`.
+
 ## Security and publication invariants
 
 These are always blocking:
