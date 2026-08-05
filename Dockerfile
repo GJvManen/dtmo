@@ -7,8 +7,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 RUN useradd --create-home --uid 10001 dtmo
 WORKDIR /app
 
-COPY pyproject.toml README.md ./
+COPY pyproject.toml README.md alembic.ini ./
 COPY backend ./backend
+COPY database ./database
 RUN pip install --upgrade pip && pip install .
 
 USER dtmo
