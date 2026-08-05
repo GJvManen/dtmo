@@ -23,6 +23,158 @@ De repository bevat stapsgewijze implementaties van RC4.1 tot en met RC4.8:
 
 De code, tests en documentatie zijn gecommit. RC4.8 wordt pas `RC_READY` nadat GitHub Actions aantoonbaar succesvol is afgerond. Een ontbrekende status wordt niet als pass behandeld.
 
+## System workflows
+
+DTMO gebruikt expliciete workflows om brondata, intelligence, analyse, review, publicatie en softwareontwikkeling van elkaar te scheiden. Elke workflow behoudt provenance, auditgegevens en afzonderlijke releasegates.
+
+### 1. Intelligence ingestion workflow
+
+```mermaid
+flowchart LR
+    A[Open bron of connector] --> B[Fetch met timeout en retry]
+    B --> C[Raw payload naar Intelligence Lake]
+    C --> D[SHA-256 receipt en provenance]
+    D --> E[Schema-validatie en normalisatie]
+    E --> F[Deduplicatie en entity resolution]
+    F --> G[PostgreSQL candidate record]
+    G --> H[OpenSearch indexing]
+    H --> I[Candidate queue voor analyst review]
+```
+
+Belangrijke invarianten:
+
+- de originele bronpayload wordt vóór normalisatie bewaard;
+- ieder raw object krijgt een hash en opslagreceipt;
+- nieuwe intelligence start altijd als `candidate`;
+- een indexeringsfout verwijdert geen raw of genormaliseerde data;
+- bron, externe identifier, confidence en timestamps blijven herleidbaar.
+
+### 2. Connector execution workflow
+
+```mermaid
+flowchart TD
+    A[Scheduler] --> B{Connector enabled?}
+    B -- Nee --> C[Disabled status registreren]
+    B -- Ja --> D[Health en configuratie controleren]
+    D --> E[Bron aanroepen]
+    E --> F{Resultaat geldig?}
+    F -- Nee --> G[Retry met exponential backoff]
+    G --> E
+    F -- Ja --> H[Records normaliseren]
+    H --> I[Ingestion workflow]
+    I --> J[Run metrics en auditresultaat]
+```
+
+Connectorruns registreren minimaal connector-ID, start- en eindtijd, status, attempts, recordaantal en foutinformatie. Live connectoren staan standaard uit en worden alleen via een feature flag en gecontroleerde configuratie geactiveerd.
+
+### 3. Analyst review and publication workflow
+
+```mermaid
+stateDiagram-v2
+    [*] --> Candidate
+    Candidate --> Reviewed: analyst review
+    Candidate --> Rejected: onvoldoende kwaliteit of relevantie
+    Reviewed --> ShareApproved: afzonderlijke bevoegde goedkeuring
+    Reviewed --> Candidate: herziening vereist
+    ShareApproved --> Published: gecontroleerde release
+    Published --> Withdrawn: correctie of intrekking
+```
+
+Governancegrenzen:
+
+- `reviewed` is nooit automatisch `share approved`;
+- review en share approval zijn afzonderlijke RBAC-permissions;
+- rapportages zonder evidence worden geweigerd;
+- publicatie vereist een bevoegde menselijke beslissing;
+- alle statusovergangen moeten auditbaar zijn.
+
+### 4. Search and investigation workflow
+
+```mermaid
+flowchart LR
+    A[Analyst query] --> B[Authenticated principal]
+    B --> C[RBAC permission check]
+    C --> D[OpenSearch query en filters]
+    D --> E[Resultaten met confidence en provenance]
+    E --> F[Drill-down naar raw evidence]
+    F --> G[Case, graphrelatie of rapportconcept]
+```
+
+Zoeken ondersteunt prioritering op onder meer severity, confidence en onderwijsrelevantie. Zoekresultaten zijn analyse-input en vormen op zichzelf geen bewijs van compromittering.
+
+### 5. Knowledge Graph and correlation workflow
+
+```mermaid
+flowchart LR
+    A[Genormaliseerde entities] --> B[Entity resolution]
+    B --> C[Relatievoorstel]
+    C --> D[Evidence en confidence verplicht]
+    D --> E[Graph edge als candidate]
+    E --> F[Analyst validation]
+    F --> G[Attack path, vendor- of campaignanalyse]
+```
+
+Graphrelaties worden niet alleen op naamsovereenkomst aangemaakt. Een relatie vereist rationale, bewijs en een confidencewaarde. Correlatie bewijst geen incident en blijft onderworpen aan analyst review.
+
+### 6. Reporting workflow
+
+```mermaid
+flowchart TD
+    A[Doelgroep en rapporttype] --> B[Evidence-backed findings]
+    B --> C[Recommendations en onzekerheden]
+    C --> D[Rapportconcept]
+    D --> E[Inhoudelijke review]
+    E --> F[Governance en privacy review]
+    F --> G{Releasegate groen?}
+    G -- Nee --> H[BLOCKED met concrete defecten]
+    G -- Ja --> I[Export naar toegestaan formaat]
+```
+
+Rapporten bevatten evidence, confidence en onzekerheden. Een ontbrekende bron, review of release-evidence blokkeert de publicatie.
+
+### 7. Continuous development workflow
+
+```mermaid
+flowchart LR
+    A[Issue #2 en actuele prioriteiten] --> B[Afgebakend development objective]
+    B --> C[Code, tests en documentatie]
+    C --> D[Lokale of CI-validatie]
+    D --> E[QA-resultaat en releasegate]
+    E --> F[RUN_LOG en issue-update]
+    F --> G[Eén expliciete vervolgstap]
+```
+
+Elke development-run legt vast:
+
+1. run-ID, datum en werkstroom;
+2. doel en gewijzigde bestanden;
+3. commits en werkelijk uitgevoerde tests;
+4. blockers, risico's en onzekerheden;
+5. releasegate: `PASS`, `BLOCKED` of `NO-CHANGE`;
+6. eerstvolgende concrete actie.
+
+Een development-run kan voor zijn afgebakende doel `PASS` krijgen, terwijl de totale RC-release `CI VALIDATION PENDING` of `BLOCKED` blijft.
+
+### 8. QA and release-gate workflow
+
+```mermaid
+flowchart TD
+    A[Change set] --> B[Lint en type checks]
+    B --> C[Unit en contract tests]
+    C --> D[Integration en migration tests]
+    D --> E[Security en governance checks]
+    E --> F[Container en smoke tests]
+    F --> G{Alle blocking gates aantoonbaar groen?}
+    G -- Nee --> H[BLOCKED of CI VALIDATION PENDING]
+    G -- Ja --> I[Interne release candidate]
+    I --> J[Externe pentest, loadtest en acceptance]
+    J --> K{Externe gates groen?}
+    K -- Nee --> L[Niet productiegereed]
+    K -- Ja --> M[Production release]
+```
+
+Er wordt nooit een releasepass toegekend op basis van alleen geconfigureerde tests. De testuitvoering en uitkomst moeten aantoonbaar beschikbaar zijn.
+
 ## Nieuwe beveiligde API
 
 De versioned API verbindt raw storage, persistence en search:
