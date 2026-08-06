@@ -4,8 +4,9 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260806-030 — RC5.4 PyJWK type-contract remediation](runs/RUN-20260806-030.md) — `BLOCKED`: Quality Gate #199 reached strict MyPy and rejected an untyped JWKS key object; key resolution now returns `jwt.PyJWK` directly; replacement exact-head CI pending
-- [RUN-20260806-029 — RC5.4 asymmetric JWKS key rotation](runs/RUN-20260806-029.md) — `CI_VALIDATION_PENDING`: production shared-secret JWT validation replaced by RS256/JWKS trust with deterministic `kid` selection, overlapping rotation keys and algorithm-confusion protection
+- [RUN-20260806-031 — RC5.5 tamper-evident audit chain](runs/RUN-20260806-031.md) — `CI_VALIDATION_PENDING`: immutable canonical audit events now form a SHA-256 hash chain with deterministic verification and tamper-detection regressions
+- [RUN-20260806-030 — RC5.4 PyJWK type-contract remediation](runs/RUN-20260806-030.md) — `PASS`: Quality Gate #203 succeeded and PR #12 merged
+- [RUN-20260806-029 — RC5.4 asymmetric JWKS key rotation](runs/RUN-20260806-029.md) — `PASS`: exact-head Quality Gate #203 succeeded and PR #12 merged
 - [RUN-20260806-028 — Align secure production configuration regression test](runs/RUN-20260806-028.md) — `PASS`: Quality Gate #197 succeeded and RC5.3 merged through PR #11
 - [RUN-20260806-027 — Restore direct-call-safe principal resolution](runs/RUN-20260806-027.md) — superseded by successful Quality Gate #197
 - [RUN-20260806-026 — RC5.3 PyJWT type-contract remediation](runs/RUN-20260806-026.md) — superseded by successful Quality Gate #197
