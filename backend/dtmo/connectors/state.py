@@ -147,7 +147,12 @@ class ConnectorStateStore:
         observed = observed_at or utc_now()
         state = self.session.get(ConnectorRuntimeState, connector_id)
         if state is None:
-            state = ConnectorRuntimeState(connector_id=connector_id)
+            state = ConnectorRuntimeState(
+                connector_id=connector_id,
+                consecutive_failures=0,
+                health_status="unknown",
+                updated_at=observed,
+            )
             self.session.add(state)
 
         state.last_run_id = run_id
@@ -189,6 +194,7 @@ class ConnectorStateStore:
                     reason=item.reason,
                     raw_evidence_hash=item.evidence_hash,
                     raw_evidence=item.raw_evidence,
+                    recovery_status="pending",
                     publish_approved=False,
                 )
             )
