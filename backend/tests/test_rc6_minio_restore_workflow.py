@@ -11,7 +11,11 @@ VERIFIER = ROOT / "tools" / "verify_minio_backup_restore.py"
 
 
 def _workflow() -> dict[str, Any]:
-    loaded = yaml.load(WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    # BaseLoader intentionally preserves GitHub Actions keys such as `on` as strings.
+    # The input is a trusted repository-controlled workflow file, not untrusted YAML.
+    loaded = yaml.load(  # noqa: S506
+        WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader
+    )
     assert isinstance(loaded, dict)
     return loaded
 
