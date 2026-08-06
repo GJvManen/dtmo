@@ -68,7 +68,7 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 11. a repository-side execution-readiness preflight must distinguish configuration readiness from actual workflow execution and must mark its own report as non-gate-eligible;
 12. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-016`:
+Current state after `RUN-20260806-017`:
 
 - structural workflow contract: implemented;
 - dedicated observable contract job: implemented;
@@ -85,10 +85,12 @@ Current state after `RUN-20260806-016`:
 - preflight output release-gate eligibility: explicitly `false`;
 - historical quality-gate run `31075045431`: executed but `failure`, not gate-eligible;
 - PR #7 quality-gate run `31082165346`: executed but `failure`, not gate-eligible;
-- earliest shared failure in run `31082165346`: `pyproject.toml` TOML parse error during dependency installation;
-- minimal TOML literal-string repair: committed as `8087033ba2ec1864b41e7fdd30fb7357344a5416`;
-- lint, type checks, tests and migrations for run `31082165346`: skipped and therefore not passed;
-- replacement quality-gate execution for the repaired head: `PENDING`;
+- PR #7 quality-gate run `31082453008`: executed but `failure`, not gate-eligible;
+- dependency installation, migrations and workflow-contracts in run `31082453008`: `PASS`;
+- lint in run `31082453008`: `FAIL` with 41 findings; type checking and tests skipped;
+- targeted Ruff repository/framework/test policy alignment: committed as `87089002f835e1bb2d076f924f1cd684984a3d79`;
+- dependency review and container smoke test in run `31082453008`: `FAIL`, not addressed in this bounded run;
+- replacement quality-gate execution for the lint-policy head: `PENDING`;
 - successful quality-gate execution evidence: `PENDING`;
 - successful observer execution evidence: `PENDING`;
 - matching artifacts for one head SHA and run ID: `PENDING`;
