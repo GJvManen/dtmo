@@ -49,11 +49,13 @@ Committed controls:
 - migration `0005_connector_state` is reversible;
 - `RC7 Connector State Gate` executes migration, persistence and recovery verification on PostgreSQL 17;
 - retained evidence upload uses `if-no-files-found: error`;
-- a separate `always()` gate fails closed unless connector-state evidence succeeds.
+- a separate `always()` gate fails closed unless connector-state evidence succeeds;
+- persisted and supplied timestamps are normalized to UTC before isolation decisions;
+- a focused regression test simulates a naive persisted isolation deadline and verifies active and expired decisions against UTC-aware inputs.
 
-Previous execution evidence showed that Connector State Gate #6 did not execute product tests because its primary job was cancelled; its independent gate correctly failed closed on missing evidence. Subsequent deterministic defects in ORM initialization and lint were remediated, but they do not establish acceptance without a complete exact-head run.
+Connector State Gate #12 reached PostgreSQL-backed project execution and exposed an offset-naive versus offset-aware comparison defect after migrations succeeded. The runtime normalization remediation is committed as `6fab8341e8123664bc3456eaba8daf8d603a0933`; direct regression protection is committed as `52e3d37f119547637571d77a33636ffb996281c6`.
 
-At 2026-08-06 19:42 CEST, all required workflows for exact head `5193b5a9caa3f1f798b74b8cbaff3c5fcf61633e` were still queued before execution. Connector State Gate #11 primary job `92684346786` had no steps, and the Quality, canary, OpenSearch and multi-store workflows had also not started. Therefore no current tests, migrations or evidence artifacts existed. GitHub-hosted runner capacity is an external blocker; RC7.2 remains `CI_VALIDATION_PENDING`.
+These commits are not acceptance evidence. RC7.2 remains `CI_VALIDATION_PENDING` until the exact current head executes the Quality Gate, Connector State Gate and required regression gates successfully and retains the required evidence artifacts.
 
 ## Security, privacy and publication invariants
 
@@ -66,8 +68,8 @@ At 2026-08-06 19:42 CEST, all required workflows for exact head `5193b5a9caa3f1f
 
 ## Current run decision
 
-`RUN-20260806-045` is `CI_VALIDATION_PENDING` until the exact-head Quality Gate and RC7 Connector State Gate complete successfully and retain evidence.
+`RUN-20260806-045` is `CI_VALIDATION_PENDING`. UTC normalization has direct regression protection, but the test and PostgreSQL-backed evidence have not yet succeeded on the exact current head.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC7 Connector State Gate after runner assignment and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
+Inspect the new exact-head RC7 Connector State Gate and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
