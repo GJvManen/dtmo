@@ -37,7 +37,7 @@ async def ingest_intelligence(
     request: IntelligenceIngestRequest,
     principal: Annotated[
         Principal,
-        Depends(require_permission(Permission.REVIEW_INTELLIGENCE)),
+        Depends(require_permission(Permission.INGEST_INTELLIGENCE)),
     ],
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> IntelligenceIngestResponse:
