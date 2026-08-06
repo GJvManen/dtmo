@@ -23,22 +23,24 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 - RC5.4 Quality Gate #203: `PASS`.
 - RC5.5 Quality Gate #205: `PASS`.
 - RC5.6 Quality Gate #207: `PASS`.
+- RC5.7 Quality Gate #209: `PASS`.
 - Every new branch still requires its own exact-head execution.
 
 ## Phase 2 — Application security and identity
 
-Current state after `RUN-20260806-033`:
+Current state after `RUN-20260806-034`:
 
-- least-privilege RBAC, trusted principals and JWKS rotation are evidenced;
-- tamper-evident audit chaining and persistent append-only storage are evidenced through Quality Gates #205 and #207;
-- live intelligence review now changes review state and appends its allow audit event in the same transaction;
-- live share approval requires a separately authorized human principal and transactionally persists state plus allow evidence;
-- a same-principal separation-of-duties attempt is rejected and a durable deny event is recorded;
-- mandatory request IDs correlate governed decisions with audit evidence;
-- rollback regressions require governance state and audit evidence to disappear together;
-- service accounts remain excluded from review and share approval;
-- exact-head RC5.7 CI evidence remains `PENDING`;
-- token revocation and broader authorization-denial audit coverage remain separate bounded objectives;
+- least-privilege RBAC, trusted principals, JWKS rotation and governed decision auditing are evidenced;
+- persistent append-only audit state and transactional review/share approval are evidenced through Quality Gates #205, #207 and #209;
+- RC5.8 introduces shared Redis token state for production bearer authentication;
+- revocation markers remain effective until the token expiry boundary;
+- every JTI is bound to issuer, subject, principal type and roles, preventing identifier reuse for another principal;
+- tokens explicitly marked `one_time=true` are consumed atomically through `SET NX` and replay is rejected;
+- token-state backend failure denies production authentication rather than bypassing state checks;
+- reusable access tokens remain reusable while their identity binding is unchanged and they are not revoked;
+- focused revocation, replay, rebinding and validation regressions are committed;
+- exact-head RC5.8 CI evidence remains `PENDING`;
+- broader authorization-denial audit coverage and operational revocation administration remain separate bounded objectives;
 - Phase 2 completion remains `BLOCKED` until remaining objectives are evidenced.
 
 ## Phase 3 — Data integrity and recovery
@@ -59,8 +61,8 @@ Current state after `RUN-20260806-033`:
 
 ## Current run decision
 
-`RUN-20260806-033` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
+`RUN-20260806-034` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC5.7 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
+Inspect the exact-head RC5.8 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
