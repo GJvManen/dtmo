@@ -51,7 +51,7 @@ Committed controls:
 - retained evidence upload uses `if-no-files-found: error`;
 - a separate `always()` gate fails closed unless connector-state evidence succeeds.
 
-No exact-head execution has completed successfully, so RC7.2 is not accepted as `PASS`.
+Connector State Gate #6, run `31118437816`, did not execute product tests because its primary job was cancelled. No connector-state artifact was retained. The independent aggregate gate failed as designed on missing evidence. This is not a product-test failure and is not accepted as `PASS`; a complete exact-head execution remains mandatory.
 
 ## Security, privacy and publication invariants
 
@@ -60,11 +60,11 @@ No exact-head execution has completed successfully, so RC7.2 is not accepted as 
 - service accounts and connectors may not review or approve sharing;
 - connector success, isolation recovery or quarantine release never implies publication approval;
 - provenance and confidence may not be silently discarded;
-- missing CI, recovery or connector evidence may not be reported as successful.
+- missing, cancelled or unexecuted CI and connector evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260806-045` is `CI_VALIDATION_PENDING` until the exact-head Quality Gate and RC7 Connector State Gate succeed and retain evidence.
+`RUN-20260806-045` is `CI_VALIDATION_PENDING` until the exact-head Quality Gate and RC7 Connector State Gate complete successfully and retain evidence.
 
 ## Exactly one next priority
 
