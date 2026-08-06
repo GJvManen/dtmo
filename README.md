@@ -6,7 +6,7 @@ DTMO is een open, onderwijsgericht Cyber Threat Intelligence-platform voor histo
 
 ## Actuele implementatiestatus
 
-DTMO is ontwikkeld van RC4.1 tot en met RC6.3.
+DTMO is ontwikkeld van RC4.1 tot en met RC6.4.
 
 ### Afgerond en evidenced
 
@@ -15,22 +15,25 @@ DTMO is ontwikkeld van RC4.1 tot en met RC6.3.
 - Phase 2 — application security, identity en privacy: `PASS`;
 - RC6.1 — clean-target PostgreSQL backup en restore: `PASS` via Quality Gate #229 en PR #22;
 - RC6.2 — geïsoleerde MinIO objectbackup en clean-target restore: `PASS` via Quality Gate #243 en PR #24;
-- RC6.3 — clean OpenSearch reconstruction vanuit canonieke PostgreSQL-data met strikte provenance-mapping en deterministische manifestverificatie: `PASS` via OpenSearch Recovery Gate #5, RC4 Quality Gate #253 en PR #25.
+- RC6.3 — clean OpenSearch reconstruction: `PASS` via OpenSearch Recovery Gate #5, RC4 Quality Gate #253 en PR #25.
 
-### RC6.3 evidence
+### Actieve run: RC6.4
 
-Exacte head `fbe3924d202d81ab59ebbcd10889a9a75b146941` is volledig groen. De evidence omvat:
+**Combined multi-store recovery acceptance: `CI_VALIDATION_PENDING`.**
 
-- een niet-bestaande target-index vóór reconstructie;
-- expliciete root- en provenance-submapping met `dynamic: strict`;
-- behoud van content hashes, review/share-status en provenance-references;
-- deterministische bron- en targetmanifesten met identieke SHA-256;
-- exacte documentaantalcontrole;
-- gemeten reconstructieduur en quiesced-source RPO-basis;
-- retained `opensearch-reconstruction-evidence` artifact `8971961873`;
-- fail-closed recoverygate en volledige aggregate Quality Gate.
+De branch bevat:
 
-PR #25 is gemerged naar `main` als `4b08640e612801898307b065f7f2413c34a090c2`.
+- één recovery-point identity en UTC-starttijd voor de volledige run;
+- PostgreSQL restore, MinIO backup/restore en OpenSearch reconstructie in één begrensde workflow;
+- controle van PostgreSQL-auditketen en provenance-hashes;
+- controle van MinIO-objectdigests en provenance-references;
+- controle van OpenSearch-provenance en deterministische bron/targetmanifesten;
+- SHA-256-binding van alle subsystem evidence in één gecombineerd artifact;
+- een cross-store provenance-envelope digest;
+- gemeten end-to-end RTO en een expliciete zero-second quiesced-run RPO-basis;
+- een onafhankelijk observeerbare fail-closed recoverygate.
+
+RC6.4 wordt pas `PASS` nadat GitHub Actions op de exacte branch-head aantoonbaar groen is en het gecombineerde evidence-artifact behouden is.
 
 ## Roadmapstatus
 
@@ -38,7 +41,7 @@ PR #25 is gemerged naar `main` als `4b08640e612801898307b065f7f2413c34a090c2`.
 |---|---|
 | 1. CI en workflow-integriteit | `PASS` |
 | 2. Applicatiebeveiliging, identity en privacy | `PASS` |
-| 3. Data-integriteit, backup en recovery | `IN PROGRESS` — PostgreSQL, MinIO en OpenSearch afzonderlijk bewezen; gecombineerde multi-store recovery acceptance ontbreekt nog |
+| 3. Data-integriteit, backup en recovery | `IN PROGRESS` — afzonderlijke stores bewezen; RC6.4 gecombineerde acceptance wacht op exact-head evidence |
 | 4. Live connectorbetrouwbaarheid en provenance | `NOT STARTED` |
 | 5. Performance en schaalbaarheid | `NOT STARTED` |
 | 6. Frontend accessibility en operationele UX | `NOT STARTED` |
@@ -47,7 +50,7 @@ PR #25 is gemerged naar `main` als `4b08640e612801898307b065f7f2413c34a090c2`.
 | 9. External assurance | `NOT STARTED` |
 | 10. Production go/no-go | `BLOCKED` |
 
-**Precies één volgende prioriteit:** gecombineerde multi-store recovery acceptance voor PostgreSQL, MinIO en OpenSearch met één consistente recovery point, cross-store provenance-integriteit en gemeten end-to-end RTO/RPO.
+**Precies één volgende prioriteit:** inspecteer de exacte RC6 Multi-store Recovery Gate en herstel uitsluitend de eerste deterministische fout, of merge na volledige groene evidence.
 
 ## Governance-invarianten
 
@@ -84,6 +87,7 @@ Belangrijke endpoints:
 - `docs/development/runs/RUN-20260806-040.md`
 - `docs/development/runs/RUN-20260806-041.md`
 - `docs/development/runs/RUN-20260806-042.md`
+- `docs/development/runs/RUN-20260806-043.md`
 - `docs/qa/QA_AND_RELEASE_GATES.md`
 - GitHub issues #2 en #3
 
