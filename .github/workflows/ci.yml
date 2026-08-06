@@ -145,13 +145,38 @@ jobs:
           exit 1
 
   dependency-review:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/dependency-review-action@v4
+      - uses: actions/setup-python@v6
         with:
-          fail-on-severity: high
+          python-version: "3.12"
+          cache: pip
+      - name: Install audit tooling and project dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Audit resolved Python dependencies
+        run: |
+          set -uo pipefail
+          mkdir -p artifacts
+          AUDIT_EXIT_CODE=0
+          python -m pip_audit --format json --output artifacts/pip-audit.json || AUDIT_EXIT_CODE=$?
+          test -s artifacts/pip-audit.json
+          echo "## pip-audit JSON evidence"
+          python -m json.tool artifacts/pip-audit.json
+          echo "## pip-audit human-readable findings"
+          python -m pip_audit || true
+          if [ "$AUDIT_EXIT_CODE" -ne 0 ]; then
+            echo "Dependency audit found one or more known vulnerabilities."
+            exit "$AUDIT_EXIT_CODE"
+          fi
+      - name: Upload dependency audit evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dependency-audit-evidence
+          path: artifacts/pip-audit.json
+          if-no-files-found: error
+          retention-days: 30
 
   release-gate:
     if: always()
@@ -179,10 +204,8 @@ jobs:
               "container": os.environ["CONTAINER"],
               "dependency-review": os.environ["DEPENDENCY_REVIEW"],
           }
-          required = {"workflow-contracts", "test", "migrations", "container"}
+          required = set(results)
           failures = [name for name in required if results[name] != "success"]
-          if results["dependency-review"] not in {"success", "skipped"}:
-              failures.append("dependency-review")
           evidence = {
               "schema_version": 1,
               "workflow": "RC4 Quality Gate",

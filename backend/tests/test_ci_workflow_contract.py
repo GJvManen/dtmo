@@ -79,6 +79,32 @@ def test_workflow_contract_job_is_independently_observable() -> None:
     assert upload_steps[0].get("if") == "always()"
 
 
+def test_dependency_audit_is_portable_fail_closed_and_observable() -> None:
+    jobs = _load_workflow()["jobs"]
+    dependency_job = jobs["dependency-review"]
+    assert isinstance(dependency_job, dict)
+    assert dependency_job.get("if") is None
+    steps = _steps(dependency_job)
+    assert not any("dependency-review-action" in str(step.get("uses", "")) for step in steps)
+    commands = _combined_run(dependency_job)
+    assert "python -m pip_audit" in commands
+    assert "--format json" in commands
+    assert "--output artifacts/pip-audit.json" in commands
+    assert "AUDIT_EXIT_CODE=0" in commands
+    assert "AUDIT_EXIT_CODE=$?" in commands
+    assert "python -m json.tool artifacts/pip-audit.json" in commands
+    assert "python -m pip_audit || true" in commands
+    assert 'exit "$AUDIT_EXIT_CODE"' in commands
+    assert "test -s artifacts/pip-audit.json" in commands
+    upload = _artifact_upload_steps(dependency_job)[0]
+    upload_with = upload.get("with")
+    assert isinstance(upload_with, dict)
+    assert upload_with.get("name") == "dependency-audit-evidence"
+    assert upload_with.get("path") == "artifacts/pip-audit.json"
+    assert upload_with.get("if-no-files-found") == "error"
+    assert upload.get("if") == "always()"
+
+
 def test_aggregate_release_gate_blocks_missing_or_failed_evidence() -> None:
     jobs = _load_workflow()["jobs"]
     release_gate = jobs["release-gate"]
@@ -95,7 +121,7 @@ def test_aggregate_release_gate_blocks_missing_or_failed_evidence() -> None:
     } <= set(needs)
     commands = _combined_run(release_gate)
     assert 'results[name] != "success"' in commands
-    assert '{"success", "skipped"}' in commands
+    assert "required = set(results)" in commands
     assert '"decision": "pass" if not failures else "blocked"' in commands
     assert "artifacts/release-gate-evidence.json" in commands
     assert "GITHUB_STEP_SUMMARY" in commands

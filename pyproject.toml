@@ -25,12 +25,13 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-  "pytest>=8.4,<9",
+  "pytest>=9.0.3,<10",
   "pytest-asyncio>=1.1,<2",
   "pytest-cov>=6,<7",
   "ruff>=0.12,<1",
   "mypy>=1.17,<2",
   "PyYAML>=6.0,<7",
+  "pip-audit>=2.9,<3",
 ]
 
 [tool.hatch.build.targets.wheel]

@@ -68,28 +68,40 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 11. a repository-side execution-readiness preflight must distinguish configuration readiness from actual workflow execution and must mark its own report as non-gate-eligible;
 12. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-010`:
+Current state after `RUN-20260806-023`:
 
-- structural workflow contract: implemented;
-- dedicated observable contract job: implemented;
-- JUnit artifact design: implemented;
-- identity-bound primary evidence manifest: implemented;
-- manifest regression protection: implemented;
-- independent observer workflow: implemented;
-- observer regression protection: implemented;
-- manual observer evidence validation: implemented;
-- deterministic evidence-pair verifier: implemented;
-- verifier positive and negative tests: implemented, execution `PENDING`;
-- repository-side execution-readiness preflight: implemented;
-- preflight positive and negative tests: implemented, execution `PENDING`;
-- preflight output release-gate eligibility: explicitly `false`;
-- successful quality-gate execution evidence: `PENDING`;
-- successful observer execution evidence: `PENDING`;
-- matching artifacts for one head SHA and run ID: `PENDING`;
-- likely external control to verify: repository Actions permissions and workflow enablement;
-- Phase 1 completion: `BLOCKED`.
+- workflow-contract job in run `31094445592` (#173): `PASS`;
+- lint and strict MyPy in run `31094445592`: `PASS`;
+- dependency audit in run `31094445592`: `PASS`;
+- migrations upgrade, revision validation, downgrade and re-upgrade in run `31094445592`: `PASS`;
+- container build and smoke test in run `31094445592`: `PASS`;
+- test job in run `31094445592`: `FAIL` after 48 passes because the new migration contract test used `AnnAssign.targets` instead of `AnnAssign.target`;
+- deterministic test repair: committed as `8246c6bd8202e5814cff4197e8a503ac36a9b74b`;
+- superseded PRs #5, #6 and #8: closed without merge;
+- sole active delivery line: PR #9;
+- replacement exact-head CI execution: `PENDING`;
+- successful observer evidence for the replacement run: `PENDING`.
 
-Phase 1 may only advance after one completed `RC4 Quality Gate` run exposes its run ID, job results and a `workflow-contract-evidence` artifact containing both XML and JSON, followed by a matching `RC4 CI Observer` run for the same head SHA, and the downloaded pair passes `tools/verify_ci_evidence.py`.
+A previously successful numbered run does not override a later failed run on the current exact head. CI acceptance may advance only after the replacement exact-head quality gate succeeds and matching observer evidence is verified.
+
+## Phase 3 — Data integrity and recovery evidence
+
+Current state after `RUN-20260806-023`:
+
+- canonical intelligence ORM and persistence model: implemented;
+- explicit RC4-to-RC5 Alembic revision: implemented as `0002_rc5_canonical`;
+- legacy intelligence and provenance confidence backfill: implemented before legacy-column removal;
+- confidence and education-relevance range constraints: implemented;
+- provenance uniqueness and reliability fields: implemented;
+- immutable intelligence revision table and uniqueness controls: implemented;
+- downgrade path restoring representable RC4 confidence values: implemented;
+- actual upgrade/current-revision/downgrade/re-upgrade in run `31094445592`: `PASS`;
+- migration contract test defect: repaired, replacement execution `PENDING`;
+- clean-environment backup and restoration evidence: `ABSENT`;
+- tested RPO and RTO: `ABSENT`;
+- Phase 3 completion: `BLOCKED`.
+
+Phase 3 may not pass until the repaired exact-head workflow succeeds and a clean-environment restore proves that database content, object evidence, provenance and checksums remain intact.
 
 ## Security and publication invariants
 
@@ -110,6 +122,4 @@ Every run file under `docs/development/runs/` must include a QA plan, QA results
 
 ## Release-level gates
 
-A release may be marked `RC_READY` only when all release-blocking automated checks are successful, no critical or high unresolved security defect remains, migrations and recovery are validated, required API/integration/UI/accessibility tests pass, documentation is complete, governance invariants are verified and external acceptance requirements remain explicit.
-
-`RC_READY` does not mean production accepted. Production acceptance additionally requires the external gates tracked in issue #1, including independent penetration testing, load testing, restoration testing and deployment acceptance.
+A release may be marked `RC_READY` only when all release-blocking automated checks are successful, no critical or high unresolved security defect remains, migrations and recovery are validated, required API/integration/UI/accessibility tests pass, documentation is complete and governance invariants are verified.
