@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from uuid import uuid4
 
@@ -39,7 +40,7 @@ async def run_cisa_kev() -> dict[str, object]:
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if settings.feature_live_connectors:
         scheduler.register(
             ScheduledJob(
@@ -64,13 +65,18 @@ app.include_router(intelligence_router)
 
 
 @app.middleware("http")
-async def request_context(request: Request, call_next):  # type: ignore[no-untyped-def]
+async def request_context(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
     request_id = request.headers.get("x-correlation-id", str(uuid4()))
     token = correlation_id.set(request_id)
     path = request.url.path
-    with LATENCY.labels(request.method, path).time():
-        response = await call_next(request)
-    correlation_id.reset(token)
+    try:
+        with LATENCY.labels(request.method, path).time():
+            response = await call_next(request)
+    finally:
+        correlation_id.reset(token)
     response.headers["x-correlation-id"] = request_id
     response.headers["x-content-type-options"] = "nosniff"
     response.headers["x-frame-options"] = "DENY"
