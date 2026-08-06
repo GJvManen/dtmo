@@ -68,25 +68,43 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 11. a repository-side execution-readiness preflight must distinguish configuration readiness from actual workflow execution and must mark its own report as non-gate-eligible;
 12. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-023`:
+Current state after `RUN-20260806-024`:
 
-- workflow-contract job in run `31094445592` (#173): `PASS`;
-- lint and strict MyPy in run `31094445592`: `PASS`;
-- dependency audit in run `31094445592`: `PASS`;
-- migrations upgrade, revision validation, downgrade and re-upgrade in run `31094445592`: `PASS`;
-- container build and smoke test in run `31094445592`: `PASS`;
-- test job in run `31094445592`: `FAIL` after 48 passes because the new migration contract test used `AnnAssign.targets` instead of `AnnAssign.target`;
-- deterministic test repair: committed as `8246c6bd8202e5814cff4197e8a503ac36a9b74b`;
-- superseded PRs #5, #6 and #8: closed without merge;
-- sole active delivery line: PR #9;
-- replacement exact-head CI execution: `PENDING`;
-- successful observer evidence for the replacement run: `PENDING`.
+- RC5.1 exact-head Quality Gate #177 / run `31095343102`: `PASS`;
+- test, lint, strict MyPy and compile jobs: `PASS`;
+- migrations upgrade, current revision, downgrade and re-upgrade: `PASS`;
+- dependency audit: `PASS`;
+- container build and smoke test: `PASS`;
+- workflow contract and aggregate release gate: `PASS`;
+- evidence artifacts: `release-gate-evidence`, `workflow-contract-evidence`, `dependency-audit-evidence`;
+- PR #9 merged into `main` as `e7d745a37b09076fe5e50bc408120e58b98bde7c`;
+- merge commit status contexts observed during RUN-024: none;
+- RC5.2 exact-head CI execution: `PENDING`.
 
-A previously successful numbered run does not override a later failed run on the current exact head. CI acceptance may advance only after the replacement exact-head quality gate succeeds and matching observer evidence is verified.
+Phase 1 CI integrity is evidenced by Quality Gate #177 for the merged RC5.1 head. New RC5.2 changes require their own exact-head execution before acceptance.
+
+## Phase 2 — Application security and identity evidence
+
+Current state after `RUN-20260806-024`:
+
+- authenticated principal resolution and route-level RBAC: implemented previously;
+- dedicated ingestion permission separate from review authority: implemented;
+- explicit analyst, senior analyst, reviewer, publisher and service-account roles: implemented;
+- service-account role mixing with human or administrator roles: denied;
+- service accounts cannot review intelligence or approve sharing;
+- share approval requires an authorized principal different from the reviewer;
+- ingestion route now requires `ingest:intelligence`, not `review:intelligence`;
+- positive and negative RBAC regression tests: committed, execution `PENDING`;
+- enterprise identity or hardened trusted-proxy boundary: not yet evidenced;
+- privileged-operation audit logging: not yet complete;
+- secrets and static-analysis gates: not yet complete;
+- Phase 2 completion: `BLOCKED`.
+
+Phase 2 may not pass until the RC5.2 exact-head quality gate succeeds and the remaining identity, audit and security-scan objectives are evidenced.
 
 ## Phase 3 — Data integrity and recovery evidence
 
-Current state after `RUN-20260806-023`:
+Current state after `RUN-20260806-024`:
 
 - canonical intelligence ORM and persistence model: implemented;
 - explicit RC4-to-RC5 Alembic revision: implemented as `0002_rc5_canonical`;
@@ -95,13 +113,13 @@ Current state after `RUN-20260806-023`:
 - provenance uniqueness and reliability fields: implemented;
 - immutable intelligence revision table and uniqueness controls: implemented;
 - downgrade path restoring representable RC4 confidence values: implemented;
-- actual upgrade/current-revision/downgrade/re-upgrade in run `31094445592`: `PASS`;
-- migration contract test defect: repaired, replacement execution `PENDING`;
+- exact-head upgrade/current-revision/downgrade/re-upgrade in Quality Gate #177: `PASS`;
+- migration contract tests in Quality Gate #177: `PASS`;
 - clean-environment backup and restoration evidence: `ABSENT`;
 - tested RPO and RTO: `ABSENT`;
 - Phase 3 completion: `BLOCKED`.
 
-Phase 3 may not pass until the repaired exact-head workflow succeeds and a clean-environment restore proves that database content, object evidence, provenance and checksums remain intact.
+Phase 3 may not pass until a clean-environment restore proves that database content, object evidence, provenance and checksums remain intact.
 
 ## Security and publication invariants
 
@@ -109,7 +127,8 @@ These are always blocking:
 
 - ingestion must not create reviewed or share-approved intelligence;
 - `reviewed` must remain separate from `share approved`;
-- external publication requires explicit human approval;
+- external publication requires explicit human approval by a principal different from the reviewer;
+- service accounts may not review intelligence or approve external sharing;
 - reports require evidence;
 - source provenance and confidence may not be silently discarded;
 - missing CI or scan results may not be reported as successful;
