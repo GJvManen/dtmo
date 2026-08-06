@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-027 — Restore direct-call-safe principal resolution](runs/RUN-20260806-027.md) — `BLOCKED`: Quality Gate #189 reached pytest and exposed a FastAPI `Header` default object during direct invocation; dependency metadata now uses `Annotated` with real string defaults; replacement exact-head CI pending
 - [RUN-20260806-026 — RC5.3 PyJWT type-contract remediation](runs/RUN-20260806-026.md) — `BLOCKED`: Quality Gate #185 reached strict MyPy after Ruff passed; PyJWT decode options now use the vendor `Options` contract; replacement exact-head CI pending
 - [RUN-20260806-025 — RC5.3 trusted principal token validation](runs/RUN-20260806-025.md) — `CI_VALIDATION_PENDING`: production identity headers replaced by signed bearer-token principal resolution with issuer, audience, signature, time-claim and human/machine-boundary validation
 - [RUN-20260806-024 — RC5.2 least-privilege RBAC and separation of duties](runs/RUN-20260806-024.md) — `PASS`: Quality Gate #179 succeeded and PR #10 was merged into `main`
