@@ -10,6 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal
+from dtmo.auth.revocation import revoke_token_with_audit
+from dtmo.auth.token_state import TokenStateError, TokenStateStore
+from dtmo.config import Settings, get_settings
 from dtmo.governance import (
     GovernedDecisionError,
     approve_intelligence_sharing,
@@ -21,7 +24,13 @@ from dtmo.persistence.repository import IntelligenceRepository
 from dtmo.persistence.session import Database
 from dtmo.search.service import OpenSearchService
 
-from .schemas import IntelligenceIngestRequest, IntelligenceIngestResponse, SearchResponse
+from .schemas import (
+    IntelligenceIngestRequest,
+    IntelligenceIngestResponse,
+    SearchResponse,
+    TokenRevocationRequest,
+    TokenRevocationResponse,
+)
 
 router = APIRouter(prefix="/api/v1", tags=["intelligence"])
 database = Database()
@@ -175,6 +184,41 @@ async def approve_intelligence_item_sharing(
         "share_approved": result.share_approved,
         "audit_event_id": str(result.audit_event_id),
     }
+
+
+@router.post("/security/tokens/revoke", response_model=TokenRevocationResponse)
+async def revoke_token(
+    request: TokenRevocationRequest,
+    principal: Annotated[
+        Principal,
+        Depends(require_permission(Permission.REVOKE_TOKENS)),
+    ],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
+    request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
+) -> TokenRevocationResponse:
+    store = TokenStateStore.from_url(settings.redis_url)
+    try:
+        result = await session.run_sync(
+            lambda sync_session: revoke_token_with_audit(
+                sync_session,
+                store=store,
+                principal=principal,
+                jti=request.jti,
+                expires_at=request.expires_at,
+                reason=request.reason,
+                request_id=request_id,
+            )
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except TokenStateError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
+    return TokenRevocationResponse(
+        jti=result.jti,
+        expires_at=result.expires_at,
+        audit_event_id=str(result.audit_event_id),
+    )
 
 
 @router.get("/intelligence/search", response_model=SearchResponse)

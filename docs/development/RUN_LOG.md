@@ -4,8 +4,9 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260806-035 — Isolate production JWKS regression from external Redis](runs/RUN-20260806-035.md) — `BLOCKED`: the pre-existing production trusted-principal unit test now supplies controlled token-state behavior while product fail-closed Redis enforcement remains unchanged; exact-head CI is pending
-- [RUN-20260806-034 — RC5.8 token revocation and replay-state enforcement](runs/RUN-20260806-034.md) — `CI_VALIDATION_PENDING`: production bearer authentication now checks expiry-bounded Redis revocation state, stable JTI binding and atomic one-time-token consumption
+- [RUN-20260806-036 — Operational revocation and authorization-denial audit](runs/RUN-20260806-036.md) — `CI_VALIDATION_PENDING`: least-privilege token revocation and append-only authorization-denial evidence are committed; exact-head CI is pending
+- [RUN-20260806-035 — Isolate production JWKS regression from external Redis](runs/RUN-20260806-035.md) — `PASS`: Quality Gate #215 succeeded and PR #16 merged
+- [RUN-20260806-034 — RC5.8 token revocation and replay-state enforcement](runs/RUN-20260806-034.md) — `PASS`: Quality Gate #215 succeeded and PR #16 merged
 - [RUN-20260806-033 — Governed decision audit integration](runs/RUN-20260806-033.md) — `PASS`: Quality Gate #209 succeeded and PR #15 merged
 - [RUN-20260806-032 — Persistent append-only audit storage](runs/RUN-20260806-032.md) — `PASS`: Quality Gate #207 succeeded and PR #14 merged
 - [RUN-20260806-031 — RC5.5 tamper-evident audit chain](runs/RUN-20260806-031.md) — `PASS`: Quality Gate #205 succeeded and PR #13 merged

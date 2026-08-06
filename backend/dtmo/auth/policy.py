@@ -26,6 +26,7 @@ class Permission(StrEnum):
     SHARE_APPROVE = "approve:share"
     MANAGE_CONNECTORS = "manage:connectors"
     MANAGE_USERS = "manage:users"
+    REVOKE_TOKENS = "revoke:tokens"
     READ_AUDIT = "read:audit"
     EXPORT_REPORTS = "export:reports"
 
@@ -36,6 +37,7 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
         {
             Permission.READ_INTELLIGENCE,
             Permission.REVIEW_INTELLIGENCE,
+            Permission.REVOKE_TOKENS,
             Permission.EXPORT_REPORTS,
         }
     ),
