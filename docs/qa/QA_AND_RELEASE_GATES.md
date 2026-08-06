@@ -55,6 +55,8 @@ Committed controls:
 
 Connector State Gate #12 reached PostgreSQL-backed project execution and exposed an offset-naive versus offset-aware comparison defect after migrations succeeded. The runtime normalization remediation is committed as `6fab8341e8123664bc3456eaba8daf8d603a0933`; direct regression protection is committed as `52e3d37f119547637571d77a33636ffb996281c6`.
 
+The subsequent exact head `d489a60bcc2492b0a7dc0423bdf91c32211a07ed` had no GitHub Actions workflow run registered when checked. PR #29 was mergeable and `.github/workflows/connector-state.yml` contained an applicable `pull_request` trigger without path exclusions. No Quality Gate, Connector State Gate, regression execution or retained artifact existed for that head. This is an external execution-evidence blocker and not a test pass.
+
 These commits are not acceptance evidence. RC7.2 remains `CI_VALIDATION_PENDING` until the exact current head executes the Quality Gate, Connector State Gate and required regression gates successfully and retains the required evidence artifacts.
 
 ## Security, privacy and publication invariants
@@ -68,8 +70,8 @@ These commits are not acceptance evidence. RC7.2 remains `CI_VALIDATION_PENDING`
 
 ## Current run decision
 
-`RUN-20260806-045` is `CI_VALIDATION_PENDING`. UTC normalization has direct regression protection, but the test and PostgreSQL-backed evidence have not yet succeeded on the exact current head.
+`RUN-20260807-046` is `CI_VALIDATION_PENDING`. Workflow triggers are configured and PR #29 is mergeable, but GitHub Actions did not register exact-head execution or retained evidence for the inspected head.
 
 ## Exactly one next priority
 
-Inspect the new exact-head RC7 Connector State Gate and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
+Inspect the first RC7 Connector State Gate registered for the current exact head and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
