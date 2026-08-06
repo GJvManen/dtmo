@@ -1,0 +1,93 @@
+name: RC6 OpenSearch Recovery Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  opensearch-reconstruction:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: dtmo
+          POSTGRES_USER: dtmo
+          POSTGRES_PASSWORD: change-me
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dtmo -d dtmo"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+      opensearch:
+        image: opensearchproject/opensearch:2.19.1
+        env:
+          discovery.type: single-node
+          plugins.security.disabled: "true"
+          OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
+        ports:
+          - 9200:9200
+        options: >-
+          --health-cmd "curl -fsS http://localhost:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 30
+    env:
+      DTMO_ENVIRONMENT: test
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e '.[test]'
+      - name: Create canonical PostgreSQL source
+        run: |
+          python -m alembic upgrade head
+          python - <<'PY'
+          from sqlalchemy import create_engine
+          from sqlalchemy.orm import Session
+          from tools.verify_postgres_backup_restore import _seed_source
+          from dtmo.config import Settings
+
+          settings = Settings(environment="test")
+          engine = create_engine(settings.database_url)
+          with Session(engine) as session:
+              _seed_source(session)
+          PY
+      - name: Verify clean OpenSearch reconstruction
+        run: |
+          mkdir -p artifacts
+          python tools/verify_opensearch_reconstruction.py \
+            --database-url "$DTMO_DATABASE_URL" \
+            --endpoint http://127.0.0.1:9200 \
+            --evidence artifacts/opensearch-reconstruction-evidence.json
+          python -m json.tool artifacts/opensearch-reconstruction-evidence.json
+      - name: Upload OpenSearch reconstruction evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: opensearch-reconstruction-evidence
+          path: artifacts/opensearch-reconstruction-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+  recovery-gate:
+    if: always()
+    needs: [opensearch-reconstruction]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail closed on missing reconstruction evidence
+        env:
+          OPENSEARCH_RECONSTRUCTION: ${{ needs.opensearch-reconstruction.result }}
+        run: |
+          test "$OPENSEARCH_RECONSTRUCTION" = "success"
