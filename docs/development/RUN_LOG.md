@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-044 — RC7.1 governed live connector canary](runs/RUN-20260806-044.md) — `CI_VALIDATION_PENDING`: controlled CISA KEV canary, provenance, licensing, timeout, bounded retry/backoff, deduplication, quarantine and fail-closed publication evidence committed
 - [RUN-20260806-043 — RC6.4 combined multi-store recovery acceptance](runs/RUN-20260806-043.md) — `PASS`: Multi-store Recovery Gate #4, RC4 Quality Gate #262 and OpenSearch Recovery Gate #14 succeeded on exact head `ba3389613341c84aa21b591b706b7819981b7a4b`; combined cross-store evidence retained; PR #26 merged
 - [RUN-20260806-042 — RC6.3 clean OpenSearch reconstruction](runs/RUN-20260806-042.md) — `PASS`: OpenSearch Recovery Gate #5 and RC4 Quality Gate #253 succeeded on exact head `fbe3924d202d81ab59ebbcd10889a9a75b146941`; deterministic reconstruction evidence retained; PR #25 merged
 - [RUN-20260806-041 — RC6.2 clean MinIO backup and restore evidence](runs/RUN-20260806-041.md) — `PASS`: Quality Gate #243 succeeded on exact head `bd2fa4f16d09e924ae3aa0cfb40946aba1fc9084`; isolated MinIO restore, object digest and provenance evidence retained; PR #24 merged
@@ -32,8 +33,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260806-043` is `PASS`. The exact-head combined recovery workflow succeeded, retained `multistore-recovery-evidence` artifact `8972811292`, and PR #26 merged as `d25c2e4a9c5e5869071020a109ddf57638779a02`. Phase 3 is complete.
+`RUN-20260806-044` is `CI_VALIDATION_PENDING`. The live canary implementation and documentation are committed, but exact-head Quality Gate execution and retained connector evidence have not yet completed successfully.
 
 ## Exactly one next priority
 
-Start Phase 4 with one controlled live connector canary including source provenance, timeout, rate limiting, retry/backoff, quarantine and fail-closed human share approval.
+Inspect the exact-head RC7 Live Connector Canary Gate and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
