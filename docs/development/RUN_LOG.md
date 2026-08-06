@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-008 — Identity-bound CI evidence manifest](runs/RUN-20260806-008.md) — `BLOCKED`: primary evidence now carries immutable run and commit identity; actual workflow and artifact execution evidence remains absent
 - [RUN-20260806-007 — Harden manual CI observation evidence](runs/RUN-20260806-007.md) — `BLOCKED`: manual observer runs now require validated upstream run metadata; actual quality-gate and observer execution evidence remains absent
 - [RUN-20260806-006 — Independent CI execution observer](runs/RUN-20260806-006.md) — `BLOCKED`: separate observer and regression contract committed; actual quality-gate and observer execution evidence remains absent
 - [RUN-20260806-005 — Diagnose absent GitHub Actions execution evidence](runs/RUN-20260806-005.md) — `BLOCKED`: workflow structure is present, but the latest `main` commit has no observable status context, successful run or artifact
