@@ -1,15 +1,16 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 import pytest
 
-from dtmo.audit import AuditDecision, append_audit_event, verify_audit_chain
+from dtmo.audit import AuditDecision, AuditEvent, append_audit_event, verify_audit_chain
 
 
-def _chain() -> list:
+def _chain() -> list[AuditEvent]:
     first = append_audit_event(
         [],
         principal="analyst@example.test",
@@ -64,9 +65,9 @@ def test_valid_chain_verifies_and_is_deterministic() -> None:
         lambda event: replace(event, provenance_reference="source:tampered"),
     ],
 )
-def test_payload_tampering_is_detected(mutated: object) -> None:
+def test_payload_tampering_is_detected(mutated: Callable[[AuditEvent], AuditEvent]) -> None:
     events = _chain()
-    events[0] = mutated(events[0])  # type: ignore[operator]
+    events[0] = mutated(events[0])
     valid, reason = verify_audit_chain(events)
     assert not valid
     assert reason == "event hash mismatch at position 0"
