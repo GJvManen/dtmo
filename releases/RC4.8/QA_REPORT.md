@@ -49,7 +49,7 @@ The ingestion contract cannot set `review_status=reviewed` or `share_approved=tr
 | RC4.5 | Graph evidence, confidence and query-depth validation | Implemented |
 | RC4.6 | Responsive SOC workspace | Implemented; browser acceptance pending |
 | RC4.7 | RBAC and evidence-gated reporting | Implemented |
-| RC4.8 | Cross-sprint regression, migrations, search, security config, secured API routes and CI workflow contract | Committed; CI pending |
+| RC4.8 | Cross-sprint regression, migrations, search, security config, secured API routes and CI workflow contract | Committed; full CI gate pending |
 
 ## Additional implementation completed
 
@@ -68,27 +68,23 @@ The ingestion contract cannot set `review_status=reviewed` or `share_approved=tr
 
 ## Latest PDCA gate outcome
 
-`RUN-20260806-012` isolated GitHub Actions execution from all DTMO application dependencies. The minimal canary was committed directly to `main` as `86c18aaa0fcd623d099c464f3bc4669392cc059b`, but the resulting commit exposed zero observable status contexts. This demonstrates that the current blocker is not caused by project tests, Python packaging, PostgreSQL, migrations, Docker, dependency review or aggregate gate logic.
+`RUN-20260806-013` confirms that basic GitHub Actions execution has been restored. The repository owner reported `GitHub Actions Canary #5` as green on 2026-08-06. This resolves `CI-OPS-001` for the bounded infrastructure objective and demonstrates that Actions can execute repository workflows.
 
-The remaining blocker is repository/account Actions policy or integration-level check-run visibility. The connected integration cannot inspect or modify the repository Actions policy endpoint and cannot list generic push-triggered workflow runs, so it cannot safely resolve that external setting from this run.
+The connected integration does not expose generic push/manual runs, so this evidence is recorded as operator-confirmed rather than API-fetched. The result is sufficient to close the basic execution blocker, but not sufficient to approve RC4.8.
 
 ## Release status
 
-**CI VALIDATION PENDING — BLOCKED BY `CI-OPS-001`**
+**CI EXECUTION RESTORED — FULL RC4 QUALITY GATE PENDING**
 
-No successful status checks are currently exposed for either the RC4 workflow or the independent canary. A missing status is not a pass. GitHub Actions must be enabled and a canary plus the RC4 Quality Gate must complete successfully before `RC_READY` can be assigned.
+The canary has passed, but `RC_READY` is not assigned. The complete `RC4 Quality Gate` must still finish successfully, including workflow contracts, lint, strict MyPy, tests with the coverage threshold, migrations, container smoke testing, pull-request dependency review where applicable, and the aggregate `release-gate`.
 
-## Required operational action
+## Required next action
 
-1. Open repository **Settings → Actions → General**.
-2. Enable Actions for the repository and allow the GitHub-authored actions used by the workflows.
-3. Manually dispatch **GitHub Actions Canary**.
-4. Capture its run URL and successful conclusion.
-5. Dispatch or push-trigger **RC4 Quality Gate** and attach its release-gate artifact to this report.
+Run **RC4 Quality Gate** on `main`. Record the workflow result and verify that the aggregate `release-gate` is green. Any failed job remains release-blocking and must be fixed before RC4.8 can receive `RC_READY`.
 
 ## Remaining technical follow-up
 
-- Resolve `CI-OPS-001` and restore observable CI execution on `main`.
+- Execute and validate the complete RC4 Quality Gate.
 - Add a transactional outbox and retry worker for OpenSearch indexing.
 - Add durable audit events for ingestion, review and share approval.
 - Add browser-based accessibility and end-to-end tests.
@@ -104,6 +100,7 @@ No successful status checks are currently exposed for either the RC4 workflow or
 - `docs/development/runs/RUN-20260805-002.md`
 - `docs/development/runs/RUN-20260806-003.md`
 - `docs/development/runs/RUN-20260806-012.md`
+- `docs/development/runs/RUN-20260806-013.md`
 
 ## External production acceptance
 
