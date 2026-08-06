@@ -25,12 +25,44 @@ jobs:
         run: |
           mkdir -p artifacts
           pytest backend/tests/test_ci_workflow_contract.py --junitxml=artifacts/workflow-contracts.xml
+      - name: Create identity-bound evidence manifest
+        if: always()
+        env:
+          EVIDENCE_CONCLUSION: ${{ job.status }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = {
+              "schema_version": 1,
+              "workflow": "RC4 Quality Gate",
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "head_sha": os.environ["GITHUB_SHA"].lower(),
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "event_name": os.environ["GITHUB_EVENT_NAME"],
+              "conclusion": os.environ["EVIDENCE_CONCLUSION"],
+              "run_url": (
+                  f"https://github.com/{os.environ['GITHUB_REPOSITORY']}"
+                  f"/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+              ),
+          }
+          Path("artifacts/workflow-contract-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          cat artifacts/workflow-contract-evidence.json
       - name: Upload workflow contract evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: workflow-contract-evidence
-          path: artifacts/workflow-contracts.xml
+          path: |
+            artifacts/workflow-contracts.xml
+            artifacts/workflow-contract-evidence.json
           if-no-files-found: error
           retention-days: 30
 
