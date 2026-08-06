@@ -1,0 +1,3 @@
+# Run daily at 02:17 UTC. The deployment operator must provide DTMO_DATABASE_URL
+# through the platform secret store; no credentials belong in this file.
+17 2 * * * dtmo cd /app && python -m dtmo.privacy.retention_cli --batch-size 500
