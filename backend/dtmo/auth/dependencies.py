@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hmac
 from collections.abc import Callable
+from typing import Annotated
 
 from fastapi import Depends, Header, HTTPException, status
 
@@ -11,10 +12,10 @@ from .policy import Permission, Principal, Role, require
 
 
 def resolve_principal(
+    settings: Annotated[Settings, Depends(get_settings)],
     x_dtmo_subject: str = Header(default="anonymous"),
     x_dtmo_roles: str = Header(default="executive"),
     x_dtmo_api_key: str = Header(default=""),
-    settings: Settings = Depends(get_settings),
 ) -> Principal:
     expected = settings.api_key.get_secret_value()
     if expected and not hmac.compare_digest(x_dtmo_api_key, expected):
@@ -40,7 +41,9 @@ def resolve_principal(
 
 
 def require_permission(permission: Permission) -> Callable[[Principal], Principal]:
-    def dependency(principal: Principal = Depends(resolve_principal)) -> Principal:
+    def dependency(
+        principal: Annotated[Principal, Depends(resolve_principal)],
+    ) -> Principal:
         try:
             require(principal, permission)
         except PermissionError as exc:
