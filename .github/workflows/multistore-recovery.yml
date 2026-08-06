@@ -1,0 +1,142 @@
+name: RC6 Multi-store Recovery Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  multistore-recovery:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: dtmo
+          POSTGRES_USER: dtmo
+          POSTGRES_PASSWORD: change-me
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dtmo -d dtmo"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+      opensearch:
+        image: opensearchproject/opensearch:2.19.1
+        env:
+          discovery.type: single-node
+          DISABLE_SECURITY_PLUGIN: "true"
+          OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
+        ports:
+          - 9200:9200
+        options: >-
+          --health-cmd "curl -fsS http://localhost:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 30
+    env:
+      DTMO_ENVIRONMENT: test
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo
+      PGPASSWORD: change-me
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project and PostgreSQL 17 client
+        run: |
+          python -m pip install -e '.[test]'
+          sudo install -d -m 0755 /usr/share/postgresql-common/pgdg
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.gpg] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+      - name: Establish one recovery point
+        run: |
+          mkdir -p artifacts
+          echo "RECOVERY_POINT_ID=${GITHUB_SHA}-${GITHUB_RUN_ID}" >> "$GITHUB_ENV"
+          echo "RECOVERY_STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+      - name: Prepare canonical source and clean PostgreSQL target
+        run: |
+          python -m alembic upgrade head
+          dropdb --if-exists --host 127.0.0.1 --username dtmo dtmo_restore
+          createdb --host 127.0.0.1 --username dtmo dtmo_restore
+      - name: Recover PostgreSQL at the shared point
+        run: |
+          python tools/verify_postgres_backup_restore.py \
+            --source-url "$DTMO_DATABASE_URL" \
+            --target-url postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo_restore \
+            --backup artifacts/dtmo-postgres.dump \
+            --evidence artifacts/postgres-restore-evidence.json
+      - name: Start isolated MinIO source and target
+        run: |
+          docker rm -f minio-source minio-target || true
+          docker run -d --name minio-source -p 19000:9000 \
+            -e MINIO_ROOT_USER="$MINIO_ACCESS_KEY" -e MINIO_ROOT_PASSWORD="$MINIO_SECRET_KEY" \
+            minio/minio:RELEASE.2025-04-22T22-12-26Z server /data
+          docker run -d --name minio-target -p 29000:9000 \
+            -e MINIO_ROOT_USER="$MINIO_ACCESS_KEY" -e MINIO_ROOT_PASSWORD="$MINIO_SECRET_KEY" \
+            minio/minio:RELEASE.2025-04-22T22-12-26Z server /data
+          for port in 19000 29000; do
+            for attempt in $(seq 1 30); do curl -fsS "http://127.0.0.1:${port}/minio/health/live" && break; sleep 2; done
+            curl -fsS "http://127.0.0.1:${port}/minio/health/live"
+          done
+      - name: Recover MinIO at the shared point
+        run: |
+          python tools/verify_minio_backup_restore.py \
+            --source-endpoint 127.0.0.1:19000 \
+            --target-endpoint 127.0.0.1:29000 \
+            --access-key "$MINIO_ACCESS_KEY" \
+            --secret-key "$MINIO_SECRET_KEY" \
+            --backup artifacts/dtmo-minio-backup.tar.gz \
+            --evidence artifacts/minio-restore-evidence.json
+      - name: Reconstruct OpenSearch at the shared point
+        run: |
+          python tools/verify_opensearch_reconstruction.py \
+            --database-url "$DTMO_DATABASE_URL" \
+            --endpoint http://127.0.0.1:9200 \
+            --evidence artifacts/opensearch-reconstruction-evidence.json
+      - name: Verify combined recovery acceptance
+        run: |
+          python tools/verify_multistore_recovery.py \
+            --recovery-point-id "$RECOVERY_POINT_ID" \
+            --started-at "$RECOVERY_STARTED_AT" \
+            --postgres-evidence artifacts/postgres-restore-evidence.json \
+            --minio-evidence artifacts/minio-restore-evidence.json \
+            --opensearch-evidence artifacts/opensearch-reconstruction-evidence.json \
+            --output artifacts/multistore-recovery-evidence.json
+          python -m json.tool artifacts/multistore-recovery-evidence.json
+      - name: Upload combined recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: multistore-recovery-evidence
+          path: |
+            artifacts/multistore-recovery-evidence.json
+            artifacts/postgres-restore-evidence.json
+            artifacts/minio-restore-evidence.json
+            artifacts/opensearch-reconstruction-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Stop MinIO containers
+        if: always()
+        run: docker rm -f minio-source minio-target || true
+
+  recovery-gate:
+    if: always()
+    needs: [multistore-recovery]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail closed on missing combined evidence
+        env:
+          MULTISTORE_RECOVERY: ${{ needs.multistore-recovery.result }}
+        run: test "$MULTISTORE_RECOVERY" = "success"
