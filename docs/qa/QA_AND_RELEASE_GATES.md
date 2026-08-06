@@ -84,6 +84,25 @@ Current state after `RUN-20260806-020`:
 
 A previously successful numbered run does not override a later failed run on the current exact head. Phase 1 may advance only after one successful current-head `RC4 Quality Gate` run and matching observer evidence pass deterministic verification.
 
+## Phase 3 — Data integrity and recovery evidence
+
+Current state after `RUN-20260806-022`:
+
+- canonical intelligence ORM and persistence model: implemented;
+- explicit RC4-to-RC5 Alembic revision: implemented as `0002_rc5_canonical`;
+- legacy intelligence and provenance confidence backfill: implemented before legacy-column removal;
+- confidence and education-relevance range constraints: implemented;
+- provenance uniqueness and reliability fields: implemented;
+- immutable intelligence revision table and uniqueness controls: implemented;
+- downgrade path restoring representable RC4 confidence values: implemented;
+- migration contract regression tests: committed, execution `PENDING`;
+- actual exact-head upgrade/current-revision/downgrade/re-upgrade evidence: `PENDING`;
+- clean-environment backup and restoration evidence: `ABSENT`;
+- tested RPO and RTO: `ABSENT`;
+- Phase 3 completion: `BLOCKED`.
+
+Phase 3 may not pass until the exact-head migration workflow succeeds and a clean-environment restore proves that database content, object evidence, provenance and checksums remain intact.
+
 ## Security and publication invariants
 
 These are always blocking:
