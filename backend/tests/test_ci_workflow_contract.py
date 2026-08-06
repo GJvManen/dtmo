@@ -114,6 +114,10 @@ def test_postgres_restore_is_clean_release_blocking_and_observable() -> None:
     assert isinstance(services, dict)
     assert "postgres" in services
     commands = _combined_run(restore_job)
+    assert "postgresql-client-17" in commands
+    assert 'echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"' in commands
+    assert "/usr/lib/postgresql/17/bin/pg_dump --version" in commands
+    assert "SHOW server_version_num" in commands
     assert "python -m alembic upgrade head" in commands
     assert "dropdb --if-exists" in commands
     assert "createdb" in commands
