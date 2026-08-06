@@ -1,9 +1,26 @@
 from __future__ import annotations
 
+import json
+
 import pytest
 from pydantic import ValidationError
 
 from dtmo.config import Settings
+
+JWKS_JSON = json.dumps(
+    {
+        "keys": [
+            {
+                "kty": "RSA",
+                "kid": "active-key",
+                "use": "sig",
+                "alg": "RS256",
+                "n": "sXchvR7fYQ",
+                "e": "AQAB",
+            }
+        ]
+    }
+)
 
 
 def test_production_rejects_insecure_object_storage() -> None:
@@ -12,7 +29,7 @@ def test_production_rejects_insecure_object_storage() -> None:
             environment="production",
             minio_secure=False,
             minio_secret_key="secret-value",
-            api_key="a" * 32,
+            jwt_jwks_json=JWKS_JSON,
         )
 
 
@@ -22,17 +39,27 @@ def test_production_rejects_missing_object_storage_secret() -> None:
             environment="production",
             minio_secure=True,
             minio_secret_key="",
-            api_key="a" * 32,
+            jwt_jwks_json=JWKS_JSON,
         )
 
 
-def test_production_rejects_missing_or_short_api_key() -> None:
-    with pytest.raises(ValidationError):
+def test_production_rejects_missing_jwks() -> None:
+    with pytest.raises(ValidationError, match="JWKS"):
         Settings(
             environment="production",
             minio_secure=True,
             minio_secret_key="secret-value",
-            api_key="short",
+        )
+
+
+def test_production_rejects_shared_secret_token_validation() -> None:
+    with pytest.raises(ValidationError, match="forbids shared-secret"):
+        Settings(
+            environment="production",
+            minio_secure=True,
+            minio_secret_key="secret-value",
+            token_signing_secret="t" * 32,
+            jwt_jwks_json=JWKS_JSON,
         )
 
 
@@ -41,8 +68,7 @@ def test_production_accepts_secure_human_gated_configuration() -> None:
         environment="production",
         minio_secure=True,
         minio_secret_key="secret-value",
-        api_key="a" * 32,
-        token_signing_secret="t" * 32,
+        jwt_jwks_json=JWKS_JSON,
         publish_requires_human_approval=True,
         database_url="postgresql+psycopg://dtmo@postgres:5432/dtmo",
     )
