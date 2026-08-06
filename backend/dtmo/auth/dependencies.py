@@ -9,6 +9,7 @@ from fastapi import Depends, Header, HTTPException, status
 from dtmo.config import Settings, get_settings
 
 from .policy import Permission, Principal, Role, require
+from .token_state import TokenStateError, TokenStateStore
 from .tokens import TokenValidationError, decode_principal_token
 
 
@@ -59,7 +60,9 @@ def resolve_principal(
                 issuer=settings.jwt_issuer,
                 audience=settings.jwt_audience,
             )
-        except TokenValidationError as exc:
+            if settings.production:
+                TokenStateStore.from_url(settings.redis_url).assert_active(authenticated)
+        except (TokenValidationError, TokenStateError) as exc:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
         return authenticated.principal
 
