@@ -64,9 +64,10 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 7. observer evidence is retained as the named `ci-observation-evidence` artifact;
 8. both artifacts are independently observable and their immutable identifiers match;
 9. manual observer execution must explicitly identify a real upstream `RC4 Quality Gate` run and may not self-attest;
-10. absent, skipped, cancelled or failed execution may not be interpreted as success.
+10. a deterministic verifier must reject failed, malformed, incomplete or mismatched evidence pairs;
+11. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-008`:
+Current state after `RUN-20260806-009`:
 
 - structural workflow contract: implemented;
 - dedicated observable contract job: implemented;
@@ -76,13 +77,15 @@ Current state after `RUN-20260806-008`:
 - independent observer workflow: implemented;
 - observer regression protection: implemented;
 - manual observer evidence validation: implemented;
+- deterministic evidence-pair verifier: implemented;
+- verifier positive and negative tests: implemented, execution `PENDING`;
 - successful quality-gate execution evidence: `PENDING`;
 - successful observer execution evidence: `PENDING`;
 - matching artifacts for one head SHA and run ID: `PENDING`;
 - likely external control to verify: repository Actions permissions and workflow enablement;
 - Phase 1 completion: `BLOCKED`.
 
-Phase 1 may only advance after one completed `RC4 Quality Gate` run exposes its run ID, job results and a `workflow-contract-evidence` artifact containing both XML and JSON, followed by a matching `RC4 CI Observer` run for the same head SHA.
+Phase 1 may only advance after one completed `RC4 Quality Gate` run exposes its run ID, job results and a `workflow-contract-evidence` artifact containing both XML and JSON, followed by a matching `RC4 CI Observer` run for the same head SHA, and the downloaded pair passes `tools/verify_ci_evidence.py`.
 
 ## Security and publication invariants
 
