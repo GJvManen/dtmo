@@ -1,5 +1,6 @@
 name: RC4 Quality Gate
 
+# Execution probe 2026-08-06T10:06+02:00
 on:
   workflow_dispatch:
   push:
