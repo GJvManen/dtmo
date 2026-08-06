@@ -4,7 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260806-042 — RC6.3 clean OpenSearch reconstruction](runs/RUN-20260806-042.md) — `CI_VALIDATION_PENDING`: clean-target reconstruction, strict mapping, canonical manifest comparison and retained evidence are committed
+- [RUN-20260806-042 — RC6.3 clean OpenSearch reconstruction](runs/RUN-20260806-042.md) — `PASS`: OpenSearch Recovery Gate #5 and RC4 Quality Gate #253 succeeded on exact head `fbe3924d202d81ab59ebbcd10889a9a75b146941`; deterministic reconstruction evidence retained; PR #25 merged
 - [RUN-20260806-041 — RC6.2 clean MinIO backup and restore evidence](runs/RUN-20260806-041.md) — `PASS`: Quality Gate #243 succeeded on exact head `bd2fa4f16d09e924ae3aa0cfb40946aba1fc9084`; isolated MinIO restore, object digest and provenance evidence retained; PR #24 merged
 - [RUN-20260806-040 — RC6.1 clean PostgreSQL backup and restore evidence](runs/RUN-20260806-040.md) — `PASS`: Quality Gate #229 succeeded on exact head `d1d0e809ffcee6458cb8a8f31ad2d10d481fefb0`; clean-target restore and integrity evidence retained; PR #22 merged
 - [RUN-20260806-039 — RC5.12 storage-layer retention enforcement](runs/RUN-20260806-039.md) — `PASS`: Quality Gate #224 succeeded and PR #21 merged
@@ -31,8 +31,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260806-042` remains `CI_VALIDATION_PENDING` until the exact branch-head recovery workflow successfully reconstructs OpenSearch from canonical PostgreSQL data, verifies deterministic manifests and retains machine-readable evidence.
+`RUN-20260806-042` is `PASS`. OpenSearch Recovery Gate #5 reconstructed the clean index from canonical PostgreSQL data, verified deterministic source/target manifests and retained machine-readable evidence. RC4 Quality Gate #253 also passed, and PR #25 is merged.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC6.3 OpenSearch Recovery Gate and remediate only its earliest deterministic failure, or merge after complete success.
+Implement combined multi-store recovery acceptance for PostgreSQL, MinIO and OpenSearch with one consistent recovery point, cross-store provenance integrity and measured end-to-end RTO/RPO.
