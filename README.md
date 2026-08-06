@@ -4,9 +4,11 @@
 
 DTMO is een open, onderwijsgericht Cyber Threat Intelligence-platform voor historische incidenten, actuele intelligence, kwetsbaarheden, IOC's, leveranciersrisico en bestuurlijke rapportage.
 
-## RC4.8 implementation
+## Actuele implementatiestatus
 
-De repository bevat stapsgewijze implementaties van RC4.1 tot en met RC4.8:
+DTMO is ontwikkeld van RC4.1 tot en met RC6.1. De oorspronkelijke RC4-platformbasis is inmiddels uitgebreid met een canoniek intelligencemodel, productiegerichte identity- en securitycontrols, tamper-evidente auditing, privacy- en bewaartermijncontroles en aantoonbare PostgreSQL-backup en clean-environment restore.
+
+### RC4-platformbasis
 
 - **RC4.1:** FastAPI-platformbasis, configuratie, logging, scheduler, metrics, Docker Compose en CI;
 - **RC4.2:** PostgreSQL/SQLAlchemy-persistentiemodellen, provenance en gecontroleerde share approval;
@@ -17,17 +19,68 @@ De repository bevat stapsgewijze implementaties van RC4.1 tot en met RC4.8:
 - **RC4.7:** RBAC, scheiding van review en share approval, evidence-gated reporting en exports;
 - **RC4.8:** migraties, MinIO, OpenSearch en beveiligde intelligence-ingestion/search API.
 
-## Huidige status
+### RC5 application security, identity en privacy
 
-**CI VALIDATION PENDING**
+RC5.1 tot en met RC5.12 zijn aantoonbaar groen en gemerged. De implementatie bevat onder meer:
 
-De code, tests en documentatie zijn gecommit. RC4.8 wordt pas `RC_READY` nadat GitHub Actions aantoonbaar succesvol is afgerond. Een ontbrekende status wordt niet als pass behandeld.
+- canonieke intelligenceclassificatie en deterministische confidence scoring;
+- least-privilege RBAC en scheiding van review, share approval en beheer;
+- trusted principal JWT-validatie met asymmetric JWKS-keyrotatie;
+- tokenrevocation, replay-state enforcement en herstel uit durable evidence;
+- persistente append-only en cryptografisch gekoppelde security-auditrecords;
+- transactionele auditregistratie van review-, publicatie- en autorisatiebeslissingen;
+- privacy-minimalisatie, purpose-bound pseudonimisering, retention en legal hold;
+- storage-layer purge van geminimaliseerde projecties zonder immutable bronauditrecords te verwijderen.
+
+**Phase 2 — Application security, identity en privacy: `PASS`.**
+
+### RC6 data-integriteit, backup en recovery
+
+**RC6.1** levert aantoonbare PostgreSQL-backup en clean-environment restore:
+
+- custom-format `pg_dump` met SHA-256-digest;
+- herstel naar een aantoonbaar lege PostgreSQL-database;
+- fail-fast `pg_restore`;
+- deterministische vergelijking van intelligence, provenance, auditrecords en Alembic-state;
+- cryptografische verificatie van de herstelde auditketen en tail-hash;
+- behoud van provenance-contenthashes, reviewstatus en human share approval;
+- gemeten restoreduur en machine-readable recovery-evidence;
+- releaseblokkerende `postgres-restore` Quality Gate.
+
+Quality Gate **#229** is geslaagd op exacte head `d1d0e809ffcee6458cb8a8f31ad2d10d481fefb0`. PR **#22** is gemerged naar `main` als `3441e5be486fd9bcca8ab1d8f531ca8e5d38958b`.
+
+**RC6.1: `PASS`.**
+
+## Roadmapstatus
+
+| Fase | Status |
+|---|---|
+| 1. CI en workflow-integriteit | `PASS` |
+| 2. Applicatiebeveiliging, identity en privacy | `PASS` |
+| 3. Data-integriteit, backup en recovery | `IN PROGRESS` — PostgreSQL restore is bewezen; MinIO, OpenSearch en gecombineerde recovery ontbreken nog |
+| 4. Live connectorbetrouwbaarheid en provenance | `NOT STARTED` |
+| 5. Performance en schaalbaarheid | `NOT STARTED` |
+| 6. Frontend accessibility en operationele UX | `NOT STARTED` |
+| 7. Observability en incident operations | `NOT STARTED` |
+| 8. Staging acceptance | `NOT STARTED` |
+| 9. External assurance | `NOT STARTED` |
+| 10. Production go/no-go | `BLOCKED` totdat alle voorgaande productiegates aantoonbaar zijn afgerond |
+
+**Actuele volgende prioriteit:** clean-environment MinIO object backup en restore evidence met objectdigest- en provenance-referenceverificatie.
+
+Zie voor de formele status:
+
+- `docs/roadmap/PRODUCTION_ROADMAP.md`
+- `docs/development/RUN_LOG.md`
+- `docs/development/runs/RUN-20260806-040.md`
+- `docs/qa/QA_AND_RELEASE_GATES.md`
+- GitHub issues **#2** en **#3**
 
 ## System workflows
 
 DTMO gebruikt expliciete workflows om brondata, intelligence, analyse, review, publicatie en softwareontwikkeling van elkaar te scheiden. Elke workflow behoudt provenance, auditgegevens en afzonderlijke releasegates.
 
-### 1. Intelligence ingestion workflow
+### Intelligence ingestion
 
 ```mermaid
 flowchart LR
@@ -49,25 +102,7 @@ Belangrijke invarianten:
 - een indexeringsfout verwijdert geen raw of genormaliseerde data;
 - bron, externe identifier, confidence en timestamps blijven herleidbaar.
 
-### 2. Connector execution workflow
-
-```mermaid
-flowchart TD
-    A[Scheduler] --> B{Connector enabled?}
-    B -- Nee --> C[Disabled status registreren]
-    B -- Ja --> D[Health en configuratie controleren]
-    D --> E[Bron aanroepen]
-    E --> F{Resultaat geldig?}
-    F -- Nee --> G[Retry met exponential backoff]
-    G --> E
-    F -- Ja --> H[Records normaliseren]
-    H --> I[Ingestion workflow]
-    I --> J[Run metrics en auditresultaat]
-```
-
-Connectorruns registreren minimaal connector-ID, start- en eindtijd, status, attempts, recordaantal en foutinformatie. Live connectoren staan standaard uit en worden alleen via een feature flag en gecontroleerde configuratie geactiveerd.
-
-### 3. Analyst review and publication workflow
+### Analyst review en publicatie
 
 ```mermaid
 stateDiagram-v2
@@ -84,111 +119,35 @@ Governancegrenzen:
 
 - `reviewed` is nooit automatisch `share approved`;
 - review en share approval zijn afzonderlijke RBAC-permissions;
-- rapportages zonder evidence worden geweigerd;
+- dezelfde principal mag niet zowel review als share approval uitvoeren;
+- serviceaccounts mogen niet reviewen, delen goedkeuren of tokens intrekken;
 - publicatie vereist een bevoegde menselijke beslissing;
-- alle statusovergangen moeten auditbaar zijn.
+- statusovergangen en autorisatieweigeringen worden append-only geaudit.
 
-### 4. Search and investigation workflow
-
-```mermaid
-flowchart LR
-    A[Analyst query] --> B[Authenticated principal]
-    B --> C[RBAC permission check]
-    C --> D[OpenSearch query en filters]
-    D --> E[Resultaten met confidence en provenance]
-    E --> F[Drill-down naar raw evidence]
-    F --> G[Case, graphrelatie of rapportconcept]
-```
-
-Zoeken ondersteunt prioritering op onder meer severity, confidence en onderwijsrelevantie. Zoekresultaten zijn analyse-input en vormen op zichzelf geen bewijs van compromittering.
-
-### 5. Knowledge Graph and correlation workflow
+### Continuous development en Quality Gates
 
 ```mermaid
 flowchart LR
-    A[Genormaliseerde entities] --> B[Entity resolution]
-    B --> C[Relatievoorstel]
-    C --> D[Evidence en confidence verplicht]
-    D --> E[Graph edge als candidate]
-    E --> F[Analyst validation]
-    F --> G[Attack path, vendor- of campaignanalyse]
-```
-
-Graphrelaties worden niet alleen op naamsovereenkomst aangemaakt. Een relatie vereist rationale, bewijs en een confidencewaarde. Correlatie bewijst geen incident en blijft onderworpen aan analyst review.
-
-### 6. Reporting workflow
-
-```mermaid
-flowchart TD
-    A[Doelgroep en rapporttype] --> B[Evidence-backed findings]
-    B --> C[Recommendations en onzekerheden]
-    C --> D[Rapportconcept]
-    D --> E[Inhoudelijke review]
-    E --> F[Governance en privacy review]
-    F --> G{Releasegate groen?}
-    G -- Nee --> H[BLOCKED met concrete defecten]
-    G -- Ja --> I[Export naar toegestaan formaat]
-```
-
-Rapporten bevatten evidence, confidence en onzekerheden. Een ontbrekende bron, review of release-evidence blokkeert de publicatie.
-
-### 7. Continuous development workflow
-
-```mermaid
-flowchart LR
-    A[Issue #2 en actuele prioriteiten] --> B[Afgebakend development objective]
-    B --> C[Code, tests en documentatie]
-    C --> D[Lokale of CI-validatie]
-    D --> E[QA-resultaat en releasegate]
-    E --> F[RUN_LOG en issue-update]
+    A[Issue #3 en roadmap] --> B[Eén afgebakend PDCA-objective]
+    B --> C[Code tests of documentatie]
+    C --> D[Exact-head GitHub Actions]
+    D --> E[Evidence artifacts en release gate]
+    E --> F[Runlog QA en issue-update]
     F --> G[Eén expliciete vervolgstap]
 ```
 
-Elke development-run legt vast:
+Een geconfigureerde maar niet uitgevoerde test is nooit `PASS`. Elke branch vereist eigen exact-head evidence. De aggregate release gate faalt gesloten wanneer een verplichte job of artifact ontbreekt.
 
-1. run-ID, datum en werkstroom;
-2. doel en gewijzigde bestanden;
-3. commits en werkelijk uitgevoerde tests;
-4. blockers, risico's en onzekerheden;
-5. releasegate: `PASS`, `BLOCKED` of `NO-CHANGE`;
-6. eerstvolgende concrete actie.
+## Beveiligde API
 
-Een development-run kan voor zijn afgebakende doel `PASS` krijgen, terwijl de totale RC-release `CI VALIDATION PENDING` of `BLOCKED` blijft.
-
-### 8. QA and release-gate workflow
-
-```mermaid
-flowchart TD
-    A[Change set] --> B[Lint en type checks]
-    B --> C[Unit en contract tests]
-    C --> D[Integration en migration tests]
-    D --> E[Security en governance checks]
-    E --> F[Container en smoke tests]
-    F --> G{Alle blocking gates aantoonbaar groen?}
-    G -- Nee --> H[BLOCKED of CI VALIDATION PENDING]
-    G -- Ja --> I[Interne release candidate]
-    I --> J[Externe pentest, loadtest en acceptance]
-    J --> K{Externe gates groen?}
-    K -- Nee --> L[Niet productiegereed]
-    K -- Ja --> M[Production release]
-```
-
-Er wordt nooit een releasepass toegekend op basis van alleen geconfigureerde tests. De testuitvoering en uitkomst moeten aantoonbaar beschikbaar zijn.
-
-## Nieuwe beveiligde API
-
-De versioned API verbindt raw storage, persistence en search:
+De versioned API verbindt raw storage, persistence en search. Relevante routes omvatten onder meer:
 
 - `POST /api/v1/intelligence`
 - `GET /api/v1/intelligence/search`
+- review- en share-approvalroutes met functiescheiding;
+- `/api/v1/security/tokens/revoke` voor bevoegde operationele tokenrevocation.
 
-De routes gebruiken API-key authenticatie, subject/role-resolutie en route-level RBAC. Ingestion levert uitsluitend candidate intelligence op; review en share approval blijven gescheiden.
-
-Zie:
-
-- `docs/api/INTELLIGENCE_API.md`
-- `docs/architecture/ADR-0001-SECURED-INTELLIGENCE-INGESTION.md`
-- `docs/development/RUN_LOG.md`
+Productie gebruikt trusted bearer principals, route-level RBAC, fail-closed tokenstate en human share approval. Ingestion levert uitsluitend candidate intelligence op.
 
 ## Snel starten
 
@@ -208,60 +167,37 @@ Daarna:
 - MinIO Console: `http://localhost:9001`
 - Prometheus: `http://localhost:9090`
 
-Live connectoren staan standaard uit. Activeer deze alleen gecontroleerd:
-
-```text
-DTMO_FEATURE_LIVE_CONNECTORS=true
-```
-
-Voor productie is daarnaast een API-key van minimaal 32 tekens vereist:
-
-```text
-DTMO_API_KEY=<secret-from-secret-manager>
-```
+Live connectoren staan standaard uit. Productie vereist onder meer sterke secret-managed identity-, signing-, pseudonymization-, storage- en databaseconfiguratie. Zie `.env.example` en de productievalidatie in `backend/dtmo/config.py`.
 
 ## Repositorystructuur
 
 ```text
-backend/dtmo/                 API, connectors, persistence, lake, graph, auth en reporting
-backend/tests/                unit-, contract- en regressietests
-frontend/                     professionele SOC/CTI-workspace
-infrastructure/prometheus/    monitoring
+backend/dtmo/                 API, auth, audit, privacy, connectors, persistence, lake, graph en reporting
+backend/tests/                unit-, contract-, security- en regressietests
+frontend/                     SOC/CTI-workspace
+infrastructure/               monitoring en geplande operationele taken
 database/migrations/          Alembic-databasemigraties
-.github/workflows/            CI en GitHub Pages
-docs/                         API, architectuur, governance en development runlogs
-releases/RC4.8/               release notes en QA-rapport
-Dockerfile                    applicatiecontainer
-docker-compose.yml            lokale platformstack
+tools/                        verificatie- en recoverytools
+.github/workflows/            releasekritieke CI en onafhankelijke CI-observer
+docs/                         roadmap, QA, architectuur, governance en PDCA-runlogs
+releases/                     release-evidence en historische release-informatie
 ```
 
-## Veiligheids- en governancegrenzen
+## Quality Gates
 
-- Intelligence wordt niet automatisch extern gepubliceerd.
-- `reviewed` is niet gelijk aan `share approved`.
-- Publicatie vereist een afzonderlijke bevoegdheid en menselijke goedkeuring.
-- Open bronnen en OSINT behouden provenance, confidence en bronclassificatie.
-- Rapportages zonder evidence worden geweigerd.
-- Secrets horen uitsluitend in environment variables of een secrets manager.
-- Productieacceptatie vereist onafhankelijke pentest, loadtest, hersteltest en deployment acceptance.
-
-## Quality gates
-
-GitHub Actions controleert onder meer:
+GitHub Actions controleert aantoonbaar:
 
 1. Ruff-linting;
 2. strict MyPy typing;
 3. Pytest met coverage-drempel;
-4. cross-sprinttests voor lake, graph, RBAC, API en reporting;
-5. Alembic upgrade/downgrade/upgrade tegen PostgreSQL;
+4. security-, governance-, privacy- en workflowcontracten;
+5. Alembic upgrade/downgrade/re-upgrade tegen PostgreSQL;
 6. Python compile checks;
-7. containerbuild en `/health` smoke test;
-8. dependency review bij pull requests.
+7. containerbuild en `/health` smoketest;
+8. dependency audit met retained JSON-evidence;
+9. clean-target PostgreSQL backup, restore en integriteitsverificatie;
+10. fail-closed aggregate release gate met retained evidence-artifact.
 
-## GitHub Pages
+## Productiestatus
 
-De statische projectpagina staat in `docs/` en wordt gepubliceerd via `.github/workflows/pages.yml`. Stel onder **Settings → Pages → Build and deployment** de bron in op **GitHub Actions**.
-
-## Externe productiegates
-
-De openstaande externe acceptatiepunten worden bijgehouden in issue **#1**. Het continue ontwikkelprogramma en alle runs worden beheerd via issue **#2** en `docs/development/RUN_LOG.md`.
+DTMO is nog niet productiegereed. Productie blijft geblokkeerd totdat de resterende recovery-, connector-, performance-, accessibility-, observability-, staging- en assurancegates aantoonbaar zijn afgerond. De actuele voortgang en precies één volgende prioriteit worden bijgehouden in issue **#3**, gecoördineerd met issue **#2** en de repositorydocumentatie.
