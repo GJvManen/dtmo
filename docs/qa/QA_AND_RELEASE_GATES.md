@@ -21,33 +21,34 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 - RC5.2 Quality Gate #179: `PASS`.
 - RC5.3 Quality Gate #197: `PASS`.
 - RC5.4 Quality Gate #203: `PASS`.
-- Required jobs, workflow contracts, migrations, dependency audit, container smoke and aggregate release gates succeeded for accepted heads.
+- RC5.5 Quality Gate #205: `PASS`.
 - Every new branch still requires its own exact-head execution.
 
 ## Phase 2 — Application security and identity
 
-Current state after `RUN-20260806-031`:
+Current state after `RUN-20260806-032`:
 
-- least-privilege RBAC, service-account isolation and human separation of duties: implemented and evidenced;
-- trusted-principal token validation and RS256/JWKS overlapping-key rotation: implemented and evidenced through Quality Gate #203;
-- RC5.5 adds immutable canonical audit events linked by SHA-256 from a fixed genesis hash;
-- the audit verifier detects payload mutation, deletion, reordering, broken links and duplicate event identifiers;
-- audit events retain principal, principal type, action, resource, decision, request ID and provenance reference;
-- required identity and action fields fail closed;
-- focused regression tests are committed;
-- persistent append-only storage and integration of live authorization/publication decisions remain separate future objectives;
-- exact-head RC5.5 CI evidence: `PENDING`;
-- Phase 2 completion: `BLOCKED` until RC5.5 and remaining identity objectives are evidenced.
+- least-privilege RBAC, trusted principals, JWKS rotation and tamper-evident in-memory audit-chain logic are evidenced;
+- persistent audit records now have deterministic sequence numbers, unique event IDs and hashes, prior-hash continuity and provenance fields;
+- transactional append locks the current chain tail and flushes the next record in the caller transaction;
+- rollback leaves no persisted chain advancement;
+- persisted chains can be reloaded and cryptographically verified;
+- migration `0003_persistent_audit` adds the table and a PostgreSQL trigger rejecting UPDATE and DELETE;
+- migration downgrade removes trigger, function, indexes and table reversibly;
+- focused persistence, rollback, tamper-detection and migration-contract regressions are committed;
+- exact-head CI evidence for this objective remains `PENDING`;
+- runtime wiring of authorization and publication decisions remains a separate bounded objective;
+- Phase 2 completion remains `BLOCKED` until remaining objectives are evidenced.
 
 ## Phase 3 — Data integrity and recovery
 
-- canonical RC5 migration and migration-contract tests: `PASS` in accepted quality gates;
-- clean-environment restoration, RPO and RTO evidence: not yet implemented;
+- canonical migrations are evidenced;
+- clean-environment restoration, RPO and RTO evidence are not yet implemented;
 - Phase 3 completion: `BLOCKED`.
 
 ## Security and publication invariants
 
-- ingestion must create candidate intelligence only;
+- ingestion creates candidate intelligence only;
 - reviewed and share-approved states remain distinct;
 - external publication requires explicit human approval by a principal different from the reviewer;
 - service accounts may not review or approve sharing;
@@ -57,8 +58,8 @@ Current state after `RUN-20260806-031`:
 
 ## Current run decision
 
-`RUN-20260806-031` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
+`RUN-20260806-032` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
 
 ## Exactly one next priority
 
-Inspect the first completed Quality Gate for RC5.5 and either resolve only its earliest deterministic failure or merge after full success.
+Inspect the exact-head Quality Gate and either resolve only its earliest deterministic failure or merge after full success.

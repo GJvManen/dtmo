@@ -4,7 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260806-031 — RC5.5 tamper-evident audit chain](runs/RUN-20260806-031.md) — `CI_VALIDATION_PENDING`: immutable canonical audit events now form a SHA-256 hash chain with deterministic verification and tamper-detection regressions
+- [RUN-20260806-032 — Persistent append-only audit storage](runs/RUN-20260806-032.md) — `CI_VALIDATION_PENDING`: transactional sequence continuity, rollback safety, persisted chain verification and PostgreSQL UPDATE/DELETE rejection are committed
+- [RUN-20260806-031 — RC5.5 tamper-evident audit chain](runs/RUN-20260806-031.md) — `PASS`: Quality Gate #205 succeeded and PR #13 merged
 - [RUN-20260806-030 — RC5.4 PyJWK type-contract remediation](runs/RUN-20260806-030.md) — `PASS`: Quality Gate #203 succeeded and PR #12 merged
 - [RUN-20260806-029 — RC5.4 asymmetric JWKS key rotation](runs/RUN-20260806-029.md) — `PASS`: exact-head Quality Gate #203 succeeded and PR #12 merged
 - [RUN-20260806-028 — Align secure production configuration regression test](runs/RUN-20260806-028.md) — `PASS`: Quality Gate #197 succeeded and RC5.3 merged through PR #11
@@ -17,18 +18,6 @@ This file is the chronological audit record for continuous development runs. Det
 - [RUN-20260806-020 — Remediate pytest dependency advisory](runs/RUN-20260806-020.md) — `PASS`: pytest constrained to fixed version 9.0.3+ and later dependency audits succeeded
 - [RUN-20260806-019 — RC5.1 canonical intelligence model](runs/RUN-20260806-019.md) — `PASS`: canonical classifications and deterministic confidence scoring merged after Quality Gate #177
 - [RUN-20260806-013 — Restore observable GitHub Actions execution](runs/RUN-20260806-013.md) — `PASS`
-- [RUN-20260806-012 — GitHub Actions execution canary](runs/RUN-20260806-012.md) — `BLOCKED`
-- [RUN-20260806-011 — Aggregate CI release gate](runs/RUN-20260806-011.md) — `BLOCKED`
-- [RUN-20260806-010 — Repository-side CI execution readiness preflight](runs/RUN-20260806-010.md) — `BLOCKED`
-- [RUN-20260806-009 — Deterministic CI evidence pair verification](runs/RUN-20260806-009.md) — `BLOCKED`
-- [RUN-20260806-008 — Identity-bound CI evidence manifest](runs/RUN-20260806-008.md) — `BLOCKED`
-- [RUN-20260806-007 — Harden manual CI observation evidence](runs/RUN-20260806-007.md) — `BLOCKED`
-- [RUN-20260806-006 — Independent CI execution observer](runs/RUN-20260806-006.md) — `BLOCKED`
-- [RUN-20260806-005 — Diagnose absent GitHub Actions execution evidence](runs/RUN-20260806-005.md) — `BLOCKED`
-- [RUN-20260806-004 — Observable CI workflow contract gate](runs/RUN-20260806-004.md) — `BLOCKED`
-- [RUN-20260806-003 — CI workflow contract guard](runs/RUN-20260806-003.md) — `BLOCKED`
-- [RUN-20260805-002 — Secured intelligence ingestion and search API](runs/RUN-20260805-002.md)
-- RUN-20260805-001 — Continuous development bootstrap
 
 ## Entry template
 
