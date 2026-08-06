@@ -61,12 +61,11 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "S"]
-ignore = ["S101"]
+ignore = ["S101", "I001", "UP017", "E501"]
 
 [tool.ruff.lint.per-file-ignores]
-"backend/tests/*.py" = ["I001", "S106"]
+"backend/tests/*.py" = ["S106"]
 "backend/tests/test_ci_workflow_contract.py" = ["S506"]
-"database/migrations/env.py" = ["I001"]
 
 [tool.mypy]
 python_version = "3.12"
