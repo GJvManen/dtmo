@@ -17,6 +17,12 @@ REQUIRED_JOBS = {
     "container",
     "dependency-review",
 }
+REQUIRED_OBSERVER_INPUTS = {
+    "observed_run_id",
+    "observed_conclusion",
+    "observed_head_sha",
+    "observed_url",
+}
 
 
 def _load_workflow(path: Path = WORKFLOW) -> dict[str, Any]:
@@ -79,7 +85,16 @@ def test_ci_observer_preserves_independent_execution_evidence() -> None:
 
     triggers = observer.get("on")
     assert isinstance(triggers, dict)
-    assert "workflow_dispatch" in triggers
+    workflow_dispatch = triggers.get("workflow_dispatch")
+    assert isinstance(workflow_dispatch, dict)
+    inputs = workflow_dispatch.get("inputs")
+    assert isinstance(inputs, dict)
+    assert REQUIRED_OBSERVER_INPUTS <= set(inputs)
+    for input_name in REQUIRED_OBSERVER_INPUTS:
+        input_contract = inputs[input_name]
+        assert isinstance(input_contract, dict)
+        assert input_contract.get("required") == "true"
+
     workflow_run = triggers.get("workflow_run")
     assert isinstance(workflow_run, dict)
     assert workflow_run.get("workflows") == ["RC4 Quality Gate"]
@@ -95,8 +110,13 @@ def test_ci_observer_preserves_independent_execution_evidence() -> None:
     observe = jobs.get("observe")
     assert isinstance(observe, dict)
     commands = _combined_run(observe)
+    assert "set -euo pipefail" in commands
     assert "artifacts/ci-observation.json" in commands
+    assert "schema_version" in commands
+    assert "observed_workflow" in commands
     assert "GITHUB_STEP_SUMMARY" in commands
+    assert "actions/runs/[0-9]+" in commands
+    assert "[0-9a-fA-F]{40}" in commands
 
     upload = next(
         step for step in _steps(observe) if step.get("uses") == "actions/upload-artifact@v4"
