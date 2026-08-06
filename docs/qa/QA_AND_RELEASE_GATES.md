@@ -28,7 +28,7 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 
 ## Phase 2 — Application security and identity
 
-Current state after `RUN-20260806-034`:
+Current state after `RUN-20260806-035`:
 
 - least-privilege RBAC, trusted principals, JWKS rotation and governed decision auditing are evidenced;
 - persistent append-only audit state and transactional review/share approval are evidenced through Quality Gates #205, #207 and #209;
@@ -37,9 +37,10 @@ Current state after `RUN-20260806-034`:
 - every JTI is bound to issuer, subject, principal type and roles, preventing identifier reuse for another principal;
 - tokens explicitly marked `one_time=true` are consumed atomically through `SET NX` and replay is rejected;
 - token-state backend failure denies production authentication rather than bypassing state checks;
-- reusable access tokens remain reusable while their identity binding is unchanged and they are not revoked;
-- focused revocation, replay, rebinding and validation regressions are committed;
-- exact-head RC5.8 CI evidence remains `PENDING`;
+- Quality Gate #211 reached 90 passing tests before a legacy production-JWKS unit test attempted to contact undeclared Redis infrastructure;
+- that test now supplies a controlled active token-state double and asserts the validated JTI reaches state enforcement;
+- product fail-closed behavior is unchanged and remains covered by dedicated token-state failure regressions;
+- a new exact-head Quality Gate is required; RC5.8 remains `BLOCKED`;
 - broader authorization-denial audit coverage and operational revocation administration remain separate bounded objectives;
 - Phase 2 completion remains `BLOCKED` until remaining objectives are evidenced.
 
@@ -57,12 +58,13 @@ Current state after `RUN-20260806-034`:
 - service accounts may not review or approve sharing;
 - source provenance and confidence may not be silently discarded;
 - production secrets may not be committed;
+- production token-state failure must deny authentication;
 - missing CI or scan evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260806-034` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
+`RUN-20260806-035` is `BLOCKED` until the updated exact PR #16 head completes its Quality Gate successfully.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC5.8 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
+Inspect the first exact-head Quality Gate after the Redis-isolated regression correction and either resolve only its earliest deterministic failure or merge after full success.
