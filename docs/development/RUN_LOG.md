@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-012 — Repair CI package metadata parsing](runs/RUN-20260806-012.md) — `BLOCKED`: first observable CI failure repaired; fresh workflow evidence remains pending
 - [RUN-20260806-011 — Pull-request CI execution trigger](runs/RUN-20260806-011.md) — `BLOCKED`: reviewable pull request created as a controlled CI execution probe; actual workflow, job and artifact evidence remains pending
 - [RUN-20260806-010 — Repository-side CI execution readiness preflight](runs/RUN-20260806-010.md) — `BLOCKED`: deterministic preflight and negative tests committed; actual GitHub Actions execution evidence remains absent
 - [RUN-20260806-009 — Deterministic CI evidence pair verification](runs/RUN-20260806-009.md) — `BLOCKED`: verifier and negative tests committed; real matching primary and observer execution artifacts remain absent
