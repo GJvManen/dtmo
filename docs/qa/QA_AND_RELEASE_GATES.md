@@ -14,6 +14,7 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 | Governance | Human review, share approval and separation of duties are preserved |
 | Data integrity | Provenance, confidence, constraints and migrations are verified |
 | Privacy | Direct identifiers, purpose limitation, retention and legal holds are verified |
+| Recovery | A clean target restores successfully and integrity plus recovery timing are evidenced |
 | Release | All release-critical jobs and evidence artifacts succeed |
 
 ## Phase 1 — CI and workflow integrity
@@ -29,27 +30,34 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 - RC5.9 Quality Gate #217: `PASS`.
 - RC5.10 Quality Gate #219: `PASS`.
 - RC5.11 Quality Gate #221: `PASS`.
+- RC5.12 Quality Gate #224: `PASS`.
 - Every new branch still requires its own exact-head execution.
 
 ## Phase 2 — Application security, identity and privacy
 
-Current state after `RUN-20260806-039`:
-
-- RC5.1 through RC5.11 are evidenced and merged;
-- RC5.12 adds persistent privacy-minimized audit projections linked by restrictive foreign key to immutable source events;
-- projection storage contains purpose-bound references rather than direct principal, token/resource or request identifiers;
-- retention expiry is stored explicitly and legal hold requires an auditable reference;
-- bounded purge batches select only expired, non-held projections and never delete source audit events;
-- a credential-free daily schedule invokes the purge command through secret-backed `DTMO_DATABASE_URL` configuration;
-- migration lineage, projection minimization, source preservation, legal hold, batch limiting and schedule safety have regressions committed;
-- exact-head RC5.12 CI evidence remains `PENDING`;
-- Phase 2 completion remains `BLOCKED` until RC5.12 is evidenced.
+- RC5.1 through RC5.12 are evidenced and merged;
+- least-privilege RBAC, trusted principals, asymmetric key rotation, revocation/replay controls and separation of duties are enforced;
+- privileged authorization, review, share approval and revocation decisions are persisted in a tamper-evident append-only audit chain;
+- privacy-minimized reporting projections use purpose-bound references, explicit retention and legal holds;
+- storage-layer purge is bounded, scheduled and cannot remove immutable source audit records;
+- Phase 2 completion: `PASS`.
 
 ## Phase 3 — Data integrity and recovery
 
-- canonical and persistent-audit migrations are evidenced;
-- deterministic recovery for volatile token-revocation state is evidenced;
-- clean-environment database/object restoration, RPO and RTO evidence are not yet implemented;
+Current state after `RUN-20260806-040`:
+
+- canonical, append-only audit and privacy-projection migrations are evidenced;
+- volatile token-revocation state can be reconciled from integrity-verified durable evidence;
+- RC6.1 adds a clean-target PostgreSQL logical backup and restoration gate;
+- a controlled source fixture contains canonical intelligence, authoritative provenance, review/share state and governed audit events;
+- source and restored databases are compared through deterministic manifests covering intelligence, provenance, audit records and Alembic revision state;
+- the restored audit chain must cryptographically verify and retain the same tail hash;
+- provenance content hashes and canonical row counts must match exactly;
+- the custom-format backup receives a SHA-256 digest and is retained with machine-readable recovery evidence;
+- measured restore duration and a quiesced-snapshot zero-second RPO basis are recorded;
+- the `postgres-restore` job is included in the fail-closed aggregate release gate;
+- exact-head RC6.1 CI and recovery evidence remain `PENDING`;
+- MinIO object restoration, OpenSearch reconstruction and combined recovery objectives remain separate bounded runs;
 - Phase 3 completion: `BLOCKED`.
 
 ## Security, privacy and publication invariants
@@ -66,12 +74,13 @@ Current state after `RUN-20260806-039`:
 - privacy reporting projections must not expose direct identity, token or request identifiers;
 - legal holds must be explicit and must block purge;
 - immutable source audit records may not be deleted by privacy-retention processing;
-- missing CI or scan evidence may not be reported as successful.
+- backup or restore completion without post-restore integrity verification may not be accepted;
+- missing CI or recovery evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260806-039` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
+`RUN-20260806-040` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate executes the clean-target backup and restore gate successfully.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC5.12 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
+Inspect the exact-head RC6.1 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
