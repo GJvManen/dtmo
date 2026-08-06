@@ -14,8 +14,8 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 | Governance | Human review, share approval and separation of duties are preserved |
 | Data integrity | Provenance, confidence, constraints and migrations are verified |
 | Privacy | Direct identifiers, purpose limitation, retention and legal holds are verified |
-| Recovery | Separate clean targets restore or reconstruct successfully and integrity plus timing are evidenced |
-| Connector reliability | Live canary execution, provenance, licensing, timeout, rate limiting, bounded retries and quarantine are evidenced |
+| Recovery | Clean targets restore or reconstruct successfully with integrity and timing evidence |
+| Connector reliability | Live canary, provenance, licensing, timeout, rate limiting, bounded retries and quarantine are evidenced |
 | Release | All release-critical jobs and retained evidence artifacts succeed |
 
 ## Completed exact-head gates
@@ -23,55 +23,47 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 - RC5.1 #177 through RC5.12 #224: `PASS`
 - RC6.1 #229: `PASS`
 - RC6.2 #243: `PASS`
-- RC6.3 OpenSearch Recovery Gate #5 and RC4 Quality Gate #253: `PASS`
-- RC6.4 Multi-store Recovery Gate #4, RC4 Quality Gate #262 and OpenSearch Recovery Gate #14: `PASS`
+- RC6.3 OpenSearch Gate #5 and Quality Gate #253: `PASS`
+- RC6.4 Multi-store Gate #4, Quality Gate #262 and OpenSearch Gate #14: `PASS`
+- RC7.1 Canary Gate #3, Quality Gate #270, OpenSearch Gate #22 and Multi-store Gate #12: `PASS`
 
-Every new branch still requires its own exact-head execution.
+## Phase status
 
-## Phase 2 — Application security, identity and privacy
+- Phase 2 — application security, identity and privacy: `PASS`.
+- Phase 3 — data integrity, backup and recovery: `PASS`.
+- Phase 4 — live connector reliability and provenance: `IN PROGRESS`.
 
-RC5.1 through RC5.12 are evidenced and merged. **Phase 2 completion: `PASS`.**
+## RC7.1 governed live connector canary — `PASS`
 
-## Phase 3 — Data integrity, backup and recovery
+Exact head `c82e20c110354c1163b58ac8b9820756f829a4ae` passed all required gates. Evidenced controls include HTTPS-only CISA KEV ingestion, licence and terms metadata, timeout, maximum three attempts, bounded exponential backoff, minimum request interval, disabled redirects, provenance retention, deduplication, quarantine of malformed/duplicate/overflow records, bounded record volume and `publish_approved: false`.
 
-RC6.1 through RC6.4 are evidenced and merged. **Phase 3 completion: `PASS`.**
+Retained artifacts:
 
-## Phase 4 — Live connector reliability and provenance
+- `live-connector-canary-evidence` — `8973407243`, digest `sha256:437b09bf13746fecf4e929921e1a63ac74bdbba1f1ecb08e0d04b99f763a3f53`;
+- `release-gate-evidence` — `8973424158`;
+- `postgres-restore-evidence` — `8973421161`;
+- `dependency-audit-evidence` — `8973411040`;
+- `minio-restore-evidence` — `8973409186`;
+- `workflow-contract-evidence` — `8973408182`.
 
-### RC7.1 governed live connector canary — `CI_VALIDATION_PENDING`
+PR #28 merged as `aeeb0709a26ecb1f20620d7ac21f823fec35e98f`.
 
-Committed controls:
-
-- approved authoritative CISA KEV HTTPS source;
-- explicit public-domain licence and terms URL;
-- fixed timeout and maximum three attempts;
-- bounded exponential retry/backoff and minimum request interval;
-- no redirects and a dedicated user agent;
-- source URL, timestamp, reliability, confidence and raw-evidence SHA-256 on accepted records;
-- duplicate and malformed records are quarantined;
-- maximum record count is bounded and overflow is quarantined;
-- canary evidence is machine-readable and retained for 30 days;
-- `publish_approved` is always false and prevents the canary from being treated as publication approval;
-- a separate `always()` gate fails closed unless the live canary succeeds;
-- positive and negative regression tests protect these controls.
-
-No exact-head execution has completed successfully, so RC7.1 is not accepted as `PASS`.
+One successful canary does not yet prove persistent run-state, long-term source health, failure isolation across runs or broader approved connector coverage.
 
 ## Security, privacy and publication invariants
 
 - ingestion creates candidate intelligence only;
 - reviewed and share-approved states remain distinct;
-- external publication requires explicit human approval by a principal different from the reviewer;
+- publication requires explicit human approval by a principal different from the reviewer;
 - service accounts and connectors may not review or approve sharing;
 - live connector success never implies publication approval;
-- source provenance and confidence may not be silently discarded;
-- immutable source audit records may not be deleted by retention processing;
+- provenance and confidence may not be silently discarded;
 - missing CI, recovery or connector evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260806-044` is `CI_VALIDATION_PENDING` until the exact-head regular Quality Gate and RC7 Live Connector Canary Gate succeed and retain canary evidence.
+`RUN-20260806-044` is `PASS`.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC7 Live Connector Canary Gate and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
+RC7.2 — persistent connector-run state, source-health history and failure isolation with quarantined recovery and no automatic publication.
