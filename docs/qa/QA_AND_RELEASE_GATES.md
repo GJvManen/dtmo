@@ -68,28 +68,21 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 11. a repository-side execution-readiness preflight must distinguish configuration readiness from actual workflow execution and must mark its own report as non-gate-eligible;
 12. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-010`:
+Current state after `RUN-20260806-020`:
 
-- structural workflow contract: implemented;
-- dedicated observable contract job: implemented;
-- JUnit artifact design: implemented;
-- identity-bound primary evidence manifest: implemented;
-- manifest regression protection: implemented;
-- independent observer workflow: implemented;
-- observer regression protection: implemented;
-- manual observer evidence validation: implemented;
-- deterministic evidence-pair verifier: implemented;
-- verifier positive and negative tests: implemented, execution `PENDING`;
-- repository-side execution-readiness preflight: implemented;
-- preflight positive and negative tests: implemented, execution `PENDING`;
-- preflight output release-gate eligibility: explicitly `false`;
-- successful quality-gate execution evidence: `PENDING`;
-- successful observer execution evidence: `PENDING`;
-- matching artifacts for one head SHA and run ID: `PENDING`;
-- likely external control to verify: repository Actions permissions and workflow enablement;
-- Phase 1 completion: `BLOCKED`.
+- workflow-contract job in run `31090145413`: `PASS`;
+- test, lint, type check and compile jobs in run `31090145413`: `PASS`;
+- migrations upgrade, revision validation, downgrade and re-upgrade in run `31090145413`: `PASS`;
+- container build and smoke test in run `31090145413`: `PASS`;
+- dependency-review in run `31090145413`: `FAIL` because `pytest 8.4.2` matched `PYSEC-2026-1845`, `CVE-2025-71176`, `GHSA-6w46-j5rx-g56g`;
+- dependency audit evidence artifact: ID `8963074009`, SHA-256 `b00f5410873b384e62c6f0c79b9fa95192d450a7cf51b6a0cac6fc7aa2158e5e`;
+- required fixed pytest version: `9.0.3`;
+- repository constraint: updated to `pytest>=9.0.3,<10`;
+- replacement exact-head CI execution: `PENDING`;
+- successful observer evidence for the replacement run: `PENDING`;
+- Phase 1 completion: `BLOCKED` until the replacement run is successful and evidence is matched.
 
-Phase 1 may only advance after one completed `RC4 Quality Gate` run exposes its run ID, job results and a `workflow-contract-evidence` artifact containing both XML and JSON, followed by a matching `RC4 CI Observer` run for the same head SHA, and the downloaded pair passes `tools/verify_ci_evidence.py`.
+A previously successful numbered run does not override a later failed run on the current exact head. Phase 1 may advance only after one successful current-head `RC4 Quality Gate` run and matching observer evidence pass deterministic verification.
 
 ## Security and publication invariants
 
