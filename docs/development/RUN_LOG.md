@@ -4,6 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-020 — Remediate pytest dependency advisory](runs/RUN-20260806-020.md) — `BLOCKED`: exact-head run #159 found `PYSEC-2026-1845` / `CVE-2025-71176`; pytest now requires fixed version 9.0.3+, replacement CI pending
+- [RUN-20260806-019 — RC5.1 canonical intelligence model](runs/RUN-20260806-019.md) — `CI_VALIDATION_PENDING`: canonical classifications and deterministic confidence scoring committed; GitHub Actions evidence required
 - [RUN-20260806-013 — Restore observable GitHub Actions execution](runs/RUN-20260806-013.md) — `PASS` for basic Actions execution: operator-confirmed `GitHub Actions Canary #5` completed green; full `RC4 Quality Gate` remains required
 - [RUN-20260806-012 — GitHub Actions execution canary](runs/RUN-20260806-012.md) — `BLOCKED`: dependency-free canary committed to `main`; no observable CI status, indicating a repository/account Actions policy or integration visibility blocker
 - [RUN-20260806-011 — Aggregate CI release gate](runs/RUN-20260806-011.md) — `BLOCKED`: fail-closed aggregate decision and regression protection committed; observable execution evidence remains absent
