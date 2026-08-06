@@ -12,7 +12,8 @@ from pydantic import SecretStr
 
 from dtmo.auth.dependencies import resolve_principal
 from dtmo.auth.policy import Role
-from dtmo.auth.tokens import PrincipalType, TokenValidationError, decode_principal_token
+from dtmo.auth.token_state import TokenStateStore
+from dtmo.auth.tokens import AuthenticatedPrincipal, PrincipalType, TokenValidationError, decode_principal_token
 from dtmo.config import Settings
 
 ISSUER = "https://identity.example.test"
@@ -159,7 +160,18 @@ def test_production_rejects_untrusted_identity_headers() -> None:
     assert exc_info.value.detail == "bearer token required"
 
 
-def test_production_resolves_roles_only_from_jwks_validated_token() -> None:
+def test_production_resolves_roles_only_from_jwks_validated_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class ActiveTokenState:
+        def assert_active(self, authenticated: AuthenticatedPrincipal) -> None:
+            assert authenticated.jti == JTI
+
+    monkeypatch.setattr(
+        TokenStateStore,
+        "from_url",
+        staticmethod(lambda _url: ActiveTokenState()),
+    )
     principal = resolve_principal(
         settings=_production_settings(),
         authorization=f"Bearer {_token()}",

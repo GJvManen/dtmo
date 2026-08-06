@@ -26,6 +26,8 @@ class AuthenticatedPrincipal:
     jti: str
     issuer: str
     authenticated_at: datetime
+    expires_at: datetime
+    one_time: bool = False
 
 
 class TokenValidationError(ValueError):
@@ -117,8 +119,11 @@ def decode_principal_token(
 
     subject = str(claims["sub"]).strip()
     jti = str(claims["jti"]).strip()
+    one_time_claim = claims.get("one_time", False)
     if not subject or not jti:
         raise TokenValidationError("token subject and identifier are required")
+    if not isinstance(one_time_claim, bool):
+        raise TokenValidationError("token one_time claim must be boolean")
 
     return AuthenticatedPrincipal(
         principal=Principal(subject=subject, roles=roles),
@@ -126,4 +131,6 @@ def decode_principal_token(
         jti=jti,
         issuer=str(claims["iss"]),
         authenticated_at=now or datetime.now(UTC),
+        expires_at=datetime.fromtimestamp(int(claims["exp"]), tz=UTC),
+        one_time=one_time_claim,
     )
