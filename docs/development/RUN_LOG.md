@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-014 — Fail-closed v1.0 production readiness evaluator](runs/RUN-20260806-014.md) — `BLOCKED`: executable readiness policy committed; CI execution evidence remains pending
 - [RUN-20260806-013 — Harden executable CI evidence](runs/RUN-20260806-013.md) — `BLOCKED`: test and container evidence hardened; actual execution remains pending
 - [RUN-20260806-012 — Repair CI package metadata parsing](runs/RUN-20260806-012.md) — `BLOCKED`: first observable CI failure repaired; fresh workflow evidence remains pending
 - [RUN-20260806-011 — Pull-request CI execution trigger](runs/RUN-20260806-011.md) — `BLOCKED`: reviewable pull request created as a controlled CI execution probe; actual workflow, job and artifact evidence remains pending
