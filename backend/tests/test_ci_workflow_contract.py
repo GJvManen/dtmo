@@ -65,6 +65,23 @@ def test_workflow_contract_job_is_independently_observable() -> None:
     run_commands = _combined_run(contract_job)
     assert "pytest backend/tests/test_ci_workflow_contract.py" in run_commands
     assert "--junitxml=artifacts/workflow-contracts.xml" in run_commands
+    assert "artifacts/workflow-contract-evidence.json" in run_commands
+    for field in {
+        "schema_version",
+        "workflow",
+        "run_id",
+        "run_attempt",
+        "head_sha",
+        "repository",
+        "event_name",
+        "conclusion",
+        "run_url",
+    }:
+        assert f'"{field}"' in run_commands
+    assert "GITHUB_RUN_ID" in run_commands
+    assert "GITHUB_RUN_ATTEMPT" in run_commands
+    assert "GITHUB_SHA" in run_commands
+    assert "GITHUB_REPOSITORY" in run_commands
 
     upload_steps = [
         step
@@ -75,7 +92,9 @@ def test_workflow_contract_job_is_independently_observable() -> None:
     upload_with = upload_steps[0].get("with")
     assert isinstance(upload_with, dict)
     assert upload_with.get("name") == "workflow-contract-evidence"
-    assert upload_with.get("path") == "artifacts/workflow-contracts.xml"
+    upload_path = str(upload_with.get("path", ""))
+    assert "artifacts/workflow-contracts.xml" in upload_path
+    assert "artifacts/workflow-contract-evidence.json" in upload_path
     assert upload_steps[0].get("if") == "always()"
 
 
