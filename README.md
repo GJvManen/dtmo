@@ -17,25 +17,23 @@ DTMO is ontwikkeld van RC4.1 tot en met RC7.1.
 - RC6.2 — geïsoleerde MinIO objectbackup en clean-target restore: `PASS` via Quality Gate #243 en PR #24;
 - RC6.3 — clean OpenSearch reconstruction: `PASS` via OpenSearch Recovery Gate #5, RC4 Quality Gate #253 en PR #25;
 - RC6.4 — gecombineerde multi-store recovery acceptance: `PASS` via Multi-store Recovery Gate #4, RC4 Quality Gate #262, OpenSearch Recovery Gate #14 en PR #26;
-- Phase 3 — data-integriteit, backup en recovery: `PASS`.
+- Phase 3 — data-integriteit, backup en recovery: `PASS`;
+- RC7.1 — governed live connector canary: `PASS` via RC7 Live Connector Canary Gate #3, RC4 Quality Gate #270, OpenSearch Recovery Gate #22 en Multi-store Recovery Gate #12;
+- PR #28 is gemerged als `aeeb0709a26ecb1f20620d7ac21f823fec35e98f`.
 
-### Actieve run: RC7.1
+### RC7.1 evidence
 
-**Governed live connector canary: `CI_VALIDATION_PENDING`.**
+Exacte head `c82e20c110354c1163b58ac8b9820756f829a4ae` is volledig groen. De evidence omvat:
 
-De branch bevat:
-
-- een gecontroleerde CISA KEV live canary op een HTTPS-bron;
+- gecontroleerde CISA KEV live canary via HTTPS;
 - verplichte licence- en terms-metadata;
-- expliciete timeout en maximaal drie pogingen;
-- begrensde exponentiële retry/backoff en minimum request interval;
-- deduplicatie en quarantaine van malformed en duplicate records;
+- expliciete timeout, maximaal drie pogingen en begrensde exponentiële retry/backoff;
+- minimum request interval en uitgeschakelde redirects;
+- deduplicatie en quarantaine van malformed, duplicate en overflow-records;
 - behoud van source URL, timestamp, confidence en raw-evidence SHA-256;
 - machine-readable retained canary evidence;
-- `publish_approved: false` als fail-closed invariant;
-- een onafhankelijke `always()` canarygate die ontbrekende of gefaalde evidence blokkeert.
-
-RC7.1 wordt pas `PASS` nadat de exacte branch-head aantoonbaar groen is in zowel de reguliere Quality Gate als `RC7 Live Connector Canary Gate`, met retained `live-connector-canary-evidence`.
+- `publish_approved: false` als harde fail-closed invariant;
+- retained `live-connector-canary-evidence` artifact `8973407243`, digest `sha256:437b09bf13746fecf4e929921e1a63ac74bdbba1f1ecb08e0d04b99f763a3f53`.
 
 ## Roadmapstatus
 
@@ -44,7 +42,7 @@ RC7.1 wordt pas `PASS` nadat de exacte branch-head aantoonbaar groen is in zowel
 | 1. CI en workflow-integriteit | `PASS` |
 | 2. Applicatiebeveiliging, identity en privacy | `PASS` |
 | 3. Data-integriteit, backup en recovery | `PASS` |
-| 4. Live connectorbetrouwbaarheid en provenance | `IN PROGRESS` — RC7.1 wacht op exact-head live-canary evidence |
+| 4. Live connectorbetrouwbaarheid en provenance | `IN PROGRESS` — eerste governed live canary bewezen |
 | 5. Performance en schaalbaarheid | `NOT STARTED` |
 | 6. Frontend accessibility en operationele UX | `NOT STARTED` |
 | 7. Observability en incident operations | `NOT STARTED` |
@@ -52,7 +50,7 @@ RC7.1 wordt pas `PASS` nadat de exacte branch-head aantoonbaar groen is in zowel
 | 9. External assurance | `NOT STARTED` |
 | 10. Production go/no-go | `BLOCKED` |
 
-**Precies één volgende prioriteit:** inspecteer de exacte RC7 Live Connector Canary Gate en herstel uitsluitend de eerste deterministische fout, of merge na volledige groene evidence.
+**Precies één volgende prioriteit:** RC7.2 — persistente connector-runstate, source-health history en failure isolation met aantoonbare quarantine/recovery zonder automatische publicatie.
 
 ## Governance-invarianten
 
@@ -97,4 +95,4 @@ Belangrijke endpoints:
 
 ## Productiestatus
 
-DTMO is nog niet productiegereed. Productie blijft geblokkeerd totdat connectorreliability, performance, accessibility, observability, staging en externe assurance aantoonbaar zijn afgerond.
+DTMO is nog niet productiegereed. Productie blijft geblokkeerd totdat Phase 4 volledig is afgerond en performance, accessibility, observability, staging en externe assurance aantoonbaar zijn afgerond.
