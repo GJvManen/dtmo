@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from uuid import uuid4
 
@@ -39,7 +40,7 @@ async def run_cisa_kev() -> dict[str, object]:
 
 
 @asynccontextmanager
-async def lifespan(_: FastAPI):
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if settings.feature_live_connectors:
         scheduler.register(
             ScheduledJob(
