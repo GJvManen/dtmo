@@ -24,3 +24,4 @@ jobs:
           echo "sha=${GITHUB_SHA}"
           echo "run_id=${GITHUB_RUN_ID}"
           echo "event=${GITHUB_EVENT_NAME}"
+          echo "probe=2026-08-06T10:06:00+02:00"
