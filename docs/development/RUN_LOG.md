@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-043 — RC6.4 combined multi-store recovery acceptance](runs/RUN-20260806-043.md) — `CI_VALIDATION_PENDING`: one recovery point, combined PostgreSQL/MinIO/OpenSearch evidence binding, cross-store provenance checks and end-to-end RTO/RPO are committed
 - [RUN-20260806-042 — RC6.3 clean OpenSearch reconstruction](runs/RUN-20260806-042.md) — `PASS`: OpenSearch Recovery Gate #5 and RC4 Quality Gate #253 succeeded on exact head `fbe3924d202d81ab59ebbcd10889a9a75b146941`; deterministic reconstruction evidence retained; PR #25 merged
 - [RUN-20260806-041 — RC6.2 clean MinIO backup and restore evidence](runs/RUN-20260806-041.md) — `PASS`: Quality Gate #243 succeeded on exact head `bd2fa4f16d09e924ae3aa0cfb40946aba1fc9084`; isolated MinIO restore, object digest and provenance evidence retained; PR #24 merged
 - [RUN-20260806-040 — RC6.1 clean PostgreSQL backup and restore evidence](runs/RUN-20260806-040.md) — `PASS`: Quality Gate #229 succeeded on exact head `d1d0e809ffcee6458cb8a8f31ad2d10d481fefb0`; clean-target restore and integrity evidence retained; PR #22 merged
@@ -31,8 +32,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260806-042` is `PASS`. OpenSearch Recovery Gate #5 reconstructed the clean index from canonical PostgreSQL data, verified deterministic source/target manifests and retained machine-readable evidence. RC4 Quality Gate #253 also passed, and PR #25 is merged.
+`RUN-20260806-043` is `CI_VALIDATION_PENDING`. The combined recovery implementation and documentation are committed, but no exact-head multi-store recovery artifact has completed successfully.
 
 ## Exactly one next priority
 
-Implement combined multi-store recovery acceptance for PostgreSQL, MinIO and OpenSearch with one consistent recovery point, cross-store provenance integrity and measured end-to-end RTO/RPO.
+Inspect the exact-head RC6 Multi-store Recovery Gate and remediate only its earliest deterministic failure, or merge after complete success.
