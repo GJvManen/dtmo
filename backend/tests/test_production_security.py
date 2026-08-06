@@ -63,12 +63,23 @@ def test_production_rejects_shared_secret_token_validation() -> None:
         )
 
 
+def test_production_rejects_missing_privacy_secret() -> None:
+    with pytest.raises(ValidationError, match="privacy pseudonymization secret"):
+        Settings(
+            environment="production",
+            minio_secure=True,
+            minio_secret_key="secret-value",
+            jwt_jwks_json=JWKS_JSON,
+        )
+
+
 def test_production_accepts_secure_human_gated_configuration() -> None:
     settings = Settings(
         environment="production",
         minio_secure=True,
         minio_secret_key="secret-value",
         jwt_jwks_json=JWKS_JSON,
+        privacy_pseudonymization_secret="p" * 32,
         publish_requires_human_approval=True,
         database_url="postgresql+psycopg://dtmo@postgres:5432/dtmo",
     )

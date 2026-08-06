@@ -13,6 +13,7 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 | Security | Authentication, authorization, secrets and input controls are verified |
 | Governance | Human review, share approval and separation of duties are preserved |
 | Data integrity | Provenance, confidence, constraints and migrations are verified |
+| Privacy | Direct identifiers, purpose limitation, retention and legal holds are verified |
 | Release | All release-critical jobs and evidence artifacts succeed |
 
 ## Phase 1 — CI and workflow integrity
@@ -26,22 +27,24 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 - RC5.7 Quality Gate #209: `PASS`.
 - RC5.8 Quality Gate #215: `PASS`.
 - RC5.9 Quality Gate #217: `PASS`.
+- RC5.10 Quality Gate #219: `PASS`.
 - Every new branch still requires its own exact-head execution.
 
-## Phase 2 — Application security and identity
+## Phase 2 — Application security, identity and privacy
 
-Current state after `RUN-20260806-037`:
+Current state after `RUN-20260806-038`:
 
-- least-privilege RBAC, trusted principals, JWKS rotation, token-state enforcement, operational revocation and denial auditing are evidenced;
-- RC5.10 records revocation expiry and rationale in versioned canonical JSON within the append-only audit event;
-- reconciliation verifies the full persistent audit chain before using durable revocation evidence;
-- missing active Redis revocation markers are restored with their original expiry boundary;
-- existing markers are left unchanged and expired revocations are not recreated;
-- malformed, incomplete or tampered durable evidence stops reconciliation rather than silently accepting drift;
-- Redis inspection failures remain `TokenStateError` and therefore fail closed;
-- focused restoration, idempotence, expiry and tamper regressions are committed;
-- exact-head RC5.10 CI evidence remains `PENDING`;
-- Phase 2 completion remains `BLOCKED` until RC5.10 and remaining privacy controls are evidenced.
+- least-privilege RBAC, trusted principals, JWKS rotation, token-state enforcement, operational revocation, denial auditing and revocation reconciliation are evidenced;
+- RC5.11 adds derived audit projections that replace direct principal, resource and request identifiers with purpose-bound HMAC-SHA-256 references;
+- direct free-text provenance is excluded from minimized projections while the immutable source event hash is retained for integrity correlation;
+- retention decisions are explicit, timezone-safe and deterministic;
+- legal hold overrides ordinary expiry without mutating the source audit chain;
+- production requires a dedicated pseudonymization secret of at least 32 characters;
+- identity projection retention may not exceed audit projection retention;
+- source audit records remain append-only and cryptographically verifiable;
+- exact-head RC5.11 CI evidence remains `PENDING`;
+- storage-layer enforcement and scheduled purge execution remain a separate bounded objective;
+- Phase 2 completion remains `BLOCKED` until RC5.11 is evidenced.
 
 ## Phase 3 — Data integrity and recovery
 
@@ -50,7 +53,7 @@ Current state after `RUN-20260806-037`:
 - clean-environment database/object restoration, RPO and RTO evidence are not yet implemented;
 - Phase 3 completion: `BLOCKED`.
 
-## Security and publication invariants
+## Security, privacy and publication invariants
 
 - ingestion creates candidate intelligence only;
 - reviewed and share-approved states remain distinct;
@@ -61,12 +64,14 @@ Current state after `RUN-20260806-037`:
 - production token-state failure must deny authentication;
 - authorization-denial audit failure must never permit access;
 - revocation recovery must never proceed from an invalid audit chain;
+- privacy reporting projections must not expose direct identity, token or request identifiers;
+- legal holds must be explicit and may not silently bypass auditability;
 - missing CI or scan evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260806-037` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
+`RUN-20260806-038` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC5.10 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
+Inspect the exact-head RC5.11 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.

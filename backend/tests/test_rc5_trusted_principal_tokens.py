@@ -144,6 +144,7 @@ def _production_settings() -> Settings:
         jwt_jwks_json=SecretStr(JWKS_JSON),
         jwt_issuer=ISSUER,
         jwt_audience=AUDIENCE,
+        privacy_pseudonymization_secret=SecretStr("p" * 32),
     )
 
 

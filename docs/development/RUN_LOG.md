@@ -4,7 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260806-037 — RC5.10 revocation reconciliation and recovery](runs/RUN-20260806-037.md) — `CI_VALIDATION_PENDING`: integrity-verified append-only revocation evidence can restore missing active Redis markers while expired evidence is skipped
+- [RUN-20260806-038 — RC5.11 privacy minimization and retention controls](runs/RUN-20260806-038.md) — `CI_VALIDATION_PENDING`: privacy-safe audit projections, purpose-bound pseudonyms, retention expiry and legal-hold override are committed
+- [RUN-20260806-037 — RC5.10 revocation reconciliation and recovery](runs/RUN-20260806-037.md) — `PASS`: Quality Gate #219 succeeded and PR #18 merged
 - [RUN-20260806-036 — Operational revocation and authorization-denial audit](runs/RUN-20260806-036.md) — `PASS`: Quality Gate #217 succeeded and PR #17 merged
 - [RUN-20260806-035 — Isolate production JWKS regression from external Redis](runs/RUN-20260806-035.md) — `PASS`: Quality Gate #215 succeeded and PR #16 merged
 - [RUN-20260806-034 — RC5.8 token revocation and replay-state enforcement](runs/RUN-20260806-034.md) — `PASS`: Quality Gate #215 succeeded and PR #16 merged

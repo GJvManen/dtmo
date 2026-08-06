@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     jwt_jwks_json: SecretStr = SecretStr("")
     jwt_issuer: str = "https://identity.dtmo.local"
     jwt_audience: str = "dtmo-api"
+    privacy_pseudonymization_secret: SecretStr = SecretStr("")
+    audit_projection_retention_days: int = Field(default=365, ge=30, le=3650)
+    identity_projection_retention_days: int = Field(default=90, ge=1, le=730)
     connector_poll_seconds: int = Field(default=3600, ge=60)
     connector_timeout_seconds: int = Field(default=30, ge=1, le=300)
     connector_max_attempts: int = Field(default=4, ge=1, le=10)
@@ -62,6 +65,10 @@ class Settings(BaseSettings):
             raise ValueError("production token audience is required")
         if not self.database_url.startswith("postgresql+psycopg://"):
             raise ValueError("production requires PostgreSQL with the psycopg driver")
+        if len(self.privacy_pseudonymization_secret.get_secret_value()) < 32:
+            raise ValueError("production privacy pseudonymization secret must be at least 32 characters")
+        if self.identity_projection_retention_days > self.audit_projection_retention_days:
+            raise ValueError("identity projection retention cannot exceed audit projection retention")
         return self
 
 
