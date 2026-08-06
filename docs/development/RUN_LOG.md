@@ -4,7 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260806-045 — RC7.2 persistent connector state and failure isolation](runs/RUN-20260806-045.md) — `CI_VALIDATION_PENDING`: PostgreSQL-backed run state, source-health history, connector-scoped isolation and human-reviewed quarantine recovery are committed; Connector State Gate #6 was cancelled before tests and its independent gate failed closed on missing evidence
+- [RUN-20260806-045 — RC7.2 persistent connector state and failure isolation](runs/RUN-20260806-045.md) — `CI_VALIDATION_PENDING`: PostgreSQL-backed run state, source-health history, connector-scoped isolation and human-reviewed quarantine recovery are committed; the required exact-head workflows were independently observed queued before execution, so no current tests or retained evidence exist
 - [RUN-20260806-044 — RC7.1 governed live connector canary](runs/RUN-20260806-044.md) — `PASS`: RC7 Live Connector Canary Gate #3, RC4 Quality Gate #270, OpenSearch Recovery Gate #22 and Multi-store Recovery Gate #12 succeeded on exact head `c82e20c110354c1163b58ac8b9820756f829a4ae`; retained canary evidence artifact `8973407243`; PR #28 merged as `aeeb0709a26ecb1f20620d7ac21f823fec35e98f`
 - [RUN-20260806-043 — RC6.4 combined multi-store recovery acceptance](runs/RUN-20260806-043.md) — `PASS`: Multi-store Recovery Gate #4, RC4 Quality Gate #262 and OpenSearch Recovery Gate #14 succeeded on exact head `ba3389613341c84aa21b591b706b7819981b7a4b`; combined cross-store evidence retained; PR #26 merged
 - [RUN-20260806-042 — RC6.3 clean OpenSearch reconstruction](runs/RUN-20260806-042.md) — `PASS`: OpenSearch Recovery Gate #5 and RC4 Quality Gate #253 succeeded on exact head `fbe3924d202d81ab59ebbcd10889a9a75b146941`; deterministic reconstruction evidence retained; PR #25 merged
@@ -34,8 +34,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260806-045` is `CI_VALIDATION_PENDING`. Connector State Gate #6 did not execute product tests because its primary job was cancelled; the independent gate correctly failed closed on absent evidence. A targeted rerun was requested, but no success is claimed until a complete exact-head run retains evidence.
+`RUN-20260806-045` is `CI_VALIDATION_PENDING`. The latest inspected exact head had all required workflows queued before runner assignment; no tests, migrations or evidence-producing steps had executed and no artifacts existed. Runner-capacity delay is an external blocker and cannot be treated as either product success or product failure.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC7 Connector State Gate and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
+Inspect the exact-head RC7 Connector State Gate after runner assignment and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
