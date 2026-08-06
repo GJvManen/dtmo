@@ -277,7 +277,8 @@ jobs:
             "container": os.environ["CONTAINER"],
             "dependency-review": os.environ["DEPENDENCY_REVIEW"],
           }
-          failures = [name for name in set(results) if results[name] != "success"]
+          required = set(results)
+          failures = [name for name in required if results[name] != "success"]
           evidence = {
             "schema_version": 1, "workflow": "RC4 Quality Gate", "gate": "release-gate",
             "run_id": os.environ["GITHUB_RUN_ID"], "head_sha": os.environ["GITHUB_SHA"].lower(),
