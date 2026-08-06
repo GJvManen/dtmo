@@ -8,7 +8,19 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from dtmo.intelligence.model import ConfidenceLevel
+
 from .models import ConnectorRun, IntelligenceItem, ProvenanceRecord
+
+
+def _confidence_level(score: int) -> ConfidenceLevel:
+    if score >= 90:
+        return ConfidenceLevel.VERY_HIGH
+    if score >= 75:
+        return ConfidenceLevel.HIGH
+    if score >= 50:
+        return ConfidenceLevel.MEDIUM
+    return ConfidenceLevel.LOW
 
 
 class IntelligenceRepository:
@@ -32,6 +44,10 @@ class IntelligenceRepository:
         if existing is not None:
             return existing, False
 
+        confidence_score = int(payload.get("confidence_score", payload.get("confidence", 50)))
+        confidence_level = _confidence_level(confidence_score)
+        confidence_rationale = list(payload.get("confidence_rationale", []))
+
         item = IntelligenceItem(
             source_id=source_id,
             external_id=str(external_id) if external_id is not None else None,
@@ -42,7 +58,9 @@ class IntelligenceRepository:
             published_at=payload.get("published_at"),
             content_hash=content_hash,
             severity=str(payload.get("severity", "informational")),
-            confidence=int(payload.get("confidence", 50)),
+            confidence_score=confidence_score,
+            confidence_level=confidence_level,
+            confidence_rationale=confidence_rationale,
             education_relevance=int(payload.get("education_relevance", 0)),
             review_status="candidate",
             share_approved=False,
@@ -60,7 +78,7 @@ class IntelligenceRepository:
                     publisher=source.get("publisher"),
                     content_hash=str(source.get("content_hash", content_hash)),
                     exact_passage=source.get("exact_passage"),
-                    confidence=int(source.get("confidence", item.confidence)),
+                    confidence_score=int(source.get("confidence_score", confidence_score)),
                 )
             )
         return item, True
