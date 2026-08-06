@@ -24,7 +24,7 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 
 ## Phase 2 — Application security and identity
 
-Current state after `RUN-20260806-027`:
+Current state after `RUN-20260806-028`:
 
 - route-level RBAC and least-privilege ingestion authority: implemented and validated in Quality Gate #179;
 - service-account and human separation: implemented;
@@ -38,9 +38,10 @@ Current state after `RUN-20260806-027`:
 - signing secret, HTTPS issuer and audience are mandatory production settings;
 - Quality Gate #181 failed at Ruff; semantic renaming corrected the false positives without suppressions;
 - Quality Gate #185 passed Ruff and failed strict MyPy; PyJWT options now use `jwt.types.Options`;
-- Quality Gate #189 reached pytest and failed because direct invocation received a FastAPI `Header` descriptor as the omitted authorization argument;
-- header dependencies now use `Annotated[str, Header()]` metadata with real string defaults, preserving HTTP injection and direct unit-test behaviour;
-- the full replacement test and coverage gate has not yet executed successfully and remains `PENDING`;
+- Quality Gate #189 reached pytest and exposed a FastAPI `Header` descriptor during direct invocation; dependency metadata now uses `Annotated` with real string defaults;
+- Quality Gate #193 reached pytest with `38 passed` before the positive secure-production fixture failed because it omitted the newly mandatory signing secret;
+- the positive production fixture now supplies a 32-character signing secret; the fail-closed production validator was not weakened;
+- the full replacement test, coverage and aggregate release gates remain `PENDING`;
 - distributed key rotation/JWKS, token revocation and privileged-operation audit persistence remain future bounded objectives;
 - Phase 2 completion: `BLOCKED` until these remaining objectives are evidenced.
 
@@ -62,7 +63,7 @@ Current state after `RUN-20260806-027`:
 
 ## Current run decision
 
-`RUN-20260806-027` is `BLOCKED` until the replacement exact PR-head Quality Gate completes successfully.
+`RUN-20260806-028` is `BLOCKED` until the replacement exact PR-head Quality Gate completes successfully.
 
 ## Exactly one next priority
 
