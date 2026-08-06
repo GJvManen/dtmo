@@ -1,0 +1,53 @@
+name: RC4 CI Observer
+
+on:
+  workflow_run:
+    workflows: ["RC4 Quality Gate"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Capture observed workflow result
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          OBSERVED_RUN_ID: ${{ github.event.workflow_run.id || github.run_id }}
+          OBSERVED_CONCLUSION: ${{ github.event.workflow_run.conclusion || 'manual-observer-check' }}
+          OBSERVED_HEAD_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          OBSERVED_URL: ${{ github.event.workflow_run.html_url || format('{0}/{1}/actions/runs/{2}', github.server_url, github.repository, github.run_id) }}
+        run: |
+          mkdir -p artifacts
+          cat > artifacts/ci-observation.json <<EOF
+          {
+            "observer_run_id": "${GITHUB_RUN_ID}",
+            "event_name": "${EVENT_NAME}",
+            "observed_run_id": "${OBSERVED_RUN_ID}",
+            "observed_conclusion": "${OBSERVED_CONCLUSION}",
+            "observed_head_sha": "${OBSERVED_HEAD_SHA}",
+            "observed_url": "${OBSERVED_URL}"
+          }
+          EOF
+          cat artifacts/ci-observation.json
+      - name: Publish observer summary
+        run: |
+          {
+            echo "## RC4 CI observation"
+            echo "- Event: ${{ github.event_name }}"
+            echo "- Observed run: ${{ github.event.workflow_run.id || github.run_id }}"
+            echo "- Conclusion: ${{ github.event.workflow_run.conclusion || 'manual-observer-check' }}"
+            echo "- Head SHA: ${{ github.event.workflow_run.head_sha || github.sha }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload independent CI observation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-observation-evidence
+          path: artifacts/ci-observation.json
+          if-no-files-found: error
+          retention-days: 30
