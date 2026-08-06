@@ -68,7 +68,7 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 11. a repository-side execution-readiness preflight must distinguish configuration readiness from actual workflow execution and must mark its own report as non-gate-eligible;
 12. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-010`:
+Current state after `RUN-20260806-018`:
 
 - structural workflow contract: implemented;
 - dedicated observable contract job: implemented;
@@ -83,10 +83,13 @@ Current state after `RUN-20260806-010`:
 - repository-side execution-readiness preflight: implemented;
 - preflight positive and negative tests: implemented, execution `PENDING`;
 - preflight output release-gate eligibility: explicitly `false`;
+- historical run `31082453008`: installation, migrations and workflow-contracts `PASS`; lint `FAIL`; type checking and tests skipped;
+- stale PR #7 head `4b0d966c98c16dc68341f7992500132567523fb3`: non-mergeable and zero workflow runs;
+- fresh current-main lint-validation branch: created with bounded Ruff policy alignment;
+- replacement quality-gate execution on the fresh PR: `PENDING`;
 - successful quality-gate execution evidence: `PENDING`;
 - successful observer execution evidence: `PENDING`;
 - matching artifacts for one head SHA and run ID: `PENDING`;
-- likely external control to verify: repository Actions permissions and workflow enablement;
 - Phase 1 completion: `BLOCKED`.
 
 Phase 1 may only advance after one completed `RC4 Quality Gate` run exposes its run ID, job results and a `workflow-contract-evidence` artifact containing both XML and JSON, followed by a matching `RC4 CI Observer` run for the same head SHA, and the downloaded pair passes `tools/verify_ci_evidence.py`.
