@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Every DTMO development step defines and evaluates explicit quality gates. A configured or committed test that has not executed is `PENDING`, never `PASS`.
+Every DTMO development step defines and evaluates explicit quality gates. A configured, queued, cancelled or committed test that has not executed is `PENDING`, never `PASS`.
 
 ## Baseline blocking gates
 
@@ -51,7 +51,9 @@ Committed controls:
 - retained evidence upload uses `if-no-files-found: error`;
 - a separate `always()` gate fails closed unless connector-state evidence succeeds.
 
-Connector State Gate #6, run `31118437816`, did not execute product tests because its primary job was cancelled. No connector-state artifact was retained. The independent aggregate gate failed as designed on missing evidence. This is not a product-test failure and is not accepted as `PASS`; a complete exact-head execution remains mandatory.
+Previous execution evidence showed that Connector State Gate #6 did not execute product tests because its primary job was cancelled; its independent gate correctly failed closed on missing evidence. Subsequent deterministic defects in ORM initialization and lint were remediated, but they do not establish acceptance without a complete exact-head run.
+
+At 2026-08-06 19:42 CEST, all required workflows for exact head `5193b5a9caa3f1f798b74b8cbaff3c5fcf61633e` were still queued before execution. Connector State Gate #11 primary job `92684346786` had no steps, and the Quality, canary, OpenSearch and multi-store workflows had also not started. Therefore no current tests, migrations or evidence artifacts existed. GitHub-hosted runner capacity is an external blocker; RC7.2 remains `CI_VALIDATION_PENDING`.
 
 ## Security, privacy and publication invariants
 
@@ -60,7 +62,7 @@ Connector State Gate #6, run `31118437816`, did not execute product tests becaus
 - service accounts and connectors may not review or approve sharing;
 - connector success, isolation recovery or quarantine release never implies publication approval;
 - provenance and confidence may not be silently discarded;
-- missing, cancelled or unexecuted CI and connector evidence may not be reported as successful.
+- missing, queued, cancelled or unexecuted CI and connector evidence may not be reported as successful.
 
 ## Current run decision
 
@@ -68,4 +70,4 @@ Connector State Gate #6, run `31118437816`, did not execute product tests becaus
 
 ## Exactly one next priority
 
-Inspect the exact-head RC7 Connector State Gate and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
+Inspect the exact-head RC7 Connector State Gate after runner assignment and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
