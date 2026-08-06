@@ -15,25 +15,25 @@ DTMO is ontwikkeld van RC4.1 tot en met RC6.4.
 - Phase 2 — application security, identity en privacy: `PASS`;
 - RC6.1 — clean-target PostgreSQL backup en restore: `PASS` via Quality Gate #229 en PR #22;
 - RC6.2 — geïsoleerde MinIO objectbackup en clean-target restore: `PASS` via Quality Gate #243 en PR #24;
-- RC6.3 — clean OpenSearch reconstruction: `PASS` via OpenSearch Recovery Gate #5, RC4 Quality Gate #253 en PR #25.
+- RC6.3 — clean OpenSearch reconstruction: `PASS` via OpenSearch Recovery Gate #5, RC4 Quality Gate #253 en PR #25;
+- RC6.4 — gecombineerde multi-store recovery acceptance: `PASS` via Multi-store Recovery Gate #4, RC4 Quality Gate #262, OpenSearch Recovery Gate #14 en PR #26;
+- Phase 3 — data-integriteit, backup en recovery: `PASS`.
 
-### Actieve run: RC6.4
+### RC6.4 evidence
 
-**Combined multi-store recovery acceptance: `CI_VALIDATION_PENDING`.**
+Exacte head `ba3389613341c84aa21b591b706b7819981b7a4b` is volledig groen. De evidence omvat:
 
-De branch bevat:
+- één recovery-point identity en UTC-starttijd voor PostgreSQL, MinIO en OpenSearch;
+- clean-target PostgreSQL restore met geldige auditketen en provenance-hashes;
+- geïsoleerde MinIO backup/restore met identieke objectdigests en provenance-references;
+- deterministische OpenSearch-reconstructie uit canonieke PostgreSQL-data;
+- SHA-256-binding van alle subsystem-evidence;
+- cross-store provenance-envelope digest;
+- gemeten end-to-end RTO en zero-second quiesced-run RPO-basis;
+- retained `multistore-recovery-evidence` artifact `8972811292`;
+- fail-closed recoverygate en volledige aggregate Quality Gate.
 
-- één recovery-point identity en UTC-starttijd voor de volledige run;
-- PostgreSQL restore, MinIO backup/restore en OpenSearch reconstructie in één begrensde workflow;
-- controle van PostgreSQL-auditketen en provenance-hashes;
-- controle van MinIO-objectdigests en provenance-references;
-- controle van OpenSearch-provenance en deterministische bron/targetmanifesten;
-- SHA-256-binding van alle subsystem evidence in één gecombineerd artifact;
-- een cross-store provenance-envelope digest;
-- gemeten end-to-end RTO en een expliciete zero-second quiesced-run RPO-basis;
-- een onafhankelijk observeerbare fail-closed recoverygate.
-
-RC6.4 wordt pas `PASS` nadat GitHub Actions op de exacte branch-head aantoonbaar groen is en het gecombineerde evidence-artifact behouden is.
+PR #26 is gemerged naar `main` als `d25c2e4a9c5e5869071020a109ddf57638779a02`.
 
 ## Roadmapstatus
 
@@ -41,7 +41,7 @@ RC6.4 wordt pas `PASS` nadat GitHub Actions op de exacte branch-head aantoonbaar
 |---|---|
 | 1. CI en workflow-integriteit | `PASS` |
 | 2. Applicatiebeveiliging, identity en privacy | `PASS` |
-| 3. Data-integriteit, backup en recovery | `IN PROGRESS` — afzonderlijke stores bewezen; RC6.4 gecombineerde acceptance wacht op exact-head evidence |
+| 3. Data-integriteit, backup en recovery | `PASS` |
 | 4. Live connectorbetrouwbaarheid en provenance | `NOT STARTED` |
 | 5. Performance en schaalbaarheid | `NOT STARTED` |
 | 6. Frontend accessibility en operationele UX | `NOT STARTED` |
@@ -50,7 +50,7 @@ RC6.4 wordt pas `PASS` nadat GitHub Actions op de exacte branch-head aantoonbaar
 | 9. External assurance | `NOT STARTED` |
 | 10. Production go/no-go | `BLOCKED` |
 
-**Precies één volgende prioriteit:** inspecteer de exacte RC6 Multi-store Recovery Gate en herstel uitsluitend de eerste deterministische fout, of merge na volledige groene evidence.
+**Precies één volgende prioriteit:** Phase 4 starten met één gecontroleerde live connector-canary, inclusief bronprovenance, timeout, rate limiting, retry/backoff, quarantine en fail-closed human share approval.
 
 ## Governance-invarianten
 
@@ -93,4 +93,4 @@ Belangrijke endpoints:
 
 ## Productiestatus
 
-DTMO is nog niet productiegereed. Productie blijft geblokkeerd totdat recovery, connectorreliability, performance, accessibility, observability, staging en externe assurance aantoonbaar zijn afgerond.
+DTMO is nog niet productiegereed. Productie blijft geblokkeerd totdat connectorreliability, performance, accessibility, observability, staging en externe assurance aantoonbaar zijn afgerond.
