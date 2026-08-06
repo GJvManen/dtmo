@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from dtmo.config import Settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
+from dtmo.lake.minio_store import MinioObjectStore
 from dtmo.main import app
 
 
@@ -22,6 +23,12 @@ FIXTURE = {
         }
     ]
 }
+
+
+def test_application_import_does_not_initialize_object_storage() -> None:
+    store = MinioObjectStore(Settings(environment="test", minio_secret_key=""))
+    assert store._client is None
+    assert app.title == "DTMO API"
 
 
 def test_health_and_security_headers() -> None:
