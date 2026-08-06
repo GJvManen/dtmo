@@ -19,10 +19,8 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - name: Prepare evidence directory
-        run: mkdir -p artifacts
-      - name: Install test dependencies
-        run: python -m pip install -e '.[test]'
+      - run: mkdir -p artifacts
+      - run: python -m pip install -e '.[test]'
       - name: Validate workflow contract
         run: python -m pytest backend/tests/test_ci_workflow_contract.py --junitxml=artifacts/workflow-contracts.xml
       - name: Create identity-bound evidence manifest
@@ -30,25 +28,20 @@ jobs:
         env:
           EVIDENCE_CONCLUSION: ${{ job.status }}
         run: |
-          mkdir -p artifacts
           python - <<'PY'
-          import json
-          import os
+          import json, os
           from pathlib import Path
-          evidence = {
-              "schema_version": 1,
-              "workflow": "RC4 Quality Gate",
-              "run_id": os.environ["GITHUB_RUN_ID"],
-              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
-              "head_sha": os.environ["GITHUB_SHA"].lower(),
-              "repository": os.environ["GITHUB_REPOSITORY"],
-              "event_name": os.environ["GITHUB_EVENT_NAME"],
-              "conclusion": os.environ["EVIDENCE_CONCLUSION"],
-              "run_url": f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
-          }
-          Path("artifacts/workflow-contract-evidence.json").write_text(
-              json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-          )
+          Path("artifacts/workflow-contract-evidence.json").write_text(json.dumps({
+            "schema_version": 1,
+            "workflow": "RC4 Quality Gate",
+            "run_id": os.environ["GITHUB_RUN_ID"],
+            "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+            "head_sha": os.environ["GITHUB_SHA"].lower(),
+            "repository": os.environ["GITHUB_REPOSITORY"],
+            "event_name": os.environ["GITHUB_EVENT_NAME"],
+            "conclusion": os.environ["EVIDENCE_CONCLUSION"],
+            "run_url": f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+          }, indent=2, sort_keys=True) + "\n")
           PY
       - name: Upload workflow contract evidence
         if: always()
@@ -67,21 +60,20 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - name: Install
-        run: python -m pip install -e '.[test]'
+      - run: python -m pip install -e '.[test]'
       - name: Environment diagnostics
         run: |
           python --version
           python -m pip --version
           python -m pip check
       - name: Lint
-        run: python -m ruff check backend database
+        run: python -m ruff check backend database tools
       - name: Type check
         run: python -m mypy backend/dtmo
       - name: Tests
         run: python -m pytest --cov=dtmo --cov-report=term-missing --cov-fail-under=80
       - name: Compile
-        run: python -m compileall -q backend database
+        run: python -m compileall -q backend database tools
 
   migrations:
     runs-on: ubuntu-latest
@@ -92,13 +84,10 @@ jobs:
           POSTGRES_DB: dtmo
           POSTGRES_USER: dtmo
           POSTGRES_PASSWORD: change-me
-        ports:
-          - 5432:5432
+        ports: ["5432:5432"]
         options: >-
           --health-cmd "pg_isready -U dtmo -d dtmo"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
+          --health-interval 10s --health-timeout 5s --health-retries 10
     env:
       DTMO_ENVIRONMENT: test
       DTMO_DATABASE_URL: postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo
@@ -108,20 +97,14 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - name: Install
-        run: python -m pip install -e '.[test]'
-      - name: Migration diagnostics
-        run: |
-          python --version
+      - run: python -m pip install -e '.[test]'
+      - run: |
           python -m pip check
           test -f alembic.ini
           test -f database/migrations/env.py
-      - name: Upgrade schema
-        run: python -m alembic upgrade head
-      - name: Validate current revision
-        run: python -m alembic current
-      - name: Downgrade and re-upgrade
-        run: |
+      - run: python -m alembic upgrade head
+      - run: python -m alembic current
+      - run: |
           python -m alembic downgrade base
           python -m alembic upgrade head
 
@@ -134,13 +117,10 @@ jobs:
           POSTGRES_DB: dtmo
           POSTGRES_USER: dtmo
           POSTGRES_PASSWORD: change-me
-        ports:
-          - 5432:5432
+        ports: ["5432:5432"]
         options: >-
           --health-cmd "pg_isready -U dtmo -d dtmo"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
+          --health-interval 10s --health-timeout 5s --health-retries 10
     env:
       DTMO_ENVIRONMENT: test
       DTMO_DATABASE_URL: postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo
@@ -158,11 +138,8 @@ jobs:
           set -euo pipefail
           python -m pip install -e '.[test]'
           sudo install -d -m 0755 /usr/share/postgresql-common/pgdg
-          sudo curl --fail --silent --show-error \
-            --output /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
-            https://www.postgresql.org/media/keys/ACCC4CF8.asc
-          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" \
-            | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          sudo curl --fail --silent --show-error --output /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt noble-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends postgresql-client-17
           echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
@@ -170,20 +147,14 @@ jobs:
         run: |
           test "$(/usr/lib/postgresql/17/bin/pg_dump --version | awk '{print $3}' | cut -d. -f1)" = "17"
           test "$(psql --host 127.0.0.1 --username dtmo --dbname dtmo --tuples-only --no-align --command 'SHOW server_version_num' | cut -c1-2)" = "17"
-      - name: Upgrade source schema
-        run: python -m alembic upgrade head
-      - name: Create clean restore target
-        run: |
+      - run: python -m alembic upgrade head
+      - run: |
           dropdb --if-exists --host 127.0.0.1 --username dtmo dtmo_restore
           createdb --host 127.0.0.1 --username dtmo dtmo_restore
       - name: Backup, restore and verify integrity
         run: |
           mkdir -p artifacts
-          python tools/verify_postgres_backup_restore.py \
-            --source-url "$SOURCE_DATABASE_URL" \
-            --target-url "$TARGET_DATABASE_URL" \
-            --backup artifacts/dtmo-postgres.dump \
-            --evidence artifacts/postgres-restore-evidence.json
+          python tools/verify_postgres_backup_restore.py --source-url "$SOURCE_DATABASE_URL" --target-url "$TARGET_DATABASE_URL" --backup artifacts/dtmo-postgres.dump --evidence artifacts/postgres-restore-evidence.json
           python -m json.tool artifacts/postgres-restore-evidence.json
       - name: Upload PostgreSQL restore evidence
         if: always()
@@ -196,23 +167,57 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  minio-restore:
+    runs-on: ubuntu-latest
+    env:
+      MINIO_ROOT_USER: dtmo-recovery
+      MINIO_ROOT_PASSWORD: recovery-secret-value
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Start isolated source and clean-target MinIO services
+        run: |
+          set -euo pipefail
+          docker run -d --name minio-source -p 9000:9000 -e MINIO_ROOT_USER -e MINIO_ROOT_PASSWORD minio/minio:RELEASE.2025-07-23T15-54-02Z server /data
+          docker run -d --name minio-target -p 9002:9000 -e MINIO_ROOT_USER -e MINIO_ROOT_PASSWORD minio/minio:RELEASE.2025-07-23T15-54-02Z server /data
+          trap 'docker logs minio-source || true; docker logs minio-target || true' ERR
+          for endpoint in http://127.0.0.1:9000/minio/health/live http://127.0.0.1:9002/minio/health/live; do
+            for attempt in {1..30}; do curl -fsS "$endpoint" && break; sleep 2; done
+            curl -fsS "$endpoint"
+          done
+      - name: Backup, restore and verify object integrity and provenance
+        run: |
+          mkdir -p artifacts
+          python tools/verify_minio_backup_restore.py --source-endpoint 127.0.0.1:9000 --target-endpoint 127.0.0.1:9002 --access-key "$MINIO_ROOT_USER" --secret-key "$MINIO_ROOT_PASSWORD" --backup artifacts/dtmo-minio-backup.tar.gz --evidence artifacts/minio-restore-evidence.json
+          python -m json.tool artifacts/minio-restore-evidence.json
+      - name: Upload MinIO restore evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: minio-restore-evidence
+          path: |
+            artifacts/minio-restore-evidence.json
+            artifacts/dtmo-minio-backup.tar.gz
+          if-no-files-found: error
+          retention-days: 30
+      - if: always()
+        run: docker rm -f minio-source minio-target || true
+
   container:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Build image
-        run: docker build --progress=plain -t dtmo:rc4 .
+      - run: docker build --progress=plain -t dtmo:rc4 .
       - name: Run image smoke test
         run: |
           set -euo pipefail
           docker run -d --name dtmo -p 8000:8000 --env DTMO_ENVIRONMENT=test dtmo:rc4
           trap 'docker logs dtmo || true; docker rm -f dtmo || true' EXIT
-          for i in {1..30}; do
-            if curl -fsS http://127.0.0.1:8000/health; then
-              exit 0
-            fi
-            sleep 2
-          done
+          for i in {1..30}; do curl -fsS http://127.0.0.1:8000/health && exit 0; sleep 2; done
           exit 1
 
   dependency-review:
@@ -223,8 +228,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-      - name: Install audit tooling and project dependencies
-        run: python -m pip install -e '.[test]'
+      - run: python -m pip install -e '.[test]'
       - name: Audit resolved Python dependencies
         run: |
           set -uo pipefail
@@ -232,14 +236,9 @@ jobs:
           AUDIT_EXIT_CODE=0
           python -m pip_audit --format json --output artifacts/pip-audit.json || AUDIT_EXIT_CODE=$?
           test -s artifacts/pip-audit.json
-          echo "## pip-audit JSON evidence"
           python -m json.tool artifacts/pip-audit.json
-          echo "## pip-audit human-readable findings"
           python -m pip_audit || true
-          if [ "$AUDIT_EXIT_CODE" -ne 0 ]; then
-            echo "Dependency audit found one or more known vulnerabilities."
-            exit "$AUDIT_EXIT_CODE"
-          fi
+          test "$AUDIT_EXIT_CODE" -eq 0
       - name: Upload dependency audit evidence
         if: always()
         uses: actions/upload-artifact@v7
@@ -251,7 +250,7 @@ jobs:
 
   release-gate:
     if: always()
-    needs: [workflow-contracts, test, migrations, postgres-restore, container, dependency-review]
+    needs: [workflow-contracts, test, migrations, postgres-restore, minio-restore, container, dependency-review]
     runs-on: ubuntu-latest
     steps:
       - name: Evaluate all release-critical jobs
@@ -260,57 +259,49 @@ jobs:
           TESTS: ${{ needs.test.result }}
           MIGRATIONS: ${{ needs.migrations.result }}
           POSTGRES_RESTORE: ${{ needs.postgres-restore.result }}
+          MINIO_RESTORE: ${{ needs.minio-restore.result }}
           CONTAINER: ${{ needs.container.result }}
           DEPENDENCY_REVIEW: ${{ needs.dependency-review.result }}
         run: |
           set -euo pipefail
           mkdir -p artifacts
           python - <<'PY'
-          import json
-          import os
+          import json, os
           from pathlib import Path
           results = {
-              "workflow-contracts": os.environ["WORKFLOW_CONTRACTS"],
-              "test": os.environ["TESTS"],
-              "migrations": os.environ["MIGRATIONS"],
-              "postgres-restore": os.environ["POSTGRES_RESTORE"],
-              "container": os.environ["CONTAINER"],
-              "dependency-review": os.environ["DEPENDENCY_REVIEW"],
+            "workflow-contracts": os.environ["WORKFLOW_CONTRACTS"],
+            "test": os.environ["TESTS"],
+            "migrations": os.environ["MIGRATIONS"],
+            "postgres-restore": os.environ["POSTGRES_RESTORE"],
+            "minio-restore": os.environ["MINIO_RESTORE"],
+            "container": os.environ["CONTAINER"],
+            "dependency-review": os.environ["DEPENDENCY_REVIEW"],
           }
           required = set(results)
           failures = [name for name in required if results[name] != "success"]
           evidence = {
-              "schema_version": 1,
-              "workflow": "RC4 Quality Gate",
-              "gate": "release-gate",
-              "run_id": os.environ["GITHUB_RUN_ID"],
-              "head_sha": os.environ["GITHUB_SHA"].lower(),
-              "repository": os.environ["GITHUB_REPOSITORY"],
-              "event_name": os.environ["GITHUB_EVENT_NAME"],
-              "job_results": results,
-              "decision": "pass" if not failures else "blocked",
-              "blocking_jobs": failures,
-              "run_url": f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+            "schema_version": 1, "workflow": "RC4 Quality Gate", "gate": "release-gate",
+            "run_id": os.environ["GITHUB_RUN_ID"], "head_sha": os.environ["GITHUB_SHA"].lower(),
+            "repository": os.environ["GITHUB_REPOSITORY"], "event_name": os.environ["GITHUB_EVENT_NAME"],
+            "job_results": results, "decision": "pass" if not failures else "blocked",
+            "blocking_jobs": failures,
+            "run_url": f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
           }
-          Path("artifacts/release-gate-evidence.json").write_text(
-              json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-          )
+          Path("artifacts/release-gate-evidence.json").write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n")
           print(json.dumps(evidence, indent=2, sort_keys=True))
-          if failures:
-              raise SystemExit(f"Release blocked by: {', '.join(failures)}")
+          if failures: raise SystemExit(f"Release blocked by: {', '.join(failures)}")
           PY
       - name: Publish release gate summary
         if: always()
         run: |
-          {
-            echo "## RC4 aggregate release gate"
-            echo "- Workflow contracts: ${{ needs.workflow-contracts.result }}"
-            echo "- Tests: ${{ needs.test.result }}"
-            echo "- Migrations: ${{ needs.migrations.result }}"
-            echo "- PostgreSQL restore: ${{ needs.postgres-restore.result }}"
-            echo "- Container: ${{ needs.container.result }}"
-            echo "- Dependency review: ${{ needs.dependency-review.result }}"
-          } >> "$GITHUB_STEP_SUMMARY"
+          echo "## RC4 aggregate release gate" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Workflow contracts: ${{ needs.workflow-contracts.result }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Tests: ${{ needs.test.result }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Migrations: ${{ needs.migrations.result }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- PostgreSQL restore: ${{ needs.postgres-restore.result }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- MinIO restore: ${{ needs.minio-restore.result }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Container: ${{ needs.container.result }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Dependency review: ${{ needs.dependency-review.result }}" >> "$GITHUB_STEP_SUMMARY"
       - name: Upload aggregate release evidence
         if: always()
         uses: actions/upload-artifact@v7

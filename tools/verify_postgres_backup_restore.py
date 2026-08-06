@@ -34,7 +34,8 @@ def _postgres_cli_url(value: str) -> str:
 
 
 def _run(command: list[str]) -> None:
-    subprocess.run(command, check=True, text=True)
+    # Commands are fixed internal argv lists built by this recovery verifier; shell=False.
+    subprocess.run(command, check=True, text=True)  # noqa: S603
 
 
 def _seed_source(session: Session) -> None:

@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-041 — RC6.2 clean MinIO backup and restore evidence](runs/RUN-20260806-041.md) — `CI_VALIDATION_PENDING`: isolated source/target MinIO recovery, object digest and provenance verification, retained evidence and release-blocking gate are committed
 - [RUN-20260806-040 — RC6.1 clean PostgreSQL backup and restore evidence](runs/RUN-20260806-040.md) — `PASS`: Quality Gate #229 succeeded on exact head `d1d0e809ffcee6458cb8a8f31ad2d10d481fefb0`; clean-target restore and integrity evidence retained; PR #22 merged
 - [RUN-20260806-039 — RC5.12 storage-layer retention enforcement](runs/RUN-20260806-039.md) — `PASS`: Quality Gate #224 succeeded and PR #21 merged
 - [RUN-20260806-038 — RC5.11 privacy minimization and retention controls](runs/RUN-20260806-038.md) — `PASS`: Quality Gate #221 succeeded and PR #19 merged
@@ -20,25 +21,17 @@ This file is the chronological audit record for continuous development runs. Det
 - [RUN-20260806-027 — Restore direct-call-safe principal resolution](runs/RUN-20260806-027.md) — superseded by successful Quality Gate #197
 - [RUN-20260806-026 — RC5.3 PyJWT type-contract remediation](runs/RUN-20260806-026.md) — superseded by successful Quality Gate #197
 - [RUN-20260806-025 — RC5.3 trusted principal token validation](runs/RUN-20260806-025.md) — `PASS`: exact-head Quality Gate #197 succeeded and PR #11 merged
-- [RUN-20260806-024 — RC5.2 least-privilege RBAC and separation of duties](runs/RUN-20260806-024.md) — `PASS`: Quality Gate #179 succeeded and PR #10 was merged into `main`
-- [RUN-20260806-023 — Restore clean RC5.1 delivery path](runs/RUN-20260806-023.md) — `PASS`: obsolete PRs closed; migration contract fixed; Quality Gate #177 succeeded and PR #9 was merged
-- [RUN-20260806-022 — Reversible canonical intelligence migration](runs/RUN-20260806-022.md) — `PASS`: data-preserving RC4-to-RC5 migration validated by exact-head upgrade/downgrade/re-upgrade evidence
-- [RUN-20260806-020 — Remediate pytest dependency advisory](runs/RUN-20260806-020.md) — `PASS`: pytest constrained to fixed version 9.0.3+ and later dependency audits succeeded
-- [RUN-20260806-019 — RC5.1 canonical intelligence model](runs/RUN-20260806-019.md) — `PASS`: canonical classifications and deterministic confidence scoring merged after Quality Gate #177
+- [RUN-20260806-024 — RC5.2 least-privilege RBAC and separation of duties](runs/RUN-20260806-024.md) — `PASS`: Quality Gate #179 succeeded and PR #10 merged
+- [RUN-20260806-023 — Restore clean RC5.1 delivery path](runs/RUN-20260806-023.md) — `PASS`: Quality Gate #177 succeeded and PR #9 merged
+- [RUN-20260806-022 — Reversible canonical intelligence migration](runs/RUN-20260806-022.md) — `PASS`
+- [RUN-20260806-020 — Remediate pytest dependency advisory](runs/RUN-20260806-020.md) — `PASS`
+- [RUN-20260806-019 — RC5.1 canonical intelligence model](runs/RUN-20260806-019.md) — `PASS`
 - [RUN-20260806-013 — Restore observable GitHub Actions execution](runs/RUN-20260806-013.md) — `PASS`
 
-## Entry template
+## Current decision
 
-```markdown
-## RUN-YYYYMMDD-NNN — Title
+`RUN-20260806-041` remains `CI_VALIDATION_PENDING` until an exact-head Quality Gate executes the MinIO backup, clean-target restore, digest comparison and provenance-reference verification successfully.
 
-- **Started:** timestamp and timezone
-- **Workstream:** selected workstream
-- **Objective:** bounded objective
-- **Changes:** files, commits, issues or configuration
-- **Validation:** tests and actual outcomes
-- **CI evidence:** workflow/status details or `PENDING`
-- **Known blockers:** concrete blockers
-- **Next action:** one concrete next step
-- **Release gate:** `PASS`, `BLOCKED` or `NO-CHANGE`
-```
+## Exactly one next priority
+
+Inspect the exact-head RC6.2 Quality Gate and remediate only its earliest deterministic failure, or merge after complete success.

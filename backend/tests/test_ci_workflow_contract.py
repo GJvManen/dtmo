@@ -95,7 +95,10 @@ def test_dependency_audit_is_portable_fail_closed_and_observable() -> None:
     assert "AUDIT_EXIT_CODE=$?" in commands
     assert "python -m json.tool artifacts/pip-audit.json" in commands
     assert "python -m pip_audit || true" in commands
-    assert 'exit "$AUDIT_EXIT_CODE"' in commands
+    assert (
+        'exit "$AUDIT_EXIT_CODE"' in commands
+        or 'test "$AUDIT_EXIT_CODE" -eq 0' in commands
+    )
     assert "test -s artifacts/pip-audit.json" in commands
     upload = _artifact_upload_steps(dependency_job)[0]
     upload_with = upload.get("with")
