@@ -1,0 +1,109 @@
+name: RC4 Quality Gate Diagnostics
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/rc4-diagnostics.yml"
+      - ".github/workflows/ci.yml"
+      - "pyproject.toml"
+      - "Dockerfile"
+      - "backend/**"
+      - "database/**"
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Capture environment
+        run: |
+          mkdir -p artifacts
+          {
+            pwd
+            python --version
+            python -m pip --version
+            find . -maxdepth 3 -type f | sort
+          } 2>&1 | tee artifacts/00-environment.log
+      - name: Capture installation
+        id: install
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m pip install --upgrade pip 2>&1 | tee artifacts/01-pip-upgrade.log
+          python -m pip install -e '.[test]' 2>&1 | tee artifacts/02-install.log
+      - name: Capture imports
+        id: imports
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python - <<'PY' 2>&1 | tee artifacts/03-imports.log
+          import dtmo
+          import dtmo.main
+          print("dtmo import OK")
+          PY
+      - name: Capture workflow contract collection
+        id: contract
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m pytest backend/tests/test_ci_workflow_contract.py --collect-only -vv 2>&1 | tee artifacts/04-contract-collect.log
+          python -m pytest backend/tests/test_ci_workflow_contract.py -vv --tb=long 2>&1 | tee artifacts/05-contract-run.log
+      - name: Capture full test collection
+        id: tests
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m pytest --collect-only -vv 2>&1 | tee artifacts/06-full-collect.log
+      - name: Capture migration diagnostics
+        id: migrations
+        continue-on-error: true
+        env:
+          DTMO_ENVIRONMENT: test
+          DTMO_DATABASE_URL: postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo
+        run: |
+          set -o pipefail
+          python -m alembic --help 2>&1 | tee artifacts/07-alembic-help.log
+          python -m alembic history 2>&1 | tee artifacts/08-alembic-history.log
+      - name: Capture container build
+        id: container
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          docker build --no-cache --progress=plain -t dtmo:diagnostics . 2>&1 | tee artifacts/09-container-build.log
+      - name: Write diagnostic summary
+        if: always()
+        run: |
+          {
+            echo "install=${{ steps.install.outcome }}"
+            echo "imports=${{ steps.imports.outcome }}"
+            echo "contract=${{ steps.contract.outcome }}"
+            echo "tests=${{ steps.tests.outcome }}"
+            echo "migrations=${{ steps.migrations.outcome }}"
+            echo "container=${{ steps.container.outcome }}"
+          } | tee artifacts/10-summary.log
+          cat artifacts/10-summary.log >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rc4-quality-gate-diagnostics
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Fail when any diagnostic phase failed
+        if: always()
+        run: |
+          test "${{ steps.install.outcome }}" = success
+          test "${{ steps.imports.outcome }}" = success
+          test "${{ steps.contract.outcome }}" = success
+          test "${{ steps.tests.outcome }}" = success
+          test "${{ steps.migrations.outcome }}" = success
+          test "${{ steps.container.outcome }}" = success
