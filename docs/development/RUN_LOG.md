@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-018 — Restore a mergeable lint-validation probe](runs/RUN-20260806-018.md) — `BLOCKED`: PR #7 became non-mergeable with no replacement workflow run; fresh current-main branch created with the bounded Ruff policy alignment, CI execution pending
 - [RUN-20260806-013 — Restore observable GitHub Actions execution](runs/RUN-20260806-013.md) — `PASS` for basic Actions execution: operator-confirmed `GitHub Actions Canary #5` completed green; full `RC4 Quality Gate` remains required
 - [RUN-20260806-012 — GitHub Actions execution canary](runs/RUN-20260806-012.md) — `BLOCKED`: dependency-free canary committed to `main`; no observable CI status, indicating a repository/account Actions policy or integration visibility blocker
 - [RUN-20260806-011 — Aggregate CI release gate](runs/RUN-20260806-011.md) — `BLOCKED`: fail-closed aggregate decision and regression protection committed; observable execution evidence remains absent
