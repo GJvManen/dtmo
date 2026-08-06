@@ -1,0 +1,26 @@
+name: GitHub Actions Canary
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/actions-canary.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    name: actions-canary
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Emit execution evidence
+        run: |
+          set -euo pipefail
+          echo "repository=${GITHUB_REPOSITORY}"
+          echo "sha=${GITHUB_SHA}"
+          echo "run_id=${GITHUB_RUN_ID}"
+          echo "event=${GITHUB_EVENT_NAME}"
