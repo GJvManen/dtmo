@@ -11,13 +11,25 @@ from dtmo.config import Settings, get_settings
 
 class MinioObjectStore:
     def __init__(self, settings: Settings | None = None) -> None:
-        cfg = settings or get_settings()
-        self.client = Minio(
-            cfg.minio_endpoint,
-            access_key=cfg.minio_access_key,
-            secret_key=cfg.minio_secret_key.get_secret_value(),
-            secure=cfg.minio_secure,
-        )
+        self.settings = settings or get_settings()
+        self._client: Minio | None = None
+
+    @property
+    def client(self) -> Minio:
+        """Create the MinIO client only when object storage is actually used.
+
+        Application import, health checks and unit-test collection must not require
+        object-storage credentials or a reachable MinIO service. Production
+        configuration validation remains enforced by ``Settings``.
+        """
+        if self._client is None:
+            self._client = Minio(
+                self.settings.minio_endpoint,
+                access_key=self.settings.minio_access_key,
+                secret_key=self.settings.minio_secret_key.get_secret_value(),
+                secure=self.settings.minio_secure,
+            )
+        return self._client
 
     async def ensure_bucket(self, bucket: str) -> None:
         def create() -> None:
@@ -61,5 +73,5 @@ class MinioObjectStore:
         try:
             await asyncio.to_thread(lambda: list(self.client.list_buckets()))
             return True
-        except (S3Error, OSError):
+        except (S3Error, OSError, ValueError):
             return False
