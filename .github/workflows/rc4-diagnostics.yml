@@ -30,7 +30,6 @@ jobs:
             pwd
             python --version
             python -m pip --version
-            python -m pip debug --verbose
             find . -maxdepth 3 -type f | sort
           } 2>&1 | tee artifacts/00-environment.log
       - name: Capture installation
@@ -39,17 +38,7 @@ jobs:
         run: |
           set -o pipefail
           python -m pip install --upgrade pip setuptools wheel 2>&1 | tee artifacts/01-pip-upgrade.log
-          python -m pip install -vvv -e '.[test]' 2>&1 | tee artifacts/02-install.log
-      - name: Publish installation failure
-        if: always()
-        run: |
-          {
-            echo "## Installation diagnostics"
-            echo '```text'
-            tail -n 200 artifacts/02-install.log 2>/dev/null || true
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-          tail -n 200 artifacts/02-install.log 2>/dev/null || true
+          python -m pip install -e '.[test]' 2>&1 | tee artifacts/02-install.log
       - name: Capture imports
         id: imports
         continue-on-error: true
@@ -60,19 +49,30 @@ jobs:
           import dtmo.main
           print("dtmo import OK")
           PY
-      - name: Capture workflow contract collection
+      - name: Capture workflow contract
         id: contract
         continue-on-error: true
         run: |
           set -o pipefail
-          python -m pytest backend/tests/test_ci_workflow_contract.py --collect-only -vv 2>&1 | tee artifacts/04-contract-collect.log
-          python -m pytest backend/tests/test_ci_workflow_contract.py -vv --tb=long 2>&1 | tee artifacts/05-contract-run.log
-      - name: Capture full test collection
-        id: tests
+          python -m pytest backend/tests/test_ci_workflow_contract.py -vv --tb=long 2>&1 | tee artifacts/04-contract.log
+      - name: Capture Ruff
+        id: ruff
         continue-on-error: true
         run: |
           set -o pipefail
-          python -m pytest --collect-only -vv 2>&1 | tee artifacts/06-full-collect.log
+          python -m ruff check backend database 2>&1 | tee artifacts/05-ruff.log
+      - name: Capture MyPy
+        id: mypy
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m mypy backend/dtmo 2>&1 | tee artifacts/06-mypy.log
+      - name: Capture Pytest with coverage
+        id: pytest
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m pytest --cov=dtmo --cov-report=term-missing --cov-fail-under=80 -vv --tb=long 2>&1 | tee artifacts/07-pytest.log
       - name: Capture migration diagnostics
         id: migrations
         continue-on-error: true
@@ -81,7 +81,6 @@ jobs:
           DTMO_DATABASE_URL: postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo
         run: |
           set -o pipefail
-          python -m alembic --help 2>&1 | tee artifacts/07-alembic-help.log
           python -m alembic history 2>&1 | tee artifacts/08-alembic-history.log
       - name: Capture container build
         id: container
@@ -89,16 +88,19 @@ jobs:
         run: |
           set -o pipefail
           docker build --no-cache --progress=plain -t dtmo:diagnostics . 2>&1 | tee artifacts/09-container-build.log
-      - name: Publish container failure
+      - name: Publish failing test diagnostics
         if: always()
         run: |
-          {
-            echo "## Container diagnostics"
-            echo '```text'
-            tail -n 200 artifacts/09-container-build.log 2>/dev/null || true
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
-          tail -n 200 artifacts/09-container-build.log 2>/dev/null || true
+          for entry in "Ruff:artifacts/05-ruff.log" "MyPy:artifacts/06-mypy.log" "Pytest:artifacts/07-pytest.log"; do
+            title="${entry%%:*}"
+            file="${entry#*:}"
+            {
+              echo "## ${title} diagnostics"
+              echo '```text'
+              tail -n 200 "$file" 2>/dev/null || true
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          done
       - name: Write diagnostic summary
         if: always()
         run: |
@@ -106,7 +108,9 @@ jobs:
             echo "install=${{ steps.install.outcome }}"
             echo "imports=${{ steps.imports.outcome }}"
             echo "contract=${{ steps.contract.outcome }}"
-            echo "tests=${{ steps.tests.outcome }}"
+            echo "ruff=${{ steps.ruff.outcome }}"
+            echo "mypy=${{ steps.mypy.outcome }}"
+            echo "pytest=${{ steps.pytest.outcome }}"
             echo "migrations=${{ steps.migrations.outcome }}"
             echo "container=${{ steps.container.outcome }}"
           } | tee artifacts/10-summary.log
@@ -125,6 +129,8 @@ jobs:
           test "${{ steps.install.outcome }}" = success
           test "${{ steps.imports.outcome }}" = success
           test "${{ steps.contract.outcome }}" = success
-          test "${{ steps.tests.outcome }}" = success
+          test "${{ steps.ruff.outcome }}" = success
+          test "${{ steps.mypy.outcome }}" = success
+          test "${{ steps.pytest.outcome }}" = success
           test "${{ steps.migrations.outcome }}" = success
           test "${{ steps.container.outcome }}" = success
