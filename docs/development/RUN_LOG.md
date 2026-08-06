@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-016 — Repair CI packaging TOML parse failure](runs/RUN-20260806-016.md) — `BLOCKED`: actual run `31082165346` exposed the earliest shared TOML parse failure; minimal fix committed, replacement execution pending
 - [RUN-20260806-015 — Fresh-base pull-request CI probe](runs/RUN-20260806-015.md) — `BLOCKED`: clean current-main branch prepared to remove PR-conflict ambiguity; actual workflow execution evidence remains pending
 - [RUN-20260806-011 — Aggregate CI release gate](runs/RUN-20260806-011.md) — `BLOCKED`: fail-closed aggregate decision and regression protection committed; observable execution evidence remains absent
 - [RUN-20260806-010 — Repository-side CI execution readiness preflight](runs/RUN-20260806-010.md) — `BLOCKED`: deterministic preflight and negative tests committed; actual GitHub Actions execution evidence remains absent
