@@ -142,3 +142,85 @@ jobs:
       - uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
+
+  release-gate:
+    if: always()
+    needs:
+      - workflow-contracts
+      - test
+      - migrations
+      - container
+      - dependency-review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate all release-critical jobs
+        env:
+          WORKFLOW_CONTRACTS: ${{ needs.workflow-contracts.result }}
+          TESTS: ${{ needs.test.result }}
+          MIGRATIONS: ${{ needs.migrations.result }}
+          CONTAINER: ${{ needs.container.result }}
+          DEPENDENCY_REVIEW: ${{ needs.dependency-review.result }}
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          results = {
+              "workflow-contracts": os.environ["WORKFLOW_CONTRACTS"],
+              "test": os.environ["TESTS"],
+              "migrations": os.environ["MIGRATIONS"],
+              "container": os.environ["CONTAINER"],
+              "dependency-review": os.environ["DEPENDENCY_REVIEW"],
+          }
+          required = {"workflow-contracts", "test", "migrations", "container"}
+          failures = [name for name in required if results[name] != "success"]
+          dependency_result = results["dependency-review"]
+          if dependency_result not in {"success", "skipped"}:
+              failures.append("dependency-review")
+
+          evidence = {
+              "schema_version": 1,
+              "workflow": "RC4 Quality Gate",
+              "gate": "release-gate",
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "head_sha": os.environ["GITHUB_SHA"].lower(),
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "event_name": os.environ["GITHUB_EVENT_NAME"],
+              "job_results": results,
+              "decision": "pass" if not failures else "blocked",
+              "blocking_jobs": failures,
+              "run_url": (
+                  f"https://github.com/{os.environ['GITHUB_REPOSITORY']}"
+                  f"/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+              ),
+          }
+          Path("artifacts/release-gate-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(evidence, indent=2, sort_keys=True))
+          if failures:
+              raise SystemExit(f"Release blocked by: {', '.join(failures)}")
+          PY
+      - name: Publish release gate summary
+        if: always()
+        run: |
+          {
+            echo "## RC4 aggregate release gate"
+            echo "- Workflow contracts: ${{ needs.workflow-contracts.result }}"
+            echo "- Tests: ${{ needs.test.result }}"
+            echo "- Migrations: ${{ needs.migrations.result }}"
+            echo "- Container: ${{ needs.container.result }}"
+            echo "- Dependency review: ${{ needs.dependency-review.result }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload aggregate release evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-evidence
+          path: artifacts/release-gate-evidence.json
+          if-no-files-found: error
+          retention-days: 30
