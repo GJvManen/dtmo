@@ -58,6 +58,30 @@ def test_failures_are_persisted_and_isolate_only_the_failing_connector() -> None
         assert len(store.health_history("cisa-kev")) == 3
 
 
+def test_naive_persisted_isolation_timestamp_is_compared_as_utc() -> None:
+    with _session() as session:
+        session.add(
+            ConnectorRuntimeState(
+                connector_id="cisa-kev",
+                consecutive_failures=3,
+                circuit_open_until=datetime(2026, 8, 6, 15, 15),
+                health_status="isolated",
+                updated_at=datetime(2026, 8, 6, 15, 0),
+            )
+        )
+        session.commit()
+
+        store = ConnectorStateStore(session)
+        assert store.is_isolated(
+            "cisa-kev",
+            now=datetime(2026, 8, 6, 15, 5, tzinfo=UTC),
+        )
+        assert not store.is_isolated(
+            "cisa-kev",
+            now=datetime(2026, 8, 6, 15, 16, tzinfo=UTC),
+        )
+
+
 def test_quarantine_recovery_requires_human_review_and_never_publishes() -> None:
     with _session() as session:
         store = ConnectorStateStore(session)
