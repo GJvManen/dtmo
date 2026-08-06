@@ -15,17 +15,14 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 | Data integrity | Provenance, confidence, constraints and migrations are verified |
 | Privacy | Direct identifiers, purpose limitation, retention and legal holds are verified |
 | Recovery | Clean targets restore or reconstruct successfully with integrity and timing evidence |
-| Connector reliability | Live canary, provenance, licensing, timeout, rate limiting, bounded retries and quarantine are evidenced |
+| Connector reliability | Live canary, persistent state, health history, isolation, provenance and quarantine recovery are evidenced |
 | Release | All release-critical jobs and retained evidence artifacts succeed |
 
 ## Completed exact-head gates
 
 - RC5.1 #177 through RC5.12 #224: `PASS`
-- RC6.1 #229: `PASS`
-- RC6.2 #243: `PASS`
-- RC6.3 OpenSearch Gate #5 and Quality Gate #253: `PASS`
-- RC6.4 Multi-store Gate #4, Quality Gate #262 and OpenSearch Gate #14: `PASS`
-- RC7.1 Canary Gate #3, Quality Gate #270, OpenSearch Gate #22 and Multi-store Gate #12: `PASS`
+- RC6.1 #229 through RC6.4 Multi-store Gate #4: `PASS`
+- RC7.1 Canary Gate #3 and Quality Gate #270: `PASS`
 
 ## Phase status
 
@@ -35,35 +32,40 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 
 ## RC7.1 governed live connector canary — `PASS`
 
-Exact head `c82e20c110354c1163b58ac8b9820756f829a4ae` passed all required gates. Evidenced controls include HTTPS-only CISA KEV ingestion, licence and terms metadata, timeout, maximum three attempts, bounded exponential backoff, minimum request interval, disabled redirects, provenance retention, deduplication, quarantine of malformed/duplicate/overflow records, bounded record volume and `publish_approved: false`.
+Exact head `c82e20c110354c1163b58ac8b9820756f829a4ae` passed required gates with retained canary evidence artifact `8973407243`.
 
-Retained artifacts:
+## RC7.2 persistent connector state and failure isolation — `CI_VALIDATION_PENDING`
 
-- `live-connector-canary-evidence` — `8973407243`, digest `sha256:437b09bf13746fecf4e929921e1a63ac74bdbba1f1ecb08e0d04b99f763a3f53`;
-- `release-gate-evidence` — `8973424158`;
-- `postgres-restore-evidence` — `8973421161`;
-- `dependency-audit-evidence` — `8973411040`;
-- `minio-restore-evidence` — `8973409186`;
-- `workflow-contract-evidence` — `8973408182`.
+Committed controls:
 
-PR #28 merged as `aeeb0709a26ecb1f20620d7ac21f823fec35e98f`.
+- PostgreSQL-backed runtime state per connector;
+- durable health events bound to unique connector/run identifiers;
+- connector-scoped isolation after a bounded consecutive-failure threshold;
+- successful runs reset failure state and close isolation;
+- quarantined raw evidence retains SHA-256 and reason;
+- quarantine recovery requires a named human reviewer and review reference;
+- recovery may only become `released_to_candidate` or `rejected`;
+- health and quarantine records are database-constrained to `publish_approved = false`;
+- migration `0005_connector_state` is reversible;
+- `RC7 Connector State Gate` executes migration, persistence and recovery verification on PostgreSQL 17;
+- retained evidence upload uses `if-no-files-found: error`;
+- a separate `always()` gate fails closed unless connector-state evidence succeeds.
 
-One successful canary does not yet prove persistent run-state, long-term source health, failure isolation across runs or broader approved connector coverage.
+No exact-head execution has completed successfully, so RC7.2 is not accepted as `PASS`.
 
 ## Security, privacy and publication invariants
 
 - ingestion creates candidate intelligence only;
-- reviewed and share-approved states remain distinct;
 - publication requires explicit human approval by a principal different from the reviewer;
 - service accounts and connectors may not review or approve sharing;
-- live connector success never implies publication approval;
+- connector success, isolation recovery or quarantine release never implies publication approval;
 - provenance and confidence may not be silently discarded;
 - missing CI, recovery or connector evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260806-044` is `PASS`.
+`RUN-20260806-045` is `CI_VALIDATION_PENDING` until the exact-head Quality Gate and RC7 Connector State Gate succeed and retain evidence.
 
 ## Exactly one next priority
 
-RC7.2 — persistent connector-run state, source-health history and failure isolation with quarantined recovery and no automatic publication.
+Inspect the exact-head RC7 Connector State Gate and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
