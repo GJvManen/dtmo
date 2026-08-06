@@ -68,7 +68,7 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 11. a repository-side execution-readiness preflight must distinguish configuration readiness from actual workflow execution and must mark its own report as non-gate-eligible;
 12. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-015`:
+Current state after `RUN-20260806-016`:
 
 - structural workflow contract: implemented;
 - dedicated observable contract job: implemented;
@@ -84,8 +84,11 @@ Current state after `RUN-20260806-015`:
 - preflight positive and negative tests: implemented, execution `PENDING`;
 - preflight output release-gate eligibility: explicitly `false`;
 - historical quality-gate run `31075045431`: executed but `failure`, not gate-eligible;
-- existing PR #5: non-mergeable; latest exact head returned zero PR workflow runs;
-- clean current-main CI probe: opened by `RUN-20260806-015`, execution evidence `PENDING`;
+- PR #7 quality-gate run `31082165346`: executed but `failure`, not gate-eligible;
+- earliest shared failure in run `31082165346`: `pyproject.toml` TOML parse error during dependency installation;
+- minimal TOML literal-string repair: committed as `8087033ba2ec1864b41e7fdd30fb7357344a5416`;
+- lint, type checks, tests and migrations for run `31082165346`: skipped and therefore not passed;
+- replacement quality-gate execution for the repaired head: `PENDING`;
 - successful quality-gate execution evidence: `PENDING`;
 - successful observer execution evidence: `PENDING`;
 - matching artifacts for one head SHA and run ID: `PENDING`;
