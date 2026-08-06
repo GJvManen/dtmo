@@ -169,11 +169,18 @@ def test_release_jobs_preserve_blocking_commands_and_services() -> None:
     assert "curl -fsS http://127.0.0.1:8000/health" in container_commands
 
     dependency_review = jobs["dependency-review"]
-    assert dependency_review.get("if") == "github.event_name == 'pull_request'"
-    review_steps = _steps(dependency_review)
-    review = next(
-        step for step in review_steps if step.get("uses") == "actions/dependency-review-action@v4"
+    assert "if" not in dependency_review
+    audit_commands = _combined_run(dependency_review)
+    assert "pip-audit --format=json" in audit_commands
+    assert "artifacts/pip-audit.json" in audit_commands
+    upload = next(
+        step
+        for step in _steps(dependency_review)
+        if step.get("uses") == "actions/upload-artifact@v4"
     )
-    review_with = review.get("with")
-    assert isinstance(review_with, dict)
-    assert review_with.get("fail-on-severity") == "high"
+    upload_with = upload.get("with")
+    assert isinstance(upload_with, dict)
+    assert upload_with.get("name") == "dependency-audit-evidence"
+    assert upload_with.get("path") == "artifacts/pip-audit.json"
+    assert upload_with.get("if-no-files-found") == "error"
+    assert upload.get("if") == "always()"
