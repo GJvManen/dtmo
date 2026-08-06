@@ -86,22 +86,26 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 2. the workflow contract runs as a dedicated job;
 3. the job produces machine-readable evidence, currently JUnit XML;
 4. the evidence is retained as the named `workflow-contract-evidence` artifact;
-5. the workflow run, jobs, result and artifact are independently observable for the same commit;
-6. absent, skipped, cancelled or failed execution may not be interpreted as success.
+5. a separate observer control records completion, conclusion, head SHA, run ID and URL;
+6. observer evidence is retained as the named `ci-observation-evidence` artifact;
+7. both the quality-gate run and observer result are independently observable for the same commit;
+8. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-005`:
+Current state after `RUN-20260806-006`:
 
 - structural workflow contract: implemented;
-- dedicated observable job: implemented;
-- retained artifact design: implemented;
-- latest inspected `main` commit: `5dcf45a38551e03d8ef8171e498048bfa3f6192e`;
-- combined status contexts observed for that commit: `0`;
-- successful workflow execution evidence: `PENDING`;
-- independently observable artifact: `PENDING`;
+- dedicated observable contract job: implemented;
+- retained workflow-contract artifact design: implemented;
+- independent observer workflow: implemented;
+- observer regression protection: implemented;
+- observer permissions: structurally limited to `actions: read` and `contents: read`;
+- successful quality-gate execution evidence: `PENDING`;
+- successful observer execution evidence: `PENDING`;
+- matching artifacts for one head SHA: `PENDING`;
 - likely external control to verify: repository Actions permissions and workflow enablement;
 - Phase 1 completion: `BLOCKED`.
 
-Phase 1 may only advance after an administrator permits/validates Actions execution and a manually or automatically triggered `RC4 Quality Gate` run exposes its run ID, job results and `workflow-contract-evidence` artifact for one commit.
+Phase 1 may only advance after an administrator permits or validates Actions execution and one completed `RC4 Quality Gate` run exposes its run ID, job results and `workflow-contract-evidence` artifact, followed by a matching `RC4 CI Observer` run with `ci-observation-evidence` for the same head SHA.
 
 ## Security and publication invariants
 
