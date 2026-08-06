@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import StrEnum
-from typing import Any
 
 import jwt
+from jwt.types import Options
 
 from .policy import Principal, Role
 
@@ -41,7 +41,7 @@ def decode_principal_token(
     if not token or not secret:
         raise TokenValidationError("token authentication is not configured")
 
-    options: dict[str, Any] = {
+    options: Options = {
         "require": ["sub", "roles", "principal_type", "jti", "iss", "aud", "iat", "nbf", "exp"],
     }
     try:
