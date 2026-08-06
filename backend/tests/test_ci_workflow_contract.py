@@ -151,11 +151,25 @@ def test_ci_observer_preserves_independent_execution_evidence() -> None:
 def test_release_jobs_preserve_blocking_commands_and_services() -> None:
     jobs = _load_workflow()["jobs"]
 
-    test_commands = _combined_run(jobs["test"])
+    test_job = jobs["test"]
+    test_commands = _combined_run(test_job)
     assert "ruff check backend database" in test_commands
     assert "mypy backend/dtmo" in test_commands
-    assert "pytest --cov=dtmo" in test_commands
+    assert "pytest" in test_commands
+    assert "--cov=dtmo" in test_commands
+    assert "--cov-report=xml:artifacts/coverage.xml" in test_commands
     assert "--cov-fail-under=80" in test_commands
+    assert "--junitxml=artifacts/tests.xml" in test_commands
+    test_upload = next(
+        step for step in _steps(test_job) if step.get("uses") == "actions/upload-artifact@v4"
+    )
+    test_upload_with = test_upload.get("with")
+    assert isinstance(test_upload_with, dict)
+    assert test_upload_with.get("name") == "test-evidence"
+    test_upload_path = str(test_upload_with.get("path", ""))
+    assert "artifacts/tests.xml" in test_upload_path
+    assert "artifacts/coverage.xml" in test_upload_path
+    assert test_upload.get("if") == "always()"
 
     migrations = jobs["migrations"]
     assert isinstance(migrations.get("services"), dict)
@@ -166,7 +180,12 @@ def test_release_jobs_preserve_blocking_commands_and_services() -> None:
 
     container_commands = _combined_run(jobs["container"])
     assert "docker build -t dtmo:rc4 ." in container_commands
+    assert "set -euo pipefail" in container_commands
+    assert "docker logs dtmo" in container_commands
+    assert "docker rm -f dtmo" in container_commands
     assert "curl -fsS http://127.0.0.1:8000/health" in container_commands
+    assert "curl -fsS http://127.0.0.1:8000/openapi.json" in container_commands
+    assert "human-approval-required" in container_commands
 
     dependency_review = jobs["dependency-review"]
     assert "if" not in dependency_review
