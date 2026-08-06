@@ -68,7 +68,7 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 11. a repository-side execution-readiness preflight must distinguish configuration readiness from actual workflow execution and must mark its own report as non-gate-eligible;
 12. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-011`:
+Current state after `RUN-20260806-012`:
 
 - structural workflow contract: implemented;
 - dedicated observable contract job: implemented;
@@ -83,12 +83,14 @@ Current state after `RUN-20260806-011`:
 - repository-side execution-readiness preflight: implemented;
 - preflight positive and negative tests: implemented, execution `PENDING`;
 - preflight output release-gate eligibility: explicitly `false`;
-- controlled pull-request execution probe: created on branch `pdca/run-20260806-011-ci-trigger`;
-- pull-request-triggered quality-gate execution: `PENDING` until independently visible;
+- controlled pull-request execution probe: active on branch `pdca/run-20260806-011-ci-trigger`;
+- pull-request-triggered quality-gate execution: observed as run `31075045431`, conclusion `failure`;
+- confirmed first failure: invalid TOML in `pyproject.toml` blocked all Python installation steps;
+- TOML parsing defect: corrected in commit `72170c9b1b51ab04c0e43d08b48b2bfb38bcf219`;
+- post-fix quality-gate execution: `PENDING`;
 - successful quality-gate execution evidence: `PENDING`;
 - successful observer execution evidence: `PENDING`;
 - matching artifacts for one head SHA and run ID: `PENDING`;
-- external control if the probe produces no run: repository Actions permissions and workflow enablement;
 - Phase 1 completion: `BLOCKED`.
 
 Phase 1 may only advance after one completed `RC4 Quality Gate` run exposes its run ID, job results and a `workflow-contract-evidence` artifact containing both XML and JSON, followed by a matching `RC4 CI Observer` run for the same head SHA, and the downloaded pair passes `tools/verify_ci_evidence.py`.
