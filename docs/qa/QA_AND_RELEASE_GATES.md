@@ -25,28 +25,29 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 - RC5.6 Quality Gate #207: `PASS`.
 - RC5.7 Quality Gate #209: `PASS`.
 - RC5.8 Quality Gate #215: `PASS`.
+- RC5.9 Quality Gate #217: `PASS`.
 - Every new branch still requires its own exact-head execution.
 
 ## Phase 2 — Application security and identity
 
-Current state after `RUN-20260806-036`:
+Current state after `RUN-20260806-037`:
 
-- least-privilege RBAC, trusted principals, JWKS rotation, token-state enforcement and governed decision auditing are evidenced;
-- only CISO and administrator roles receive `revoke:tokens`;
-- the revocation API requires a JTI, future expiry, human rationale and request correlation;
-- successful revocation writes expiry-bounded Redis state and appends an immutable allow event with reason provenance;
-- permission denials append principal, permission, route and correlation evidence before returning 403;
-- inability to persist denial evidence remains fail closed and returns 503 rather than allowing access;
-- service accounts receive no revocation permission;
-- focused revocation and denial-audit regressions are committed;
-- exact-head RC5.9 CI evidence remains `PENDING`;
-- cross-system revocation/audit reconciliation is recorded as a future resilience objective;
-- Phase 2 completion remains `BLOCKED` until RC5.9 and remaining privacy controls are evidenced.
+- least-privilege RBAC, trusted principals, JWKS rotation, token-state enforcement, operational revocation and denial auditing are evidenced;
+- RC5.10 records revocation expiry and rationale in versioned canonical JSON within the append-only audit event;
+- reconciliation verifies the full persistent audit chain before using durable revocation evidence;
+- missing active Redis revocation markers are restored with their original expiry boundary;
+- existing markers are left unchanged and expired revocations are not recreated;
+- malformed, incomplete or tampered durable evidence stops reconciliation rather than silently accepting drift;
+- Redis inspection failures remain `TokenStateError` and therefore fail closed;
+- focused restoration, idempotence, expiry and tamper regressions are committed;
+- exact-head RC5.10 CI evidence remains `PENDING`;
+- Phase 2 completion remains `BLOCKED` until RC5.10 and remaining privacy controls are evidenced.
 
 ## Phase 3 — Data integrity and recovery
 
 - canonical and persistent-audit migrations are evidenced;
-- clean-environment restoration, RPO and RTO evidence are not yet implemented;
+- RC5.10 adds deterministic recovery for volatile token-revocation state from integrity-verified durable evidence;
+- clean-environment database/object restoration, RPO and RTO evidence are not yet implemented;
 - Phase 3 completion: `BLOCKED`.
 
 ## Security and publication invariants
@@ -59,12 +60,13 @@ Current state after `RUN-20260806-036`:
 - production secrets may not be committed;
 - production token-state failure must deny authentication;
 - authorization-denial audit failure must never permit access;
+- revocation recovery must never proceed from an invalid audit chain;
 - missing CI or scan evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260806-036` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
+`RUN-20260806-037` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC5.9 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
+Inspect the exact-head RC5.10 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
