@@ -31,6 +31,7 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 - RC5.10 Quality Gate #219: `PASS`.
 - RC5.11 Quality Gate #221: `PASS`.
 - RC5.12 Quality Gate #224: `PASS`.
+- RC6.1 Quality Gate #229: `PASS`.
 - Every new branch still requires its own exact-head execution.
 
 ## Phase 2 — Application security, identity and privacy
@@ -48,15 +49,16 @@ Current state after `RUN-20260806-040`:
 
 - canonical, append-only audit and privacy-projection migrations are evidenced;
 - volatile token-revocation state can be reconciled from integrity-verified durable evidence;
-- RC6.1 adds a clean-target PostgreSQL logical backup and restoration gate;
+- RC6.1 clean-target PostgreSQL logical backup and restoration is evidenced by Quality Gate #229 on exact head `d1d0e809ffcee6458cb8a8f31ad2d10d481fefb0`;
 - a controlled source fixture contains canonical intelligence, authoritative provenance, review/share state and governed audit events;
-- source and restored databases are compared through deterministic manifests covering intelligence, provenance, audit records and Alembic revision state;
-- the restored audit chain must cryptographically verify and retain the same tail hash;
-- provenance content hashes and canonical row counts must match exactly;
-- the custom-format backup receives a SHA-256 digest and is retained with machine-readable recovery evidence;
-- measured restore duration and a quiesced-snapshot zero-second RPO basis are recorded;
+- source and restored databases matched through deterministic manifests covering intelligence, provenance, audit records and Alembic revision state;
+- the restored audit chain cryptographically verified and retained the same tail hash;
+- provenance content hashes and canonical row counts matched exactly;
+- the custom-format backup received a SHA-256 digest and was retained with machine-readable recovery evidence;
+- measured restore duration and a quiesced-snapshot zero-second RPO basis were recorded;
 - the `postgres-restore` job is included in the fail-closed aggregate release gate;
-- exact-head RC6.1 CI and recovery evidence remain `PENDING`;
+- retained artifacts: `postgres-restore-evidence` 8969397478, `release-gate-evidence` 8969403121, `workflow-contract-evidence` 8969379199 and `dependency-audit-evidence` 8969379447;
+- PR #22 merged to `main` as `3441e5be486fd9bcca8ab1d8f531ca8e5d38958b`;
 - MinIO object restoration, OpenSearch reconstruction and combined recovery objectives remain separate bounded runs;
 - Phase 3 completion: `BLOCKED`.
 
@@ -79,8 +81,8 @@ Current state after `RUN-20260806-040`:
 
 ## Current run decision
 
-`RUN-20260806-040` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate executes the clean-target backup and restore gate successfully.
+`RUN-20260806-040` is `PASS`. Quality Gate #229 and the clean-target PostgreSQL restore evidence succeeded on the exact PR head, and PR #22 is merged.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC6.1 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
+Implement clean-environment MinIO object backup and restore evidence with object digest and provenance-reference verification.
