@@ -11,12 +11,11 @@ VERIFIER = ROOT / "tools" / "verify_minio_backup_restore.py"
 
 
 def _workflow() -> dict[str, Any]:
-    # BaseLoader intentionally preserves GitHub Actions keys such as `on` as strings.
-    # The input is a trusted repository-controlled workflow file, not untrusted YAML.
-    loaded = yaml.load(  # noqa: S506
-        WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader
-    )
+    loaded = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
     assert isinstance(loaded, dict)
+    # PyYAML follows YAML 1.1 and may parse the GitHub Actions key `on` as True.
+    if True in loaded and "on" not in loaded:
+        loaded["on"] = loaded.pop(True)
     return loaded
 
 
