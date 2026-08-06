@@ -42,10 +42,10 @@ def _legacy_development_principal(
 
 def resolve_principal(
     settings: Annotated[Settings, Depends(get_settings)],
-    authorization: str = Header(default=""),
-    x_dtmo_subject: str = Header(default="anonymous"),
-    x_dtmo_roles: str = Header(default="executive"),
-    x_dtmo_api_key: str = Header(default=""),
+    authorization: Annotated[str, Header()] = "",
+    x_dtmo_subject: Annotated[str, Header()] = "anonymous",
+    x_dtmo_roles: Annotated[str, Header()] = "executive",
+    x_dtmo_api_key: Annotated[str, Header()] = "",
 ) -> Principal:
     scheme, _, credential = authorization.partition(" ")
     if authorization:
