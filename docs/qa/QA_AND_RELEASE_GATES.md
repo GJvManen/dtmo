@@ -32,6 +32,7 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 - RC5.11 #221: `PASS`
 - RC5.12 #224: `PASS`
 - RC6.1 #229: `PASS`
+- RC6.2 #243: `PASS`
 
 Every new branch still requires its own exact-head execution.
 
@@ -55,7 +56,7 @@ RC5.1 through RC5.12 are evidenced and merged. Least-privilege RBAC, trusted pri
 
 ### RC6.2 MinIO
 
-Committed controls:
+Quality Gate #243 succeeded on exact head `bd2fa4f16d09e924ae3aa0cfb40946aba1fc9084` (run ID `31110100789`). Evidence proves:
 
 - separate source and target MinIO instances;
 - verified-empty target bucket before restore;
@@ -64,15 +65,21 @@ Committed controls:
 - SHA-256 digest for backup and every object;
 - exact comparison of object name, size, content type, digest and provenance reference;
 - measured restore duration and explicit quiesced-fixture RPO basis;
-- retained `minio-restore-evidence` artifact;
-- release-critical `minio-restore` job included in the aggregate release gate;
-- workflow regression test protecting isolation, evidence and fail-closed release aggregation.
+- release-critical `minio-restore` job included in the aggregate gate.
 
-Exact-head GitHub Actions has not completed, so no MinIO recovery result is accepted yet.
+Retained artifacts:
 
-**RC6.2: `CI_VALIDATION_PENDING`.**
+- `minio-restore-evidence` — `8971294887`;
+- `postgres-restore-evidence` — `8971307002`;
+- `release-gate-evidence` — `8971313962`;
+- `dependency-audit-evidence` — `8971291122`;
+- `workflow-contract-evidence` — `8971287078`.
 
-Open Phase 3 objectives after RC6.2 are OpenSearch reconstruction and combined recovery acceptance. Phase 3 remains `BLOCKED` until all required recovery evidence exists.
+PR #24 merged to `main` as `2b623ada2d5dc2faa5d04414da719fe6b9ff6509`.
+
+**RC6.2: `PASS`.**
+
+Open Phase 3 objectives are OpenSearch reconstruction and combined multi-store recovery acceptance. Phase 3 remains `BLOCKED` until those required recovery controls are evidenced.
 
 ## Security, privacy and publication invariants
 
@@ -92,8 +99,8 @@ Open Phase 3 objectives after RC6.2 are OpenSearch reconstruction and combined r
 
 ## Current run decision
 
-`RUN-20260806-041` is `CI_VALIDATION_PENDING` until the exact branch-head Quality Gate successfully executes the isolated MinIO backup and clean-target restore and retains the expected evidence.
+`RUN-20260806-041` is `PASS`. Quality Gate #243 executed the isolated MinIO backup and clean-target restore successfully on the exact PR head, retained all required evidence and PR #24 is merged.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC6.2 Quality Gate and remediate only its earliest deterministic failure, or merge after complete success.
+Implement clean-environment OpenSearch reconstruction from canonical PostgreSQL and immutable MinIO evidence, with deterministic index-manifest verification.
