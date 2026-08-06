@@ -3,12 +3,18 @@ from __future__ import annotations
 import json
 from collections.abc import AsyncIterator
 from typing import Annotated
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal
+from dtmo.governance import (
+    GovernedDecisionError,
+    approve_intelligence_sharing,
+    review_intelligence,
+)
 from dtmo.lake.minio_store import MinioObjectStore
 from dtmo.lake.service import IntelligenceLake
 from dtmo.persistence.repository import IntelligenceRepository
@@ -110,6 +116,65 @@ async def ingest_intelligence(
         raw_sha256=receipt.sha256,
         indexed=indexed,
     )
+
+
+@router.post("/intelligence/{item_id}/review")
+async def review_intelligence_item(
+    item_id: UUID,
+    principal: Annotated[
+        Principal,
+        Depends(require_permission(Permission.REVIEW_INTELLIGENCE)),
+    ],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
+) -> dict[str, str | bool]:
+    try:
+        result = await session.run_sync(
+            lambda sync_session: review_intelligence(
+                sync_session,
+                item_id=item_id,
+                principal=principal,
+                request_id=request_id,
+            )
+        )
+    except GovernedDecisionError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    return {
+        "id": str(result.item_id),
+        "review_status": result.review_status,
+        "share_approved": result.share_approved,
+        "audit_event_id": str(result.audit_event_id),
+    }
+
+
+@router.post("/intelligence/{item_id}/share-approval")
+async def approve_intelligence_item_sharing(
+    item_id: UUID,
+    principal: Annotated[
+        Principal,
+        Depends(require_permission(Permission.SHARE_APPROVE)),
+    ],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
+) -> dict[str, str | bool]:
+    try:
+        result = await session.run_sync(
+            lambda sync_session: approve_intelligence_sharing(
+                sync_session,
+                item_id=item_id,
+                principal=principal,
+                request_id=request_id,
+            )
+        )
+    except GovernedDecisionError as exc:
+        await session.commit()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    return {
+        "id": str(result.item_id),
+        "review_status": result.review_status,
+        "share_approved": result.share_approved,
+        "audit_event_id": str(result.audit_event_id),
+    }
 
 
 @router.get("/intelligence/search", response_model=SearchResponse)

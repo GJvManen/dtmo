@@ -4,7 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260806-032 — Persistent append-only audit storage](runs/RUN-20260806-032.md) — `CI_VALIDATION_PENDING`: transactional sequence continuity, rollback safety, persisted chain verification and PostgreSQL UPDATE/DELETE rejection are committed
+- [RUN-20260806-033 — Governed decision audit integration](runs/RUN-20260806-033.md) — `CI_VALIDATION_PENDING`: live review and share-approval transitions are transactionally coupled to persistent allow/deny audit events with rollback and separation-of-duties regressions
+- [RUN-20260806-032 — Persistent append-only audit storage](runs/RUN-20260806-032.md) — `PASS`: Quality Gate #207 succeeded and PR #14 merged
 - [RUN-20260806-031 — RC5.5 tamper-evident audit chain](runs/RUN-20260806-031.md) — `PASS`: Quality Gate #205 succeeded and PR #13 merged
 - [RUN-20260806-030 — RC5.4 PyJWK type-contract remediation](runs/RUN-20260806-030.md) — `PASS`: Quality Gate #203 succeeded and PR #12 merged
 - [RUN-20260806-029 — RC5.4 asymmetric JWKS key rotation](runs/RUN-20260806-029.md) — `PASS`: exact-head Quality Gate #203 succeeded and PR #12 merged
