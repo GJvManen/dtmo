@@ -19,35 +19,36 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 
 - RC5.1 Quality Gate #177: `PASS`.
 - RC5.2 Quality Gate #179: `PASS`.
-- Required jobs, workflow contracts, migrations, dependency audit, container smoke and aggregate release gates succeeded for both accepted heads.
+- RC5.3 Quality Gate #197: `PASS`.
+- Required jobs, workflow contracts, migrations, dependency audit, container smoke and aggregate release gates succeeded for accepted heads.
 - Every new branch still requires its own exact-head execution.
 
 ## Phase 2 — Application security and identity
 
-Current state after `RUN-20260806-028`:
+Current state after `RUN-20260806-030`:
 
-- route-level RBAC and least-privilege ingestion authority: implemented and validated in Quality Gate #179;
+- route-level RBAC and least-privilege ingestion authority: implemented and validated;
 - service-account and human separation: implemented;
 - review and share approval remain separate, with different human principals required;
-- production no longer accepts caller-supplied subject or role headers as identity;
-- production principal resolution requires a signed bearer token;
-- token signature algorithm is restricted to `HS256` for this bounded implementation;
-- issuer, audience, expiry, not-before, issued-at, subject, role, principal type and JTI claims are required;
-- machine identities may use only the `service_account` role;
-- human identities may not claim the `service_account` role;
-- signing secret, HTTPS issuer and audience are mandatory production settings;
-- Quality Gate #181 failed at Ruff; semantic renaming corrected the false positives without suppressions;
-- Quality Gate #185 passed Ruff and failed strict MyPy; PyJWT options now use `jwt.types.Options`;
-- Quality Gate #189 reached pytest and exposed a FastAPI `Header` descriptor during direct invocation; dependency metadata now uses `Annotated` with real string defaults;
-- Quality Gate #193 reached pytest with `38 passed` before the positive secure-production fixture failed because it omitted the newly mandatory signing secret;
-- the positive production fixture now supplies a 32-character signing secret; the fail-closed production validator was not weakened;
-- the full replacement test, coverage and aggregate release gates remain `PENDING`;
-- distributed key rotation/JWKS, token revocation and privileged-operation audit persistence remain future bounded objectives;
-- Phase 2 completion: `BLOCKED` until these remaining objectives are evidenced.
+- RC5.3 production trusted-principal validation: `PASS` in Quality Gate #197;
+- RC5.4 replaces production shared-secret JWT validation with RS256/JWKS trust;
+- production requires a non-empty JWKS and rejects configured token signing secrets;
+- token headers must declare `RS256` and a non-empty `kid`;
+- a `kid` must resolve to exactly one trusted RSA signing key;
+- overlapping active and previous keys are supported for controlled rotation;
+- unknown, duplicate, non-RSA, non-signing and algorithm-confusion paths fail closed;
+- issuer, audience, expiry, not-before, issued-at, subject, role, principal type and JTI checks remain mandatory;
+- focused positive and negative JWKS rotation tests are committed;
+- Quality Gate #199 reached strict MyPy and failed because JWKS resolution returned `object` to `jwt.decode`;
+- JWKS resolution now returns `jwt.PyJWK`, a supported PyJWT key type, without `Any`, ignores or relaxed algorithm validation;
+- tests and later release jobs after the failed MyPy step remain `PENDING`;
+- replacement exact-head RC5.4 CI evidence: `PENDING`;
+- remote JWKS retrieval/cache policy, token revocation and privileged-operation audit persistence remain future bounded objectives;
+- Phase 2 completion: `BLOCKED` until remaining objectives are evidenced.
 
 ## Phase 3 — Data integrity and recovery
 
-- canonical RC5 migration and migration-contract tests: `PASS` in Quality Gate #177 and #179;
+- canonical RC5 migration and migration-contract tests: `PASS` in accepted quality gates;
 - clean-environment restoration, RPO and RTO evidence: not yet implemented;
 - Phase 3 completion: `BLOCKED`.
 
@@ -63,8 +64,8 @@ Current state after `RUN-20260806-028`:
 
 ## Current run decision
 
-`RUN-20260806-028` is `BLOCKED` until the replacement exact PR-head Quality Gate completes successfully.
+`RUN-20260806-030` is `BLOCKED` until the replacement exact PR-head Quality Gate completes successfully.
 
 ## Exactly one next priority
 
-Inspect the replacement Quality Gate for the updated PR #11 head and either accept full success or resolve only its earliest deterministic failure.
+Inspect the replacement Quality Gate for the updated PR #12 head and either accept full success or resolve only its earliest deterministic failure.

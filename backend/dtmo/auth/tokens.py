@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import StrEnum
+from typing import Any
 
 import jwt
 from jwt.types import Options
@@ -30,25 +32,67 @@ class TokenValidationError(ValueError):
     """Raised when a bearer token cannot establish a trusted principal."""
 
 
+def _select_jwks_key(token: str, jwks_json: str) -> jwt.PyJWK:
+    try:
+        header = jwt.get_unverified_header(token)
+        kid = header.get("kid")
+        algorithm = header.get("alg")
+        payload = json.loads(jwks_json)
+    except (jwt.PyJWTError, json.JSONDecodeError, TypeError) as exc:
+        raise TokenValidationError("invalid bearer token or JWKS document") from exc
+
+    if algorithm != "RS256":
+        raise TokenValidationError("bearer token must use RS256")
+    if not isinstance(kid, str) or not kid.strip():
+        raise TokenValidationError("bearer token requires a key identifier")
+    if not isinstance(payload, dict) or not isinstance(payload.get("keys"), list):
+        raise TokenValidationError("JWKS document must contain a keys list")
+
+    matching_keys: list[dict[str, Any]] = []
+    for value in payload["keys"]:
+        if not isinstance(value, dict):
+            continue
+        if value.get("kid") != kid:
+            continue
+        if value.get("kty") != "RSA" or value.get("alg") not in (None, "RS256"):
+            continue
+        if value.get("use") not in (None, "sig"):
+            continue
+        matching_keys.append(value)
+
+    if len(matching_keys) != 1:
+        raise TokenValidationError("JWKS must contain exactly one trusted signing key for kid")
+
+    try:
+        return jwt.PyJWK.from_dict(matching_keys[0], algorithm="RS256")
+    except (jwt.PyJWTError, ValueError, TypeError) as exc:
+        raise TokenValidationError("JWKS signing key is invalid") from exc
+
+
 def decode_principal_token(
     token: str,
     *,
-    secret: str,
     issuer: str,
     audience: str,
+    jwks_json: str = "",
+    secret: str = "",
     now: datetime | None = None,
 ) -> AuthenticatedPrincipal:
-    if not token or not secret:
+    if not token:
         raise TokenValidationError("token authentication is not configured")
+    if bool(jwks_json) == bool(secret):
+        raise TokenValidationError("configure exactly one token trust source")
 
     options: Options = {
         "require": ["sub", "roles", "principal_type", "jti", "iss", "aud", "iat", "nbf", "exp"],
     }
+    algorithm = "RS256" if jwks_json else "HS256"
+    key = _select_jwks_key(token, jwks_json) if jwks_json else secret
     try:
         claims = jwt.decode(
             token,
-            secret,
-            algorithms=["HS256"],
+            key,
+            algorithms=[algorithm],
             issuer=issuer,
             audience=audience,
             options=options,

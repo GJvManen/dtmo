@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from functools import lru_cache
 from typing import Literal, Self
 
@@ -22,6 +23,7 @@ class Settings(BaseSettings):
     api_key: SecretStr = SecretStr("")
     auth_header_name: str = "x-dtmo-api-key"
     token_signing_secret: SecretStr = SecretStr("")
+    jwt_jwks_json: SecretStr = SecretStr("")
     jwt_issuer: str = "https://identity.dtmo.local"
     jwt_audience: str = "dtmo-api"
     connector_poll_seconds: int = Field(default=3600, ge=60)
@@ -45,8 +47,15 @@ class Settings(BaseSettings):
             raise ValueError("production requires TLS for object storage")
         if not self.minio_secret_key.get_secret_value():
             raise ValueError("production requires an object-storage secret")
-        if len(self.token_signing_secret.get_secret_value()) < 32:
-            raise ValueError("production token signing secret must be at least 32 characters")
+        if self.token_signing_secret.get_secret_value():
+            raise ValueError("production forbids shared-secret token validation")
+        jwks_json = self.jwt_jwks_json.get_secret_value()
+        try:
+            jwks = json.loads(jwks_json)
+        except json.JSONDecodeError as exc:
+            raise ValueError("production requires a valid JWKS document") from exc
+        if not isinstance(jwks, dict) or not isinstance(jwks.get("keys"), list) or not jwks["keys"]:
+            raise ValueError("production requires at least one JWKS signing key")
         if not self.jwt_issuer.startswith("https://"):
             raise ValueError("production token issuer must use HTTPS")
         if not self.jwt_audience.strip():

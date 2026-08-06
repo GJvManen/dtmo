@@ -55,6 +55,7 @@ def resolve_principal(
             authenticated = decode_principal_token(
                 credential.strip(),
                 secret=settings.token_signing_secret.get_secret_value(),
+                jwks_json=settings.jwt_jwks_json.get_secret_value(),
                 issuer=settings.jwt_issuer,
                 audience=settings.jwt_audience,
             )
