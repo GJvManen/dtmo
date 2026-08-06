@@ -64,20 +64,31 @@ The ingestion contract cannot set `review_status=reviewed` or `share_approved=tr
 - Manual `workflow_dispatch` trigger and PostgreSQL migration validation in CI.
 - Regression protection for release-critical workflow triggers, jobs and commands.
 - `pytest-asyncio` and explicit async test configuration.
+- A dependency-free GitHub Actions execution canary at `.github/workflows/actions-canary.yml`.
 
 ## Latest PDCA gate outcome
 
-`RUN-20260806-003` added `backend/tests/test_ci_workflow_contract.py` and committed the implementation. The run remains `BLOCKED` because the latest inspected commit exposed neither status checks nor workflow runs. The committed test is therefore not represented as executed or passing.
+`RUN-20260806-012` isolated GitHub Actions execution from all DTMO application dependencies. The minimal canary was committed directly to `main` as `86c18aaa0fcd623d099c464f3bc4669392cc059b`, but the resulting commit exposed zero observable status contexts. This demonstrates that the current blocker is not caused by project tests, Python packaging, PostgreSQL, migrations, Docker, dependency review or aggregate gate logic.
+
+The remaining blocker is repository/account Actions policy or integration-level check-run visibility. The connected integration cannot inspect or modify the repository Actions policy endpoint and cannot list generic push-triggered workflow runs, so it cannot safely resolve that external setting from this run.
 
 ## Release status
 
-**CI VALIDATION PENDING**
+**CI VALIDATION PENDING — BLOCKED BY `CI-OPS-001`**
 
-No successful status checks are currently exposed for the latest inspected commit. A missing status is not a pass. GitHub Actions must be enabled and complete successfully before `RC_READY` can be assigned.
+No successful status checks are currently exposed for either the RC4 workflow or the independent canary. A missing status is not a pass. GitHub Actions must be enabled and a canary plus the RC4 Quality Gate must complete successfully before `RC_READY` can be assigned.
+
+## Required operational action
+
+1. Open repository **Settings → Actions → General**.
+2. Enable Actions for the repository and allow the GitHub-authored actions used by the workflows.
+3. Manually dispatch **GitHub Actions Canary**.
+4. Capture its run URL and successful conclusion.
+5. Dispatch or push-trigger **RC4 Quality Gate** and attach its release-gate artifact to this report.
 
 ## Remaining technical follow-up
 
-- Diagnose why GitHub Actions runs are absent and restore observable CI execution on `main`.
+- Resolve `CI-OPS-001` and restore observable CI execution on `main`.
 - Add a transactional outbox and retry worker for OpenSearch indexing.
 - Add durable audit events for ingestion, review and share approval.
 - Add browser-based accessibility and end-to-end tests.
@@ -92,6 +103,7 @@ No successful status checks are currently exposed for the latest inspected commi
 - `docs/architecture/ADR-0001-SECURED-INTELLIGENCE-INGESTION.md`
 - `docs/development/runs/RUN-20260805-002.md`
 - `docs/development/runs/RUN-20260806-003.md`
+- `docs/development/runs/RUN-20260806-012.md`
 
 ## External production acceptance
 
