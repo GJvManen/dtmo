@@ -21,7 +21,7 @@ def test_canonical_migration_has_linear_reversible_revision_chain() -> None:
     tree = ast.parse(source)
 
     assignments = {
-        node.targets[0].id: ast.literal_eval(node.value)
+        node.target.id: ast.literal_eval(node.value)
         for node in tree.body
         if isinstance(node, ast.AnnAssign)
         and isinstance(node.target, ast.Name)
