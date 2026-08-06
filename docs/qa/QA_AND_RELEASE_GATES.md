@@ -23,6 +23,7 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 - RC6.1 #229: `PASS`
 - RC6.2 #243: `PASS`
 - RC6.3 OpenSearch Recovery Gate #5 and RC4 Quality Gate #253: `PASS`
+- RC6.4 Multi-store Recovery Gate #4, RC4 Quality Gate #262 and OpenSearch Recovery Gate #14: `PASS`
 
 Every new branch still requires its own exact-head execution.
 
@@ -44,24 +45,39 @@ Quality Gate #243 proved isolated source/target MinIO recovery, exact object dig
 
 OpenSearch Recovery Gate #5 and RC4 Quality Gate #253 proved deterministic clean reconstruction from canonical PostgreSQL data with strict provenance mappings and retained evidence.
 
-### RC6.4 combined multi-store recovery — `CI_VALIDATION_PENDING`
+### RC6.4 combined multi-store recovery — `PASS`
 
-Committed controls:
+Exact head `ba3389613341c84aa21b591b706b7819981b7a4b` passed:
+
+- RC6 Multi-store Recovery Gate #4, run `31113680268`;
+- RC4 Quality Gate #262, run `31113681659`;
+- RC6 OpenSearch Recovery Gate #14, run `31113680720`.
+
+Evidence proves:
 
 - one recovery-point identifier and UTC start timestamp bind the complete acceptance run;
 - PostgreSQL, MinIO and OpenSearch recovery execute sequentially within the same bounded workflow;
-- the PostgreSQL audit chain and provenance hashes must remain valid;
-- MinIO object digests and provenance references must remain valid;
-- OpenSearch provenance and source/target manifest equality must remain valid;
-- all three subsystem decisions must be `pass`;
+- the PostgreSQL audit chain and provenance hashes remain valid;
+- MinIO object digests and provenance references remain valid;
+- OpenSearch provenance and deterministic source/target manifests match;
+- all three subsystem decisions are `pass`;
 - subsystem evidence files are SHA-256 bound into one combined artifact;
-- a cross-store provenance envelope digest is recorded;
-- zero-second quiesced-run RPO basis and measured end-to-end RTO are recorded;
-- artifact upload uses `if-no-files-found: error`;
-- a separate `always()` recovery gate fails closed unless the combined job succeeds;
-- workflow contract tests protect these requirements.
+- a cross-store provenance-envelope digest is retained;
+- zero-second quiesced-run RPO basis and measured end-to-end RTO are retained;
+- the independent `always()` recovery gate fails closed unless combined recovery succeeds.
 
-No exact-head execution has completed successfully, so RC6.4 is not accepted as `PASS`.
+Retained artifacts:
+
+- `multistore-recovery-evidence` — `8972811292`, digest `sha256:7739c8667acb87ab7d5377c0473586fce5959a3424432e0a78f04cf3ecd70502`;
+- `release-gate-evidence` — `8972794627`;
+- `postgres-restore-evidence` — `8972788335`;
+- `minio-restore-evidence` — `8972774036`;
+- `workflow-contract-evidence` — `8972771621`;
+- `dependency-audit-evidence` — `8972771222`.
+
+PR #26 merged as `d25c2e4a9c5e5869071020a109ddf57638779a02`.
+
+**Phase 3 completion: `PASS`.**
 
 ## Security, privacy and publication invariants
 
@@ -76,8 +92,8 @@ No exact-head execution has completed successfully, so RC6.4 is not accepted as 
 
 ## Current run decision
 
-`RUN-20260806-043` is `CI_VALIDATION_PENDING` until the exact-head multi-store workflow retains passing combined evidence and its fail-closed gate succeeds.
+`RUN-20260806-043` is `PASS`. Phase 3 recovery acceptance is complete and evidenced.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC6 Multi-store Recovery Gate and remediate only its earliest deterministic failure, or merge after complete success.
+Start Phase 4 with one controlled live connector canary including source provenance, timeout, rate limiting, retry/backoff, quarantine and fail-closed human share approval.
