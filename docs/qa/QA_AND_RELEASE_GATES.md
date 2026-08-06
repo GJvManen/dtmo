@@ -20,31 +20,24 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 - RC5.1 Quality Gate #177: `PASS`.
 - RC5.2 Quality Gate #179: `PASS`.
 - RC5.3 Quality Gate #197: `PASS`.
+- RC5.4 Quality Gate #203: `PASS`.
 - Required jobs, workflow contracts, migrations, dependency audit, container smoke and aggregate release gates succeeded for accepted heads.
 - Every new branch still requires its own exact-head execution.
 
 ## Phase 2 — Application security and identity
 
-Current state after `RUN-20260806-030`:
+Current state after `RUN-20260806-031`:
 
-- route-level RBAC and least-privilege ingestion authority: implemented and validated;
-- service-account and human separation: implemented;
-- review and share approval remain separate, with different human principals required;
-- RC5.3 production trusted-principal validation: `PASS` in Quality Gate #197;
-- RC5.4 replaces production shared-secret JWT validation with RS256/JWKS trust;
-- production requires a non-empty JWKS and rejects configured token signing secrets;
-- token headers must declare `RS256` and a non-empty `kid`;
-- a `kid` must resolve to exactly one trusted RSA signing key;
-- overlapping active and previous keys are supported for controlled rotation;
-- unknown, duplicate, non-RSA, non-signing and algorithm-confusion paths fail closed;
-- issuer, audience, expiry, not-before, issued-at, subject, role, principal type and JTI checks remain mandatory;
-- focused positive and negative JWKS rotation tests are committed;
-- Quality Gate #199 reached strict MyPy and failed because JWKS resolution returned `object` to `jwt.decode`;
-- JWKS resolution now returns `jwt.PyJWK`, a supported PyJWT key type, without `Any`, ignores or relaxed algorithm validation;
-- tests and later release jobs after the failed MyPy step remain `PENDING`;
-- replacement exact-head RC5.4 CI evidence: `PENDING`;
-- remote JWKS retrieval/cache policy, token revocation and privileged-operation audit persistence remain future bounded objectives;
-- Phase 2 completion: `BLOCKED` until remaining objectives are evidenced.
+- least-privilege RBAC, service-account isolation and human separation of duties: implemented and evidenced;
+- trusted-principal token validation and RS256/JWKS overlapping-key rotation: implemented and evidenced through Quality Gate #203;
+- RC5.5 adds immutable canonical audit events linked by SHA-256 from a fixed genesis hash;
+- the audit verifier detects payload mutation, deletion, reordering, broken links and duplicate event identifiers;
+- audit events retain principal, principal type, action, resource, decision, request ID and provenance reference;
+- required identity and action fields fail closed;
+- focused regression tests are committed;
+- persistent append-only storage and integration of live authorization/publication decisions remain separate future objectives;
+- exact-head RC5.5 CI evidence: `PENDING`;
+- Phase 2 completion: `BLOCKED` until RC5.5 and remaining identity objectives are evidenced.
 
 ## Phase 3 — Data integrity and recovery
 
@@ -64,8 +57,8 @@ Current state after `RUN-20260806-030`:
 
 ## Current run decision
 
-`RUN-20260806-030` is `BLOCKED` until the replacement exact PR-head Quality Gate completes successfully.
+`RUN-20260806-031` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
 
 ## Exactly one next priority
 
-Inspect the replacement Quality Gate for the updated PR #12 head and either accept full success or resolve only its earliest deterministic failure.
+Inspect the first completed Quality Gate for RC5.5 and either resolve only its earliest deterministic failure or merge after full success.
