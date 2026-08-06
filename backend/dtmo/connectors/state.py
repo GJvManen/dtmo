@@ -16,6 +16,13 @@ def utc_now() -> datetime:
     return datetime.now(UTC)
 
 
+def as_utc(value: datetime) -> datetime:
+    """Return an aware UTC datetime, including for drivers that drop tzinfo."""
+    if value.tzinfo is None:
+        return value.replace(tzinfo=UTC)
+    return value.astimezone(UTC)
+
+
 class ConnectorRuntimeState(Base):
     __tablename__ = "connector_runtime_states"
 
@@ -124,8 +131,12 @@ class ConnectorStateStore:
 
     def is_isolated(self, connector_id: str, *, now: datetime | None = None) -> bool:
         state = self.session.get(ConnectorRuntimeState, connector_id)
-        current = now or utc_now()
-        return bool(state and state.circuit_open_until and state.circuit_open_until > current)
+        current = as_utc(now or utc_now())
+        return bool(
+            state
+            and state.circuit_open_until
+            and as_utc(state.circuit_open_until) > current
+        )
 
     def record_run(
         self,
@@ -144,7 +155,7 @@ class ConnectorStateStore:
             raise ValueError("connector_id is required")
         if duration_seconds < 0 or record_count < 0:
             raise ValueError("run counters cannot be negative")
-        observed = observed_at or utc_now()
+        observed = as_utc(observed_at or utc_now())
         state = self.session.get(ConnectorRuntimeState, connector_id)
         if state is None:
             state = ConnectorRuntimeState(
@@ -223,7 +234,7 @@ class ConnectorStateStore:
         if record.recovery_status != "pending":
             raise ValueError("quarantine record already decided")
         record.recovery_status = decision
-        record.recovered_at = recovered_at or utc_now()
+        record.recovered_at = as_utc(recovered_at or utc_now())
         record.recovered_by = human_reviewer
         record.review_reference = review_reference
         record.publish_approved = False
