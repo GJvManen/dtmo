@@ -13,15 +13,15 @@ DTMO is ontwikkeld van RC4.1 tot en met RC6.2.
 - RC4-platformbasis: API, persistence, immutable Intelligence Lake, connectorcatalogus, Knowledge Graph, SOC/CTI-workspace, RBAC, migraties, MinIO en OpenSearch;
 - RC5.1 tot en met RC5.12: canonieke intelligence, least-privilege RBAC, functiescheiding, trusted JWT-principals, JWKS-keyrotatie, revocation/replaybescherming, tamper-evidente persistente auditing, privacy-minimalisatie, retention, legal hold en bounded purge;
 - Phase 2 — application security, identity en privacy: `PASS`;
-- RC6.1 — clean-target PostgreSQL backup en restore met auditketen-, provenance- en schema-integriteitsverificatie: `PASS` via Quality Gate #229 en PR #22.
+- RC6.1 — clean-target PostgreSQL backup en restore met auditketen-, provenance- en schema-integriteitsverificatie: `PASS` via Quality Gate #229 en PR #22;
+- RC6.2 — geïsoleerde MinIO objectbackup en clean-target restore met objectdigest- en provenance-referenceverificatie: `PASS` via Quality Gate #243 en PR #24.
 
-### Actieve run
+### RC6.2 evidence
 
-**RC6.2 — clean MinIO object backup and restore evidence: `CI_VALIDATION_PENDING`.**
-
-De branch bevat:
+Quality Gate #243 is geslaagd op exacte head `bd2fa4f16d09e924ae3aa0cfb40946aba1fc9084`. De evidence omvat:
 
 - twee geïsoleerde MinIO-instanties voor bron en clean target;
+- aantoonbaar lege target-bucket vóór restore;
 - manifest-bound objectbackup;
 - SHA-256-digestcontrole van backup en individuele objecten;
 - verificatie van objectnaam, grootte, content type en provenance-reference;
@@ -29,7 +29,7 @@ De branch bevat:
 - retained `minio-restore-evidence` artifact;
 - een releaseblokkerende `minio-restore` job in de aggregate Quality Gate.
 
-De run wordt pas `PASS` nadat GitHub Actions op de exacte branch-head aantoonbaar groen is. Een geconfigureerde of niet-uitgevoerde test wordt nooit als pass behandeld.
+PR #24 is gemerged naar `main` als `2b623ada2d5dc2faa5d04414da719fe6b9ff6509`.
 
 ## Roadmapstatus
 
@@ -37,7 +37,7 @@ De run wordt pas `PASS` nadat GitHub Actions op de exacte branch-head aantoonbaa
 |---|---|
 | 1. CI en workflow-integriteit | `PASS` |
 | 2. Applicatiebeveiliging, identity en privacy | `PASS` |
-| 3. Data-integriteit, backup en recovery | `IN PROGRESS` — PostgreSQL bewezen; MinIO RC6.2 wacht op exact-head evidence; OpenSearch en gecombineerde recovery volgen daarna |
+| 3. Data-integriteit, backup en recovery | `IN PROGRESS` — PostgreSQL en MinIO bewezen; OpenSearch reconstruction en gecombineerde recovery ontbreken nog |
 | 4. Live connectorbetrouwbaarheid en provenance | `NOT STARTED` |
 | 5. Performance en schaalbaarheid | `NOT STARTED` |
 | 6. Frontend accessibility en operationele UX | `NOT STARTED` |
@@ -46,7 +46,7 @@ De run wordt pas `PASS` nadat GitHub Actions op de exacte branch-head aantoonbaa
 | 9. External assurance | `NOT STARTED` |
 | 10. Production go/no-go | `BLOCKED` |
 
-**Precies één volgende prioriteit:** inspecteer de exacte RC6.2 Quality Gate; herstel uitsluitend de eerste deterministische fout of merge na volledige groene evidence.
+**Precies één volgende prioriteit:** clean-environment OpenSearch reconstruction vanuit canonieke PostgreSQL-data en immutable MinIO-evidence, met deterministische index-manifestverificatie.
 
 ## Governance-invarianten
 
