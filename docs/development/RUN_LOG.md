@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260807-046 — Exact-head CI execution blocker](runs/RUN-20260807-046.md) — `CI_VALIDATION_PENDING`: PR #29 is mergeable and the connector-state workflow has an applicable `pull_request` trigger, but GitHub Actions registered no workflow run for exact head `d489a60bcc2492b0a7dc0423bdf91c32211a07ed`; no execution or retained artifact is treated as `PASS`
 - [RUN-20260806-045 — RC7.2 persistent connector state and failure isolation](runs/RUN-20260806-045.md) — `CI_VALIDATION_PENDING`: PostgreSQL-backed run state, source-health history, connector-scoped isolation and human-reviewed quarantine recovery are committed; UTC normalization now has a focused regression test for naive persisted isolation timestamps, but exact-head execution and retained evidence are still required
 - [RUN-20260806-044 — RC7.1 governed live connector canary](runs/RUN-20260806-044.md) — `PASS`: RC7 Live Connector Canary Gate #3, RC4 Quality Gate #270, OpenSearch Recovery Gate #22 and Multi-store Recovery Gate #12 succeeded on exact head `c82e20c110354c1163b58ac8b9820756f829a4ae`; retained canary evidence artifact `8973407243`; PR #28 merged as `aeeb0709a26ecb1f20620d7ac21f823fec35e98f`
 - [RUN-20260806-043 — RC6.4 combined multi-store recovery acceptance](runs/RUN-20260806-043.md) — `PASS`: Multi-store Recovery Gate #4, RC4 Quality Gate #262 and OpenSearch Recovery Gate #14 succeeded on exact head `ba3389613341c84aa21b591b706b7819981b7a4b`; combined cross-store evidence retained; PR #26 merged
@@ -34,8 +35,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260806-045` is `CI_VALIDATION_PENDING`. The UTC persistence-boundary remediation now has direct regression protection committed, but neither committed tests nor absent workflow results count as execution evidence.
+`RUN-20260807-046` is `CI_VALIDATION_PENDING`. The exact-head workflow trigger is configured and PR #29 is mergeable, but no GitHub Actions run or retained evidence exists for the inspected head.
 
 ## Exactly one next priority
 
-Inspect the new exact-head RC7 Connector State Gate and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
+Inspect the first RC7 Connector State Gate registered for the current exact head and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
