@@ -4,7 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260806-041 — RC6.2 clean MinIO backup and restore evidence](runs/RUN-20260806-041.md) — `CI_VALIDATION_PENDING`: isolated source/target MinIO recovery, object digest and provenance verification, retained evidence and release-blocking gate are committed
+- [RUN-20260806-041 — RC6.2 clean MinIO backup and restore evidence](runs/RUN-20260806-041.md) — `PASS`: Quality Gate #243 succeeded on exact head `bd2fa4f16d09e924ae3aa0cfb40946aba1fc9084`; isolated MinIO restore, object digest and provenance evidence retained; PR #24 merged
 - [RUN-20260806-040 — RC6.1 clean PostgreSQL backup and restore evidence](runs/RUN-20260806-040.md) — `PASS`: Quality Gate #229 succeeded on exact head `d1d0e809ffcee6458cb8a8f31ad2d10d481fefb0`; clean-target restore and integrity evidence retained; PR #22 merged
 - [RUN-20260806-039 — RC5.12 storage-layer retention enforcement](runs/RUN-20260806-039.md) — `PASS`: Quality Gate #224 succeeded and PR #21 merged
 - [RUN-20260806-038 — RC5.11 privacy minimization and retention controls](runs/RUN-20260806-038.md) — `PASS`: Quality Gate #221 succeeded and PR #19 merged
@@ -30,8 +30,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260806-041` remains `CI_VALIDATION_PENDING` until an exact-head Quality Gate executes the MinIO backup, clean-target restore, digest comparison and provenance-reference verification successfully.
+`RUN-20260806-041` is `PASS`. Quality Gate #243 successfully executed the isolated MinIO backup and clean-target restore on the exact PR head and retained the required evidence artifacts. PR #24 is merged.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC6.2 Quality Gate and remediate only its earliest deterministic failure, or merge after complete success.
+Implement clean-environment OpenSearch reconstruction from canonical PostgreSQL and immutable MinIO evidence, with deterministic index-manifest verification.
