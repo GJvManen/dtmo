@@ -41,6 +41,19 @@ class IntelligenceIngestResponse(BaseModel):
     indexed: bool
 
 
+class TokenRevocationRequest(BaseModel):
+    jti: str = Field(min_length=1, max_length=255)
+    expires_at: datetime
+    reason: str = Field(min_length=3, max_length=500)
+
+
+class TokenRevocationResponse(BaseModel):
+    jti: str
+    expires_at: datetime
+    audit_event_id: str
+    revoked: bool = True
+
+
 class SearchResponse(BaseModel):
     query: str
     count: int
