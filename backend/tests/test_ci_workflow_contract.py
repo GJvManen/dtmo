@@ -6,7 +6,9 @@ from typing import Any
 import yaml
 
 
-WORKFLOW = Path(__file__).parents[2] / ".github" / "workflows" / "ci.yml"
+ROOT = Path(__file__).parents[2]
+WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
+OBSERVER_WORKFLOW = ROOT / ".github" / "workflows" / "ci-observer.yml"
 REQUIRED_TRIGGERS = {"workflow_dispatch", "push", "pull_request"}
 REQUIRED_JOBS = {
     "workflow-contracts",
@@ -17,9 +19,9 @@ REQUIRED_JOBS = {
 }
 
 
-def _load_workflow() -> dict[str, Any]:
-    loaded = yaml.load(WORKFLOW.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
-    assert isinstance(loaded, dict), "CI workflow must be a YAML mapping"
+def _load_workflow(path: Path = WORKFLOW) -> dict[str, Any]:
+    loaded = yaml.load(path.read_text(encoding="utf-8"), Loader=yaml.BaseLoader)
+    assert isinstance(loaded, dict), f"{path.name} must be a YAML mapping"
     return loaded
 
 
@@ -58,9 +60,6 @@ def test_workflow_contract_job_is_independently_observable() -> None:
     assert "pytest backend/tests/test_ci_workflow_contract.py" in run_commands
     assert "--junitxml=artifacts/workflow-contracts.xml" in run_commands
 
-    uses = [str(step.get("uses", "")) for step in _steps(contract_job)]
-    assert "actions/upload-artifact@v4" in uses
-
     upload_steps = [
         step
         for step in _steps(contract_job)
@@ -72,6 +71,42 @@ def test_workflow_contract_job_is_independently_observable() -> None:
     assert upload_with.get("name") == "workflow-contract-evidence"
     assert upload_with.get("path") == "artifacts/workflow-contracts.xml"
     assert upload_steps[0].get("if") == "always()"
+
+
+def test_ci_observer_preserves_independent_execution_evidence() -> None:
+    observer = _load_workflow(OBSERVER_WORKFLOW)
+    assert observer.get("name") == "RC4 CI Observer"
+
+    triggers = observer.get("on")
+    assert isinstance(triggers, dict)
+    assert "workflow_dispatch" in triggers
+    workflow_run = triggers.get("workflow_run")
+    assert isinstance(workflow_run, dict)
+    assert workflow_run.get("workflows") == ["RC4 Quality Gate"]
+    assert workflow_run.get("types") == ["completed"]
+
+    permissions = observer.get("permissions")
+    assert isinstance(permissions, dict)
+    assert permissions.get("actions") == "read"
+    assert permissions.get("contents") == "read"
+
+    jobs = observer.get("jobs")
+    assert isinstance(jobs, dict)
+    observe = jobs.get("observe")
+    assert isinstance(observe, dict)
+    commands = _combined_run(observe)
+    assert "artifacts/ci-observation.json" in commands
+    assert "GITHUB_STEP_SUMMARY" in commands
+
+    upload = next(
+        step for step in _steps(observe) if step.get("uses") == "actions/upload-artifact@v4"
+    )
+    upload_with = upload.get("with")
+    assert isinstance(upload_with, dict)
+    assert upload_with.get("name") == "ci-observation-evidence"
+    assert upload_with.get("path") == "artifacts/ci-observation.json"
+    assert upload_with.get("if-no-files-found") == "error"
+    assert upload.get("if") == "always()"
 
 
 def test_release_jobs_preserve_blocking_commands_and_services() -> None:
