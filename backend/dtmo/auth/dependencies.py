@@ -20,10 +20,7 @@ def _legacy_development_principal(
     api_key: str,
 ) -> Principal:
     if settings.production:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="bearer token required",
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="bearer token required")
     expected = settings.api_key.get_secret_value()
     if expected and not hmac.compare_digest(api_key, expected):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid API key")
@@ -36,10 +33,7 @@ def _legacy_development_principal(
         try:
             roles.add(Role(token))
         except ValueError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"unknown role: {token}",
-            ) from exc
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"unknown role: {token}") from exc
     try:
         return Principal(subject=subject, roles=frozenset(roles))
     except ValueError as exc:
@@ -56,22 +50,16 @@ def resolve_principal(
     scheme, _, credential = authorization.partition(" ")
     if authorization:
         if scheme.lower() != "bearer" or not credential.strip():
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="invalid authorization header",
-            )
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="invalid authorization header")
         try:
             authenticated = decode_principal_token(
                 credential.strip(),
                 secret=settings.token_signing_secret.get_secret_value(),
-                issuer=settings.token_issuer,
-                audience=settings.token_audience,
+                issuer=settings.jwt_issuer,
+                audience=settings.jwt_audience,
             )
         except TokenValidationError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=str(exc),
-            ) from exc
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
         return authenticated.principal
 
     return _legacy_development_principal(
@@ -83,9 +71,7 @@ def resolve_principal(
 
 
 def require_permission(permission: Permission) -> Callable[[Principal], Principal]:
-    def dependency(
-        principal: Annotated[Principal, Depends(resolve_principal)],
-    ) -> Principal:
+    def dependency(principal: Annotated[Principal, Depends(resolve_principal)]) -> Principal:
         try:
             require(principal, permission)
         except PermissionError as exc:
