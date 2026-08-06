@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
 from dtmo.persistence.privacy_models import MinimizedAuditProjectionRecord
@@ -58,19 +58,19 @@ def persist_minimized_projection(
 
 def purge_expired_projections(session: Session, *, now: datetime | None = None) -> PurgeResult:
     current = (now or datetime.now(UTC)).astimezone(UTC)
-    held = session.scalar(
-        select(MinimizedAuditProjectionRecord)
-        .where(
+    held_count = session.scalar(
+        select(func.count()).select_from(MinimizedAuditProjectionRecord).where(
             MinimizedAuditProjectionRecord.expires_at <= current,
             MinimizedAuditProjectionRecord.legal_hold.is_(True),
         )
-        .with_only_columns(MinimizedAuditProjectionRecord.event_id)
     )
-    held_count = 0 if held is None else 1
     result = session.execute(
         delete(MinimizedAuditProjectionRecord).where(
             MinimizedAuditProjectionRecord.expires_at <= current,
             MinimizedAuditProjectionRecord.legal_hold.is_(False),
         )
     )
-    return PurgeResult(deleted=int(result.rowcount or 0), retained_on_legal_hold=held_count)
+    return PurgeResult(
+        deleted=int(result.rowcount or 0),
+        retained_on_legal_hold=int(held_count or 0),
+    )
