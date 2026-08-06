@@ -89,15 +89,17 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 5. a separate observer control records completion, conclusion, head SHA, run ID and URL;
 6. observer evidence is retained as the named `ci-observation-evidence` artifact;
 7. both the quality-gate run and observer result are independently observable for the same commit;
-8. absent, skipped, cancelled or failed execution may not be interpreted as success.
+8. manual observer execution must explicitly identify a real upstream `RC4 Quality Gate` run and may not self-attest with the observer's own metadata;
+9. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-006`:
+Current state after `RUN-20260806-007`:
 
 - structural workflow contract: implemented;
 - dedicated observable contract job: implemented;
 - retained workflow-contract artifact design: implemented;
 - independent observer workflow: implemented;
 - observer regression protection: implemented;
+- manual observer evidence inputs and validation: implemented;
 - observer permissions: structurally limited to `actions: read` and `contents: read`;
 - successful quality-gate execution evidence: `PENDING`;
 - successful observer execution evidence: `PENDING`;
