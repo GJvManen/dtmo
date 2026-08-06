@@ -2,10 +2,8 @@ from __future__ import annotations
 
 import json
 from collections.abc import AsyncIterator
+from functools import lru_cache
 from typing import Annotated
-
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal
@@ -14,13 +12,25 @@ from dtmo.lake.service import IntelligenceLake
 from dtmo.persistence.repository import IntelligenceRepository
 from dtmo.persistence.session import Database
 from dtmo.search.service import OpenSearchService
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .schemas import IntelligenceIngestRequest, IntelligenceIngestResponse, SearchResponse
 
 router = APIRouter(prefix="/api/v1", tags=["intelligence"])
 database = Database()
-lake = IntelligenceLake(MinioObjectStore())
 search_service = OpenSearchService()
+
+
+@lru_cache(maxsize=1)
+def get_intelligence_lake() -> IntelligenceLake:
+    """Create the object-store client only when an ingestion request needs it.
+
+    Health, readiness and documentation endpoints must remain available when optional
+    storage credentials are not configured in development or container smoke tests.
+    Production configuration validation still rejects missing storage credentials.
+    """
+    return IntelligenceLake(MinioObjectStore())
 
 
 async def get_session() -> AsyncIterator[AsyncSession]:
@@ -43,7 +53,7 @@ async def ingest_intelligence(
 ) -> IntelligenceIngestResponse:
     raw = json.dumps(request.raw_payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
     external_id = request.external_id or request.title
-    receipt = await lake.land(
+    receipt = await get_intelligence_lake().land(
         source_id=request.source_id,
         external_id=external_id,
         payload=raw,
