@@ -21,7 +21,7 @@ class PrincipalType(StrEnum):
 class AuthenticatedPrincipal:
     principal: Principal
     principal_type: PrincipalType
-    token_id: str
+    jti: str
     issuer: str
     authenticated_at: datetime
 
@@ -72,15 +72,14 @@ def decode_principal_token(
         raise TokenValidationError("human principals cannot use the service_account role")
 
     subject = str(claims["sub"]).strip()
-    token_id = str(claims["jti"]).strip()
-    if not subject or not token_id:
+    jti = str(claims["jti"]).strip()
+    if not subject or not jti:
         raise TokenValidationError("token subject and identifier are required")
 
-    authenticated_at = now or datetime.now(UTC)
     return AuthenticatedPrincipal(
         principal=Principal(subject=subject, roles=roles),
         principal_type=principal_type,
-        token_id=token_id,
+        jti=jti,
         issuer=str(claims["iss"]),
-        authenticated_at=authenticated_at,
+        authenticated_at=now or datetime.now(UTC),
     )
