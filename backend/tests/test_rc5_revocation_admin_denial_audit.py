@@ -43,7 +43,7 @@ def test_ciso_can_revoke_token_and_append_allow_audit_event() -> None:
     with _session() as session:
         result = revoke_token_with_audit(
             session,
-            store=store,  # type: ignore[arg-type]
+            store=store,
             principal=principal,
             jti="token-123",
             expires_at=expires_at,
@@ -68,7 +68,7 @@ def test_revocation_rejects_expired_target_without_state_change() -> None:
     with _session() as session, pytest.raises(ValueError, match="expiry must be in the future"):
         revoke_token_with_audit(
             session,
-            store=store,  # type: ignore[arg-type]
+            store=store,
             principal=principal,
             jti="token-123",
             expires_at=datetime.now(UTC) - timedelta(seconds=1),
