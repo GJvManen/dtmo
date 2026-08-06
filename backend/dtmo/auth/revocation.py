@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Protocol
@@ -28,6 +29,18 @@ class RevocationResult:
     jti: str
     expires_at: datetime
     audit_event_id: UUID
+
+
+def revocation_provenance(*, expires_at: datetime, reason: str) -> str:
+    return json.dumps(
+        {
+            "expires_at": expires_at.astimezone(UTC).isoformat(),
+            "reason": reason.strip(),
+            "schema": "token-revocation/v1",
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
 
 
 def revoke_token_with_audit(
@@ -64,6 +77,6 @@ def revoke_token_with_audit(
         resource=f"token:jti:{token_id}",
         decision=AuditDecision.ALLOW,
         request_id=correlation_id,
-        provenance_reference=f"reason:{rationale}",
+        provenance_reference=revocation_provenance(expires_at=expiry, reason=rationale),
     )
     return RevocationResult(jti=token_id, expires_at=expiry, audit_event_id=event.event_id)
