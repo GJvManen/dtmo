@@ -4,7 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260806-044 — RC7.1 governed live connector canary](runs/RUN-20260806-044.md) — `CI_VALIDATION_PENDING`: controlled CISA KEV canary, provenance, licensing, timeout, bounded retry/backoff, deduplication, quarantine and fail-closed publication evidence committed
+- [RUN-20260806-044 — RC7.1 governed live connector canary](runs/RUN-20260806-044.md) — `PASS`: RC7 Live Connector Canary Gate #3, RC4 Quality Gate #270, OpenSearch Recovery Gate #22 and Multi-store Recovery Gate #12 succeeded on exact head `c82e20c110354c1163b58ac8b9820756f829a4ae`; retained canary evidence artifact `8973407243`; PR #28 merged as `aeeb0709a26ecb1f20620d7ac21f823fec35e98f`
 - [RUN-20260806-043 — RC6.4 combined multi-store recovery acceptance](runs/RUN-20260806-043.md) — `PASS`: Multi-store Recovery Gate #4, RC4 Quality Gate #262 and OpenSearch Recovery Gate #14 succeeded on exact head `ba3389613341c84aa21b591b706b7819981b7a4b`; combined cross-store evidence retained; PR #26 merged
 - [RUN-20260806-042 — RC6.3 clean OpenSearch reconstruction](runs/RUN-20260806-042.md) — `PASS`: OpenSearch Recovery Gate #5 and RC4 Quality Gate #253 succeeded on exact head `fbe3924d202d81ab59ebbcd10889a9a75b146941`; deterministic reconstruction evidence retained; PR #25 merged
 - [RUN-20260806-041 — RC6.2 clean MinIO backup and restore evidence](runs/RUN-20260806-041.md) — `PASS`: Quality Gate #243 succeeded on exact head `bd2fa4f16d09e924ae3aa0cfb40946aba1fc9084`; isolated MinIO restore, object digest and provenance evidence retained; PR #24 merged
@@ -33,8 +33,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260806-044` is `CI_VALIDATION_PENDING`. The live canary implementation and documentation are committed, but exact-head Quality Gate execution and retained connector evidence have not yet completed successfully.
+`RUN-20260806-044` is `PASS`. The controlled CISA KEV canary and all exact-head regression gates succeeded; retained evidence is available and PR #28 is merged.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC7 Live Connector Canary Gate and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
+RC7.2 — implement persistent connector-run state, source-health history and failure isolation with quarantined recovery and no automatic publication.
