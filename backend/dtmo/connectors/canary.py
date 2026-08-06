@@ -196,12 +196,23 @@ def parse_cisa_kev(payload: Any, policy: CanaryPolicy) -> tuple[list[CanaryRecor
         if not isinstance(raw, dict):
             quarantined.append(QuarantinedRecord("malformed_record", raw))
             continue
-        cve = raw.get("cveID")
-        title = raw.get("vulnerabilityName")
-        published_at = raw.get("dateAdded")
-        if not all(isinstance(value, str) and value.strip() for value in (cve, title, published_at)):
+        cve_value = raw.get("cveID")
+        title_value = raw.get("vulnerabilityName")
+        published_at_value = raw.get("dateAdded")
+        if (
+            not isinstance(cve_value, str)
+            or not cve_value.strip()
+            or not isinstance(title_value, str)
+            or not title_value.strip()
+            or not isinstance(published_at_value, str)
+            or not published_at_value.strip()
+        ):
             quarantined.append(QuarantinedRecord("missing_required_provenance", raw))
             continue
+
+        cve = cve_value
+        title = title_value
+        published_at = published_at_value
         if cve in seen:
             duplicate_count += 1
             quarantined.append(QuarantinedRecord("duplicate_external_id", raw))
