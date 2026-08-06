@@ -135,10 +135,24 @@ jobs:
           exit 1
 
   dependency-review:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/dependency-review-action@v4
+      - uses: actions/setup-python@v5
         with:
-          fail-on-severity: high
+          python-version: "3.12"
+          cache: pip
+      - name: Install audit tooling and project
+        run: pip install -e '.[test]'
+      - name: Audit resolved Python dependencies
+        run: |
+          mkdir -p artifacts
+          pip-audit --format=json --output=artifacts/pip-audit.json
+      - name: Upload dependency audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-audit-evidence
+          path: artifacts/pip-audit.json
+          if-no-files-found: error
+          retention-days: 30
