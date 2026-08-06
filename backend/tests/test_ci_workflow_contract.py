@@ -16,6 +16,7 @@ REQUIRED_JOBS = {
     "migrations",
     "container",
     "dependency-review",
+    "release-gate",
 }
 REQUIRED_OBSERVER_INPUTS = {
     "observed_run_id",
@@ -96,6 +97,51 @@ def test_workflow_contract_job_is_independently_observable() -> None:
     assert "artifacts/workflow-contracts.xml" in upload_path
     assert "artifacts/workflow-contract-evidence.json" in upload_path
     assert upload_steps[0].get("if") == "always()"
+
+
+def test_aggregate_release_gate_blocks_missing_or_failed_evidence() -> None:
+    jobs = _load_workflow()["jobs"]
+    release_gate = jobs["release-gate"]
+    assert isinstance(release_gate, dict)
+    assert release_gate.get("if") == "always()"
+
+    needs = release_gate.get("needs")
+    assert isinstance(needs, list)
+    assert {
+        "workflow-contracts",
+        "test",
+        "migrations",
+        "container",
+        "dependency-review",
+    } <= set(needs)
+
+    commands = _combined_run(release_gate)
+    for result_name in {
+        "WORKFLOW_CONTRACTS",
+        "TESTS",
+        "MIGRATIONS",
+        "CONTAINER",
+        "DEPENDENCY_REVIEW",
+    }:
+        assert result_name in commands
+    assert 'results[name] != "success"' in commands
+    assert '{"success", "skipped"}' in commands
+    assert '"decision": "pass" if not failures else "blocked"' in commands
+    assert 'raise SystemExit(f"Release blocked by:' in commands
+    assert "artifacts/release-gate-evidence.json" in commands
+    assert "GITHUB_STEP_SUMMARY" in commands
+
+    upload = next(
+        step
+        for step in _steps(release_gate)
+        if step.get("uses") == "actions/upload-artifact@v4"
+    )
+    upload_with = upload.get("with")
+    assert isinstance(upload_with, dict)
+    assert upload_with.get("name") == "release-gate-evidence"
+    assert upload_with.get("path") == "artifacts/release-gate-evidence.json"
+    assert upload_with.get("if-no-files-found") == "error"
+    assert upload.get("if") == "always()"
 
 
 def test_ci_observer_preserves_independent_execution_evidence() -> None:
