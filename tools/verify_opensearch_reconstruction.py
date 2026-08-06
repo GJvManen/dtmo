@@ -63,6 +63,15 @@ def _manifest(documents: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _raise_with_body(response: httpx.Response) -> None:
+    try:
+        response.raise_for_status()
+    except httpx.HTTPStatusError as exc:
+        raise RuntimeError(
+            f"OpenSearch request failed with {response.status_code}: {response.text}"
+        ) from exc
+
+
 def verify_reconstruction(*, database_url: str, endpoint: str, evidence_path: Path) -> dict[str, Any]:
     engine = create_engine(database_url, pool_pre_ping=True)
     with Session(engine) as session:
@@ -78,12 +87,12 @@ def verify_reconstruction(*, database_url: str, endpoint: str, evidence_path: Pa
     base = endpoint.rstrip("/")
     with httpx.Client(timeout=30.0) as client:
         health = client.get(f"{base}/_cluster/health")
-        health.raise_for_status()
+        _raise_with_body(health)
         existing = client.head(f"{base}/{INDEX_NAME}")
         if existing.status_code == 200:
             raise RuntimeError("OpenSearch recovery target must not contain the target index")
         if existing.status_code != 404:
-            existing.raise_for_status()
+            _raise_with_body(existing)
 
         mapping = {
             "settings": {"index": {"number_of_shards": 1, "number_of_replicas": 0}},
@@ -107,12 +116,22 @@ def verify_reconstruction(*, database_url: str, endpoint: str, evidence_path: Pa
                     "review_status": {"type": "keyword"},
                     "share_approved": {"type": "boolean"},
                     "tags": {"type": "keyword"},
-                    "provenance": {"type": "object", "enabled": True},
+                    "provenance": {
+                        "type": "object",
+                        "dynamic": "strict",
+                        "properties": {
+                            "source_url": {"type": "keyword"},
+                            "content_hash": {"type": "keyword"},
+                            "source_reliability": {"type": "keyword"},
+                            "is_primary_source": {"type": "boolean"},
+                            "content_integrity_verified": {"type": "boolean"},
+                        },
+                    },
                 },
             },
         }
         created = client.put(f"{base}/{INDEX_NAME}", json=mapping)
-        created.raise_for_status()
+        _raise_with_body(created)
 
         started = time.monotonic()
         for document in source_manifest["documents"]:
@@ -121,15 +140,16 @@ def verify_reconstruction(*, database_url: str, endpoint: str, evidence_path: Pa
                 params={"refresh": "false"},
                 json=document,
             )
-            response.raise_for_status()
-        client.post(f"{base}/{INDEX_NAME}/_refresh").raise_for_status()
+            _raise_with_body(response)
+        refreshed = client.post(f"{base}/{INDEX_NAME}/_refresh")
+        _raise_with_body(refreshed)
         reconstruction_seconds = round(time.monotonic() - started, 3)
 
         response = client.get(
             f"{base}/{INDEX_NAME}/_search",
             params={"size": max(1, source_manifest["document_count"]), "sort": "id:asc"},
         )
-        response.raise_for_status()
+        _raise_with_body(response)
         hits = response.json()["hits"]["hits"]
         target_manifest = _manifest([hit["_source"] for hit in hits])
 
@@ -167,7 +187,12 @@ def main() -> None:
     parser.add_argument("--endpoint", required=True)
     parser.add_argument("--evidence", type=Path, required=True)
     args = parser.parse_args()
-    print(json.dumps(verify_reconstruction(database_url=args.database_url, endpoint=args.endpoint, evidence_path=args.evidence), indent=2, sort_keys=True))
+    evidence = verify_reconstruction(
+        database_url=args.database_url,
+        endpoint=args.endpoint,
+        evidence_path=args.evidence,
+    )
+    print(json.dumps(evidence, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
