@@ -41,6 +41,15 @@ class TokenStateStore:
         current = now.astimezone(UTC)
         return max(1, int((expiry - current).total_seconds()))
 
+    def is_revoked(self, jti: str) -> bool:
+        token_id = jti.strip()
+        if not token_id:
+            raise ValueError("token identifier is required")
+        try:
+            return bool(self.client.exists(self._key("revoked", token_id)))
+        except RedisError as exc:
+            raise TokenStateError("token state backend unavailable") from exc
+
     def assert_active(
         self,
         authenticated: AuthenticatedPrincipal,
@@ -49,7 +58,6 @@ class TokenStateStore:
     ) -> None:
         current = now or datetime.now(UTC)
         ttl = self._ttl_seconds(authenticated.expires_at, current)
-        revoked_key = self._key("revoked", authenticated.jti)
         replay_key = self._key("used", authenticated.jti)
         binding_key = self._key("binding", authenticated.jti)
         binding = "|".join(
@@ -61,7 +69,7 @@ class TokenStateStore:
             )
         )
         try:
-            if self.client.exists(revoked_key):
+            if self.is_revoked(authenticated.jti):
                 raise TokenRevokedError("bearer token has been revoked")
             existing_binding = self.client.get(binding_key)
             if existing_binding is None:
