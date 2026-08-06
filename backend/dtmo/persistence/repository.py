@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from hashlib import sha256
 from typing import Any
 
@@ -97,7 +97,7 @@ class ConnectorRunRepository:
         errors: Iterable[str] = (),
     ) -> ConnectorRun:
         error_list = list(errors)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         run.finished_at = now
         run.status = "completed" if not error_list else "degraded"
         run.fetched = fetched
