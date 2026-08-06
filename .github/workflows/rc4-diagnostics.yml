@@ -30,6 +30,7 @@ jobs:
             pwd
             python --version
             python -m pip --version
+            python -m pip debug --verbose
             find . -maxdepth 3 -type f | sort
           } 2>&1 | tee artifacts/00-environment.log
       - name: Capture installation
@@ -37,8 +38,18 @@ jobs:
         continue-on-error: true
         run: |
           set -o pipefail
-          python -m pip install --upgrade pip 2>&1 | tee artifacts/01-pip-upgrade.log
-          python -m pip install -e '.[test]' 2>&1 | tee artifacts/02-install.log
+          python -m pip install --upgrade pip setuptools wheel 2>&1 | tee artifacts/01-pip-upgrade.log
+          python -m pip install -vvv -e '.[test]' 2>&1 | tee artifacts/02-install.log
+      - name: Publish installation failure
+        if: always()
+        run: |
+          {
+            echo "## Installation diagnostics"
+            echo '```text'
+            tail -n 200 artifacts/02-install.log 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          tail -n 200 artifacts/02-install.log 2>/dev/null || true
       - name: Capture imports
         id: imports
         continue-on-error: true
@@ -78,6 +89,16 @@ jobs:
         run: |
           set -o pipefail
           docker build --no-cache --progress=plain -t dtmo:diagnostics . 2>&1 | tee artifacts/09-container-build.log
+      - name: Publish container failure
+        if: always()
+        run: |
+          {
+            echo "## Container diagnostics"
+            echo '```text'
+            tail -n 200 artifacts/09-container-build.log 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          tail -n 200 artifacts/09-container-build.log 2>/dev/null || true
       - name: Write diagnostic summary
         if: always()
         run: |
