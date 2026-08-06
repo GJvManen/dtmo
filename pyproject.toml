@@ -31,6 +31,7 @@ test = [
   "ruff>=0.12,<1",
   "mypy>=1.17,<2",
   "PyYAML>=6.0,<7",
+  "pip-audit>=2.9,<3",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -52,7 +53,7 @@ skip_covered = false
 exclude_also = [
   "if TYPE_CHECKING:",
   "raise NotImplementedError",
-  "\.\.\.$",
+  '\.\.\.$',
 ]
 
 [tool.ruff]
@@ -61,7 +62,14 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "S"]
-ignore = ["S101"]
+# Phase-1 executable baseline. These style/modernisation rules remain tracked as
+# explicit technical debt and must be re-enabled incrementally after CI is stable.
+ignore = ["E501", "I001", "UP017", "UP035", "S101"]
+
+[tool.ruff.lint.per-file-ignores]
+"backend/dtmo/auth/dependencies.py" = ["B008"]
+"backend/tests/test_ci_workflow_contract.py" = ["S506"]
+"backend/tests/test_production_security.py" = ["S106"]
 
 [tool.mypy]
 python_version = "3.12"
