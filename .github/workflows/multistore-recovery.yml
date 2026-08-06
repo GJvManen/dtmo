@@ -1,0 +1,135 @@
+name: RC6 Multi-Store Recovery Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  multistore-recovery:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: dtmo
+          POSTGRES_USER: dtmo
+          POSTGRES_PASSWORD: change-me
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dtmo -d dtmo"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+      opensearch:
+        image: opensearchproject/opensearch:2.19.1
+        env:
+          discovery.type: single-node
+          DISABLE_SECURITY_PLUGIN: "true"
+          OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
+        ports:
+          - 9200:9200
+        options: >-
+          --health-cmd "curl -fsS http://localhost:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 30
+    env:
+      DTMO_ENVIRONMENT: test
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo
+      PGPASSWORD: change-me
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project and PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          python -m pip install -e '.[test]'
+      - name: Start isolated MinIO source and target
+        run: |
+          docker run -d --name minio-source -p 9000:9000 \
+            -e MINIO_ROOT_USER="$MINIO_ACCESS_KEY" \
+            -e MINIO_ROOT_PASSWORD="$MINIO_SECRET_KEY" \
+            quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z server /data
+          docker run -d --name minio-target -p 9002:9000 \
+            -e MINIO_ROOT_USER="$MINIO_ACCESS_KEY" \
+            -e MINIO_ROOT_PASSWORD="$MINIO_SECRET_KEY" \
+            quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z server /data
+          for port in 9000 9002; do
+            for attempt in $(seq 1 30); do
+              curl -fsS "http://127.0.0.1:${port}/minio/health/live" && break
+              test "$attempt" -lt 30
+              sleep 2
+            done
+          done
+      - name: Create one quiesced canonical recovery point
+        run: |
+          python -m alembic upgrade head
+          dropdb --if-exists --host 127.0.0.1 --username dtmo dtmo_restore
+          createdb --host 127.0.0.1 --username dtmo dtmo_restore
+          mkdir -p artifacts
+          printf '%s\n' "commit:${GITHUB_SHA}" > artifacts/recovery-point-id.txt
+      - name: Recover PostgreSQL, MinIO and OpenSearch
+        run: |
+          python tools/verify_postgres_backup_restore.py \
+            --source-url "$DTMO_DATABASE_URL" \
+            --target-url postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo_restore \
+            --backup artifacts/postgres.dump \
+            --evidence artifacts/postgres-recovery.json
+          python tools/verify_minio_backup_restore.py \
+            --source-endpoint 127.0.0.1:9000 \
+            --target-endpoint 127.0.0.1:9002 \
+            --access-key "$MINIO_ACCESS_KEY" \
+            --secret-key "$MINIO_SECRET_KEY" \
+            --backup artifacts/minio-backup.tar.gz \
+            --evidence artifacts/minio-recovery.json
+          python tools/verify_opensearch_reconstruction.py \
+            --database-url "$DTMO_DATABASE_URL" \
+            --endpoint http://127.0.0.1:9200 \
+            --evidence artifacts/opensearch-recovery.json
+      - name: Evaluate combined recovery acceptance
+        run: |
+          python tools/verify_multistore_recovery.py \
+            --recovery-point-id "commit:${GITHUB_SHA}" \
+            --postgres-evidence artifacts/postgres-recovery.json \
+            --minio-evidence artifacts/minio-recovery.json \
+            --opensearch-evidence artifacts/opensearch-recovery.json \
+            --evidence artifacts/multistore-recovery-evidence.json
+          python -m json.tool artifacts/multistore-recovery-evidence.json
+      - name: Upload combined recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: multistore-recovery-evidence
+          path: |
+            artifacts/multistore-recovery-evidence.json
+            artifacts/postgres-recovery.json
+            artifacts/minio-recovery.json
+            artifacts/opensearch-recovery.json
+            artifacts/recovery-point-id.txt
+          if-no-files-found: error
+          retention-days: 30
+      - name: Stop isolated MinIO services
+        if: always()
+        run: docker rm -f minio-source minio-target || true
+
+  recovery-acceptance-gate:
+    if: always()
+    needs: [multistore-recovery]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail closed on missing or failed multi-store evidence
+        env:
+          MULTISTORE_RECOVERY: ${{ needs.multistore-recovery.result }}
+        run: test "$MULTISTORE_RECOVERY" = "success"
