@@ -51,13 +51,24 @@ Committed controls:
 - retained evidence upload uses `if-no-files-found: error`;
 - a separate `always()` gate fails closed unless connector-state evidence succeeds;
 - persisted and supplied timestamps are normalized to UTC before isolation decisions;
-- a focused regression test simulates a naive persisted isolation deadline and verifies active and expired decisions against UTC-aware inputs.
+- a focused regression test simulates a naive persisted isolation deadline and verifies active and expired decisions against UTC-aware inputs;
+- new or updated parent runtime-state rows are explicitly flushed before health-event children are inserted.
 
-Connector State Gate #12 reached PostgreSQL-backed project execution and exposed an offset-naive versus offset-aware comparison defect after migrations succeeded. The runtime normalization remediation is committed as `6fab8341e8123664bc3456eaba8daf8d603a0933`; direct regression protection is committed as `52e3d37f119547637571d77a33636ffb996281c6`.
+Connector State Gate #13, run `31129850744`, provided independently observable PostgreSQL-backed execution on exact head `1fea5a9b07fa21cf16476a723bb1ddd656d0b39e`:
 
-The subsequent exact head `d489a60bcc2492b0a7dc0423bdf91c32211a07ed` had no GitHub Actions workflow run registered when checked. PR #29 was mergeable and `.github/workflows/connector-state.yml` contained an applicable `pull_request` trigger without path exclusions. No Quality Gate, Connector State Gate, regression execution or retained artifact existed for that head. This is an external execution-evidence blocker and not a test pass.
+- Alembic upgrade through `0005_connector_state`: `PASS`;
+- targeted connector-state and migration tests: `5 passed`;
+- Quality Gate #288: `PASS`;
+- Live Connector Canary Gate #21: `PASS`;
+- OpenSearch Recovery Gate #40: `PASS`;
+- Multi-store Recovery Gate #30: `PASS`;
+- connector-state evidence fixture: `FAIL` with a PostgreSQL foreign-key violation because a health-event child was flushed before its newly created runtime-state parent;
+- retained connector-state evidence artifact: absent because the primary job failed before upload;
+- independent connector-state gate: correctly `FAIL` closed on missing evidence.
 
-These commits are not acceptance evidence. RC7.2 remains `CI_VALIDATION_PENDING` until the exact current head executes the Quality Gate, Connector State Gate and required regression gates successfully and retains the required evidence artifacts.
+The bounded remediation is committed as `407fd75e149b50d28bb2830a17d26a877b09d9c4`. The parent `ConnectorRuntimeState` is now explicitly flushed before adding `ConnectorHealthEvent` children. This does not alter RBAC, separation of duties, privacy, provenance, quarantine decisions or human share approval.
+
+The remediation commit is not acceptance evidence. RC7.2 remains `CI_VALIDATION_PENDING` until the exact current head executes the Quality Gate, Connector State Gate and required regression gates successfully and retains the required connector-state evidence artifact.
 
 ## Security, privacy and publication invariants
 
@@ -70,8 +81,8 @@ These commits are not acceptance evidence. RC7.2 remains `CI_VALIDATION_PENDING`
 
 ## Current run decision
 
-`RUN-20260807-046` is `CI_VALIDATION_PENDING`. Workflow triggers are configured and PR #29 is mergeable, but GitHub Actions did not register exact-head execution or retained evidence for the inspected head.
+`RUN-20260807-047` is `CI_VALIDATION_PENDING`. Real PostgreSQL execution exposed and bounded a parent-before-child persistence-ordering defect; exact-head validation of the remediation and retained evidence are still required.
 
 ## Exactly one next priority
 
-Inspect the first RC7 Connector State Gate registered for the current exact head and remediate only its earliest deterministic failure, or merge after all exact-head gates and retained evidence succeed.
+Inspect the RC7 Connector State Gate for the current exact head and remediate only its earliest deterministic failure, or merge PR #29 after all exact-head gates and retained evidence succeed.
