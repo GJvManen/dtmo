@@ -5,6 +5,29 @@ on:
     workflows: ["RC4 Quality Gate"]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      observed_run_id:
+        description: "RC4 Quality Gate run ID being independently observed"
+        required: true
+        type: string
+      observed_conclusion:
+        description: "Conclusion reported by the observed RC4 Quality Gate run"
+        required: true
+        type: choice
+        options:
+          - success
+          - failure
+          - cancelled
+          - timed_out
+          - action_required
+      observed_head_sha:
+        description: "Full commit SHA evaluated by the observed run"
+        required: true
+        type: string
+      observed_url:
+        description: "Canonical GitHub Actions URL for the observed run"
+        required: true
+        type: string
 
 permissions:
   actions: read
@@ -17,31 +40,59 @@ jobs:
       - name: Capture observed workflow result
         env:
           EVENT_NAME: ${{ github.event_name }}
-          OBSERVED_RUN_ID: ${{ github.event.workflow_run.id || github.run_id }}
-          OBSERVED_CONCLUSION: ${{ github.event.workflow_run.conclusion || 'manual-observer-check' }}
-          OBSERVED_HEAD_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-          OBSERVED_URL: ${{ github.event.workflow_run.html_url || format('{0}/{1}/actions/runs/{2}', github.server_url, github.repository, github.run_id) }}
+          OBSERVED_WORKFLOW: RC4 Quality Gate
+          OBSERVED_RUN_ID: ${{ github.event.workflow_run.id || inputs.observed_run_id }}
+          OBSERVED_CONCLUSION: ${{ github.event.workflow_run.conclusion || inputs.observed_conclusion }}
+          OBSERVED_HEAD_SHA: ${{ github.event.workflow_run.head_sha || inputs.observed_head_sha }}
+          OBSERVED_URL: ${{ github.event.workflow_run.html_url || inputs.observed_url }}
         run: |
+          set -euo pipefail
+          test -n "${OBSERVED_RUN_ID}"
+          test -n "${OBSERVED_CONCLUSION}"
+          test -n "${OBSERVED_HEAD_SHA}"
+          test -n "${OBSERVED_URL}"
+          [[ "${OBSERVED_RUN_ID}" =~ ^[0-9]+$ ]]
+          [[ "${OBSERVED_HEAD_SHA}" =~ ^[0-9a-fA-F]{40}$ ]]
+          [[ "${OBSERVED_URL}" =~ ^https://github.com/${GITHUB_REPOSITORY}/actions/runs/[0-9]+$ ]]
+
           mkdir -p artifacts
-          cat > artifacts/ci-observation.json <<EOF
-          {
-            "observer_run_id": "${GITHUB_RUN_ID}",
-            "event_name": "${EVENT_NAME}",
-            "observed_run_id": "${OBSERVED_RUN_ID}",
-            "observed_conclusion": "${OBSERVED_CONCLUSION}",
-            "observed_head_sha": "${OBSERVED_HEAD_SHA}",
-            "observed_url": "${OBSERVED_URL}"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = {
+              "schema_version": 1,
+              "observer_run_id": os.environ["GITHUB_RUN_ID"],
+              "observer_head_sha": os.environ["GITHUB_SHA"],
+              "event_name": os.environ["EVENT_NAME"],
+              "observed_workflow": os.environ["OBSERVED_WORKFLOW"],
+              "observed_run_id": os.environ["OBSERVED_RUN_ID"],
+              "observed_conclusion": os.environ["OBSERVED_CONCLUSION"],
+              "observed_head_sha": os.environ["OBSERVED_HEAD_SHA"].lower(),
+              "observed_url": os.environ["OBSERVED_URL"],
           }
-          EOF
+          Path("artifacts/ci-observation.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
           cat artifacts/ci-observation.json
       - name: Publish observer summary
+        env:
+          OBSERVED_RUN_ID: ${{ github.event.workflow_run.id || inputs.observed_run_id }}
+          OBSERVED_CONCLUSION: ${{ github.event.workflow_run.conclusion || inputs.observed_conclusion }}
+          OBSERVED_HEAD_SHA: ${{ github.event.workflow_run.head_sha || inputs.observed_head_sha }}
+          OBSERVED_URL: ${{ github.event.workflow_run.html_url || inputs.observed_url }}
         run: |
           {
             echo "## RC4 CI observation"
             echo "- Event: ${{ github.event_name }}"
-            echo "- Observed run: ${{ github.event.workflow_run.id || github.run_id }}"
-            echo "- Conclusion: ${{ github.event.workflow_run.conclusion || 'manual-observer-check' }}"
-            echo "- Head SHA: ${{ github.event.workflow_run.head_sha || github.sha }}"
+            echo "- Observed workflow: RC4 Quality Gate"
+            echo "- Observed run: ${OBSERVED_RUN_ID}"
+            echo "- Conclusion: ${OBSERVED_CONCLUSION}"
+            echo "- Head SHA: ${OBSERVED_HEAD_SHA}"
+            echo "- Run URL: ${OBSERVED_URL}"
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload independent CI observation
         if: always()
