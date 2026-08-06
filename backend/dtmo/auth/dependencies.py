@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 import hmac
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import Annotated
 
-from fastapi import Depends, Header, HTTPException, status
+from fastapi import Depends, Header, HTTPException, Request, status
 
 from dtmo.config import Settings, get_settings
+from dtmo.persistence.session import Database
 
+from .authorization_audit import record_authorization_denial
 from .policy import Permission, Principal, Role, require
 from .token_state import TokenStateError, TokenStateStore
 from .tokens import TokenValidationError, decode_principal_token
+
+_audit_database = Database()
 
 
 def _legacy_development_principal(
@@ -74,11 +78,45 @@ def resolve_principal(
     )
 
 
-def require_permission(permission: Permission) -> Callable[[Principal], Principal]:
-    def dependency(principal: Annotated[Principal, Depends(resolve_principal)]) -> Principal:
+async def _persist_authorization_denial(
+    *,
+    principal: Principal,
+    permission: Permission,
+    resource: str,
+    request_id: str,
+) -> None:
+    async for session in _audit_database.session():
+        await record_authorization_denial(
+            session,
+            principal=principal,
+            permission=permission,
+            resource=resource,
+            request_id=request_id,
+        )
+        return
+
+
+def require_permission(permission: Permission) -> Callable[..., Awaitable[Principal]]:
+    async def dependency(
+        request: Request,
+        principal: Annotated[Principal, Depends(resolve_principal)],
+        request_id: Annotated[str, Header(alias="X-Request-ID")] = "",
+    ) -> Principal:
         try:
             require(principal, permission)
         except PermissionError as exc:
+            try:
+                await _persist_authorization_denial(
+                    principal=principal,
+                    permission=permission,
+                    resource=request.url.path,
+                    request_id=request_id,
+                )
+            except Exception as audit_exc:
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="authorization denied; audit backend unavailable",
+                ) from audit_exc
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
         return principal
 
