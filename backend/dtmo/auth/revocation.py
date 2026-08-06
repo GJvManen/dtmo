@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import Protocol
 from uuid import UUID
 
 from sqlalchemy.orm import Session
@@ -10,7 +11,16 @@ from dtmo.audit.chain import AuditDecision
 from dtmo.audit.store import append_persistent_audit_event
 
 from .policy import Principal
-from .token_state import TokenStateStore
+
+
+class TokenRevoker(Protocol):
+    def revoke(
+        self,
+        jti: str,
+        *,
+        expires_at: datetime,
+        now: datetime | None = None,
+    ) -> None: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,7 +33,7 @@ class RevocationResult:
 def revoke_token_with_audit(
     session: Session,
     *,
-    store: TokenStateStore,
+    store: TokenRevoker,
     principal: Principal,
     jti: str,
     expires_at: datetime,
