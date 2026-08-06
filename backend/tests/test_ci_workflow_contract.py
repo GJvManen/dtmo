@@ -13,6 +13,7 @@ REQUIRED_JOBS = {
     "workflow-contracts",
     "test",
     "migrations",
+    "postgres-restore",
     "container",
     "dependency-review",
     "release-gate",
@@ -105,6 +106,33 @@ def test_dependency_audit_is_portable_fail_closed_and_observable() -> None:
     assert upload.get("if") == "always()"
 
 
+def test_postgres_restore_is_clean_release_blocking_and_observable() -> None:
+    jobs = _load_workflow()["jobs"]
+    restore_job = jobs["postgres-restore"]
+    assert isinstance(restore_job, dict)
+    services = restore_job.get("services")
+    assert isinstance(services, dict)
+    assert "postgres" in services
+    commands = _combined_run(restore_job)
+    assert "python -m alembic upgrade head" in commands
+    assert "dropdb --if-exists" in commands
+    assert "createdb" in commands
+    assert "tools/verify_postgres_backup_restore.py" in commands
+    assert "--source-url" in commands
+    assert "--target-url" in commands
+    assert "artifacts/dtmo-postgres.dump" in commands
+    assert "artifacts/postgres-restore-evidence.json" in commands
+    upload = _artifact_upload_steps(restore_job)[0]
+    upload_with = upload.get("with")
+    assert isinstance(upload_with, dict)
+    assert upload_with.get("name") == "postgres-restore-evidence"
+    upload_path = str(upload_with.get("path", ""))
+    assert "artifacts/postgres-restore-evidence.json" in upload_path
+    assert "artifacts/dtmo-postgres.dump" in upload_path
+    assert upload_with.get("if-no-files-found") == "error"
+    assert upload.get("if") == "always()"
+
+
 def test_aggregate_release_gate_blocks_missing_or_failed_evidence() -> None:
     jobs = _load_workflow()["jobs"]
     release_gate = jobs["release-gate"]
@@ -116,10 +144,12 @@ def test_aggregate_release_gate_blocks_missing_or_failed_evidence() -> None:
         "workflow-contracts",
         "test",
         "migrations",
+        "postgres-restore",
         "container",
         "dependency-review",
     } <= set(needs)
     commands = _combined_run(release_gate)
+    assert '"postgres-restore": os.environ["POSTGRES_RESTORE"]' in commands
     assert 'results[name] != "success"' in commands
     assert "required = set(results)" in commands
     assert '"decision": "pass" if not failures else "blocked"' in commands
