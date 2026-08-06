@@ -25,7 +25,7 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 
 ## Phase 2 — Application security and identity
 
-Current state after `RUN-20260806-029`:
+Current state after `RUN-20260806-030`:
 
 - route-level RBAC and least-privilege ingestion authority: implemented and validated;
 - service-account and human separation: implemented;
@@ -39,7 +39,10 @@ Current state after `RUN-20260806-029`:
 - unknown, duplicate, non-RSA, non-signing and algorithm-confusion paths fail closed;
 - issuer, audience, expiry, not-before, issued-at, subject, role, principal type and JTI checks remain mandatory;
 - focused positive and negative JWKS rotation tests are committed;
-- exact-head RC5.4 CI evidence: `PENDING`;
+- Quality Gate #199 reached strict MyPy and failed because JWKS resolution returned `object` to `jwt.decode`;
+- JWKS resolution now returns `jwt.PyJWK`, a supported PyJWT key type, without `Any`, ignores or relaxed algorithm validation;
+- tests and later release jobs after the failed MyPy step remain `PENDING`;
+- replacement exact-head RC5.4 CI evidence: `PENDING`;
 - remote JWKS retrieval/cache policy, token revocation and privileged-operation audit persistence remain future bounded objectives;
 - Phase 2 completion: `BLOCKED` until remaining objectives are evidenced.
 
@@ -61,8 +64,8 @@ Current state after `RUN-20260806-029`:
 
 ## Current run decision
 
-`RUN-20260806-029` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
+`RUN-20260806-030` is `BLOCKED` until the replacement exact PR-head Quality Gate completes successfully.
 
 ## Exactly one next priority
 
-Inspect the first completed Quality Gate for RC5.4 and either resolve only its earliest deterministic failure or merge after full success.
+Inspect the replacement Quality Gate for the updated PR #12 head and either accept full success or resolve only its earliest deterministic failure.
