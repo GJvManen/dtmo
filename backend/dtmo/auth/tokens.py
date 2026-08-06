@@ -32,7 +32,7 @@ class TokenValidationError(ValueError):
     """Raised when a bearer token cannot establish a trusted principal."""
 
 
-def _select_jwks_key(token: str, jwks_json: str) -> object:
+def _select_jwks_key(token: str, jwks_json: str) -> jwt.PyJWK:
     try:
         header = jwt.get_unverified_header(token)
         kid = header.get("kid")
@@ -64,7 +64,7 @@ def _select_jwks_key(token: str, jwks_json: str) -> object:
         raise TokenValidationError("JWKS must contain exactly one trusted signing key for kid")
 
     try:
-        return jwt.PyJWK.from_dict(matching_keys[0], algorithm="RS256").key
+        return jwt.PyJWK.from_dict(matching_keys[0], algorithm="RS256")
     except (jwt.PyJWTError, ValueError, TypeError) as exc:
         raise TokenValidationError("JWKS signing key is invalid") from exc
 
