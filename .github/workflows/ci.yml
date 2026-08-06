@@ -1,6 +1,5 @@
 name: RC4 Quality Gate
 
-# Execution probe 2026-08-06T10:06+02:00
 on:
   workflow_dispatch:
   push:
@@ -15,27 +14,27 @@ jobs:
   workflow-contracts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
+      - name: Prepare evidence directory
+        run: mkdir -p artifacts
       - name: Install test dependencies
-        run: pip install -e '.[test]'
+        run: python -m pip install -e '.[test]'
       - name: Validate workflow contract
-        run: |
-          mkdir -p artifacts
-          pytest backend/tests/test_ci_workflow_contract.py --junitxml=artifacts/workflow-contracts.xml
+        run: python -m pytest backend/tests/test_ci_workflow_contract.py --junitxml=artifacts/workflow-contracts.xml
       - name: Create identity-bound evidence manifest
         if: always()
         env:
           EVIDENCE_CONCLUSION: ${{ job.status }}
         run: |
+          mkdir -p artifacts
           python - <<'PY'
           import json
           import os
           from pathlib import Path
-
           evidence = {
               "schema_version": 1,
               "workflow": "RC4 Quality Gate",
@@ -45,44 +44,42 @@ jobs:
               "repository": os.environ["GITHUB_REPOSITORY"],
               "event_name": os.environ["GITHUB_EVENT_NAME"],
               "conclusion": os.environ["EVIDENCE_CONCLUSION"],
-              "run_url": (
-                  f"https://github.com/{os.environ['GITHUB_REPOSITORY']}"
-                  f"/actions/runs/{os.environ['GITHUB_RUN_ID']}"
-              ),
+              "run_url": f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
           }
           Path("artifacts/workflow-contract-evidence.json").write_text(
-              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8"
           )
           PY
-          cat artifacts/workflow-contract-evidence.json
       - name: Upload workflow contract evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: workflow-contract-evidence
-          path: |
-            artifacts/workflow-contracts.xml
-            artifacts/workflow-contract-evidence.json
+          path: artifacts/
           if-no-files-found: error
           retention-days: 30
 
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
       - name: Install
-        run: pip install -e '.[test]'
+        run: python -m pip install -e '.[test]'
+      - name: Environment diagnostics
+        run: |
+          python --version
+          python -m pip --version
+          python -m pip check
       - name: Lint
-        run: ruff check backend database
+        run: python -m ruff check backend database
       - name: Type check
-        run: mypy backend/dtmo
+        run: python -m mypy backend/dtmo
       - name: Tests
-        run: pytest --cov=dtmo --cov-report=term-missing --cov-fail-under=80
+        run: python -m pytest --cov=dtmo --cov-report=term-missing --cov-fail-under=80
       - name: Compile
         run: python -m compileall -q backend database
 
@@ -106,52 +103,59 @@ jobs:
       DTMO_ENVIRONMENT: test
       DTMO_DATABASE_URL: postgresql+psycopg://dtmo:change-me@127.0.0.1:5432/dtmo
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
       - name: Install
-        run: pip install -e '.[test]'
+        run: python -m pip install -e '.[test]'
+      - name: Migration diagnostics
+        run: |
+          python --version
+          python -m pip check
+          test -f alembic.ini
+          test -f database/migrations/env.py
       - name: Upgrade schema
-        run: alembic upgrade head
+        run: python -m alembic upgrade head
       - name: Validate current revision
-        run: alembic current
+        run: python -m alembic current
       - name: Downgrade and re-upgrade
         run: |
-          alembic downgrade base
-          alembic upgrade head
+          python -m alembic downgrade base
+          python -m alembic upgrade head
 
   container:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build image
-        run: docker build -t dtmo:rc4 .
+        run: docker build --progress=plain -t dtmo:rc4 .
       - name: Run image smoke test
         run: |
+          set -euo pipefail
           docker run -d --name dtmo -p 8000:8000 --env DTMO_ENVIRONMENT=test dtmo:rc4
-          for i in {1..20}; do curl -fsS http://127.0.0.1:8000/health && exit 0; sleep 2; done
-          docker logs dtmo
+          trap 'docker logs dtmo || true; docker rm -f dtmo || true' EXIT
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8000/health; then
+              exit 0
+            fi
+            sleep 2
+          done
           exit 1
 
   dependency-review:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: high
 
   release-gate:
     if: always()
-    needs:
-      - workflow-contracts
-      - test
-      - migrations
-      - container
-      - dependency-review
+    needs: [workflow-contracts, test, migrations, container, dependency-review]
     runs-on: ubuntu-latest
     steps:
       - name: Evaluate all release-critical jobs
@@ -168,7 +172,6 @@ jobs:
           import json
           import os
           from pathlib import Path
-
           results = {
               "workflow-contracts": os.environ["WORKFLOW_CONTRACTS"],
               "test": os.environ["TESTS"],
@@ -178,10 +181,8 @@ jobs:
           }
           required = {"workflow-contracts", "test", "migrations", "container"}
           failures = [name for name in required if results[name] != "success"]
-          dependency_result = results["dependency-review"]
-          if dependency_result not in {"success", "skipped"}:
+          if results["dependency-review"] not in {"success", "skipped"}:
               failures.append("dependency-review")
-
           evidence = {
               "schema_version": 1,
               "workflow": "RC4 Quality Gate",
@@ -193,14 +194,10 @@ jobs:
               "job_results": results,
               "decision": "pass" if not failures else "blocked",
               "blocking_jobs": failures,
-              "run_url": (
-                  f"https://github.com/{os.environ['GITHUB_REPOSITORY']}"
-                  f"/actions/runs/{os.environ['GITHUB_RUN_ID']}"
-              ),
+              "run_url": f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
           }
           Path("artifacts/release-gate-evidence.json").write_text(
-              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8"
           )
           print(json.dumps(evidence, indent=2, sort_keys=True))
           if failures:
@@ -219,7 +216,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload aggregate release evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-gate-evidence
           path: artifacts/release-gate-evidence.json
