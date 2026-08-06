@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-023 — Restore clean RC5.1 delivery path](runs/RUN-20260806-023.md) — `BLOCKED`: obsolete PRs #5, #6 and #8 closed; RC5.1 AST migration-contract defect fixed in `8246c6bd8202e5814cff4197e8a503ac36a9b74b`; replacement exact-head CI pending
 - [RUN-20260806-022 — Reversible canonical intelligence migration](runs/RUN-20260806-022.md) — `BLOCKED`: data-preserving RC4-to-RC5 migration and contract tests committed; exact-head upgrade/downgrade/re-upgrade evidence pending
 - [RUN-20260806-020 — Remediate pytest dependency advisory](runs/RUN-20260806-020.md) — `BLOCKED`: exact-head run #159 found `PYSEC-2026-1845` / `CVE-2025-71176`; pytest now requires fixed version 9.0.3+, replacement CI pending
 - [RUN-20260806-019 — RC5.1 canonical intelligence model](runs/RUN-20260806-019.md) — `CI_VALIDATION_PENDING`: canonical classifications and deterministic confidence scoring committed; GitHub Actions evidence required
