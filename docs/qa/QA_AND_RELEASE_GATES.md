@@ -65,9 +65,10 @@ The committed presence of a workflow file is not release evidence. Phase 1 requi
 8. both artifacts are independently observable and their immutable identifiers match;
 9. manual observer execution must explicitly identify a real upstream `RC4 Quality Gate` run and may not self-attest;
 10. a deterministic verifier must reject failed, malformed, incomplete or mismatched evidence pairs;
-11. absent, skipped, cancelled or failed execution may not be interpreted as success.
+11. a repository-side execution-readiness preflight must distinguish configuration readiness from actual workflow execution and must mark its own report as non-gate-eligible;
+12. absent, skipped, cancelled or failed execution may not be interpreted as success.
 
-Current state after `RUN-20260806-009`:
+Current state after `RUN-20260806-010`:
 
 - structural workflow contract: implemented;
 - dedicated observable contract job: implemented;
@@ -79,6 +80,9 @@ Current state after `RUN-20260806-009`:
 - manual observer evidence validation: implemented;
 - deterministic evidence-pair verifier: implemented;
 - verifier positive and negative tests: implemented, execution `PENDING`;
+- repository-side execution-readiness preflight: implemented;
+- preflight positive and negative tests: implemented, execution `PENDING`;
+- preflight output release-gate eligibility: explicitly `false`;
 - successful quality-gate execution evidence: `PENDING`;
 - successful observer execution evidence: `PENDING`;
 - matching artifacts for one head SHA and run ID: `PENDING`;
