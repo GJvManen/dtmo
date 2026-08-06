@@ -114,7 +114,7 @@ def purge_expired_projections(
     )
     if not identifiers:
         return PurgeResult(deleted=0, cutoff=cutoff)
-    result = session.execute(
+    session.execute(
         delete(AuditProjectionRecord).where(AuditProjectionRecord.source_event_id.in_(identifiers))
     )
-    return PurgeResult(deleted=int(result.rowcount or 0), cutoff=cutoff)
+    return PurgeResult(deleted=len(identifiers), cutoff=cutoff)
