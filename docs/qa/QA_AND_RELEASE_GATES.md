@@ -22,6 +22,7 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 - RC5.1 #177 through RC5.12 #224: `PASS`
 - RC6.1 #229: `PASS`
 - RC6.2 #243: `PASS`
+- RC6.3 OpenSearch Recovery Gate #5 and RC4 Quality Gate #253: `PASS`
 
 Every new branch still requires its own exact-head execution.
 
@@ -41,24 +42,35 @@ Clean-target logical backup and restore, canonical intelligence, provenance, rev
 
 Quality Gate #243 proved isolated source/target MinIO recovery, verified-empty target state, backup and object SHA-256 digests, exact object manifests, provenance references, recovery timing and retained evidence. PR #24 is merged.
 
-### RC6.3 OpenSearch — `CI_VALIDATION_PENDING`
+### RC6.3 OpenSearch — `PASS`
 
-Committed controls:
+OpenSearch Recovery Gate #5, run `31111652425`, and RC4 Quality Gate #253, run `31111652503`, succeeded on exact head `fbe3924d202d81ab59ebbcd10889a9a75b146941`.
+
+Evidence proves:
 
 - PostgreSQL is the canonical normalized source;
-- recovery uses a clean OpenSearch target where the index must not pre-exist;
-- index mapping is explicit and dynamically strict;
-- canonical documents retain content hash, governance state and provenance references;
-- source and target manifests are sorted deterministically and SHA-256 hashed;
-- document count and complete manifest digest must match exactly;
+- the target index did not exist before reconstruction;
+- root and provenance mappings are explicitly `dynamic: strict`;
+- canonical content hash, governance state and provenance references are retained;
+- source and target manifests are deterministically sorted and SHA-256 hashed;
+- complete manifest digests and document counts match exactly;
 - reconstruction duration and quiesced-source RPO basis are retained;
-- `opensearch-reconstruction-evidence` is uploaded with `if-no-files-found: error`;
-- a separate `recovery-gate` executes with `always()` and fails closed unless reconstruction succeeds;
-- workflow regression tests protect service isolation, evidence upload and fail-closed behavior.
+- the independent recovery gate fails closed unless reconstruction succeeds.
 
-No exact-head execution has completed, so no OpenSearch reconstruction result is accepted yet.
+Retained artifacts:
 
-Open Phase 3 objective after RC6.3 is combined multi-store recovery acceptance. Phase 3 remains `BLOCKED` until all recovery controls are evidenced.
+- `opensearch-reconstruction-evidence` — `8971961873`;
+- `release-gate-evidence` — `8971960034`;
+- `postgres-restore-evidence` — `8971952797`;
+- `minio-restore-evidence` — `8971939713`;
+- `workflow-contract-evidence` — `8971929978`;
+- `dependency-audit-evidence` — `8971928709`.
+
+PR #25 merged as `4b08640e612801898307b065f7f2413c34a090c2`.
+
+**RC6.3: `PASS`.**
+
+Phase 3 remains `IN PROGRESS`: PostgreSQL, MinIO and OpenSearch are individually evidenced, but one combined multi-store recovery acceptance run with a consistent recovery point, cross-store provenance integrity and end-to-end RTO/RPO is still required.
 
 ## Security, privacy and publication invariants
 
@@ -74,8 +86,8 @@ Open Phase 3 objective after RC6.3 is combined multi-store recovery acceptance. 
 
 ## Current run decision
 
-`RUN-20260806-042` is `CI_VALIDATION_PENDING` until the exact branch-head OpenSearch Recovery Gate reconstructs the index, verifies deterministic manifests and retains the required evidence.
+`RUN-20260806-042` is `PASS`. The exact-head recovery and aggregate release gates succeeded, evidence is retained and PR #25 is merged.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC6.3 OpenSearch Recovery Gate and remediate only its earliest deterministic failure, or merge after complete success.
+Implement combined multi-store recovery acceptance for PostgreSQL, MinIO and OpenSearch with one consistent recovery point, cross-store provenance verification and measured end-to-end RTO/RPO.
