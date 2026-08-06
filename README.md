@@ -13,26 +13,24 @@ DTMO is ontwikkeld van RC4.1 tot en met RC6.3.
 - RC4-platformbasis: API, persistence, immutable Intelligence Lake, connectorcatalogus, Knowledge Graph, SOC/CTI-workspace, RBAC, migraties, MinIO en OpenSearch;
 - RC5.1 tot en met RC5.12: canonieke intelligence, least-privilege RBAC, functiescheiding, trusted JWT-principals, JWKS-keyrotatie, revocation/replaybescherming, tamper-evidente persistente auditing, privacy-minimalisatie, retention, legal hold en bounded purge;
 - Phase 2 — application security, identity en privacy: `PASS`;
-- RC6.1 — clean-target PostgreSQL backup en restore met auditketen-, provenance- en schema-integriteitsverificatie: `PASS` via Quality Gate #229 en PR #22;
-- RC6.2 — geïsoleerde MinIO objectbackup en clean-target restore met objectdigest- en provenance-referenceverificatie: `PASS` via Quality Gate #243 en PR #24.
+- RC6.1 — clean-target PostgreSQL backup en restore: `PASS` via Quality Gate #229 en PR #22;
+- RC6.2 — geïsoleerde MinIO objectbackup en clean-target restore: `PASS` via Quality Gate #243 en PR #24;
+- RC6.3 — clean OpenSearch reconstruction vanuit canonieke PostgreSQL-data met strikte provenance-mapping en deterministische manifestverificatie: `PASS` via OpenSearch Recovery Gate #5, RC4 Quality Gate #253 en PR #25.
 
-### Actieve run: RC6.3
+### RC6.3 evidence
 
-**Clean-environment OpenSearch reconstruction: `CI_VALIDATION_PENDING`.**
+Exacte head `fbe3924d202d81ab59ebbcd10889a9a75b146941` is volledig groen. De evidence omvat:
 
-De branch bevat:
-
-- canonieke documentprojectie vanuit PostgreSQL;
-- expliciete, dynamisch strikte OpenSearch-mapping;
-- verificatie dat de target-index vóór reconstructie niet bestaat;
+- een niet-bestaande target-index vóór reconstructie;
+- expliciete root- en provenance-submapping met `dynamic: strict`;
 - behoud van content hashes, review/share-status en provenance-references;
-- deterministische bron- en targetmanifesten met SHA-256;
-- exacte vergelijking van documentaantal en manifestdigest;
+- deterministische bron- en targetmanifesten met identieke SHA-256;
+- exacte documentaantalcontrole;
 - gemeten reconstructieduur en quiesced-source RPO-basis;
-- retained `opensearch-reconstruction-evidence`;
-- een onafhankelijk observeerbare fail-closed recoverygate.
+- retained `opensearch-reconstruction-evidence` artifact `8971961873`;
+- fail-closed recoverygate en volledige aggregate Quality Gate.
 
-RC6.3 wordt pas `PASS` nadat GitHub Actions op de exacte branch-head aantoonbaar groen is. Een geconfigureerde of niet-uitgevoerde test wordt nooit als pass behandeld.
+PR #25 is gemerged naar `main` als `4b08640e612801898307b065f7f2413c34a090c2`.
 
 ## Roadmapstatus
 
@@ -40,7 +38,7 @@ RC6.3 wordt pas `PASS` nadat GitHub Actions op de exacte branch-head aantoonbaar
 |---|---|
 | 1. CI en workflow-integriteit | `PASS` |
 | 2. Applicatiebeveiliging, identity en privacy | `PASS` |
-| 3. Data-integriteit, backup en recovery | `IN PROGRESS` — PostgreSQL en MinIO bewezen; OpenSearch RC6.3 wacht op exact-head evidence; gecombineerde recovery volgt daarna |
+| 3. Data-integriteit, backup en recovery | `IN PROGRESS` — PostgreSQL, MinIO en OpenSearch afzonderlijk bewezen; gecombineerde multi-store recovery acceptance ontbreekt nog |
 | 4. Live connectorbetrouwbaarheid en provenance | `NOT STARTED` |
 | 5. Performance en schaalbaarheid | `NOT STARTED` |
 | 6. Frontend accessibility en operationele UX | `NOT STARTED` |
@@ -49,7 +47,7 @@ RC6.3 wordt pas `PASS` nadat GitHub Actions op de exacte branch-head aantoonbaar
 | 9. External assurance | `NOT STARTED` |
 | 10. Production go/no-go | `BLOCKED` |
 
-**Precies één volgende prioriteit:** inspecteer de exacte RC6.3 OpenSearch Recovery Gate; herstel uitsluitend de eerste deterministische fout of merge na volledige groene evidence.
+**Precies één volgende prioriteit:** gecombineerde multi-store recovery acceptance voor PostgreSQL, MinIO en OpenSearch met één consistente recovery point, cross-store provenance-integriteit en gemeten end-to-end RTO/RPO.
 
 ## Governance-invarianten
 
