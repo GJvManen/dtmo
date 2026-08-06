@@ -182,6 +182,11 @@ class ConnectorStateStore:
             else:
                 state.health_status = "degraded"
 
+        # Persist the parent row before inserting health-event children. The models
+        # intentionally avoid an ORM relationship, so SQLAlchemy cannot infer this
+        # dependency ordering from object references alone.
+        self.session.flush([state])
+
         self.session.add(
             ConnectorHealthEvent(
                 connector_id=connector_id,
