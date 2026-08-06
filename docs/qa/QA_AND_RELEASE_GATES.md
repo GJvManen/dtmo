@@ -16,62 +16,43 @@ Every DTMO development step must define and evaluate explicit quality gates. A c
 | Privacy | Direct identifiers, purpose limitation, retention and legal holds are verified |
 | Release | All release-critical jobs and evidence artifacts succeed |
 
-## Phase 1 — CI and workflow integrity
+## Evidenced quality gates
 
-- RC5.1 Quality Gate #177: `PASS`.
-- RC5.2 Quality Gate #179: `PASS`.
-- RC5.3 Quality Gate #197: `PASS`.
-- RC5.4 Quality Gate #203: `PASS`.
-- RC5.5 Quality Gate #205: `PASS`.
-- RC5.6 Quality Gate #207: `PASS`.
-- RC5.7 Quality Gate #209: `PASS`.
-- RC5.8 Quality Gate #215: `PASS`.
-- RC5.9 Quality Gate #217: `PASS`.
-- RC5.10 Quality Gate #219: `PASS`.
-- Every new branch still requires its own exact-head execution.
+RC5.1 #177, RC5.2 #179, RC5.3 #197, RC5.4 #203, RC5.5 #205, RC5.6 #207, RC5.7 #209, RC5.8 #215, RC5.9 #217, RC5.10 #219 and RC5.11 #221 are `PASS`.
 
 ## Phase 2 — Application security, identity and privacy
 
-Current state after `RUN-20260806-038`:
+Current state after `RUN-20260806-039`:
 
-- least-privilege RBAC, trusted principals, JWKS rotation, token-state enforcement, operational revocation, denial auditing and revocation reconciliation are evidenced;
-- RC5.11 adds derived audit projections that replace direct principal, resource and request identifiers with purpose-bound HMAC-SHA-256 references;
-- direct free-text provenance is excluded from minimized projections while the immutable source event hash is retained for integrity correlation;
-- retention decisions are explicit, timezone-safe and deterministic;
-- legal hold overrides ordinary expiry without mutating the source audit chain;
-- production requires a dedicated pseudonymization secret of at least 32 characters;
-- identity projection retention may not exceed audit projection retention;
-- source audit records remain append-only and cryptographically verifiable;
-- exact-head RC5.11 CI evidence remains `PENDING`;
-- storage-layer enforcement and scheduled purge execution remain a separate bounded objective;
-- Phase 2 completion remains `BLOCKED` until RC5.11 is evidenced.
+- privacy-minimized projections use purpose-bound references and exclude direct identity, resource and request identifiers;
+- RC5.12 adds a dedicated storage table for derived projections, separate from immutable source audit records;
+- projection writes are idempotent and reject event-ID/source-hash conflicts;
+- retention expiry is materialized at write time;
+- purge deletes only expired records without legal hold;
+- legal hold can be escalated and is never silently cleared by ordinary persistence;
+- migration `0004_minimized_projection` is reversible;
+- exact-head RC5.12 CI evidence remains `PENDING`.
 
 ## Phase 3 — Data integrity and recovery
 
 - canonical and persistent-audit migrations are evidenced;
-- RC5.10 adds deterministic recovery for volatile token-revocation state from integrity-verified durable evidence;
-- clean-environment database/object restoration, RPO and RTO evidence are not yet implemented;
-- Phase 3 completion: `BLOCKED`.
+- volatile revocation state is recoverable from integrity-verified durable evidence;
+- projection retention storage is reversible and independently purgeable;
+- clean-environment database/object restoration, RPO and RTO evidence remain outstanding.
 
 ## Security, privacy and publication invariants
 
-- ingestion creates candidate intelligence only;
-- reviewed and share-approved states remain distinct;
-- external publication requires explicit human approval by a principal different from the reviewer;
-- service accounts may not review, approve sharing or revoke tokens;
-- source provenance and confidence may not be silently discarded;
-- production secrets may not be committed;
-- production token-state failure must deny authentication;
-- authorization-denial audit failure must never permit access;
-- revocation recovery must never proceed from an invalid audit chain;
-- privacy reporting projections must not expose direct identity, token or request identifiers;
-- legal holds must be explicit and may not silently bypass auditability;
-- missing CI or scan evidence may not be reported as successful.
+- immutable source audit records are never included in projection purge;
+- legal-hold records must survive ordinary retention purge;
+- direct identifiers may not enter minimized projection storage;
+- production token-state and authorization-denial failures remain fail closed;
+- human publication approval and separation of duties remain mandatory;
+- missing CI evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260806-038` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
+`RUN-20260806-039` is `CI_VALIDATION_PENDING` until the exact PR-head Quality Gate completes successfully.
 
 ## Exactly one next priority
 
-Inspect the exact-head RC5.11 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
+Inspect the exact-head RC5.12 Quality Gate and either resolve only its earliest deterministic failure or merge after full success.
