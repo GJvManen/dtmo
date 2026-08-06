@@ -21,6 +21,7 @@ dependencies = [
   "apscheduler>=3.11,<4",
   "prometheus-client>=0.22,<1",
   "structlog>=25,<26",
+  "PyJWT>=2.10,<3",
 ]
 
 [project.optional-dependencies]
@@ -75,4 +76,8 @@ packages = ["dtmo"]
 
 [[tool.mypy.overrides]]
 module = ["apscheduler.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["jwt.*"]
 ignore_missing_imports = true

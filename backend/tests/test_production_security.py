@@ -42,6 +42,7 @@ def test_production_accepts_secure_human_gated_configuration() -> None:
         minio_secure=True,
         minio_secret_key="secret-value",
         api_key="a" * 32,
+        token_signing_secret="t" * 32,
         publish_requires_human_approval=True,
         database_url="postgresql+psycopg://dtmo@postgres:5432/dtmo",
     )
