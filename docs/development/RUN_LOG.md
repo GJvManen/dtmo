@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260806-012 — GitHub Actions execution canary](runs/RUN-20260806-012.md) — `BLOCKED`: dependency-free canary committed to `main`; no observable CI status, indicating a repository/account Actions policy or integration visibility blocker
 - [RUN-20260806-011 — Aggregate CI release gate](runs/RUN-20260806-011.md) — `BLOCKED`: fail-closed aggregate decision and regression protection committed; observable execution evidence remains absent
 - [RUN-20260806-010 — Repository-side CI execution readiness preflight](runs/RUN-20260806-010.md) — `BLOCKED`: deterministic preflight and negative tests committed; actual GitHub Actions execution evidence remains absent
 - [RUN-20260806-009 — Deterministic CI evidence pair verification](runs/RUN-20260806-009.md) — `BLOCKED`: verifier and negative tests committed; real matching primary and observer execution artifacts remain absent
