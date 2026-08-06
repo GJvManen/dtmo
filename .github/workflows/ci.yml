@@ -156,10 +156,19 @@ jobs:
         run: python -m pip install -e '.[test]'
       - name: Audit resolved Python dependencies
         run: |
-          set -euo pipefail
+          set -uo pipefail
           mkdir -p artifacts
-          python -m pip_audit --format json --output artifacts/pip-audit.json
+          AUDIT_EXIT_CODE=0
+          python -m pip_audit --format json --output artifacts/pip-audit.json || AUDIT_EXIT_CODE=$?
           test -s artifacts/pip-audit.json
+          echo "## pip-audit JSON evidence"
+          python -m json.tool artifacts/pip-audit.json
+          echo "## pip-audit human-readable findings"
+          python -m pip_audit || true
+          if [ "$AUDIT_EXIT_CODE" -ne 0 ]; then
+            echo "Dependency audit found one or more known vulnerabilities."
+            exit "$AUDIT_EXIT_CODE"
+          fi
       - name: Upload dependency audit evidence
         if: always()
         uses: actions/upload-artifact@v7
