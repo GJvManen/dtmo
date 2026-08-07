@@ -1,0 +1,103 @@
+name: RC7 Connector Replay Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  connector-replay:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: dtmo
+          POSTGRES_PASSWORD: dtmo-test
+          POSTGRES_DB: dtmo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dtmo -d dtmo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://dtmo:dtmo-test@127.0.0.1:5432/dtmo
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:dtmo-test@127.0.0.1:5432/dtmo
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - run: python -m alembic upgrade head
+      - name: Run replay regressions
+        run: python -m pytest -q backend/tests/test_rc7_connector_replay.py --junitxml=artifacts/connector-replay-tests.xml
+      - name: Emit persistent replay evidence
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from datetime import UTC, datetime
+          from pathlib import Path
+          from uuid import uuid4
+          from sqlalchemy import create_engine, select
+          from sqlalchemy.orm import Session
+          from dtmo.connectors.provenance import IngestionContext, normalize_connector_records
+          from dtmo.connectors.replay import ConnectorReplayClaim, ConnectorReplayStore
+
+          engine = create_engine(os.environ['DATABASE_URL'])
+          raw = {'cveID': 'CVE-2026-4321', 'dateAdded': '2026-08-07'}
+          with Session(engine) as session:
+              registry = ConnectorReplayStore(session)
+              def context():
+                  return IngestionContext(
+                      connector_id='cisa-kev', run_id=uuid4(),
+                      source_uri='https://www.cisa.gov/known-exploited-vulnerabilities-catalog',
+                      fetched_at=datetime.now(UTC), confidence=95,
+                  )
+              first = normalize_connector_records([raw], context=context(), external_id_field='cveID', replay_registry=registry)
+              session.commit()
+              second = normalize_connector_records([raw], context=context(), external_id_field='cveID', replay_registry=registry)
+              claims = list(session.scalars(select(ConnectorReplayClaim)))
+              evidence = {
+                  'schema_version': 1,
+                  'generated_at': datetime.now(UTC).isoformat(),
+                  'first_candidate_count': len(first.candidates),
+                  'replay_candidate_count': len(second.candidates),
+                  'replay_quarantine_reasons': [item.reason for item in second.quarantined],
+                  'claim_count': len(claims),
+                  'publish_approved': any(item.publish_approved for item in (*first.candidates, *second.quarantined, *claims)),
+              }
+              evidence['decision'] = 'pass' if (
+                  evidence['first_candidate_count'] == 1
+                  and evidence['replay_candidate_count'] == 0
+                  and evidence['replay_quarantine_reasons'] == ['replayed_record']
+                  and evidence['claim_count'] == 1
+                  and evidence['publish_approved'] is False
+              ) else 'fail'
+              if evidence['decision'] != 'pass':
+                  raise SystemExit('connector replay evidence failed')
+              Path('artifacts/connector-replay-evidence.json').write_text(json.dumps(evidence, indent=2, sort_keys=True), encoding='utf-8')
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: connector-replay-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  connector-replay-gate:
+    if: always()
+    needs: [connector-replay]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed replay evidence
+        env:
+          REPLAY_RESULT: ${{ needs.connector-replay.result }}
+        run: test "$REPLAY_RESULT" = "success"
