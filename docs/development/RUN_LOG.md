@@ -4,8 +4,9 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260807-050 — RC7.3 quality-gate lint remediation](runs/RUN-20260807-050.md) — `CI_VALIDATION_PENDING`: RC4 Quality Gate #297 failed deterministically on Ruff `S105` for a synthetic redaction-test fixture; fixture was made explicitly non-sensitive with a narrow line-level suppression; no product control changed
-- [RUN-20260807-049 — RC7.3 governed connector contract validation](runs/RUN-20260807-049.md) — `CI_VALIDATION_PENDING`: connector-contract, canary, state and recovery gates passed on head `b333d013d2b183d2678a7aaec04010bc6b1549d1`, but RC4 Quality Gate #297 failed at lint and blocked acceptance
+- [RUN-20260807-051 — RC7.3 exact-head acceptance and merge](runs/RUN-20260807-051.md) — `PASS`: exact head `54ad16cd6694ba17aa2ab28d56c9beaeaf7b789f` passed RC4 Quality #301, RC7 Canary #34, RC7 Contract #5, RC7 State #22, RC6 Multi-store #43 and RC6 OpenSearch #53; retained connector-contract evidence artifact `8981283640`; PR #30 merged as `0e1d4d370aff0a1e340a10fe1fd373d282864abc`
+- [RUN-20260807-050 — RC7.3 quality-gate lint remediation](runs/RUN-20260807-050.md) — `PASS`: remediation later validated by exact-head Quality Gate #301 and accepted through RUN-20260807-051
+- [RUN-20260807-049 — RC7.3 governed connector contract validation](runs/RUN-20260807-049.md) — `PASS`: governed contract validation accepted through RUN-20260807-051 with retained evidence and all required exact-head regression gates green
 - [RUN-20260807-048 — RC7.2 exact-head acceptance and merge](runs/RUN-20260807-048.md) — `PASS`: Connector State Gate #17, Quality Gate #292, Canary Gate #25, OpenSearch Recovery Gate #44 and Multi-store Recovery Gate #34 succeeded on exact head `af4625b0f285da6e2b0d5135a623c418a9f3b9d4`; retained connector-state artifact `8976473782`; PR #29 merged as `ac31b9d4409b97d6db734791365a3dd814255c9d`
 - [RUN-20260807-047 — RC7.2 parent-before-child persistence ordering](runs/RUN-20260807-047.md) — `PASS`: remediation validated by exact-head Connector State Gate #17 and retained evidence; superseded by RUN-20260807-048 acceptance
 - [RUN-20260807-046 — Exact-head CI execution blocker](runs/RUN-20260807-046.md) — superseded by successful exact-head execution and RUN-20260807-048 acceptance
@@ -39,8 +40,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260807-050` is `CI_VALIDATION_PENDING`. The first deterministic RC4 failure was remediated without changing product controls; exact-head GitHub Actions must execute again before RC7.3 can be accepted.
+`RUN-20260807-051` is `PASS`. RC7.3 governed connector contract validation was accepted on immutable exact-head evidence and PR #30 was merged. Phase 4 remains `IN PROGRESS`; issue #1 continues to gate real production credentials, provider rate limits, licences and terms.
 
 ## Exactly one next priority
 
-Inspect the first RC4 Quality Gate registered for the current exact head; remediate only its earliest deterministic failure, or accept and merge PR #30 only after every required exact-head gate and retained evidence artifact succeeds.
+Implement and evidence connector payload provenance and normalization enforcement at the ingestion boundary: every candidate record must retain immutable source URI, source timestamp where supplied, fetch timestamp, connector/run identity, payload digest and confidence; malformed or duplicate records must fail closed to quarantine, and successful ingestion must never imply publication approval.
