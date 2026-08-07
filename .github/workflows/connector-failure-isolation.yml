@@ -1,0 +1,135 @@
+name: RC7 Connector Failure Isolation Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  connector-failure-isolation:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Run failure isolation regressions
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc7_connector_failure_isolation.py --junitxml=artifacts/connector-failure-isolation-tests.xml
+      - name: Emit failure isolation evidence
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from datetime import UTC, datetime, timedelta
+          from pathlib import Path
+          from uuid import uuid4
+
+          from sqlalchemy import create_engine
+          from sqlalchemy.orm import Session
+
+          from dtmo.connectors.health import evaluate_connector_execution
+          from dtmo.connectors.state import ConnectorStateStore
+          from dtmo.persistence.models import Base
+
+          engine = create_engine('sqlite+pysqlite:///:memory:')
+          Base.metadata.create_all(engine)
+          observed = datetime(2026, 8, 7, 13, 0, tzinfo=UTC)
+
+          with Session(engine) as session:
+              store = ConnectorStateStore(session, failure_threshold=3, isolation_minutes=15)
+              for offset in range(3):
+                  store.record_run(
+                      connector_id='cisa-kev',
+                      run_id=uuid4(),
+                      succeeded=False,
+                      duration_seconds=1.0,
+                      record_count=0,
+                      quarantined=[],
+                      error_code='upstream_unavailable',
+                      observed_at=observed + timedelta(minutes=offset),
+                  )
+
+              isolated = evaluate_connector_execution(
+                  store, 'cisa-kev', now=observed + timedelta(minutes=3)
+              )
+              independent = evaluate_connector_execution(
+                  store, 'nvd', now=observed + timedelta(minutes=3)
+              )
+              recovery = evaluate_connector_execution(
+                  store, 'cisa-kev', now=observed + timedelta(minutes=18)
+              )
+              history = store.health_history('cisa-kev')
+
+              evidence = {
+                  'schema_version': 1,
+                  'generated_at': datetime.now(UTC).isoformat(),
+                  'failure_threshold': store.failure_threshold,
+                  'isolation_minutes': store.isolation_minutes,
+                  'failure_events': len(history),
+                  'isolated_connector': {
+                      'connector_id': isolated.connector_id,
+                      'allowed': isolated.allowed,
+                      'reason': isolated.reason,
+                      'health_status': isolated.health_status,
+                      'consecutive_failures': isolated.consecutive_failures,
+                      'retry_at': isolated.retry_at.isoformat() if isolated.retry_at else None,
+                      'publish_approved': isolated.publish_approved,
+                  },
+                  'independent_connector': {
+                      'connector_id': independent.connector_id,
+                      'allowed': independent.allowed,
+                      'reason': independent.reason,
+                      'publish_approved': independent.publish_approved,
+                  },
+                  'recovery_probe': {
+                      'allowed': recovery.allowed,
+                      'reason': recovery.reason,
+                      'publish_approved': recovery.publish_approved,
+                  },
+                  'health_events_publish_approved': [event.publish_approved for event in history],
+              }
+
+              evidence['decision'] = 'pass' if (
+                  evidence['failure_events'] == 3
+                  and evidence['isolated_connector']['allowed'] is False
+                  and evidence['isolated_connector']['reason'] == 'circuit_open'
+                  and evidence['isolated_connector']['consecutive_failures'] == 3
+                  and evidence['isolated_connector']['publish_approved'] is False
+                  and evidence['independent_connector']['allowed'] is True
+                  and evidence['independent_connector']['publish_approved'] is False
+                  and evidence['recovery_probe']['allowed'] is True
+                  and evidence['recovery_probe']['reason'] == 'recovery_probe'
+                  and evidence['recovery_probe']['publish_approved'] is False
+                  and not any(evidence['health_events_publish_approved'])
+              ) else 'fail'
+
+          Path('artifacts').mkdir(exist_ok=True)
+          Path('artifacts/connector-failure-isolation-evidence.json').write_text(
+              json.dumps(evidence, indent=2, sort_keys=True), encoding='utf-8'
+          )
+          if evidence['decision'] != 'pass':
+              raise SystemExit('connector failure isolation evidence failed')
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: connector-failure-isolation-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  connector-failure-isolation-gate:
+    if: always()
+    needs: [connector-failure-isolation]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed failure-isolation evidence
+        env:
+          FAILURE_ISOLATION_RESULT: ${{ needs.connector-failure-isolation.result }}
+        run: test "$FAILURE_ISOLATION_RESULT" = "success"
