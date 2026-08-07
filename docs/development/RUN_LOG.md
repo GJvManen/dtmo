@@ -4,9 +4,10 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260807-047 — RC7.2 parent-before-child persistence ordering](runs/RUN-20260807-047.md) — `CI_VALIDATION_PENDING`: Connector State Gate #13 migrated successfully and all five targeted tests passed, but its PostgreSQL evidence fixture exposed a foreign-key ordering defect; explicit parent-state flushing is committed and exact-head evidence is pending
-- [RUN-20260807-046 — Exact-head CI execution blocker](runs/RUN-20260807-046.md) — `CI_VALIDATION_PENDING`: PR #29 is mergeable and the connector-state workflow has an applicable `pull_request` trigger, but GitHub Actions registered no workflow run for exact head `d489a60bcc2492b0a7dc0423bdf91c32211a07ed`; no execution or retained artifact is treated as `PASS`
-- [RUN-20260806-045 — RC7.2 persistent connector state and failure isolation](runs/RUN-20260806-045.md) — `CI_VALIDATION_PENDING`: PostgreSQL-backed run state, source-health history, connector-scoped isolation and human-reviewed quarantine recovery are committed; UTC normalization now has a focused regression test for naive persisted isolation timestamps, but exact-head execution and retained evidence are still required
+- [RUN-20260807-048 — RC7.2 exact-head acceptance and merge](runs/RUN-20260807-048.md) — `PASS`: Connector State Gate #17, Quality Gate #292, Canary Gate #25, OpenSearch Recovery Gate #44 and Multi-store Recovery Gate #34 succeeded on exact head `af4625b0f285da6e2b0d5135a623c418a9f3b9d4`; retained connector-state artifact `8976473782`; PR #29 merged as `ac31b9d4409b97d6db734791365a3dd814255c9d`
+- [RUN-20260807-047 — RC7.2 parent-before-child persistence ordering](runs/RUN-20260807-047.md) — `PASS`: remediation validated by exact-head Connector State Gate #17 and retained evidence; superseded by RUN-20260807-048 acceptance
+- [RUN-20260807-046 — Exact-head CI execution blocker](runs/RUN-20260807-046.md) — superseded by successful exact-head execution and RUN-20260807-048 acceptance
+- [RUN-20260806-045 — RC7.2 persistent connector state and failure isolation](runs/RUN-20260806-045.md) — `PASS`: PostgreSQL-backed run state, source-health history, connector-scoped isolation and human-reviewed quarantine recovery accepted through RUN-20260807-048
 - [RUN-20260806-044 — RC7.1 governed live connector canary](runs/RUN-20260806-044.md) — `PASS`: RC7 Live Connector Canary Gate #3, RC4 Quality Gate #270, OpenSearch Recovery Gate #22 and Multi-store Recovery Gate #12 succeeded on exact head `c82e20c110354c1163b58ac8b9820756f829a4ae`; retained canary evidence artifact `8973407243`; PR #28 merged as `aeeb0709a26ecb1f20620d7ac21f823fec35e98f`
 - [RUN-20260806-043 — RC6.4 combined multi-store recovery acceptance](runs/RUN-20260806-043.md) — `PASS`: Multi-store Recovery Gate #4, RC4 Quality Gate #262 and OpenSearch Recovery Gate #14 succeeded on exact head `ba3389613341c84aa21b591b706b7819981b7a4b`; combined cross-store evidence retained; PR #26 merged
 - [RUN-20260806-042 — RC6.3 clean OpenSearch reconstruction](runs/RUN-20260806-042.md) — `PASS`: OpenSearch Recovery Gate #5 and RC4 Quality Gate #253 succeeded on exact head `fbe3924d202d81ab59ebbcd10889a9a75b146941`; deterministic reconstruction evidence retained; PR #25 merged
@@ -36,8 +37,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260807-047` is `CI_VALIDATION_PENDING`. Connector State Gate #13 provided real PostgreSQL evidence and exposed a parent-before-child flush defect after migrations and tests passed. The bounded remediation is committed, but no exact-head `PASS` or retained artifact is claimed yet.
+`RUN-20260807-048` is `PASS`. RC7.2 exact-head CI, PostgreSQL persistence verification, fail-closed aggregate gating and retained connector-state evidence were independently observed, and PR #29 was merged using the verified head.
 
 ## Exactly one next priority
 
-Inspect the RC7 Connector State Gate for the current exact head and remediate only its earliest deterministic failure, or merge PR #29 after all exact-head gates and retained evidence succeed.
+Implement and evidence governed connector contract validation for approved live connectors: credentials presence without secret disclosure, rate-limit/backoff behavior, licence/terms provenance and fail-closed quarantine for malformed or duplicate records, while preserving human review before publication.
