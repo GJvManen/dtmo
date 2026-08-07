@@ -107,7 +107,7 @@ The issue #1 external gate for validating real production credentials, provider 
 
 ## RC7.4 payload provenance and normalization enforcement — `CI_VALIDATION_PENDING`
 
-Implemented controls pending exact-head execution evidence:
+Implemented controls:
 
 - immutable ingestion context binds connector ID, run ID, HTTPS source URI, fetch timestamp and confidence before record acceptance;
 - accepted candidates retain optional source timestamp, canonical SHA-256 raw-payload digest and raw evidence;
@@ -120,7 +120,11 @@ Implemented controls pending exact-head execution evidence:
 - the independent aggregate gate fails closed when the provenance job is missing or unsuccessful;
 - workflow structure is regression protected.
 
-No RC7.4 `PASS` is claimed until the exact PR head executes the dedicated gate, existing RC4/RC6/RC7 regression gates complete successfully, and the retained provenance artifact is independently observable.
+The previous exact head `7d96a25cab1fff0fc6cf1d1235efd251618213a8` executed all required RC4/RC6/RC7 workflows successfully, but independent retained-artifact inspection found a release-evidence defect: `quarantine_publish_approved` was emitted as `true` even though every quarantined object itself had `publish_approved = false`. The evidence generator had inverted the meaning by storing `all(item.publish_approved is False ...)` under a positively named approval field, and the workflow asserted the misleading value as true.
+
+RUN-20260807-053 corrected this evidence contract so `quarantine_publish_approved` represents actual approval state and must be `false`; the dedicated workflow now asserts false and a regression test protects aggregate, candidate and quarantine approval evidence. The old green exact-head executions are not accepted as RC7.4 release evidence because their retained artifact was semantically unsafe.
+
+No RC7.4 `PASS` is claimed until fresh exact-head CI executes the dedicated gate, existing RC4/RC6/RC7 regressions complete successfully, and the retained artifact is independently verified to report aggregate, candidate and quarantine publication approval as false.
 
 ## Security, privacy and publication invariants
 
@@ -130,12 +134,13 @@ No RC7.4 `PASS` is claimed until the exact PR head executes the dedicated gate, 
 - connector success, isolation recovery, quarantine release, contract validation or normalization never implies publication approval;
 - provenance and confidence may not be silently discarded;
 - secret values may not be emitted into connector contract evidence;
+- retained evidence must use literal, non-inverted publication-approval semantics;
 - missing, queued, cancelled or unexecuted CI and connector evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260807-052` is `CI_VALIDATION_PENDING`. RC7.4 is implemented but remains unaccepted until exact-head workflow execution and retained artifact verification complete. Phase 4 remains `IN PROGRESS`; external production connector and assurance gates remain tracked in issue #1.
+`RUN-20260807-053` is `CI_VALIDATION_PENDING`. A higher-severity retained-evidence semantics defect was corrected before merge. Fresh exact-head workflow execution and retained artifact verification are required before RC7.4 acceptance. Phase 4 remains `IN PROGRESS`; external production connector and assurance gates remain tracked in issue #1.
 
 ## Exactly one next priority
 
-Inspect the first exact-head RC7 Payload Provenance Gate execution and remediate only its earliest deterministic failure; if all required exact-head RC4/RC6/RC7 gates and retained evidence succeed, accept and merge RC7.4.
+Inspect the fresh exact-head RC7 Payload Provenance Gate and remediate only its earliest deterministic failure; if all required exact-head RC4/RC6/RC7 gates succeed and retained evidence records aggregate, candidate and quarantine publication approval as false, accept and merge RC7.4.
