@@ -25,6 +25,7 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 - RC7.1 Canary Gate #3 and Quality Gate #270: `PASS`
 - RC7.2 Connector State Gate #17 and Quality Gate #292: `PASS`
 - RC7.3 Connector Contract Gate #5 and Quality Gate #301: `PASS`
+- RC7.4 Payload Provenance Gate #7 and Quality Gate #312: `PASS`
 
 ## Phase status
 
@@ -105,9 +106,9 @@ PR #30 was re-read immediately before merge and remained open, mergeable and unc
 
 The issue #1 external gate for validating real production credentials, provider rate limits, licences and terms for every live connector remains open; repository contract validation is not a substitute for external acceptance.
 
-## RC7.4 payload provenance and normalization enforcement — `CI_VALIDATION_PENDING`
+## RC7.4 payload provenance and normalization enforcement — `PASS`
 
-Implemented controls:
+Accepted controls:
 
 - immutable ingestion context binds connector ID, run ID, HTTPS source URI, fetch timestamp and confidence before record acceptance;
 - accepted candidates retain optional source timestamp, canonical SHA-256 raw-payload digest and raw evidence;
@@ -118,13 +119,31 @@ Implemented controls:
 - deterministic canonical JSON hashing prevents dictionary key ordering from changing payload identity;
 - dedicated `RC7 Payload Provenance Gate` runs focused regressions and emits retained machine-readable `payload-provenance-evidence`;
 - the independent aggregate gate fails closed when the provenance job is missing or unsuccessful;
-- workflow structure is regression protected.
+- workflow structure is regression protected;
+- retained evidence uses literal, non-inverted publication-approval semantics.
 
-The previous exact head `7d96a25cab1fff0fc6cf1d1235efd251618213a8` executed all required RC4/RC6/RC7 workflows successfully, but independent retained-artifact inspection found a release-evidence defect: `quarantine_publish_approved` was emitted as `true` even though every quarantined object itself had `publish_approved = false`. The evidence generator had inverted the meaning by storing `all(item.publish_approved is False ...)` under a positively named approval field, and the workflow asserted the misleading value as true.
+RUN-20260807-053 corrected the previous evidence-contract defect so `quarantine_publish_approved` represents actual approval state. Fresh exact-head execution on `1ea6dc5c54e7d710111c8effeb1ddb47cb8dc532` then produced complete release evidence:
 
-RUN-20260807-053 corrected this evidence contract so `quarantine_publish_approved` represents actual approval state and must be `false`; the dedicated workflow now asserts false and a regression test protects aggregate, candidate and quarantine approval evidence. The old green exact-head executions are not accepted as RC7.4 release evidence because their retained artifact was semantically unsafe.
+- RC4 Quality Gate #312, run `31155266077`: `PASS`;
+- RC6 OpenSearch Recovery Gate #64, run `31155266084`: `PASS`;
+- RC6 Multi-store Recovery Gate #54, run `31155266094`: `PASS`;
+- RC7 Connector State Gate #29, run `31155266079`: `PASS`;
+- RC7 Live Connector Canary Gate #45, run `31155266107`: `PASS`;
+- RC7 Connector Contract Gate #16, run `31155266165`: `PASS`;
+- RC7 Payload Provenance Gate #7, run `31155266085`: `PASS`;
+- retained artifact `payload-provenance-evidence`, ID `8984887048`, not expired;
+- artifact digest `sha256:bc46b958cef4f89e09eda2f1059c8f9f56d6fe0f9b0802037298637760761d1d`;
+- downloaded evidence `decision = pass`;
+- connector `cisa-kev-canary` retained HTTPS CISA KEV source provenance, source timestamp, fetch timestamp, run identity and confidence `95`;
+- deterministic payload digest `145f602c19a039fbb7471967a973c4a5c4dbd69ab3966005c4f1790de5920b58`;
+- duplicate count `1`, with `duplicate_external_id` and `missing_external_id` quarantined;
+- aggregate `publish_approved = false`;
+- candidate `candidate_publish_approved = false`;
+- quarantine `quarantine_publish_approved = false`.
 
-No RC7.4 `PASS` is claimed until fresh exact-head CI executes the dedicated gate, existing RC4/RC6/RC7 regressions complete successfully, and the retained artifact is independently verified to report aggregate, candidate and quarantine publication approval as false.
+PR #31 was re-read immediately before merge and remained open, mergeable and unchanged at that exact head. It was merged with expected-head protection as squash commit `5562a2ec9e6d3647b0babfb9549767dc49f2c19d`.
+
+The external issue #1 gate for real production credentials, provider-enforced rate limits, licences/terms and provider-specific acceptance remains open; RC7.4 repository evidence is not a substitute for those external controls.
 
 ## Security, privacy and publication invariants
 
@@ -139,8 +158,8 @@ No RC7.4 `PASS` is claimed until fresh exact-head CI executes the dedicated gate
 
 ## Current run decision
 
-`RUN-20260807-053` is `CI_VALIDATION_PENDING`. A higher-severity retained-evidence semantics defect was corrected before merge. Fresh exact-head workflow execution and retained artifact verification are required before RC7.4 acceptance. Phase 4 remains `IN PROGRESS`; external production connector and assurance gates remain tracked in issue #1.
+`RUN-20260807-054` is `PASS`. RC7.4 exact-head CI and corrected retained payload-provenance evidence were independently verified before expected-head merge of PR #31. Phase 4 remains `IN PROGRESS`; external production connector and assurance gates remain tracked in issue #1.
 
 ## Exactly one next priority
 
-Inspect the fresh exact-head RC7 Payload Provenance Gate and remediate only its earliest deterministic failure; if all required exact-head RC4/RC6/RC7 gates succeed and retained evidence records aggregate, candidate and quarantine publication approval as false, accept and merge RC7.4.
+Implement and evidence connector idempotency and replay protection across repeated live-feed ingestion runs so the same upstream item cannot create duplicate candidate intelligence across runs, while preserving payload provenance, quarantine behavior and mandatory human publication approval.
