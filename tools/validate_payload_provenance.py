@@ -42,7 +42,7 @@ def build_evidence() -> dict[str, object]:
         "duplicate_count": result.duplicate_count,
         "publish_approved": result.publish_approved,
         "candidate_publish_approved": candidate.publish_approved,
-        "quarantine_publish_approved": all(item.publish_approved is False for item in result.quarantined),
+        "quarantine_publish_approved": any(item.publish_approved for item in result.quarantined),
     }
 
 
