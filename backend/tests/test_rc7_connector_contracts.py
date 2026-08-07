@@ -28,13 +28,13 @@ def test_environment_credentials_are_presence_checked_without_secret_disclosure(
         auth_mode="environment",
         credential_env_names=("VENDOR_API_TOKEN",),
     )
-    secret = "super-secret-value-that-must-never-be-evidence"
-    report = validate_connector_contracts([contract], environment={"VENDOR_API_TOKEN": secret})
+    test_token = "non-sensitive-test-token"  # noqa: S105 - fixture verifies evidence redaction, not a credential
+    report = validate_connector_contracts([contract], environment={"VENDOR_API_TOKEN": test_token})
 
     assert report.decision == "pass"
     serialized = json.dumps(report.as_dict(), sort_keys=True)
     assert "VENDOR_API_TOKEN" in serialized
-    assert secret not in serialized
+    assert test_token not in serialized
 
 
 def test_missing_required_credentials_fail_closed() -> None:
