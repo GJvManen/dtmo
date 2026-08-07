@@ -4,7 +4,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Mapping, Protocol
 from uuid import UUID
 
 
@@ -17,6 +17,19 @@ def _as_utc(value: datetime) -> datetime:
 def canonical_payload_digest(payload: Mapping[str, Any]) -> str:
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+class ReplayRegistry(Protocol):
+    def claim(
+        self,
+        *,
+        connector_id: str,
+        external_id: str,
+        payload_digest: str,
+        run_id: UUID,
+        source_uri: str,
+        observed_at: datetime | None = None,
+    ) -> bool: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -71,7 +84,7 @@ class NormalizationResult:
 
     @property
     def duplicate_count(self) -> int:
-        return sum(item.reason == "duplicate_external_id" for item in self.quarantined)
+        return sum(item.reason in {"duplicate_external_id", "replayed_record"} for item in self.quarantined)
 
 
 def normalize_connector_records(
@@ -80,11 +93,13 @@ def normalize_connector_records(
     context: IngestionContext,
     external_id_field: str,
     source_timestamp_field: str | None = None,
+    replay_registry: ReplayRegistry | None = None,
 ) -> NormalizationResult:
     """Normalize untrusted connector records into governed, non-publishable candidates.
 
-    Malformed and duplicate records fail closed to quarantine. Provenance is copied
-    into immutable dataclasses and publication approval is always false.
+    Malformed, same-run duplicate and cross-run replayed records fail closed to
+    quarantine. Provenance is copied into immutable dataclasses and publication
+    approval is always false.
     """
     context.validate()
     fetched_at = _as_utc(context.fetched_at)
@@ -160,6 +175,28 @@ def normalize_connector_records(
                 continue
             if isinstance(source_value, str):
                 source_timestamp = source_value.strip()
+
+        if replay_registry is not None and not replay_registry.claim(
+            connector_id=context.connector_id,
+            external_id=external_id,
+            payload_digest=digest,
+            run_id=context.run_id,
+            source_uri=context.source_uri,
+            observed_at=fetched_at,
+        ):
+            quarantined.append(
+                QuarantinedPayload(
+                    connector_id=context.connector_id,
+                    run_id=context.run_id,
+                    reason="replayed_record",
+                    source_uri=context.source_uri,
+                    fetched_at=fetched_at,
+                    payload_digest=digest,
+                    raw_evidence=raw,
+                    external_id=external_id,
+                )
+            )
+            continue
 
         candidates.append(
             CandidateRecord(
