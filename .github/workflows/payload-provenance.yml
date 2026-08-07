@@ -1,0 +1,61 @@
+name: RC7 Payload Provenance Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  payload-provenance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e '.[test]'
+      - name: Run payload provenance regressions
+        run: python -m pytest -q backend/tests/test_rc7_payload_provenance.py
+      - name: Emit payload provenance evidence
+        run: |
+          set -euo pipefail
+          python tools/validate_payload_provenance.py --output artifacts/payload-provenance-evidence.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          evidence = json.loads(Path('artifacts/payload-provenance-evidence.json').read_text())
+          assert evidence['decision'] == 'pass'
+          assert evidence['source_uri'].startswith('https://')
+          assert len(evidence['payload_digest']) == 64
+          assert evidence['confidence'] == 95
+          assert evidence['duplicate_count'] == 1
+          assert evidence['quarantine_reasons'] == ['duplicate_external_id', 'missing_external_id']
+          assert evidence['publish_approved'] is False
+          assert evidence['candidate_publish_approved'] is False
+          assert evidence['quarantine_publish_approved'] is False
+          PY
+      - name: Upload payload provenance evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: payload-provenance-evidence
+          path: artifacts/payload-provenance-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+  payload-provenance-gate:
+    if: always()
+    needs: [payload-provenance]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail closed on missing or failed payload provenance evidence
+        env:
+          PROVENANCE_RESULT: ${{ needs.payload-provenance.result }}
+        run: test "$PROVENANCE_RESULT" = "success"

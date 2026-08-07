@@ -4,6 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260807-053 — RC7.4 quarantine publication-evidence remediation](runs/RUN-20260807-053.md) — `CI_VALIDATION_PENDING`: retained artifact inspection found misleading `quarantine_publish_approved=true`; evidence semantics, workflow assertion and regression protection corrected; fresh exact-head execution required before acceptance
+- [RUN-20260807-052 — RC7.4 payload provenance and normalization enforcement](runs/RUN-20260807-052.md) — `CI_VALIDATION_PENDING`: payload-level source/run/fetch identity, deterministic SHA-256, confidence retention, fail-closed malformed/duplicate quarantine and non-publication invariants implemented; exact-head workflow evidence still required
 - [RUN-20260807-051 — RC7.3 exact-head acceptance and merge](runs/RUN-20260807-051.md) — `PASS`: exact head `54ad16cd6694ba17aa2ab28d56c9beaeaf7b789f` passed RC4 Quality #301, RC7 Canary #34, RC7 Contract #5, RC7 State #22, RC6 Multi-store #43 and RC6 OpenSearch #53; retained connector-contract evidence artifact `8981283640`; PR #30 merged as `0e1d4d370aff0a1e340a10fe1fd373d282864abc`
 - [RUN-20260807-050 — RC7.3 quality-gate lint remediation](runs/RUN-20260807-050.md) — `PASS`: remediation later validated by exact-head Quality Gate #301 and accepted through RUN-20260807-051
 - [RUN-20260807-049 — RC7.3 governed connector contract validation](runs/RUN-20260807-049.md) — `PASS`: governed contract validation accepted through RUN-20260807-051 with retained evidence and all required exact-head regression gates green
@@ -40,8 +42,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260807-051` is `PASS`. RC7.3 governed connector contract validation was accepted on immutable exact-head evidence and PR #30 was merged. Phase 4 remains `IN PROGRESS`; issue #1 continues to gate real production credentials, provider rate limits, licences and terms.
+`RUN-20260807-053` is `CI_VALIDATION_PENDING`. The previous exact head had green CI, but its retained RC7.4 artifact exposed misleading `quarantine_publish_approved=true` evidence. That evidence semantic has been corrected and regression protected; fresh exact-head execution and retained artifact inspection are required before RC7.4 can be accepted. Phase 4 remains `IN PROGRESS`; issue #1 continues to gate production credentials, provider limits, licences/terms and external acceptance.
 
 ## Exactly one next priority
 
-Implement and evidence connector payload provenance and normalization enforcement at the ingestion boundary: every candidate record must retain immutable source URI, source timestamp where supplied, fetch timestamp, connector/run identity, payload digest and confidence; malformed or duplicate records must fail closed to quarantine, and successful ingestion must never imply publication approval.
+Inspect the fresh exact-head RC7 Payload Provenance Gate and remediate only its earliest deterministic failure; if all required exact-head gates and retained evidence succeed with aggregate, candidate and quarantine publication approval all false, accept and merge RC7.4.
