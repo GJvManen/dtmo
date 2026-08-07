@@ -1,6 +1,6 @@
 # RC7.5 Connector Replay Gate
 
-Status: `CI_VALIDATION_PENDING`
+Status: `PASS`
 
 ## Required evidence
 
@@ -12,21 +12,21 @@ Status: `CI_VALIDATION_PENDING`
 - `RC7 Connector Replay Gate` executes on the exact PR head and retains `connector-replay-evidence`;
 - existing RC4, RC6 and RC7 regression gates remain successful on the same head.
 
-## Executed implementation-head evidence
+## Final exact-head evidence
 
-Implementation head `b1cdcfbdead00b8b687691a2b749407842fa0a14` executed successfully in GitHub Actions:
-- RC7 Connector Replay Gate #1 / run `31163250434` — success;
-- RC7 Connector State Gate #30 — success;
-- RC4 Quality Gate #317 — success;
-- RC6 OpenSearch Recovery Gate #69 — success;
-- RC6 Multi-store Recovery Gate #59 — success;
-- RC7 Connector Contract Gate #21 — success;
-- RC7 Live Connector Canary Gate #50 — success;
-- RC7 Payload Provenance Gate #12 — success.
+Exact PR head `677b90b8690a60b2a9de130bc50e3b273b351e6d` executed successfully in GitHub Actions:
+- RC7 Connector Replay Gate #4 / run `31167140732` — success;
+- RC7 Connector State Gate #33 / run `31167140723` — success;
+- RC4 Quality Gate #320 / run `31167140710` — success;
+- RC6 OpenSearch Recovery Gate #72 / run `31167140753` — success;
+- RC6 Multi-store Recovery Gate #62 / run `31167140709` — success;
+- RC7 Connector Contract Gate #24 / run `31167140712` — success;
+- RC7 Live Connector Canary Gate #53 / run `31167140734` — success;
+- RC7 Payload Provenance Gate #15 / run `31167140727` — success.
 
 Retained `connector-replay-evidence`:
-- artifact ID `8987942539`;
-- digest `sha256:724333380a09072c25d933f4ab6d73063ce83391634ab079d9eb2a269015dcdd`;
+- artifact ID `8989448410`;
+- digest `sha256:cc80113746341b4c0a3ce43c46d307b5869941d74eb0c5aab4adcf025a842d9e`;
 - expired: false at inspection;
 - `decision=pass`;
 - `claim_count=1`;
@@ -36,6 +36,6 @@ Retained `connector-replay-evidence`:
 - `publish_approved=false`;
 - JUnit: 2 tests, 0 failures, 0 errors, 0 skipped, including changed-payload non-suppression.
 
-## Current decision
+## Decision
 
-The implementation-head evidence satisfies the RC7.5 behavioral requirements. However, RUN-20260807-056 documentation changes the PR head, so the gate remains `CI_VALIDATION_PENDING` until the new exact head also completes all required workflows successfully. No absent or unexecuted test is interpreted as success. External production connector credentials, provider limits, licences/terms and provider acceptance remain separate open gates in issue #1.
+RC7.5 is `PASS`. PR #32 was merged with expected-head protection as `41113d3f53028a174a823b06ce01545ede1cd232`. No absent or unexecuted test was interpreted as success. External production connector credentials, provider limits, licences/terms and provider acceptance remain separate open gates in issue #1 and are not implied by this acceptance.
