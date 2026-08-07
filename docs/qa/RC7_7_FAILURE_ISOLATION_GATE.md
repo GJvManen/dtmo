@@ -22,6 +22,28 @@ Evidence that repeated upstream connector failures are observable and bounded by
 
 The gate job uses `if: always()` and fails unless the evidence-producing job actually succeeds.
 
+## Observed implementation-head evidence
+
+Implementation/documentation head `3c263f71e62c5a82b5160071689d58c76f89e7f3` executed RC7 Connector Failure Isolation Gate run `31184266766` successfully.
+
+Retained artifact:
+
+- artifact ID: `8996062460`;
+- digest: `sha256:06466abc69ecb630941c17ade18ff88e661101103e88452f17e3b9b557f519f7`;
+- expired: false at inspection;
+- JSON decision: `pass`;
+- JUnit: 6 tests, 0 failures, 0 errors, 0 skipped;
+- failure threshold: 3;
+- observed failure events: 3;
+- failing connector decision: `allowed=false`, reason `circuit_open`, health `isolated`;
+- independent connector decision: `allowed=true`;
+- post-isolation recovery decision: `allowed=true`, reason `recovery_probe`;
+- health events and all execution decisions: `publish_approved=false`.
+
+The artifact was independently downloaded and inspected during RUN-20260807-060 rather than inferred from workflow configuration.
+
+At the same head, RC7 Live Connector Canary, Connector State, Freshness, Payload Provenance, Connector Contract and Connector Replay had completed successfully at the latest check. RC4 Quality, RC6 OpenSearch Recovery and RC6 Multi-store Recovery were still in progress, so RC7.7 remained `CI_VALIDATION_PENDING` and no merge was permitted.
+
 ## Threat and incident context
 
 The implementation is intentionally connector-local. CISA's K-12 cybersecurity reporting documents historical vendor incidents with broad downstream school impact, including an incident in which one hosting vendor outage affected thousands of school websites. This supports failure-domain isolation as a high-confidence resilience requirement for education-sector intelligence services. CISA also recommends isolating affected systems and maintaining continuity during cyber incidents.
@@ -35,4 +57,4 @@ No connector-specific new CVE or vendor advisory changes the bounded objective o
 
 ## Acceptance rule
 
-RC7.7 may be marked `PASS` only after the exact pull-request head has executed this gate and all required RC4/RC6/RC7 regression workflows successfully, and the retained failure-isolation artifact has been independently inspected. Until then the status remains `CI_VALIDATION_PENDING`.
+RC7.7 may be marked `PASS` only after the exact pull-request head has executed this gate and all required RC4/RC6/RC7 regression workflows successfully, and the retained failure-isolation artifact has been independently inspected. Documentation changes move the PR head and therefore require fresh exact-head CI. Until then the status remains `CI_VALIDATION_PENDING`.
