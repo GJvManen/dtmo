@@ -6,6 +6,7 @@ from uuid import UUID
 import pytest
 
 from dtmo.connectors.provenance import IngestionContext, canonical_payload_digest, normalize_connector_records
+from tools.validate_payload_provenance import build_evidence
 
 
 RUN_ID = UUID("11111111-1111-4111-8111-111111111111")
@@ -103,3 +104,11 @@ def test_invalid_ingestion_context_fails_before_accepting_records() -> None:
 
     with pytest.raises(ValueError):
         normalize_connector_records([{"id": "1"}], context=invalid, external_id_field="id")
+
+
+def test_retained_evidence_never_reports_quarantine_as_publication_approved() -> None:
+    evidence = build_evidence()
+
+    assert evidence["publish_approved"] is False
+    assert evidence["candidate_publish_approved"] is False
+    assert evidence["quarantine_publish_approved"] is False
