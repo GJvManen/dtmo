@@ -24,6 +24,7 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 - RC6.1 #229 through RC6.4 Multi-store Gate #4: `PASS`
 - RC7.1 Canary Gate #3 and Quality Gate #270: `PASS`
 - RC7.2 Connector State Gate #17 and Quality Gate #292: `PASS`
+- RC7.3 Connector Contract Gate #5 and Quality Gate #301: `PASS`
 
 ## Phase status
 
@@ -69,9 +70,9 @@ Exact head `af4625b0f285da6e2b0d5135a623c418a9f3b9d4` produced complete evidence
 
 PR #29 was merged from that exact head as squash commit `ac31b9d4409b97d6db734791365a3dd814255c9d`.
 
-## RC7.3 governed connector contract validation — `CI_VALIDATION_PENDING`
+## RC7.3 governed connector contract validation — `PASS`
 
-Implemented controls:
+Accepted controls:
 
 - connector IDs must be unique and explicitly approved before live execution;
 - source and terms endpoints require HTTPS and licence provenance is mandatory;
@@ -85,20 +86,24 @@ Implemented controls:
 - dedicated `RC7 Connector Contract Gate` runs focused regressions, retains `connector-contract-evidence` for 30 days and fails closed when its primary job is missing or unsuccessful;
 - workflow structure itself is regression protected.
 
-Observed pre-remediation evidence on exact head `b333d013d2b183d2678a7aaec04010bc6b1549d1`:
+Exact head `54ad16cd6694ba17aa2ab28d56c9beaeaf7b789f` produced complete release evidence:
 
-- RC7 Connector Contract Gate #1: `PASS`;
-- RC7 Live Connector Canary Gate #30: `PASS`;
-- RC7 Connector State Gate #18: `PASS`;
-- RC6 OpenSearch Recovery Gate #49: `PASS`;
-- RC6 Multi-store Recovery Gate #39: `PASS`;
-- RC4 Quality Gate #297: `FAIL`;
-- first deterministic RC4 failure: Ruff `S105` on a synthetic redaction-test fixture in `backend/tests/test_rc7_connector_contracts.py`;
-- type check, tests and compile in the RC4 test job did not execute after lint failed.
+- RC4 Quality Gate #301, run `31145386886`: `PASS`;
+- RC7 Live Connector Canary Gate #34, run `31145386892`: `PASS`;
+- RC7 Connector Contract Gate #5, run `31145386898`: `PASS`;
+- RC7 Connector State Gate #22, run `31145386874`: `PASS`;
+- RC6 Multi-store Recovery Gate #43, run `31145386891`: `PASS`;
+- RC6 OpenSearch Recovery Gate #53, run `31145386961`: `PASS`;
+- retained artifact `connector-contract-evidence`, ID `8981283640`, not expired;
+- artifact digest `sha256:e5be71c0a30ebe4249877a3a990abc8726375293dd0c20b43411ea2e0af13733`;
+- downloaded evidence aggregate decision: `pass`;
+- duplicate connector IDs: none;
+- evidence records `publish_approved = false` at connector and aggregate levels;
+- deterministic CISA contract digest: `b55692915fe4ad450355c48139371240c330bc997411f0f5ab39df86c56b09ef`.
 
-RUN-20260807-050 remediated only that lint failure by making the fixture explicitly non-sensitive and applying a narrow line-level `S105` suppression. No repository-wide lint rule and no product control was weakened. New exact-head CI is required before acceptance.
+PR #30 was re-read immediately before merge and remained open, mergeable and unchanged at that exact head. It was merged with expected-head protection as squash commit `0e1d4d370aff0a1e340a10fe1fd373d282864abc`.
 
-The issue #1 external gate for validating real production credentials, rate limits, licences and terms for every live connector remains open; repository contract validation is not a substitute for external acceptance.
+The issue #1 external gate for validating real production credentials, provider rate limits, licences and terms for every live connector remains open; repository contract validation is not a substitute for external acceptance.
 
 ## Security, privacy and publication invariants
 
@@ -112,8 +117,8 @@ The issue #1 external gate for validating real production credentials, rate limi
 
 ## Current run decision
 
-`RUN-20260807-050` is `CI_VALIDATION_PENDING`. The first deterministic RC4 failure has been remediated, but the new exact head has not yet been accepted by GitHub Actions. Phase 4 remains `IN PROGRESS`.
+`RUN-20260807-051` is `PASS`. RC7.3 is accepted and merged on immutable exact-head evidence with retained artifact verification. Phase 4 remains `IN PROGRESS` because payload-level provenance/normalization enforcement and external production connector gates remain outstanding.
 
 ## Exactly one next priority
 
-Inspect the first RC4 Quality Gate registered for the current exact head; remediate only its earliest deterministic failure, or accept and merge RC7.3 only after the contract gate and required regression gates execute successfully with retained evidence.
+Implement and evidence connector payload provenance and normalization enforcement at the ingestion boundary: every candidate record must retain immutable source URI, source timestamp where supplied, fetch timestamp, connector/run identity, payload digest and confidence; malformed or duplicate records must fail closed to quarantine, and successful ingestion must never imply publication approval.
