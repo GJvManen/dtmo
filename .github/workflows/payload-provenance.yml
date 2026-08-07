@@ -39,7 +39,7 @@ jobs:
           assert evidence['quarantine_reasons'] == ['duplicate_external_id', 'missing_external_id']
           assert evidence['publish_approved'] is False
           assert evidence['candidate_publish_approved'] is False
-          assert evidence['quarantine_publish_approved'] is True
+          assert evidence['quarantine_publish_approved'] is False
           PY
       - name: Upload payload provenance evidence
         if: always()
