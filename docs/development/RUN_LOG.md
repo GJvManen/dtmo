@@ -4,7 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260807-049 — RC7.3 governed connector contract validation](runs/RUN-20260807-049.md) — `CI_VALIDATION_PENDING`: fail-closed approval, provenance, credential-presence, bounded rate/backoff, quarantine and human-review contract controls implemented with dedicated retained-evidence workflow; no exact-head CI PASS claimed yet
+- [RUN-20260807-050 — RC7.3 quality-gate lint remediation](runs/RUN-20260807-050.md) — `CI_VALIDATION_PENDING`: RC4 Quality Gate #297 failed deterministically on Ruff `S105` for a synthetic redaction-test fixture; fixture was made explicitly non-sensitive with a narrow line-level suppression; no product control changed
+- [RUN-20260807-049 — RC7.3 governed connector contract validation](runs/RUN-20260807-049.md) — `CI_VALIDATION_PENDING`: connector-contract, canary, state and recovery gates passed on head `b333d013d2b183d2678a7aaec04010bc6b1549d1`, but RC4 Quality Gate #297 failed at lint and blocked acceptance
 - [RUN-20260807-048 — RC7.2 exact-head acceptance and merge](runs/RUN-20260807-048.md) — `PASS`: Connector State Gate #17, Quality Gate #292, Canary Gate #25, OpenSearch Recovery Gate #44 and Multi-store Recovery Gate #34 succeeded on exact head `af4625b0f285da6e2b0d5135a623c418a9f3b9d4`; retained connector-state artifact `8976473782`; PR #29 merged as `ac31b9d4409b97d6db734791365a3dd814255c9d`
 - [RUN-20260807-047 — RC7.2 parent-before-child persistence ordering](runs/RUN-20260807-047.md) — `PASS`: remediation validated by exact-head Connector State Gate #17 and retained evidence; superseded by RUN-20260807-048 acceptance
 - [RUN-20260807-046 — Exact-head CI execution blocker](runs/RUN-20260807-046.md) — superseded by successful exact-head execution and RUN-20260807-048 acceptance
@@ -38,8 +39,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260807-049` is `CI_VALIDATION_PENDING`. RC7.3 governed connector contract controls and regression/evidence workflow are committed, but exact-head GitHub Actions execution and retained evidence have not yet been accepted.
+`RUN-20260807-050` is `CI_VALIDATION_PENDING`. The first deterministic RC4 failure was remediated without changing product controls; exact-head GitHub Actions must execute again before RC7.3 can be accepted.
 
 ## Exactly one next priority
 
-Inspect the exact-head `RC7 Connector Contract Gate` and remediate only its earliest deterministic failure, or accept/merge RC7.3 only after the contract gate and required regression gates execute successfully with retained evidence.
+Inspect the first RC4 Quality Gate registered for the current exact head; remediate only its earliest deterministic failure, or accept and merge PR #30 only after every required exact-head gate and retained evidence artifact succeeds.
