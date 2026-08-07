@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260807-064 — RC7.9 connector timeout and cancellation budgets](runs/RUN-20260807-064.md) — `CI_VALIDATION_PENDING`: added a connector-local async timeout guard with mandatory connector/run/source provenance, fail-closed timeout cancellation, scheduler-cancellation propagation, regression coverage and a dedicated retained-evidence workflow; exact-head GitHub Actions execution and artifact inspection remain required before PASS or merge
 - [RUN-20260807-063 — RC7.8 exact-head acceptance and merge](runs/RUN-20260807-063.md) — `PASS`: exact head `05daeb35c53a8c44d2d7e51e95a745b2b5ece15a` passed all 11 required RC4/RC6/RC7 workflows, including RC4 #340, RC6 OpenSearch #92, RC6 Multi-store #82 and RC7 Retry #1; retained artifact `9000180534` independently verified 7/7 tests, deterministic `2/4/8` backoff, capped provider `Retry-After`, fail-closed exhaustion/non-retryable states, connector-local independence and `publish_approved=false`; PR #35 merged with expected-head protection as `e4b165df68ae7d9df4e25e51ec9f59e1b1133c92`
 - [RUN-20260807-062 — RC7.8 bounded connector retry/backoff](runs/RUN-20260807-062.md) — `CI_VALIDATION_PENDING`: added deterministic bounded retry policy, capped exponential delay, bounded provider `Retry-After`, fail-closed invalid/non-retryable/exhausted paths, connector-local regression tests and a dedicated retained-evidence workflow; exact-head GitHub Actions execution and artifact inspection were still required before PASS or merge
 - [RUN-20260807-061 — RC7.7 exact-head acceptance and merge](runs/RUN-20260807-061.md) — `PASS`: exact head `4d17dfc7a9cd7f0bbc155fa0c42770ba34535ae2` passed RC4 #335, RC6 OpenSearch #87, RC6 Multi-store #77, RC7 State #40, Canary #68, Contract #39, Payload Provenance #30, Replay #11, Freshness #7 and Failure Isolation #3; retained artifact `8996123528` independently verified connector-local circuit blocking, independent-source execution, bounded recovery, 6/6 tests and `publish_approved=false`; PR #34 merged with expected-head protection as `6f033c57e2b143172347a88ad1c0213915226ac1`
@@ -17,8 +18,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260807-063` is `PASS` for RC7.8. PR #35 was merged from the exact validated head after all required workflows completed successfully and the retained retry evidence was independently inspected. Phase 4 remains `IN PROGRESS`; issue #1 continues to gate production credentials, provider limits, licences/terms and external acceptance.
+`RUN-20260807-064` is `CI_VALIDATION_PENDING` for RC7.9. The timeout/cancellation implementation, tests and dedicated retained-evidence workflow exist on the review branch, but no PASS is claimed until the final exact PR head has completed all required RC4/RC6/RC7 workflows and retained timeout evidence has been inspected. Phase 4 remains `IN PROGRESS`; issue #1 continues to gate production credentials, provider limits, licences/terms and external acceptance.
 
 ## Exactly one next priority
 
-Implement and evidence connector timeout/cancellation budgets so a hung or slow upstream request is bounded, cancellation is connector-local, failure state remains observable with provenance, and timeout/cancellation can never imply publication approval.
+Inspect the exact-head RC7 Connector Timeout Gate and all required RC4/RC6/RC7 regressions after PR creation; remediate only the earliest deterministic failure, or accept and merge only if every required workflow succeeds and retained timeout evidence proves connector-local cancellation with `publish_approved=false`.
