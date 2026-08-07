@@ -1,6 +1,6 @@
 # RC7.7 Connector Failure Isolation Gate
 
-Status: `CI_VALIDATION_PENDING`
+Status: `PASS`
 
 ## Objective
 
@@ -16,45 +16,18 @@ Evidence that repeated upstream connector failures are observable and bounded by
 - Health decisions and health events always retain `publish_approved=false`.
 - Missing execution evidence cannot be interpreted as success.
 
-## Evidence workflow
+## Final exact-head evidence
 
-`.github/workflows/connector-failure-isolation.yml` runs `backend/tests/test_rc7_connector_failure_isolation.py`, emits JUnit evidence and a deterministic JSON evidence record, and retains both in the `connector-failure-isolation-evidence` artifact for 30 days.
+PR #34 exact head `4d17dfc7a9cd7f0bbc155fa0c42770ba34535ae2` passed all required workflows: RC4 Quality #335, RC6 OpenSearch #87, RC6 Multi-store #77, RC7 State #40, Canary #68, Contract #39, Payload Provenance #30, Replay #11, Freshness #7 and Failure Isolation #3.
 
-The gate job uses `if: always()` and fails unless the evidence-producing job actually succeeds.
+Retained `connector-failure-isolation-evidence` artifact `8996123528` was independently downloaded and inspected. Digest: `sha256:d5b53752e7cd81ba8790f0f3f8a3c64e23ffa7f12cfd4962896e30b95f9fe20f`. It was not expired. JSON recorded `decision=pass`, failure threshold 3, three failure events, isolated connector `allowed=false` with reason `circuit_open`, independent connector `allowed=true`, recovery probe `allowed=true`, and `publish_approved=false` for every health event and execution decision. JUnit recorded 6 tests with 0 failures, 0 errors and 0 skips.
 
-## Observed implementation-head evidence
-
-Implementation/documentation head `3c263f71e62c5a82b5160071689d58c76f89e7f3` executed RC7 Connector Failure Isolation Gate run `31184266766` successfully.
-
-Retained artifact:
-
-- artifact ID: `8996062460`;
-- digest: `sha256:06466abc69ecb630941c17ade18ff88e661101103e88452f17e3b9b557f519f7`;
-- expired: false at inspection;
-- JSON decision: `pass`;
-- JUnit: 6 tests, 0 failures, 0 errors, 0 skipped;
-- failure threshold: 3;
-- observed failure events: 3;
-- failing connector decision: `allowed=false`, reason `circuit_open`, health `isolated`;
-- independent connector decision: `allowed=true`;
-- post-isolation recovery decision: `allowed=true`, reason `recovery_probe`;
-- health events and all execution decisions: `publish_approved=false`.
-
-The artifact was independently downloaded and inspected during RUN-20260807-060 rather than inferred from workflow configuration.
-
-At the same head, RC7 Live Connector Canary, Connector State, Freshness, Payload Provenance, Connector Contract and Connector Replay had completed successfully at the latest check. RC4 Quality, RC6 OpenSearch Recovery and RC6 Multi-store Recovery were still in progress, so RC7.7 remained `CI_VALIDATION_PENDING` and no merge was permitted.
+PR #34 was merged with expected-head protection as `6f033c57e2b143172347a88ad1c0213915226ac1`.
 
 ## Threat and incident context
 
-The implementation is intentionally connector-local. CISA's K-12 cybersecurity reporting documents historical vendor incidents with broad downstream school impact, including an incident in which one hosting vendor outage affected thousands of school websites. This supports failure-domain isolation as a high-confidence resilience requirement for education-sector intelligence services. CISA also recommends isolating affected systems and maintaining continuity during cyber incidents.
+RUN-20260807-060 recorded high-confidence CISA K-12 historical incident and resilience context supporting connector-local failure-domain isolation. No new connector-specific CVE or vendor advisory changed this bounded acceptance decision. Production credentials, provider rate limits, licences, terms and provider acceptance remain external gates in issue #1.
 
-Sources reviewed on 2026-08-07:
+## Acceptance decision
 
-- CISA, *Protecting Our Future: Partnering to Safeguard K-12 Organizations from Cybersecurity Threats*, https://www.cisa.gov/sites/default/files/2023-01/K-12report_FINAL_V2_508c_0.pdf — confidence: high (primary government source; historical incident context).
-- CISA, *Cyber Risk to Public Safety: Ransomware*, https://www.cisa.gov/sites/default/files/2023-02/CISA%20Cyber%20Risks%20to%20Public%20Safety%20Ransomware_9.29.20%20-%20FINAL%20%28508c%29_0.pdf — confidence: high (primary government resilience guidance).
-
-No connector-specific new CVE or vendor advisory changes the bounded objective of this run; production source credentials, provider rate limits, licences and provider acceptance remain external gates in issue #1.
-
-## Acceptance rule
-
-RC7.7 may be marked `PASS` only after the exact pull-request head has executed this gate and all required RC4/RC6/RC7 regression workflows successfully, and the retained failure-isolation artifact has been independently inspected. Documentation changes move the PR head and therefore require fresh exact-head CI. Until then the status remains `CI_VALIDATION_PENDING`.
+`PASS`. Exact-head workflow execution, retained evidence inspection and protected merge are complete. This does not complete Phase 4 or any external production gate.
