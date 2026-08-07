@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260807-049 — RC7.3 governed connector contract validation](runs/RUN-20260807-049.md) — `CI_VALIDATION_PENDING`: fail-closed approval, provenance, credential-presence, bounded rate/backoff, quarantine and human-review contract controls implemented with dedicated retained-evidence workflow; no exact-head CI PASS claimed yet
 - [RUN-20260807-048 — RC7.2 exact-head acceptance and merge](runs/RUN-20260807-048.md) — `PASS`: Connector State Gate #17, Quality Gate #292, Canary Gate #25, OpenSearch Recovery Gate #44 and Multi-store Recovery Gate #34 succeeded on exact head `af4625b0f285da6e2b0d5135a623c418a9f3b9d4`; retained connector-state artifact `8976473782`; PR #29 merged as `ac31b9d4409b97d6db734791365a3dd814255c9d`
 - [RUN-20260807-047 — RC7.2 parent-before-child persistence ordering](runs/RUN-20260807-047.md) — `PASS`: remediation validated by exact-head Connector State Gate #17 and retained evidence; superseded by RUN-20260807-048 acceptance
 - [RUN-20260807-046 — Exact-head CI execution blocker](runs/RUN-20260807-046.md) — superseded by successful exact-head execution and RUN-20260807-048 acceptance
@@ -37,8 +38,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260807-048` is `PASS`. RC7.2 exact-head CI, PostgreSQL persistence verification, fail-closed aggregate gating and retained connector-state evidence were independently observed, and PR #29 was merged using the verified head.
+`RUN-20260807-049` is `CI_VALIDATION_PENDING`. RC7.3 governed connector contract controls and regression/evidence workflow are committed, but exact-head GitHub Actions execution and retained evidence have not yet been accepted.
 
 ## Exactly one next priority
 
-Implement and evidence governed connector contract validation for approved live connectors: credentials presence without secret disclosure, rate-limit/backoff behavior, licence/terms provenance and fail-closed quarantine for malformed or duplicate records, while preserving human review before publication.
+Inspect the exact-head `RC7 Connector Contract Gate` and remediate only its earliest deterministic failure, or accept/merge RC7.3 only after the contract gate and required regression gates execute successfully with retained evidence.
