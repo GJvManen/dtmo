@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, Iterable, Mapping, Protocol
 from uuid import UUID
 
@@ -12,6 +12,14 @@ def _as_utc(value: datetime) -> datetime:
     if value.tzinfo is None:
         return value.replace(tzinfo=UTC)
     return value.astimezone(UTC)
+
+
+def _parse_source_timestamp(value: str) -> datetime:
+    normalized = value.strip()
+    if normalized.endswith("Z"):
+        normalized = normalized[:-1] + "+00:00"
+    parsed = datetime.fromisoformat(normalized)
+    return _as_utc(parsed)
 
 
 def canonical_payload_digest(payload: Mapping[str, Any]) -> str:
@@ -30,6 +38,19 @@ class ReplayRegistry(Protocol):
         source_uri: str,
         observed_at: datetime | None = None,
     ) -> bool: ...
+
+
+@dataclass(frozen=True, slots=True)
+class SourceFreshnessPolicy:
+    max_age: timedelta
+    max_future_skew: timedelta = timedelta(minutes=5)
+    allow_missing: bool = False
+
+    def validate(self) -> None:
+        if self.max_age <= timedelta(0):
+            raise ValueError("max_age must be positive")
+        if self.max_future_skew < timedelta(0):
+            raise ValueError("max_future_skew cannot be negative")
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,6 +77,8 @@ class CandidateRecord:
     external_id: str
     source_uri: str
     source_timestamp: str | None
+    source_timestamp_utc: datetime | None
+    freshness_status: str
     fetched_at: datetime
     payload_digest: str
     confidence: int
@@ -73,6 +96,9 @@ class QuarantinedPayload:
     payload_digest: str
     raw_evidence: Any
     external_id: str | None = None
+    source_timestamp: str | None = None
+    source_timestamp_utc: datetime | None = None
+    freshness_status: str | None = None
     publish_approved: bool = False
 
 
@@ -93,15 +119,21 @@ def normalize_connector_records(
     context: IngestionContext,
     external_id_field: str,
     source_timestamp_field: str | None = None,
+    freshness_policy: SourceFreshnessPolicy | None = None,
     replay_registry: ReplayRegistry | None = None,
 ) -> NormalizationResult:
     """Normalize untrusted connector records into governed, non-publishable candidates.
 
-    Malformed, same-run duplicate and cross-run replayed records fail closed to
-    quarantine. Provenance is copied into immutable dataclasses and publication
-    approval is always false.
+    Malformed, duplicate, replayed, stale, invalid-time and excessive future-skew
+    records fail closed to quarantine. Provenance is copied into immutable dataclasses
+    and publication approval is always false.
     """
     context.validate()
+    if freshness_policy is not None:
+        freshness_policy.validate()
+        if source_timestamp_field is None:
+            raise ValueError("freshness_policy requires source_timestamp_field")
+
     fetched_at = _as_utc(context.fetched_at)
     seen: set[str] = set()
     candidates: list[CandidateRecord] = []
@@ -157,6 +189,8 @@ def normalize_connector_records(
         seen.add(external_id)
 
         source_timestamp: str | None = None
+        source_timestamp_utc: datetime | None = None
+        freshness_status = "not_evaluated"
         if source_timestamp_field is not None:
             source_value = raw.get(source_timestamp_field)
             if source_value is not None and (not isinstance(source_value, str) or not source_value.strip()):
@@ -170,11 +204,85 @@ def normalize_connector_records(
                         payload_digest=digest,
                         raw_evidence=raw,
                         external_id=external_id,
+                        freshness_status="invalid",
                     )
                 )
                 continue
             if isinstance(source_value, str):
                 source_timestamp = source_value.strip()
+                try:
+                    source_timestamp_utc = _parse_source_timestamp(source_timestamp)
+                except ValueError:
+                    quarantined.append(
+                        QuarantinedPayload(
+                            connector_id=context.connector_id,
+                            run_id=context.run_id,
+                            reason="malformed_source_timestamp",
+                            source_uri=context.source_uri,
+                            fetched_at=fetched_at,
+                            payload_digest=digest,
+                            raw_evidence=raw,
+                            external_id=external_id,
+                            source_timestamp=source_timestamp,
+                            freshness_status="invalid",
+                        )
+                    )
+                    continue
+
+        if freshness_policy is not None:
+            if source_timestamp_utc is None:
+                if not freshness_policy.allow_missing:
+                    quarantined.append(
+                        QuarantinedPayload(
+                            connector_id=context.connector_id,
+                            run_id=context.run_id,
+                            reason="missing_source_timestamp",
+                            source_uri=context.source_uri,
+                            fetched_at=fetched_at,
+                            payload_digest=digest,
+                            raw_evidence=raw,
+                            external_id=external_id,
+                            freshness_status="missing",
+                        )
+                    )
+                    continue
+                freshness_status = "missing_allowed"
+            elif source_timestamp_utc > fetched_at + freshness_policy.max_future_skew:
+                quarantined.append(
+                    QuarantinedPayload(
+                        connector_id=context.connector_id,
+                        run_id=context.run_id,
+                        reason="future_source_timestamp",
+                        source_uri=context.source_uri,
+                        fetched_at=fetched_at,
+                        payload_digest=digest,
+                        raw_evidence=raw,
+                        external_id=external_id,
+                        source_timestamp=source_timestamp,
+                        source_timestamp_utc=source_timestamp_utc,
+                        freshness_status="future_skew",
+                    )
+                )
+                continue
+            elif fetched_at - source_timestamp_utc > freshness_policy.max_age:
+                quarantined.append(
+                    QuarantinedPayload(
+                        connector_id=context.connector_id,
+                        run_id=context.run_id,
+                        reason="stale_source_timestamp",
+                        source_uri=context.source_uri,
+                        fetched_at=fetched_at,
+                        payload_digest=digest,
+                        raw_evidence=raw,
+                        external_id=external_id,
+                        source_timestamp=source_timestamp,
+                        source_timestamp_utc=source_timestamp_utc,
+                        freshness_status="stale",
+                    )
+                )
+                continue
+            else:
+                freshness_status = "fresh"
 
         if replay_registry is not None and not replay_registry.claim(
             connector_id=context.connector_id,
@@ -194,6 +302,9 @@ def normalize_connector_records(
                     payload_digest=digest,
                     raw_evidence=raw,
                     external_id=external_id,
+                    source_timestamp=source_timestamp,
+                    source_timestamp_utc=source_timestamp_utc,
+                    freshness_status=freshness_status,
                 )
             )
             continue
@@ -205,6 +316,8 @@ def normalize_connector_records(
                 external_id=external_id,
                 source_uri=context.source_uri,
                 source_timestamp=source_timestamp,
+                source_timestamp_utc=source_timestamp_utc,
+                freshness_status=freshness_status,
                 fetched_at=fetched_at,
                 payload_digest=digest,
                 confidence=context.confidence,
