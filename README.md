@@ -6,34 +6,32 @@ DTMO is een open, onderwijsgericht Cyber Threat Intelligence-platform voor histo
 
 ## Actuele implementatiestatus
 
-DTMO is ontwikkeld van RC4.1 tot en met RC7.1.
+DTMO is ontwikkeld van RC4.1 tot en met RC7.2.
 
 ### Afgerond en evidenced
 
 - RC4-platformbasis: API, persistence, immutable Intelligence Lake, connectorcatalogus, Knowledge Graph, SOC/CTI-workspace, RBAC, migraties, MinIO en OpenSearch;
-- RC5.1 tot en met RC5.12: canonieke intelligence, least-privilege RBAC, functiescheiding, trusted JWT-principals, JWKS-keyrotatie, revocation/replaybescherming, tamper-evidente persistente auditing, privacy-minimalisatie, retention, legal hold en bounded purge;
-- Phase 2 — application security, identity en privacy: `PASS`;
-- RC6.1 — clean-target PostgreSQL backup en restore: `PASS` via Quality Gate #229 en PR #22;
-- RC6.2 — geïsoleerde MinIO objectbackup en clean-target restore: `PASS` via Quality Gate #243 en PR #24;
-- RC6.3 — clean OpenSearch reconstruction: `PASS` via OpenSearch Recovery Gate #5, RC4 Quality Gate #253 en PR #25;
-- RC6.4 — gecombineerde multi-store recovery acceptance: `PASS` via Multi-store Recovery Gate #4, RC4 Quality Gate #262, OpenSearch Recovery Gate #14 en PR #26;
-- Phase 3 — data-integriteit, backup en recovery: `PASS`;
-- RC7.1 — governed live connector canary: `PASS` via RC7 Live Connector Canary Gate #3, RC4 Quality Gate #270, OpenSearch Recovery Gate #22 en Multi-store Recovery Gate #12;
-- PR #28 is gemerged als `aeeb0709a26ecb1f20620d7ac21f823fec35e98f`.
+- RC5.1 tot en met RC5.12 en Phase 2: `PASS`;
+- RC6.1 tot en met RC6.4 en Phase 3: `PASS`;
+- RC7.1 governed live connector canary: `PASS` via Canary Gate #3 en Quality Gate #270.
 
-### RC7.1 evidence
+### Actieve run: RC7.2
 
-Exacte head `c82e20c110354c1163b58ac8b9820756f829a4ae` is volledig groen. De evidence omvat:
+**Persistent connector state and failure isolation: `CI_VALIDATION_PENDING`.**
 
-- gecontroleerde CISA KEV live canary via HTTPS;
-- verplichte licence- en terms-metadata;
-- expliciete timeout, maximaal drie pogingen en begrensde exponentiële retry/backoff;
-- minimum request interval en uitgeschakelde redirects;
-- deduplicatie en quarantaine van malformed, duplicate en overflow-records;
-- behoud van source URL, timestamp, confidence en raw-evidence SHA-256;
-- machine-readable retained canary evidence;
-- `publish_approved: false` als harde fail-closed invariant;
-- retained `live-connector-canary-evidence` artifact `8973407243`, digest `sha256:437b09bf13746fecf4e929921e1a63ac74bdbba1f1ecb08e0d04b99f763a3f53`.
+De branch bevat:
+
+- PostgreSQL-backed connector-runstate;
+- append-only source-health history per connector en run-ID;
+- connector-scoped failure isolation na een begrensde foutdrempel;
+- automatische reset van isolatie na een succesvolle run;
+- persistente quarantaine met raw-evidence SHA-256;
+- human-reviewed recovery naar uitsluitend `released_to_candidate` of `rejected`;
+- databaseconstraints die automatische publicatie uitsluiten;
+- reversibele migratie `0005_connector_state`;
+- onafhankelijke `RC7 Connector State Gate` met retained evidence en fail-closed aggregate gate.
+
+RC7.2 wordt pas `PASS` nadat de exacte branch-head aantoonbaar groen is in zowel de reguliere Quality Gate als de Connector State Gate, met retained `connector-state-evidence`.
 
 ## Roadmapstatus
 
@@ -42,7 +40,7 @@ Exacte head `c82e20c110354c1163b58ac8b9820756f829a4ae` is volledig groen. De evi
 | 1. CI en workflow-integriteit | `PASS` |
 | 2. Applicatiebeveiliging, identity en privacy | `PASS` |
 | 3. Data-integriteit, backup en recovery | `PASS` |
-| 4. Live connectorbetrouwbaarheid en provenance | `IN PROGRESS` — eerste governed live canary bewezen |
+| 4. Live connectorbetrouwbaarheid en provenance | `IN PROGRESS` — RC7.2 wacht op exact-head evidence |
 | 5. Performance en schaalbaarheid | `NOT STARTED` |
 | 6. Frontend accessibility en operationele UX | `NOT STARTED` |
 | 7. Observability en incident operations | `NOT STARTED` |
@@ -50,7 +48,7 @@ Exacte head `c82e20c110354c1163b58ac8b9820756f829a4ae` is volledig groen. De evi
 | 9. External assurance | `NOT STARTED` |
 | 10. Production go/no-go | `BLOCKED` |
 
-**Precies één volgende prioriteit:** RC7.2 — persistente connector-runstate, source-health history en failure isolation met aantoonbare quarantine/recovery zonder automatische publicatie.
+**Precies één volgende prioriteit:** inspecteer de exacte RC7 Connector State Gate en herstel uitsluitend de eerste deterministische fout, of merge na volledige groene evidence.
 
 ## Governance-invarianten
 
@@ -58,9 +56,8 @@ Exacte head `c82e20c110354c1163b58ac8b9820756f829a4ae` is volledig groen. De evi
 - review en share approval blijven afzonderlijke menselijke beslissingen;
 - dezelfde principal mag niet reviewen en share approval uitvoeren;
 - serviceaccounts en connectors mogen niet reviewen of delen goedkeuren;
-- live canary-ingestion mag nooit automatisch publiceren;
+- connector success of quarantine recovery mag nooit automatisch publiceren;
 - raw evidence, provenance en confidence mogen niet stilzwijgend verdwijnen;
-- immutable bronauditrecords mogen niet door privacy-purge worden verwijderd;
 - ontbrekende CI-, recovery- of connector-evidence blokkeert releaseacceptatie.
 
 ## Snel starten
@@ -85,11 +82,7 @@ Belangrijke endpoints:
 
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
 - `docs/development/RUN_LOG.md`
-- `docs/development/runs/RUN-20260806-040.md`
-- `docs/development/runs/RUN-20260806-041.md`
-- `docs/development/runs/RUN-20260806-042.md`
-- `docs/development/runs/RUN-20260806-043.md`
-- `docs/development/runs/RUN-20260806-044.md`
+- `docs/development/runs/RUN-20260806-045.md`
 - `docs/qa/QA_AND_RELEASE_GATES.md`
 - GitHub issues #2 en #3
 

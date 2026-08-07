@@ -1,0 +1,104 @@
+name: RC7 Connector State Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  connector-state:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: dtmo
+          POSTGRES_PASSWORD: dtmo-test
+          POSTGRES_DB: dtmo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dtmo -d dtmo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://dtmo:dtmo-test@127.0.0.1:5432/dtmo
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:dtmo-test@127.0.0.1:5432/dtmo
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - run: python -m alembic upgrade head
+      - run: python -m pytest backend/tests/test_rc7_connector_state.py backend/tests/test_rc7_connector_state_migration.py --junitxml=artifacts/connector-state-tests.xml
+      - name: Persist and verify isolated connector state
+        run: |
+          mkdir -p artifacts
+          python - <<'PY'
+          import json, os
+          from datetime import UTC, datetime
+          from pathlib import Path
+          from uuid import uuid4
+          from sqlalchemy import create_engine, select
+          from sqlalchemy.orm import Session
+          from dtmo.connectors.state import ConnectorQuarantineRecord, ConnectorStateStore, QuarantineInput
+
+          engine = create_engine(os.environ["DATABASE_URL"])
+          with Session(engine) as session:
+              store = ConnectorStateStore(session, failure_threshold=2, isolation_minutes=15)
+              for _ in range(2):
+                  store.record_run(
+                      connector_id="cisa-kev",
+                      run_id=uuid4(),
+                      succeeded=False,
+                      duration_seconds=0.2,
+                      record_count=0,
+                      quarantined=[QuarantineInput("malformed_record", {"cveID": None})],
+                      error_code="fixture_failure",
+                  )
+              state_isolated = store.is_isolated("cisa-kev")
+              record = session.scalar(select(ConnectorQuarantineRecord).limit(1))
+              assert record is not None
+              recovered = store.recover_quarantine(
+                  record.id,
+                  decision="released_to_candidate",
+                  human_reviewer="analyst@example.org",
+                  review_reference="RC7.2-CI",
+              )
+              evidence = {
+                  "schema_version": 1,
+                  "generated_at": datetime.now(UTC).isoformat(),
+                  "connector_id": "cisa-kev",
+                  "state_isolated": state_isolated,
+                  "history_count": len(store.health_history("cisa-kev")),
+                  "quarantine_recovery_status": recovered.recovery_status,
+                  "publish_approved": recovered.publish_approved,
+                  "decision": "pass" if state_isolated and not recovered.publish_approved else "fail",
+              }
+              if evidence["decision"] != "pass":
+                  raise SystemExit("connector state evidence failed")
+              Path("artifacts/connector-state-evidence.json").write_text(
+                  json.dumps(evidence, indent=2, sort_keys=True), encoding="utf-8"
+              )
+          PY
+      - uses: actions/upload-artifact@v6
+        with:
+          name: connector-state-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  connector-state-gate:
+    if: always()
+    needs: [connector-state]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing connector state evidence
+        env:
+          CONNECTOR_STATE: ${{ needs.connector-state.result }}
+        run: test "$CONNECTOR_STATE" = "success"
