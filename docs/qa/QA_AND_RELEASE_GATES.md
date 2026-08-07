@@ -85,12 +85,18 @@ Implemented controls:
 - dedicated `RC7 Connector Contract Gate` runs focused regressions, retains `connector-contract-evidence` for 30 days and fails closed when its primary job is missing or unsuccessful;
 - workflow structure itself is regression protected.
 
-Pending acceptance evidence:
+Observed pre-remediation evidence on exact head `b333d013d2b183d2678a7aaec04010bc6b1549d1`:
 
-- exact-head connector-contract regression execution;
-- successful `RC7 Connector Contract Gate` aggregate job;
-- retained `connector-contract-evidence` artifact;
-- required existing quality/canary/recovery regressions on the same exact head.
+- RC7 Connector Contract Gate #1: `PASS`;
+- RC7 Live Connector Canary Gate #30: `PASS`;
+- RC7 Connector State Gate #18: `PASS`;
+- RC6 OpenSearch Recovery Gate #49: `PASS`;
+- RC6 Multi-store Recovery Gate #39: `PASS`;
+- RC4 Quality Gate #297: `FAIL`;
+- first deterministic RC4 failure: Ruff `S105` on a synthetic redaction-test fixture in `backend/tests/test_rc7_connector_contracts.py`;
+- type check, tests and compile in the RC4 test job did not execute after lint failed.
+
+RUN-20260807-050 remediated only that lint failure by making the fixture explicitly non-sensitive and applying a narrow line-level `S105` suppression. No repository-wide lint rule and no product control was weakened. New exact-head CI is required before acceptance.
 
 The issue #1 external gate for validating real production credentials, rate limits, licences and terms for every live connector remains open; repository contract validation is not a substitute for external acceptance.
 
@@ -106,8 +112,8 @@ The issue #1 external gate for validating real production credentials, rate limi
 
 ## Current run decision
 
-`RUN-20260807-049` is `CI_VALIDATION_PENDING`. RC7.3 contract code, tests and retained-evidence workflow are committed, but exact-head CI has not yet been accepted. Phase 4 remains `IN PROGRESS`.
+`RUN-20260807-050` is `CI_VALIDATION_PENDING`. The first deterministic RC4 failure has been remediated, but the new exact head has not yet been accepted by GitHub Actions. Phase 4 remains `IN PROGRESS`.
 
 ## Exactly one next priority
 
-Inspect the exact-head `RC7 Connector Contract Gate` and remediate only its earliest deterministic failure, or accept/merge RC7.3 only after the contract gate and required regression gates execute successfully with retained evidence.
+Inspect the first RC4 Quality Gate registered for the current exact head; remediate only its earliest deterministic failure, or accept and merge RC7.3 only after the contract gate and required regression gates execute successfully with retained evidence.
