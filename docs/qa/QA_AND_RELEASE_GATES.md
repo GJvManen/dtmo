@@ -105,20 +105,37 @@ PR #30 was re-read immediately before merge and remained open, mergeable and unc
 
 The issue #1 external gate for validating real production credentials, provider rate limits, licences and terms for every live connector remains open; repository contract validation is not a substitute for external acceptance.
 
+## RC7.4 payload provenance and normalization enforcement — `CI_VALIDATION_PENDING`
+
+Implemented controls pending exact-head execution evidence:
+
+- immutable ingestion context binds connector ID, run ID, HTTPS source URI, fetch timestamp and confidence before record acceptance;
+- accepted candidates retain optional source timestamp, canonical SHA-256 raw-payload digest and raw evidence;
+- naive fetch timestamps are normalized to UTC;
+- malformed non-object records, missing external IDs, malformed supplied source timestamps and duplicate external IDs fail closed to quarantine;
+- duplicate detection occurs before candidate creation;
+- candidate, quarantine and aggregate normalization outputs always record `publish_approved = false`;
+- deterministic canonical JSON hashing prevents dictionary key ordering from changing payload identity;
+- dedicated `RC7 Payload Provenance Gate` runs focused regressions and emits retained machine-readable `payload-provenance-evidence`;
+- the independent aggregate gate fails closed when the provenance job is missing or unsuccessful;
+- workflow structure is regression protected.
+
+No RC7.4 `PASS` is claimed until the exact PR head executes the dedicated gate, existing RC4/RC6/RC7 regression gates complete successfully, and the retained provenance artifact is independently observable.
+
 ## Security, privacy and publication invariants
 
 - ingestion creates candidate intelligence only;
 - publication requires explicit human approval by a principal different from the reviewer;
 - service accounts and connectors may not review or approve sharing;
-- connector success, isolation recovery, quarantine release or contract validation never implies publication approval;
+- connector success, isolation recovery, quarantine release, contract validation or normalization never implies publication approval;
 - provenance and confidence may not be silently discarded;
 - secret values may not be emitted into connector contract evidence;
 - missing, queued, cancelled or unexecuted CI and connector evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260807-051` is `PASS`. RC7.3 is accepted and merged on immutable exact-head evidence with retained artifact verification. Phase 4 remains `IN PROGRESS` because payload-level provenance/normalization enforcement and external production connector gates remain outstanding.
+`RUN-20260807-052` is `CI_VALIDATION_PENDING`. RC7.4 is implemented but remains unaccepted until exact-head workflow execution and retained artifact verification complete. Phase 4 remains `IN PROGRESS`; external production connector and assurance gates remain tracked in issue #1.
 
 ## Exactly one next priority
 
-Implement and evidence connector payload provenance and normalization enforcement at the ingestion boundary: every candidate record must retain immutable source URI, source timestamp where supplied, fetch timestamp, connector/run identity, payload digest and confidence; malformed or duplicate records must fail closed to quarantine, and successful ingestion must never imply publication approval.
+Inspect the first exact-head RC7 Payload Provenance Gate execution and remediate only its earliest deterministic failure; if all required exact-head RC4/RC6/RC7 gates and retained evidence succeed, accept and merge RC7.4.
