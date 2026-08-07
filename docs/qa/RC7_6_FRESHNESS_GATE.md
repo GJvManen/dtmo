@@ -1,6 +1,6 @@
 # RC7.6 Connector Freshness Gate
 
-Status: `CI_VALIDATION_PENDING`
+Status: `PASS`
 
 ## Objective
 
@@ -26,13 +26,26 @@ CISA continues to describe the Known Exploited Vulnerabilities catalog as an aut
 Source: https://www.cisa.gov/known-exploited-vulnerabilities-catalog
 Confidence: high (primary government source).
 
-## Executed evidence on implementation head
+## Final exact-head acceptance evidence
 
-Implementation/documentation head `4718eaf40cac9631ea93242fb4e38f09413b76f8` executed `RC7 Connector Freshness Gate` #1 / run `31175267660` successfully.
+Final PR #33 head: `cd932c983035537b0cac1af6fc5768a818f238bc`.
+
+All required workflows completed successfully on that exact head:
+
+- RC4 Quality Gate #328;
+- RC6 OpenSearch Recovery Gate #80;
+- RC6 Multi-store Recovery Gate #70;
+- RC7 Connector State Gate #37;
+- RC7 Live Connector Canary Gate #61;
+- RC7 Connector Contract Gate #32;
+- RC7 Payload Provenance Gate #23;
+- RC7 Connector Replay Gate #8;
+- RC7 Connector Freshness Gate #4 / run `31175416031`.
 
 Retained `connector-freshness-evidence`:
-- artifact ID `8992567326`;
-- digest `sha256:63c69677b7e663e5235e51966161db6378d35a481e295c4db1b9a2c187c4b3ab`;
+
+- artifact ID `8992632471`;
+- digest `sha256:0fc05c726486a4cf7fd922e6a5af55511f6bff8c5aa0333faf589d4ed77fb606`;
 - expired: false at inspection;
 - `decision=pass`;
 - 7 tests, 0 failures, 0 errors, 0 skipped;
@@ -41,8 +54,8 @@ Retained `connector-freshness-evidence`:
 - quarantine reasons `stale_source_timestamp`, `future_source_timestamp`, `malformed_source_timestamp`, `missing_source_timestamp`;
 - `publish_approved=false`.
 
-On the same head, RC7 Live Connector Canary #58, Payload Provenance #20, Connector Contract #29 and Connector Replay #5 had completed successfully at inspection. RC4 Quality #325, RC6 OpenSearch #77, RC6 Multi-store #67 and RC7 Connector State #34 were still queued/in progress and therefore were not counted as PASS.
+PR #33 merged with expected-head protection as `ad376612ae13d79d4ba1efd38183d599dcd08ef0`.
 
-## Current decision
+## Decision
 
-RC7.6 remains `CI_VALIDATION_PENDING`. The dedicated freshness evidence is successful, but not all required exact-head regression gates were complete when this run closed. This documentation update also moves the PR head, so fresh exact-head execution is required before acceptance or merge.
+RC7.6 is `PASS`. The final exact PR head passed the dedicated freshness gate and every required RC4/RC6/RC7 regression gate, and retained evidence independently confirms fail-closed timestamp handling without publication approval. External production connector credentials, provider-enforced limits, licences/terms and provider-specific acceptance remain open in issue #1.
