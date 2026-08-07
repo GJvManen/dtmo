@@ -1,0 +1,59 @@
+name: RC7 Connector Contract Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  connector-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e '.[test]'
+      - name: Run connector contract regressions
+        run: python -m pytest -q backend/tests/test_rc7_connector_contracts.py
+      - name: Emit governed connector contract evidence
+        run: |
+          set -euo pipefail
+          python tools/validate_connector_contracts.py --output artifacts/connector-contract-evidence.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          evidence = json.loads(Path('artifacts/connector-contract-evidence.json').read_text())
+          assert evidence['decision'] == 'pass'
+          assert evidence['duplicate_connector_ids'] == []
+          assert evidence['publish_approved'] is False
+          assert evidence['connectors']
+          assert all(item['decision'] == 'pass' for item in evidence['connectors'])
+          assert all(item['publish_approved'] is False for item in evidence['connectors'])
+          assert all(len(item['contract_digest']) == 64 for item in evidence['connectors'])
+          PY
+      - name: Upload connector contract evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: connector-contract-evidence
+          path: artifacts/connector-contract-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+  connector-contract-gate:
+    if: always()
+    needs: [connector-contracts]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail closed on missing or failed connector contract evidence
+        env:
+          CONTRACT_RESULT: ${{ needs.connector-contracts.result }}
+        run: test "$CONTRACT_RESULT" = "success"

@@ -15,7 +15,7 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 | Data integrity | Provenance, confidence, constraints and migrations are verified |
 | Privacy | Direct identifiers, purpose limitation, retention and legal holds are verified |
 | Recovery | Clean targets restore or reconstruct successfully with integrity and timing evidence |
-| Connector reliability | Live canary, persistent state, health history, isolation, provenance and quarantine recovery are evidenced |
+| Connector reliability | Live canary, persistent state, health history, isolation, provenance, governed contracts and quarantine recovery are evidenced |
 | Release | All release-critical jobs and retained evidence artifacts succeed |
 
 ## Completed exact-head gates
@@ -69,19 +69,51 @@ Exact head `af4625b0f285da6e2b0d5135a623c418a9f3b9d4` produced complete evidence
 
 PR #29 was merged from that exact head as squash commit `ac31b9d4409b97d6db734791365a3dd814255c9d`.
 
+## RC7.3 governed connector contract validation — `CI_VALIDATION_PENDING`
+
+Implemented controls:
+
+- connector IDs must be unique and explicitly approved before live execution;
+- source and terms endpoints require HTTPS and licence provenance is mandatory;
+- source reliability and confidence are bounded;
+- environment-backed credentials are validated for presence without serializing secret values;
+- timeout, attempts, minimum request interval, maximum backoff and record-volume limits are bounded;
+- malformed and duplicate records must be governed for quarantine;
+- human review is mandatory and automatic publication is forbidden;
+- evidence includes deterministic SHA-256 contract digests and always records `publish_approved = false`;
+- approved CISA KEV contract preserves authoritative-source, feed and terms provenance;
+- dedicated `RC7 Connector Contract Gate` runs focused regressions, retains `connector-contract-evidence` for 30 days and fails closed when its primary job is missing or unsuccessful;
+- workflow structure itself is regression protected.
+
+Observed pre-remediation evidence on exact head `b333d013d2b183d2678a7aaec04010bc6b1549d1`:
+
+- RC7 Connector Contract Gate #1: `PASS`;
+- RC7 Live Connector Canary Gate #30: `PASS`;
+- RC7 Connector State Gate #18: `PASS`;
+- RC6 OpenSearch Recovery Gate #49: `PASS`;
+- RC6 Multi-store Recovery Gate #39: `PASS`;
+- RC4 Quality Gate #297: `FAIL`;
+- first deterministic RC4 failure: Ruff `S105` on a synthetic redaction-test fixture in `backend/tests/test_rc7_connector_contracts.py`;
+- type check, tests and compile in the RC4 test job did not execute after lint failed.
+
+RUN-20260807-050 remediated only that lint failure by making the fixture explicitly non-sensitive and applying a narrow line-level `S105` suppression. No repository-wide lint rule and no product control was weakened. New exact-head CI is required before acceptance.
+
+The issue #1 external gate for validating real production credentials, rate limits, licences and terms for every live connector remains open; repository contract validation is not a substitute for external acceptance.
+
 ## Security, privacy and publication invariants
 
 - ingestion creates candidate intelligence only;
 - publication requires explicit human approval by a principal different from the reviewer;
 - service accounts and connectors may not review or approve sharing;
-- connector success, isolation recovery or quarantine release never implies publication approval;
+- connector success, isolation recovery, quarantine release or contract validation never implies publication approval;
 - provenance and confidence may not be silently discarded;
+- secret values may not be emitted into connector contract evidence;
 - missing, queued, cancelled or unexecuted CI and connector evidence may not be reported as successful.
 
 ## Current run decision
 
-`RUN-20260807-048` is `PASS`. RC7.2 is evidenced and merged. Phase 4 remains `IN PROGRESS` pending governed connector contract validation for credentials, rate limits/backoff, licence/terms provenance and malformed/duplicate quarantine behavior.
+`RUN-20260807-050` is `CI_VALIDATION_PENDING`. The first deterministic RC4 failure has been remediated, but the new exact head has not yet been accepted by GitHub Actions. Phase 4 remains `IN PROGRESS`.
 
 ## Exactly one next priority
 
-Implement and evidence governed connector contract validation for approved live connectors: credentials presence without secret disclosure, rate-limit/backoff behavior, licence/terms provenance and fail-closed quarantine for malformed or duplicate records, while preserving human review before publication.
+Inspect the first RC4 Quality Gate registered for the current exact head; remediate only its earliest deterministic failure, or accept and merge RC7.3 only after the contract gate and required regression gates execute successfully with retained evidence.
