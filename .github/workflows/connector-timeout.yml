@@ -1,0 +1,140 @@
+name: RC7 Connector Timeout Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  connector-timeout:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Run connector timeout regressions
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc7_connector_timeout.py --junitxml=artifacts/connector-timeout-tests.xml
+      - name: Emit connector timeout evidence
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import asyncio
+          import json
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          from dtmo.connectors.timeout import (
+              ConnectorTimedOutError,
+              ConnectorTimeoutPolicy,
+              run_connector_with_timeout,
+          )
+
+          async def main():
+              cancelled = asyncio.Event()
+
+              async def slow():
+                  try:
+                      await asyncio.sleep(60)
+                  finally:
+                      cancelled.set()
+
+              async def fast():
+                  await asyncio.sleep(0.001)
+                  return 'nvd-ok'
+
+              policy = ConnectorTimeoutPolicy(timeout_seconds=0.02)
+              observed = datetime(2026, 8, 7, 17, 0, tzinfo=UTC)
+              slow_task = asyncio.create_task(
+                  run_connector_with_timeout(
+                      'cisa-kev',
+                      run_id='evidence-cisa',
+                      source_uri='https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json',
+                      operation=slow(),
+                      policy=policy,
+                      observed_at=observed,
+                  )
+              )
+              fast_task = asyncio.create_task(
+                  run_connector_with_timeout(
+                      'nvd',
+                      run_id='evidence-nvd',
+                      source_uri='https://services.nvd.nist.gov/rest/json/cves/2.0',
+                      operation=fast(),
+                      policy=ConnectorTimeoutPolicy(timeout_seconds=0.2),
+                      observed_at=observed,
+                  )
+              )
+
+              fast_value, fast_decision = await fast_task
+              timeout_decision = None
+              try:
+                  await slow_task
+              except ConnectorTimedOutError as exc:
+                  timeout_decision = exc.decision
+
+              evidence = {
+                  'schema_version': 1,
+                  'generated_at': datetime.now(UTC).isoformat(),
+                  'timeout': {
+                      'connector_id': timeout_decision.connector_id if timeout_decision else None,
+                      'run_id': timeout_decision.run_id if timeout_decision else None,
+                      'source_uri': timeout_decision.source_uri if timeout_decision else None,
+                      'reason': timeout_decision.reason if timeout_decision else None,
+                      'timeout_seconds': timeout_decision.timeout_seconds if timeout_decision else None,
+                      'cancelled': cancelled.is_set(),
+                      'publish_approved': timeout_decision.publish_approved if timeout_decision else None,
+                  },
+                  'independent_connector': {
+                      'connector_id': fast_decision.connector_id,
+                      'run_id': fast_decision.run_id,
+                      'source_uri': fast_decision.source_uri,
+                      'result': fast_value,
+                      'reason': fast_decision.reason,
+                      'allowed_to_continue': fast_decision.allowed_to_continue,
+                      'publish_approved': fast_decision.publish_approved,
+                  },
+              }
+              evidence['decision'] = 'pass' if (
+                  evidence['timeout']['connector_id'] == 'cisa-kev'
+                  and evidence['timeout']['reason'] == 'timeout_budget_exhausted'
+                  and evidence['timeout']['cancelled'] is True
+                  and evidence['timeout']['publish_approved'] is False
+                  and evidence['independent_connector']['connector_id'] == 'nvd'
+                  and evidence['independent_connector']['result'] == 'nvd-ok'
+                  and evidence['independent_connector']['allowed_to_continue'] is True
+                  and evidence['independent_connector']['publish_approved'] is False
+              ) else 'fail'
+              return evidence
+
+          evidence = asyncio.run(main())
+          Path('artifacts').mkdir(exist_ok=True)
+          Path('artifacts/connector-timeout-evidence.json').write_text(
+              json.dumps(evidence, indent=2, sort_keys=True), encoding='utf-8'
+          )
+          if evidence['decision'] != 'pass':
+              raise SystemExit('connector timeout evidence failed')
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: connector-timeout-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  connector-timeout-gate:
+    if: always()
+    needs: [connector-timeout]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed timeout evidence
+        env:
+          CONNECTOR_TIMEOUT_RESULT: ${{ needs.connector-timeout.result }}
+        run: test "$CONNECTOR_TIMEOUT_RESULT" = "success"
