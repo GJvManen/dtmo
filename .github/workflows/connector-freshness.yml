@@ -1,0 +1,106 @@
+name: RC7 Connector Freshness Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  connector-freshness:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Run freshness regressions
+        run: python -m pytest -q backend/tests/test_rc7_connector_freshness.py --junitxml=artifacts/connector-freshness-tests.xml
+      - name: Emit freshness evidence
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from datetime import UTC, datetime, timedelta
+          from pathlib import Path
+          from uuid import UUID
+          from dtmo.connectors.provenance import IngestionContext, SourceFreshnessPolicy, normalize_connector_records
+
+          fetched_at = datetime(2026, 8, 7, 11, 30, tzinfo=UTC)
+          context = IngestionContext(
+              connector_id='cisa-kev-canary',
+              run_id=UUID('77777777-7777-4777-8777-777777777777'),
+              source_uri='https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json',
+              fetched_at=fetched_at,
+              confidence=95,
+          )
+          policy = SourceFreshnessPolicy(max_age=timedelta(hours=24), max_future_skew=timedelta(minutes=5))
+          records = [
+              {'cveID': 'CVE-2026-1000', 'observedAt': '2026-08-07T10:45:00Z'},
+              {'cveID': 'CVE-2026-1001', 'observedAt': '2026-08-06T10:00:00Z'},
+              {'cveID': 'CVE-2026-1002', 'observedAt': '2026-08-07T11:36:00Z'},
+              {'cveID': 'CVE-2026-1003', 'observedAt': 'not-a-time'},
+              {'cveID': 'CVE-2026-1004'},
+          ]
+          result = normalize_connector_records(
+              records,
+              context=context,
+              external_id_field='cveID',
+              source_timestamp_field='observedAt',
+              freshness_policy=policy,
+          )
+          evidence = {
+              'schema_version': 1,
+              'generated_at': datetime.now(UTC).isoformat(),
+              'connector_id': context.connector_id,
+              'run_id': str(context.run_id),
+              'source_uri': context.source_uri,
+              'fetched_at': fetched_at.isoformat(),
+              'confidence': context.confidence,
+              'max_age_seconds': int(policy.max_age.total_seconds()),
+              'max_future_skew_seconds': int(policy.max_future_skew.total_seconds()),
+              'candidate_freshness': [item.freshness_status for item in result.candidates],
+              'quarantine_reasons': [item.reason for item in result.quarantined],
+              'quarantine_freshness': [item.freshness_status for item in result.quarantined],
+              'publish_approved': result.publish_approved or any(
+                  item.publish_approved for item in (*result.candidates, *result.quarantined)
+              ),
+          }
+          evidence['decision'] = 'pass' if (
+              evidence['candidate_freshness'] == ['fresh']
+              and evidence['quarantine_reasons'] == [
+                  'stale_source_timestamp',
+                  'future_source_timestamp',
+                  'malformed_source_timestamp',
+                  'missing_source_timestamp',
+              ]
+              and evidence['quarantine_freshness'] == ['stale', 'future_skew', 'invalid', 'missing']
+              and evidence['publish_approved'] is False
+          ) else 'fail'
+          Path('artifacts').mkdir(exist_ok=True)
+          Path('artifacts/connector-freshness-evidence.json').write_text(
+              json.dumps(evidence, indent=2, sort_keys=True), encoding='utf-8'
+          )
+          if evidence['decision'] != 'pass':
+              raise SystemExit('connector freshness evidence failed')
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: connector-freshness-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  connector-freshness-gate:
+    if: always()
+    needs: [connector-freshness]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed freshness evidence
+        env:
+          FRESHNESS_RESULT: ${{ needs.connector-freshness.result }}
+        run: test "$FRESHNESS_RESULT" = "success"
