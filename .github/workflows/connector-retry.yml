@@ -1,0 +1,131 @@
+name: RC7 Connector Retry Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  connector-retry:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Run connector retry regressions
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc7_connector_retry.py --junitxml=artifacts/connector-retry-tests.xml
+      - name: Emit connector retry evidence
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from datetime import UTC, datetime
+          from pathlib import Path
+
+          from dtmo.connectors.retry import ConnectorRetryPolicy, evaluate_connector_retry
+
+          policy = ConnectorRetryPolicy(
+              max_attempts=4,
+              base_delay_seconds=2,
+              max_delay_seconds=30,
+              max_retry_after_seconds=120,
+          )
+          observed = datetime(2026, 8, 7, 15, 0, tzinfo=UTC)
+
+          backoff = [
+              evaluate_connector_retry('cisa-kev', failed_attempt=attempt, policy=policy, now=observed)
+              for attempt in (1, 2, 3)
+          ]
+          provider = evaluate_connector_retry(
+              'cisa-kev', failed_attempt=1, policy=policy, retry_after_seconds=900, now=observed
+          )
+          exhausted = evaluate_connector_retry(
+              'cisa-kev', failed_attempt=4, policy=policy, now=observed
+          )
+          non_retryable = evaluate_connector_retry(
+              'cisa-kev', failed_attempt=1, policy=policy, retryable=False, now=observed
+          )
+          independent = evaluate_connector_retry(
+              'nvd', failed_attempt=1, policy=policy, now=observed
+          )
+
+          evidence = {
+              'schema_version': 1,
+              'generated_at': datetime.now(UTC).isoformat(),
+              'policy': {
+                  'max_attempts': policy.max_attempts,
+                  'base_delay_seconds': policy.base_delay_seconds,
+                  'max_delay_seconds': policy.max_delay_seconds,
+                  'max_retry_after_seconds': policy.max_retry_after_seconds,
+              },
+              'exponential_delays': [item.delay_seconds for item in backoff],
+              'provider_retry_after': {
+                  'reason': provider.reason,
+                  'delay_seconds': provider.delay_seconds,
+                  'retry_allowed': provider.retry_allowed,
+                  'publish_approved': provider.publish_approved,
+              },
+              'exhaustion': {
+                  'reason': exhausted.reason,
+                  'retry_allowed': exhausted.retry_allowed,
+                  'publish_approved': exhausted.publish_approved,
+              },
+              'non_retryable': {
+                  'reason': non_retryable.reason,
+                  'retry_allowed': non_retryable.retry_allowed,
+                  'publish_approved': non_retryable.publish_approved,
+              },
+              'independent_connector': {
+                  'connector_id': independent.connector_id,
+                  'retry_allowed': independent.retry_allowed,
+                  'publish_approved': independent.publish_approved,
+              },
+          }
+          evidence['decision'] = 'pass' if (
+              evidence['exponential_delays'] == [2.0, 4.0, 8.0]
+              and evidence['provider_retry_after']['reason'] == 'provider_retry_after'
+              and evidence['provider_retry_after']['delay_seconds'] == 120.0
+              and evidence['provider_retry_after']['retry_allowed'] is True
+              and evidence['provider_retry_after']['publish_approved'] is False
+              and evidence['exhaustion']['reason'] == 'attempts_exhausted'
+              and evidence['exhaustion']['retry_allowed'] is False
+              and evidence['exhaustion']['publish_approved'] is False
+              and evidence['non_retryable']['reason'] == 'non_retryable_failure'
+              and evidence['non_retryable']['retry_allowed'] is False
+              and evidence['non_retryable']['publish_approved'] is False
+              and evidence['independent_connector']['connector_id'] == 'nvd'
+              and evidence['independent_connector']['retry_allowed'] is True
+              and evidence['independent_connector']['publish_approved'] is False
+          ) else 'fail'
+
+          Path('artifacts').mkdir(exist_ok=True)
+          Path('artifacts/connector-retry-evidence.json').write_text(
+              json.dumps(evidence, indent=2, sort_keys=True), encoding='utf-8'
+          )
+          if evidence['decision'] != 'pass':
+              raise SystemExit('connector retry evidence failed')
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: connector-retry-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  connector-retry-gate:
+    if: always()
+    needs: [connector-retry]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed retry evidence
+        env:
+          CONNECTOR_RETRY_RESULT: ${{ needs.connector-retry.result }}
+        run: test "$CONNECTOR_RETRY_RESULT" = "success"

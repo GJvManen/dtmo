@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260807-062 — RC7.8 bounded connector retry/backoff](runs/RUN-20260807-062.md) — `CI_VALIDATION_PENDING`: added deterministic bounded retry policy, capped exponential delay, bounded provider `Retry-After`, fail-closed invalid/non-retryable/exhausted paths, connector-local regression tests and a dedicated retained-evidence workflow; exact-head GitHub Actions execution and artifact inspection are still required before PASS or merge
 - [RUN-20260807-061 — RC7.7 exact-head acceptance and merge](runs/RUN-20260807-061.md) — `PASS`: exact head `4d17dfc7a9cd7f0bbc155fa0c42770ba34535ae2` passed RC4 #335, RC6 OpenSearch #87, RC6 Multi-store #77, RC7 State #40, Canary #68, Contract #39, Payload Provenance #30, Replay #11, Freshness #7 and Failure Isolation #3; retained artifact `8996123528` independently verified connector-local circuit blocking, independent-source execution, bounded recovery, 6/6 tests and `publish_approved=false`; PR #34 merged with expected-head protection as `6f033c57e2b143172347a88ad1c0213915226ac1`
 - [RUN-20260807-060 — RC7.7 connector source-health and failure isolation](runs/RUN-20260807-060.md) — `CI_VALIDATION_PENDING`: added a connector-local fail-closed execution health guard over persisted runtime health, regression tests for bounded circuit isolation/non-cascading failure/recovery behavior, and a dedicated retained-evidence workflow; exact-head GitHub Actions evidence was still required before PASS or merge
 - [RUN-20260807-059 — RC7.6 exact-head acceptance and merge](runs/RUN-20260807-059.md) — `PASS`: exact head `cd932c983035537b0cac1af6fc5768a818f238bc` passed RC4 #328, RC6 OpenSearch #80, RC6 Multi-store #70, RC7 State #37, Canary #61, Contract #32, Payload Provenance #23, Replay #8 and Freshness #4; retained artifact `8992632471` independently verified fail-closed stale/future-skew/invalid/missing timestamp handling, 7/7 tests and `publish_approved=false`; PR #33 merged as `ad376612ae13d79d4ba1efd38183d599dcd08ef0`
@@ -15,8 +16,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260807-061` is `PASS` for RC7.7. Exact-head workflows completed successfully, retained failure-isolation evidence was independently inspected, and PR #34 was merged with expected-head protection. Phase 4 remains `IN PROGRESS`; issue #1 continues to gate production credentials, provider limits, licences/terms and external acceptance.
+`RUN-20260807-062` is `CI_VALIDATION_PENDING` for RC7.8. The bounded retry/backoff implementation, regression tests, retained-evidence workflow and QA definition are committed, but exact-head GitHub Actions execution has not yet been accepted as evidence. Phase 4 remains `IN PROGRESS`; issue #1 continues to gate production credentials, provider limits, licences/terms and external acceptance.
 
 ## Exactly one next priority
 
-Implement and evidence bounded connector retry and backoff policy: deterministic maximum attempts, bounded exponential delay, provider `Retry-After` handling where available, fail-closed exhaustion, connector-local isolation, preserved provenance and `publish_approved=false` throughout retry state.
+Inspect the exact-head RC7 Connector Retry Gate and required RC4/RC6/RC7 regressions after GitHub registers and executes them; remediate only the earliest deterministic failure, or accept/merge only when all required exact-head evidence succeeds and retained retry evidence confirms bounded attempts/delays and `publish_approved=false`.
