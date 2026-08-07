@@ -23,6 +23,7 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 - RC5.1 #177 through RC5.12 #224: `PASS`
 - RC6.1 #229 through RC6.4 Multi-store Gate #4: `PASS`
 - RC7.1 Canary Gate #3 and Quality Gate #270: `PASS`
+- RC7.2 Connector State Gate #17 and Quality Gate #292: `PASS`
 
 ## Phase status
 
@@ -34,9 +35,9 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 
 Exact head `c82e20c110354c1163b58ac8b9820756f829a4ae` passed required gates with retained canary evidence artifact `8973407243`.
 
-## RC7.2 persistent connector state and failure isolation — `CI_VALIDATION_PENDING`
+## RC7.2 persistent connector state and failure isolation — `PASS`
 
-Committed controls:
+Accepted controls:
 
 - PostgreSQL-backed runtime state per connector;
 - durable health events bound to unique connector/run identifiers;
@@ -47,28 +48,26 @@ Committed controls:
 - recovery may only become `released_to_candidate` or `rejected`;
 - health and quarantine records are database-constrained to `publish_approved = false`;
 - migration `0005_connector_state` is reversible;
-- `RC7 Connector State Gate` executes migration, persistence and recovery verification on PostgreSQL 17;
-- retained evidence upload uses `if-no-files-found: error`;
-- a separate `always()` gate fails closed unless connector-state evidence succeeds;
 - persisted and supplied timestamps are normalized to UTC before isolation decisions;
-- a focused regression test simulates a naive persisted isolation deadline and verifies active and expired decisions against UTC-aware inputs;
-- new or updated parent runtime-state rows are explicitly flushed before health-event children are inserted.
+- parent runtime-state rows are flushed before health-event children are inserted;
+- retained evidence upload fails closed when evidence is absent;
+- connector recovery never implies publication approval.
 
-Connector State Gate #13, run `31129850744`, provided independently observable PostgreSQL-backed execution on exact head `1fea5a9b07fa21cf16476a723bb1ddd656d0b39e`:
+Exact head `af4625b0f285da6e2b0d5135a623c418a9f3b9d4` produced complete evidence:
 
+- RC7 Connector State Gate #17, run `31132196662`: `PASS`;
 - Alembic upgrade through `0005_connector_state`: `PASS`;
-- targeted connector-state and migration tests: `5 passed`;
-- Quality Gate #288: `PASS`;
-- Live Connector Canary Gate #21: `PASS`;
-- OpenSearch Recovery Gate #40: `PASS`;
-- Multi-store Recovery Gate #30: `PASS`;
-- connector-state evidence fixture: `FAIL` with a PostgreSQL foreign-key violation because a health-event child was flushed before its newly created runtime-state parent;
-- retained connector-state evidence artifact: absent because the primary job failed before upload;
-- independent connector-state gate: correctly `FAIL` closed on missing evidence.
+- targeted connector-state and migration tests: `PASS`;
+- PostgreSQL-backed persistence and isolation fixture: `PASS`;
+- independent fail-closed aggregate gate: `PASS`;
+- retained artifact `connector-state-evidence`, ID `8976473782`;
+- artifact digest `sha256:a3f23e76eb550c058d942918582488aa9782b78b8845e4c76b5d9bdf5a9139b9`;
+- RC7 Live Connector Canary Gate #25: `PASS`;
+- RC4 Quality Gate #292: `PASS`;
+- RC6 OpenSearch Recovery Gate #44: `PASS`;
+- RC6 Multi-store Recovery Gate #34: `PASS`.
 
-The bounded remediation is committed as `407fd75e149b50d28bb2830a17d26a877b09d9c4`. The parent `ConnectorRuntimeState` is now explicitly flushed before adding `ConnectorHealthEvent` children. This does not alter RBAC, separation of duties, privacy, provenance, quarantine decisions or human share approval.
-
-The remediation commit is not acceptance evidence. RC7.2 remains `CI_VALIDATION_PENDING` until the exact current head executes the Quality Gate, Connector State Gate and required regression gates successfully and retains the required connector-state evidence artifact.
+PR #29 was merged from that exact head as squash commit `ac31b9d4409b97d6db734791365a3dd814255c9d`.
 
 ## Security, privacy and publication invariants
 
@@ -81,8 +80,8 @@ The remediation commit is not acceptance evidence. RC7.2 remains `CI_VALIDATION_
 
 ## Current run decision
 
-`RUN-20260807-047` is `CI_VALIDATION_PENDING`. Real PostgreSQL execution exposed and bounded a parent-before-child persistence-ordering defect; exact-head validation of the remediation and retained evidence are still required.
+`RUN-20260807-048` is `PASS`. RC7.2 is evidenced and merged. Phase 4 remains `IN PROGRESS` pending governed connector contract validation for credentials, rate limits/backoff, licence/terms provenance and malformed/duplicate quarantine behavior.
 
 ## Exactly one next priority
 
-Inspect the RC7 Connector State Gate for the current exact head and remediate only its earliest deterministic failure, or merge PR #29 after all exact-head gates and retained evidence succeed.
+Implement and evidence governed connector contract validation for approved live connectors: credentials presence without secret disclosure, rate-limit/backoff behavior, licence/terms provenance and fail-closed quarantine for malformed or duplicate records, while preserving human review before publication.
