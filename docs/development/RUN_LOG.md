@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260808-072 — RC8.3 bounded OpenSearch search-read performance harness](runs/RUN-20260808-072.md) — `CI_VALIDATION_PENDING`: added a workload-profile-driven search-read harness against a real OpenSearch 2.19.1 CI service, a 5,000-document synthetic corpus, 40 searches/s for five seconds, fail-closed latency/error/provenance/publication-state evaluation, focused regressions and retained machine-readable evidence; exact-head CI and artifact inspection remain required before PASS
 - [RUN-20260808-071 — RC8.2 exact-head acceptance and merge](runs/RUN-20260808-071.md) — `PASS`: PR #39 exact head `e8ab9132bab6da753087d4cc830bac6541eb99ff` passed all 13 required RC4/RC6/RC7/RC8 workflows; retained artifact `9022168980` (`sha256:ca930454d8795be70844ba22befe2ff4420c8c7002289b2c97c979bd9f889d30`) independently verified 500/500 successful API reads at 100.142 req/s, 0% errors, p95 1.878 ms, p99 11.059 ms and preserved governance markers; PR #39 merged with expected-head protection as `13fdadcfa83170b64713f3e72f7261501829e585`
 - [RUN-20260808-070 — RC8.2 bounded API-read performance harness](runs/RUN-20260808-070.md) — `CI_VALIDATION_PENDING`: added a workload-profile-driven API-read harness, fail-closed latency/error/governance evaluation, focused regressions and a dedicated retained-evidence workflow against the real DTMO `/health` endpoint; exact-head CI and artifact inspection remain required before PASS
 - [RUN-20260808-069 — RC8.1 exact-head acceptance and merge](runs/RUN-20260808-069.md) — `PASS`: PR #38 exact head `9e45a0e1f8991d42c841ebfa4e03b42fe64d4dbb` passed all 12 required RC4/RC6/RC7 workflows and merged with expected-head protection as `67ff969554fbced6b2efbd0e84b7d050bd16c3cc`; workload budgets are accepted targets, not measured performance results
@@ -14,8 +15,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260808-071` is `PASS` for RC8.2. The exact PR head passed all required workflows and the retained API-read artifact was independently inspected before expected-head merge. The bounded internal API-read target is evidenced, but Phase 5 remains `IN PROGRESS`: search, ingestion, queue pressure, connector bursts, degraded dependencies and representative external load/stress acceptance remain unevidenced.
+`RUN-20260808-072` is `CI_VALIDATION_PENDING` for RC8.3. The bounded real-OpenSearch search-read harness, regressions and retained-evidence workflow are implemented, but no latency/error result is accepted until exact-head GitHub Actions execute successfully and the retained artifact is independently inspected. The 5,000-document CI corpus is explicitly scaled and does not satisfy the 1,000,000-record representative envelope or issue #1's independent load/stress gate. Phase 5 remains `IN PROGRESS`.
 
 ## Exactly one next priority
 
-Implement a bounded synthetic OpenSearch/search-read performance harness driven by the accepted RC8.1 workload profile, with exact-head retained latency/error evidence and fail-closed governance evaluation. Do not broaden that run into ingestion, queue pressure, connector bursts or degraded-dependency testing.
+Inspect all exact-head workflows for the RC8.3 PR. Remediate only the earliest deterministic failure, or accept and merge only if every required gate succeeds and retained search-read evidence satisfies the accepted latency/error, provenance and non-publication invariants.
