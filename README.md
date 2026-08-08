@@ -6,49 +6,53 @@ DTMO is een open, onderwijsgericht Cyber Threat Intelligence-platform voor histo
 
 ## Actuele implementatiestatus
 
-DTMO is ontwikkeld van RC4.1 tot en met RC7.2.
+DTMO bevindt zich in **Phase 5 — performance en schaalbaarheid** van de productie-roadmap.
 
 ### Afgerond en evidenced
 
-- RC4-platformbasis: API, persistence, immutable Intelligence Lake, connectorcatalogus, Knowledge Graph, SOC/CTI-workspace, RBAC, migraties, MinIO en OpenSearch;
-- RC5.1 tot en met RC5.12 en Phase 2: `PASS`;
-- RC6.1 tot en met RC6.4 en Phase 3: `PASS`;
-- RC7.1 governed live connector canary: `PASS` via Canary Gate #3 en Quality Gate #270.
+- Phase 1 — CI en workflow-integriteit: `PASS`;
+- Phase 2 — applicatiebeveiliging en identity: `PASS`;
+- Phase 3 — data-integriteit, backup en recovery: `PASS`;
+- Phase 4 — live connectorbetrouwbaarheid en provenance: `PASS`;
+- RC8.1 performance workload profile: `PASS`;
+- RC8.2 API-read performance: `PASS`;
+- RC8.3 OpenSearch search-read performance: `PASS`;
+- RC8.4 ingestion-throughput performance: `PASS`.
 
-### Actieve run: RC7.2
+### Actieve gate
 
-**Persistent connector state and failure isolation: `CI_VALIDATION_PENDING`.**
+**RC8.5 queue pressure en connector burst: `CI_VALIDATION_PENDING` in PR #42.**
 
-De branch bevat:
-
-- PostgreSQL-backed connector-runstate;
-- append-only source-health history per connector en run-ID;
-- connector-scoped failure isolation na een begrensde foutdrempel;
-- automatische reset van isolatie na een succesvolle run;
-- persistente quarantaine met raw-evidence SHA-256;
-- human-reviewed recovery naar uitsluitend `released_to_candidate` of `rejected`;
-- databaseconstraints die automatische publicatie uitsluiten;
-- reversibele migratie `0005_connector_state`;
-- onafhankelijke `RC7 Connector State Gate` met retained evidence en fail-closed aggregate gate.
-
-RC7.2 wordt pas `PASS` nadat de exacte branch-head aantoonbaar groen is in zowel de reguliere Quality Gate als de Connector State Gate, met retained `connector-state-evidence`.
+RC8.5 staat nog niet op `main` en wordt pas geaccepteerd nadat alle vereiste exact-head workflows zijn geslaagd en retained queue-burst evidence onafhankelijk is gecontroleerd.
 
 ## Roadmapstatus
 
 | Fase | Status |
 |---|---|
 | 1. CI en workflow-integriteit | `PASS` |
-| 2. Applicatiebeveiliging, identity en privacy | `PASS` |
+| 2. Applicatiebeveiliging en identity | `PASS` |
 | 3. Data-integriteit, backup en recovery | `PASS` |
-| 4. Live connectorbetrouwbaarheid en provenance | `IN PROGRESS` — RC7.2 wacht op exact-head evidence |
-| 5. Performance en schaalbaarheid | `NOT STARTED` |
-| 6. Frontend accessibility en operationele UX | `NOT STARTED` |
-| 7. Observability en incident operations | `NOT STARTED` |
-| 8. Staging acceptance | `NOT STARTED` |
-| 9. External assurance | `NOT STARTED` |
+| 4. Live connectorbetrouwbaarheid en provenance | `PASS` |
+| 5. Performance en schaalbaarheid | `IN PROGRESS` — RC8.1 t/m RC8.4 PASS, RC8.5 pending |
+| 6. Frontend accessibility en operationele UX | `NOT ACCEPTED` |
+| 7. Observability en incident operations | `NOT ACCEPTED` |
+| 8. Staging acceptance | `NOT ACCEPTED` |
+| 9. External assurance | `NOT ACCEPTED` |
 | 10. Production go/no-go | `BLOCKED` |
 
-**Precies één volgende prioriteit:** inspecteer de exacte RC7 Connector State Gate en herstel uitsluitend de eerste deterministische fout, of merge na volledige groene evidence.
+## Architectuur, workflows en grafieken
+
+De actuele runtime-, governance-, roadmap- en CI-grafieken staan in:
+
+- `docs/project/CURRENT_STATE.md`
+
+Op `main` zijn onder andere de volgende Phase-5-workflows aanwezig:
+
+- `.github/workflows/api-read-performance.yml`;
+- `.github/workflows/search-read-performance.yml`;
+- `.github/workflows/ingestion-performance.yml`.
+
+De RC8.5 queue-burst workflow blijft onderdeel van PR #42 totdat die exact-head is geaccepteerd en gemerged.
 
 ## Governance-invarianten
 
@@ -56,9 +60,9 @@ RC7.2 wordt pas `PASS` nadat de exacte branch-head aantoonbaar groen is in zowel
 - review en share approval blijven afzonderlijke menselijke beslissingen;
 - dezelfde principal mag niet reviewen en share approval uitvoeren;
 - serviceaccounts en connectors mogen niet reviewen of delen goedkeuren;
-- connector success of quarantine recovery mag nooit automatisch publiceren;
+- connector-, replay-, retry-, timeout-, recovery- of performance-success mag nooit automatisch publiceren;
 - raw evidence, provenance en confidence mogen niet stilzwijgend verdwijnen;
-- ontbrekende CI-, recovery- of connector-evidence blokkeert releaseacceptatie.
+- ontbrekende, queued, cancelled of unexecuted CI-evidence blokkeert releaseacceptatie.
 
 ## Snel starten
 
@@ -80,12 +84,15 @@ Belangrijke endpoints:
 
 ## Documentatie en evidence
 
+- `docs/project/CURRENT_STATE.md`
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
 - `docs/development/RUN_LOG.md`
-- `docs/development/runs/RUN-20260806-045.md`
-- `docs/qa/QA_AND_RELEASE_GATES.md`
-- GitHub issues #2 en #3
+- `docs/development/runs/`
+- `docs/qa/`
+- GitHub issues #1, #2 en #3
 
 ## Productiestatus
 
-DTMO is nog niet productiegereed. Productie blijft geblokkeerd totdat Phase 4 volledig is afgerond en performance, accessibility, observability, staging en externe assurance aantoonbaar zijn afgerond.
+DTMO is nog niet productiegereed. Phase 5 is nog actief en Phases 6–10 plus resterende externe gates vereisen aanvullende objectieve evidence.
+
+**Precies één volgende prioriteit:** valideer PR #42 / RC8.5 exact-head; herstel uitsluitend de eerste deterministische fout of merge alleen na volledig groene workflows en gecontroleerde retained evidence.
