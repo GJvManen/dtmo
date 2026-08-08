@@ -64,6 +64,25 @@ De RC8.5 queue-burst workflow blijft onderdeel van PR #42 totdat die exact-head 
 - raw evidence, provenance en confidence mogen niet stilzwijgend verdwijnen;
 - ontbrekende, queued, cancelled of unexecuted CI-evidence blokkeert releaseacceptatie.
 
+## Open-source licentie en projectgovernance
+
+DTMO is gelicenseerd onder de **Apache License, Version 2.0** (`Apache-2.0`). De volledige voorwaarden staan in `LICENSE`; distributie-attributie staat in `NOTICE`.
+
+Apache-2.0 geldt voor project-eigen broncode en documentatie tenzij expliciet anders vermeld. Externe dependencies, container images, API's, databronnen, dreigingsinformatie en trademarks behouden hun eigen licenties en gebruiksvoorwaarden en worden niet door DTMO opnieuw gelicenseerd.
+
+Belangrijke governancebestanden:
+
+- `LICENSE` — volledige Apache License 2.0;
+- `NOTICE` — project- en distributienotices;
+- `SECURITY.md` — responsible-disclosure- en securitybeleid;
+- `CONTRIBUTING.md` — bijdrage-, evidence- en governancevereisten;
+- `CODE_OF_CONDUCT.md` — samenwerkings- en gedragsregels;
+- `SUPPORTED_VERSIONS.md` — security support policy;
+- `docs/legal/LICENSING.md` — licentiebeleid en releasecontroles;
+- `docs/legal/THIRD_PARTY.md` — third-party software/data/terms policy.
+
+De Python-package metadata declareert eveneens `Apache-2.0`. Een toekomstige publieke release moet daarnaast version-specifieke dependency/SBOM- en third-party licence-evidence bevatten; de aanwezigheid van de projectlicentie alleen sluit die externe releasegate niet.
+
 ## Snel starten
 
 ```bash
@@ -89,10 +108,12 @@ Belangrijke endpoints:
 - `docs/development/RUN_LOG.md`
 - `docs/development/runs/`
 - `docs/qa/`
+- `docs/legal/LICENSING.md`
+- `docs/legal/THIRD_PARTY.md`
 - GitHub issues #1, #2 en #3
 
 ## Productiestatus
 
 DTMO is nog niet productiegereed. Phase 5 is nog actief en Phases 6–10 plus resterende externe gates vereisen aanvullende objectieve evidence.
 
-**Precies één volgende prioriteit:** valideer PR #42 / RC8.5 exact-head; herstel uitsluitend de eerste deterministische fout of merge alleen na volledig groene workflows en gecontroleerde retained evidence.
+**Precies één volgende prioriteit:** valideer deze Apache-2.0/open-source-governance wijziging op exact-head CI; na acceptatie wordt RC8.5 / PR #42 weer de enige roadmapprioriteit.
