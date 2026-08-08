@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260808-066 — Phase 4 external connector acceptance](runs/RUN-20260808-066.md) — `CI_VALIDATION_PENDING`: project-owner external/manual attestation dated 2026-08-08 verifies the remaining live-connector credentials, provider limits, licences/terms and provider-specific production acceptance; substantive Phase 4 requirements are satisfied, but the acceptance-record exact head must still execute required GitHub Actions before final PASS/merge
 - [RUN-20260807-065 — RC7.9 exact-head acceptance and merge](runs/RUN-20260807-065.md) — `PASS`: exact head `0eee765b72d016489af248d2bf29e3b1dbd593db` passed all 12 required RC4/RC6/RC7 workflows; retained artifact `9003952153` (`sha256:b448608ae258086bacf0f4cb69c2c18f566b58851f7e55ace322fb30b5dc353f`) independently verified 8/8 tests, actual timeout cancellation, connector-local independence, mandatory provenance and `publish_approved=false`; PR #36 merged with expected-head protection as `3c5e1ed278d86b5279a285e546d24e12fbaabd3f`
 - [RUN-20260807-064 — RC7.9 connector timeout and cancellation budgets](runs/RUN-20260807-064.md) — `CI_VALIDATION_PENDING`: added a connector-local async timeout guard with mandatory connector/run/source provenance, fail-closed timeout cancellation, scheduler-cancellation propagation, regression coverage and a dedicated retained-evidence workflow; exact-head GitHub Actions execution and artifact inspection remain required before PASS or merge
 - [RUN-20260807-063 — RC7.8 exact-head acceptance and merge](runs/RUN-20260807-063.md) — `PASS`: exact head `05daeb35c53a8c44d2d7e51e95a745b2b5ece15a` passed all 11 required RC4/RC6/RC7 workflows, including RC4 #340, RC6 OpenSearch #92, RC6 Multi-store #82 and RC7 Retry #1; retained artifact `9000180534` independently verified 7/7 tests, deterministic `2/4/8` backoff, capped provider `Retry-After`, fail-closed exhaustion/non-retryable states, connector-local independence and `publish_approved=false`; PR #35 merged with expected-head protection as `e4b165df68ae7d9df4e25e51ec9f59e1b1133c92`
@@ -19,8 +20,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260807-065` is `PASS` for RC7.9. Exact-head CI and retained timeout evidence were independently verified and PR #36 was merged with expected-head protection. Phase 4 remains `IN PROGRESS` because issue #1 still requires external validation of live-connector credentials, provider-enforced rate limits, licences/terms and provider-specific production acceptance; these cannot be satisfied by source-code commits or CI alone.
+`RUN-20260808-066` is `CI_VALIDATION_PENDING`. The substantive Phase 4 gate now has both previously accepted RC7.1–RC7.9 internal evidence and 2026-08-08 external/manual project-owner attestation for live-connector credentials, provider limits, licences/terms and provider-specific production acceptance. Final Phase 4 PASS is withheld until the acceptance-record exact head executes required GitHub Actions successfully.
 
 ## Exactly one next priority
 
-Reconcile Phase 4 against the external live-connector validation gate in issue #1 and record the precise external dependency blocker; do not advance to Phase 5 unless credentials, provider limits, licences/terms and connector production acceptance are objectively evidenced.
+Inspect exact-head CI for the Phase 4 acceptance record; remediate only the earliest deterministic failure, or mark Phase 4 PASS and merge with expected-head protection if every required gate succeeds.
