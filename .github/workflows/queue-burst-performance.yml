@@ -1,0 +1,47 @@
+name: RC8 Queue Burst Performance Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  queue-burst-performance:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Run RC8.5 queue burst regressions
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc8_queue_burst_performance.py --junitxml=artifacts/queue-burst-performance-tests.xml
+      - name: Execute bounded queue-pressure and connector-burst load
+        run: |
+          python -m dtmo.performance.queue_burst \
+            --profile config/performance/phase5_workload_profile.json \
+            --duration-seconds 1 \
+            --consumer-records-per-second 100 \
+            --output artifacts/queue-burst-performance-evidence.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: queue-burst-performance-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  queue-burst-performance-gate:
+    if: always()
+    needs: [queue-burst-performance]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed queue-burst evidence
+        env:
+          QUEUE_BURST_RESULT: ${{ needs.queue-burst-performance.result }}
+        run: test "$QUEUE_BURST_RESULT" = "success"
