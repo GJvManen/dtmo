@@ -4,29 +4,28 @@
 
 Provide an auditable Apache-2.0 licensing and open-source governance baseline for DTMO without changing product runtime behavior.
 
-## Required evidence
+## Accepted evidence
 
-The gate requires all of the following on the exact pull-request head:
+PR #44 exact head `38ba52f700a4324de6039db58422006ad8a17a96` completed all 16 registered required workflows successfully.
 
-- root `LICENSE` contains the complete Apache License, Version 2.0 text;
-- root `NOTICE` exists and does not imply third-party relicensing or endorsement;
-- `pyproject.toml` declares SPDX licence identifier `Apache-2.0`;
-- `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` and `SUPPORTED_VERSIONS.md` exist;
-- `docs/legal/LICENSING.md` distinguishes project licensing from third-party rights;
-- `docs/legal/THIRD_PARTY.md` keeps provider, dependency, data and trademark terms independent;
-- README links the licensing/governance entry points and does not change production-readiness claims;
-- the focused governance regressions execute successfully;
-- the dedicated `Open Source Governance Gate` executes and retains its evidence artifact;
-- all other required exact-head regression workflows execute successfully.
+The dedicated `Open Source Governance Gate` succeeded and retained artifact `9028364655`, digest `sha256:0e63aed861c8e761d626413227f1f2817fe2e36d6a1291fa2a0ebcfac521d83a`. Independent inspection confirmed 5 focused tests, 0 failures, 0 errors and 0 skipped, plus the expected Apache-2.0/governance manifest.
 
-## Fail-closed rules
+Accepted controls:
 
-Missing, queued, cancelled or unexecuted CI is not PASS. A project-level Apache-2.0 licence does not prove that every dependency or external intelligence source can be redistributed under Apache-2.0. Version-specific dependency/SBOM and provider licence evidence remains a release responsibility.
+- complete Apache License 2.0 root `LICENSE`;
+- root `NOTICE`;
+- Python package metadata `Apache-2.0`;
+- `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`;
+- project licensing and third-party rights policies;
+- README governance entry points;
+- focused regression protection and retained CI evidence.
 
-## Governance invariants
+## Fail-closed boundary
 
-This gate does not modify RBAC, separation of duties, privacy controls, provenance rules, auditability or human share approval. Security reporting guidance explicitly prohibits unauthorized testing and public disclosure of sensitive exploit, credential or personal-data material.
+This PASS applies to DTMO's project-level licensing/governance baseline only. It does not prove licence compatibility or redistribution rights for every resolved dependency, provider feed, CVE/vendor-advisory source, threat-intelligence dataset or trademark. Version-specific SBOM/dependency licence and provider-terms evidence remains required for production/public distribution.
+
+RBAC, separation of duties, privacy controls, provenance, auditability and human share approval were not weakened or modified.
 
 ## Decision
 
-`CI_VALIDATION_PENDING` until the exact pull-request head has complete successful workflow evidence and the retained open-source-governance artifact has been inspected.
+`PASS`. PR #44 merged with expected-head protection as `565c9df9eea133b2e7b1f58fb3d5d772c7753e9b`.
