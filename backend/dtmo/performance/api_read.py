@@ -100,6 +100,7 @@ async def run_api_read_harness(
     duration_seconds: float,
     concurrency: int,
     timeout_seconds: float = 5.0,
+    transport: httpx.AsyncBaseTransport | None = None,
 ) -> ApiReadResult:
     if duration_seconds <= 0:
         raise ValueError("duration_seconds must be positive")
@@ -116,7 +117,7 @@ async def run_api_read_harness(
     authentication_boundary_reported = True
     started = perf_counter()
 
-    async with httpx.AsyncClient(timeout=timeout_seconds) as client:
+    async with httpx.AsyncClient(timeout=timeout_seconds, transport=transport) as client:
         async def execute(index: int) -> None:
             nonlocal failed_requests, publication_gate_preserved, authentication_boundary_reported
             scheduled_at = started + (index / budget.requests_per_second)
