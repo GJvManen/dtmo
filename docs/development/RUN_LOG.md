@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260808-070 — RC8.2 bounded API-read performance harness](runs/RUN-20260808-070.md) — `CI_VALIDATION_PENDING`: added a workload-profile-driven API-read harness, fail-closed latency/error/governance evaluation, focused regressions and a dedicated retained-evidence workflow against the real DTMO `/health` endpoint; exact-head CI and artifact inspection remain required before PASS
 - [RUN-20260808-069 — RC8.1 exact-head acceptance and merge](runs/RUN-20260808-069.md) — `PASS`: PR #38 exact head `9e45a0e1f8991d42c841ebfa4e03b42fe64d4dbb` passed all 12 required RC4/RC6/RC7 workflows and merged with expected-head protection as `67ff969554fbced6b2efbd0e84b7d050bd16c3cc`; workload budgets are accepted targets, not measured performance results
 - [RUN-20260808-068 — RC8.1 Phase 5 workload profile](runs/RUN-20260808-068.md) — `CI_VALIDATION_PENDING`: defined a machine-readable synthetic education-sector CTI workload, measurable API/search/ingestion/resource budgets, privacy/governance invariants and regression contract; no performance result is claimed until exact-head CI executes
 - [RUN-20260808-067 — RC7.10 exact-head acceptance and merge](runs/RUN-20260808-067.md) — `PASS`: PR #37 exact head `32c62c557e1135dbce4ebf3b8ab03c33a6650cd3` passed all 12 required RC4/RC6/RC7 workflows and merged with expected-head protection as `d84d9edbee10a805ad4c3d904af5e1305bcef623`; Phase 4 accepted
@@ -23,8 +24,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260808-069` is `PASS` for RC8.1. Phase 4 remains `PASS`. Phase 5 is `IN PROGRESS`: the representative synthetic workload and measurable performance/capacity budgets are accepted from exact-head CI, but no representative performance execution has yet been run. The external load/stress gate in issue #1 remains open.
+`RUN-20260808-070` is `CI_VALIDATION_PENDING` for RC8.2. Phase 5 remains `IN PROGRESS`. The bounded API-read harness and dedicated observable evidence workflow are implemented, but no measured latency/error result is accepted until exact-head GitHub Actions execute successfully and retained evidence is independently inspected. The external load/stress gate in issue #1 remains open.
 
 ## Exactly one next priority
 
-Implement a bounded synthetic API/read performance harness against the accepted Phase 5 workload profile, producing machine-readable latency/error evidence and fail-closed acceptance evaluation. Do not add search, ingestion or degraded-dependency load in the same run.
+Inspect all exact-head workflows for the RC8.2 PR. Remediate only the earliest deterministic failure, or accept and merge only if every required gate succeeds and retained API-read evidence satisfies the accepted workload budgets and governance invariants.
