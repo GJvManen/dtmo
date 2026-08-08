@@ -1,0 +1,71 @@
+name: RC8 OpenSearch Search Read Performance Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  search-read-performance:
+    runs-on: ubuntu-24.04
+    services:
+      opensearch:
+        image: opensearchproject/opensearch:2.19.1
+        env:
+          discovery.type: single-node
+          DISABLE_SECURITY_PLUGIN: "true"
+          OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
+        ports:
+          - 9200:9200
+        options: >-
+          --health-cmd "curl -fsS http://localhost:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Run RC8.3 performance regressions
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc8_search_read_performance.py --junitxml=artifacts/search-read-performance-tests.xml
+      - name: Execute bounded synthetic OpenSearch search load
+        run: |
+          python -m dtmo.performance.search_read \
+            --endpoint http://127.0.0.1:9200 \
+            --index-name dtmo-performance \
+            --profile config/performance/phase5_workload_profile.json \
+            --documents 5000 \
+            --duration-seconds 5 \
+            --concurrency 20 \
+            --output artifacts/search-read-performance-evidence.json
+          python -m json.tool artifacts/search-read-performance-evidence.json
+      - name: Capture OpenSearch environment evidence
+        if: always()
+        run: |
+          curl -fsS http://127.0.0.1:9200/ > artifacts/opensearch-node.json || true
+          curl -fsS http://127.0.0.1:9200/_cluster/health > artifacts/opensearch-cluster-health.json || true
+          curl -fsS http://127.0.0.1:9200/_cat/indices/dtmo-performance?format=json > artifacts/opensearch-index.json || true
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: search-read-performance-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  search-read-performance-gate:
+    if: always()
+    needs: [search-read-performance]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed search evidence
+        env:
+          SEARCH_RESULT: ${{ needs.search-read-performance.result }}
+        run: test "$SEARCH_RESULT" = "success"
