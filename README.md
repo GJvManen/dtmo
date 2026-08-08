@@ -17,7 +17,8 @@ DTMO bevindt zich in **Phase 5 — performance en schaalbaarheid** van de produc
 - RC8.1 performance workload profile: `PASS`;
 - RC8.2 API-read performance: `PASS`;
 - RC8.3 OpenSearch search-read performance: `PASS`;
-- RC8.4 ingestion-throughput performance: `PASS`.
+- RC8.4 ingestion-throughput performance: `PASS`;
+- Apache-2.0/open-source-governance baseline: `PASS` via RUN-20260809-080 / PR #44.
 
 ### Actieve gate
 
@@ -50,7 +51,8 @@ Op `main` zijn onder andere de volgende Phase-5-workflows aanwezig:
 
 - `.github/workflows/api-read-performance.yml`;
 - `.github/workflows/search-read-performance.yml`;
-- `.github/workflows/ingestion-performance.yml`.
+- `.github/workflows/ingestion-performance.yml`;
+- `.github/workflows/open-source-governance.yml`.
 
 De RC8.5 queue-burst workflow blijft onderdeel van PR #42 totdat die exact-head is geaccepteerd en gemerged.
 
@@ -116,4 +118,4 @@ Belangrijke endpoints:
 
 DTMO is nog niet productiegereed. Phase 5 is nog actief en Phases 6–10 plus resterende externe gates vereisen aanvullende objectieve evidence.
 
-**Precies één volgende prioriteit:** valideer deze Apache-2.0/open-source-governance wijziging op exact-head CI; na acceptatie wordt RC8.5 / PR #42 weer de enige roadmapprioriteit.
+**Precies één volgende prioriteit:** valideer PR #42 / RC8.5 exact-head; herstel uitsluitend de eerste deterministische fout of merge alleen na volledig groene workflows en onafhankelijk gecontroleerde retained queue-burst evidence.
