@@ -31,7 +31,7 @@ def test_profile_fails_closed_if_publication_is_allowed(tmp_path: Path) -> None:
 
 @pytest.mark.asyncio
 async def test_api_read_harness_passes_only_with_governance_markers() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:
+    def handler(request: httpx.Request) -> httpx.Response:
         assert request.headers["x-correlation-id"].startswith("perf-api-read-")
         return httpx.Response(
             200,
@@ -58,7 +58,7 @@ async def test_api_read_harness_passes_only_with_governance_markers() -> None:
 
 @pytest.mark.asyncio
 async def test_api_read_harness_fails_closed_on_missing_publication_gate() -> None:
-    async def handler(_: httpx.Request) -> httpx.Response:
+    def handler(_: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json={"status": "healthy", "authentication": "api-key-and-rbac"})
 
     result = await run_api_read_harness(
@@ -74,7 +74,7 @@ async def test_api_read_harness_fails_closed_on_missing_publication_gate() -> No
 
 @pytest.mark.asyncio
 async def test_api_read_harness_fails_closed_on_http_errors() -> None:
-    async def handler(_: httpx.Request) -> httpx.Response:
+    def handler(_: httpx.Request) -> httpx.Response:
         return httpx.Response(503, json={"detail": "unavailable"})
 
     result = await run_api_read_harness(
