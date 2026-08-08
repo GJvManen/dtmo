@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "profile_id": "education-sector-phase5-v1",
+  "purpose": "Synthetic production-readiness performance envelope for DTMO",
+  "privacy": {
+    "synthetic_only": true,
+    "production_personal_data_allowed": false,
+    "raw_evidence_fixture_policy": "generated-or-public-test-fixtures-only"
+  },
+  "dataset": {
+    "education_organizations": 250,
+    "analyst_ciso_audit_users": 200,
+    "peak_concurrent_users": 50,
+    "intelligence_records": 1000000,
+    "vulnerability_records": 500000,
+    "ioc_records": 5000000,
+    "graph_edges": 20000000,
+    "raw_evidence_objects": 2000000,
+    "raw_evidence_bytes": 536870912000
+  },
+  "traffic": {
+    "api_read_requests_per_second": 100,
+    "api_write_requests_per_second": 25,
+    "search_requests_per_second": 40,
+    "dashboard_requests_per_second": 10,
+    "ingestion_sustained_records_per_second": 100,
+    "ingestion_burst_records_per_second": 250,
+    "ingestion_burst_duration_seconds": 600,
+    "connector_parallelism": 20
+  },
+  "budgets": {
+    "api_read_p95_ms": 300,
+    "api_read_p99_ms": 750,
+    "api_write_p95_ms": 500,
+    "search_p95_ms": 800,
+    "search_p99_ms": 1500,
+    "dashboard_p95_ms": 1500,
+    "ingestion_min_sustained_records_per_second": 100,
+    "ingestion_min_burst_records_per_second": 250,
+    "error_rate_max_percent": 1.0,
+    "data_loss_max_records": 0,
+    "duplicate_candidate_max_records": 0,
+    "api_cpu_avg_max_percent": 70,
+    "api_memory_avg_max_percent": 75,
+    "postgres_cpu_avg_max_percent": 70,
+    "opensearch_heap_avg_max_percent": 75,
+    "queue_recovery_max_seconds_after_burst": 900
+  },
+  "governance": {
+    "load_test_may_publish": false,
+    "human_review_required": true,
+    "share_approval_separate_from_review": true,
+    "service_accounts_may_approve_share": false
+  }
+}
