@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
     services:
       opensearch:
-        image: opensearchproject/opensearch:2.19.1
+        image: opensearchproject/opensearch:2.19.6
         env:
           discovery.type: single-node
           DISABLE_SECURITY_PLUGIN: "true"
