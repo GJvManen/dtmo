@@ -1,0 +1,52 @@
+name: Open Source Governance Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  governance:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Validate Apache-2.0 and governance contract
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_open_source_governance.py --junitxml=artifacts/open-source-governance-tests.xml
+      - name: Capture governance evidence
+        run: |
+          {
+            echo "license=Apache-2.0"
+            echo "license_file=LICENSE"
+            echo "notice_file=NOTICE"
+            echo "security_policy=SECURITY.md"
+            echo "contributing=CONTRIBUTING.md"
+            echo "code_of_conduct=CODE_OF_CONDUCT.md"
+            echo "supported_versions=SUPPORTED_VERSIONS.md"
+            echo "third_party_policy=docs/legal/THIRD_PARTY.md"
+          } > artifacts/open-source-governance-evidence.txt
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: open-source-governance-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  governance-gate:
+    if: always()
+    needs: [governance]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed governance evidence
+        env:
+          GOVERNANCE_RESULT: ${{ needs.governance.result }}
+        run: test "$GOVERNANCE_RESULT" = "success"
