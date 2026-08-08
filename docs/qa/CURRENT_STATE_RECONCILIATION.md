@@ -1,6 +1,6 @@
 # Current-State Documentation Reconciliation Gate
 
-Status: `CI_VALIDATION_PENDING`
+Status: `PASS`
 
 ## Control objective
 
@@ -23,8 +23,14 @@ Ensure the repository's human-visible current-state documentation accurately ref
 - Accepted bounded RC8.2–RC8.4 measurements are summarized without claiming the independent external load/stress gate.
 - Security and governance invariants remain explicit.
 
-## Acceptance rule
+## Acceptance evidence
 
-This reconciliation becomes `PASS` only after required GitHub Actions execute successfully on the exact documentation PR head. Configured, queued, cancelled, missing or unexecuted workflows are not PASS.
+PR #43 exact head `b0260a17200d7a223a9a04403d6dcaaba92b726c` was re-verified before merge. All 15 registered required RC4/RC6/RC7/RC8 workflows were observed as `completed/success`. The PR was merged with expected-head protection as `c79a1c3d4a4664d8972f95bcb444f2cdef660b34`.
 
-No product behavior, RBAC, separation of duties, privacy, provenance, auditability or human share-approval control is modified by this gate.
+Configured, queued, cancelled, missing or unexecuted workflows were not treated as PASS.
+
+No product behavior, RBAC, separation of duties, privacy, provenance, auditability or human share-approval control was modified by this gate.
+
+## Decision
+
+`PASS` for documentation reconciliation only. RC8.5, the remainder of Phase 5, external assurance and production go/no-go remain independently gated.
