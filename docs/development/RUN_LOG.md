@@ -4,7 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260809-121 — RC9.15 complete focus-order evidence](runs/RUN-20260809-121.md) — `CI_VALIDATION_PENDING`: added a bounded Chromium WCAG 2.2 SC 2.4.3 gate across the four accepted critical surfaces; enumerates every visible enabled tabbable, rejects positive `tabindex`, drives and retains the complete Tab sequence, compares it to DOM-logical order, checks reverse navigation, and preserves real backend-session RBAC plus separate human share approval.
+- [RUN-20260809-121 — RC9.15 complete focus-order evidence](runs/RUN-20260809-121.md) — `CI_VALIDATION_PENDING`: initial exact-head CI on `f6c0d2fade7646c469dc7993d5dbefbd92397a53` found one deterministic test-oracle failure on the single-tabbable auditor surface; Chromium correctly returned reverse focus to the document boundary, while the test incorrectly expected the same control. The oracle was repaired without production-code changes. Exact-head CI and retained focus-order evidence must rerun on the repaired branch head.
 - [RUN-20260809-120 — RC9.14 exact-head acceptance](runs/RUN-20260809-120.md) — `PASS`: PR #76 exact head `de52730b9b5165e2c6c19c803413bbfcc60` passed all 32 registered workflows; retained artifact `9039432903` (`sha256:f547bd306bb9c63e02d049dda24d52d962086388f777f8857921cc818e75c5f1`) independently proved bounded WCAG 2.2 SC 1.4.12 text-spacing behavior across all four accepted critical surfaces with 1/1 JUnit test passing, no detected clipped text, all governed controls focusable, real backend-session RBAC and preserved human share approval; merged as `7d4816658159fac3b2b773fa6151b6274b510351`.
 - [RUN-20260809-119 — RC9.14 WCAG 2.2 text-spacing evidence](runs/RUN-20260809-119.md) — `CI_VALIDATION_PENDING`: implemented the bounded Chromium SC 1.4.12 gate later accepted by RUN-120.
 - [RUN-20260809-118 — RC9.13 exact-head acceptance](runs/RUN-20260809-118.md) — `PASS`: bounded SC 1.4.10 reflow accepted for PR #74.
@@ -15,8 +15,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260809-121` is `CI_VALIDATION_PENDING`. Phase 6 remains `IN PROGRESS`: complete focus-order evidence is implemented but not yet exact-head accepted; genuine assistive-technology behavior remains unevidenced. Issue #1 external production gates remain open.
+`RUN-20260809-121` remains `CI_VALIDATION_PENDING`. The first deterministic CI failure was a test-oracle defect and has been repaired; the repaired exact head must now execute every registered workflow and produce retained focus-order evidence before acceptance. Phase 6 remains `IN PROGRESS`; genuine assistive-technology behavior remains unevidenced. Issue #1 external production gates remain open.
 
 ## Exactly one next priority
 
-Verify every registered workflow on the exact final RC9.15 PR head and independently inspect retained `browser-focus-order-evidence`; repair only the first deterministic failure, or merge only after complete successful exact-head evidence.
+Verify every registered workflow on the repaired final RC9.15 PR head and independently inspect retained `browser-focus-order-evidence`; repair only the first deterministic failure, or merge only after complete successful exact-head evidence.
