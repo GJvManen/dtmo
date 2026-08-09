@@ -30,23 +30,19 @@ Phase 7 remains incomplete because distributed tracing, API-error/search-health 
 
 ## Higher-severity object-storage remediation
 
-Fresh storage-layer threat intelligence established that `docker-compose.yml` pins legacy MinIO `RELEASE.2025-07-23T15-54-02Z`, within affected ranges for later advisories. RUN-20260809-131 established that the former community runtime is archived/unmaintained and therefore cannot satisfy the supported-runtime production gate.
+RUN-131 established that the legacy MinIO community runtime is archived/unmaintained. RUN-132 accepted ADR-0001 and selected MinIO AIStor Enterprise Lite or Enterprise with active paid support as the supported successor. PR #89 exact head `79c5684b7e65064efe480e6da7913fd437d52b6d` completed 37/37 workflows and merged as `83e880a289467151c6604e28cd4141118fb538a9`.
 
-RUN-20260809-132 resolves the **target-selection** blocker by accepting ADR-0001:
+RUN-133 now implements the bounded repository migration contract:
 
-**Supported target:** MinIO AIStor Enterprise Lite or AIStor Enterprise with an active paid support entitlement. For Enterprise Lite, DTMO requires the separately purchased direct-to-engineer support option for production acceptance.
+- legacy `minio/minio` removed from `docker-compose.yml`;
+- `AISTOR_IMAGE` is a required external input and must be a vendor-supported release pinned with `@sha256` digest;
+- `latest` is prohibited by regression test;
+- AIStor license is provided through required external `AISTOR_LICENSE_FILE` and Compose secret mounting;
+- administrative user/password have no runnable source-controlled defaults;
+- existing `minio` service name, `minio:9000` application endpoint, `minio_data:/data` persistence contract and human share-approval invariant are preserved;
+- a dedicated `Supported Object Storage Migration Gate` retains bounded JUnit evidence.
 
-Production migration constraints:
-
-- vendor-supported production topology;
-- `quay.io/minio/aistor/minio` or approved private mirror;
-- current supported release pinned by immutable release tag and image digest; `latest` prohibited for accepted production manifests;
-- license/SUBNET, administrative/root and least-privilege application S3 credentials separated and injected outside source control;
-- TLS/network encryption and server-side encryption required before production acceptance;
-- AIStor Free rejected for production because vendor documentation states no SLA/SLO/service agreement and an insufficient distributed/support profile;
-- legacy `minio/minio` and unsupported source builds remain rejected.
-
-The target decision does not accept the migration. Security, recovery, storage-integrity and full-regression evidence must be rerun on the migration exact head. Commercial entitlement/support and remaining deployment/secrets gates remain external.
+The implementation is `CI_VALIDATION_PENDING`. It is not accepted until the dedicated migration workflow plus every registered workflow succeed on the final exact head. Production still requires vendor-supported topology, externally verified image digest, active entitlement, TLS/network encryption, server-side encryption, secrets-manager acceptance and external deployment assurance.
 
 ## Phase 1 — CI and workflow integrity
 
@@ -98,9 +94,9 @@ Blocking gates:
 - runbooks complete and exercised;
 - operational ownership/escalation documented.
 
-Current decision: `IN PROGRESS`. RC10.1–RC10.4 are accepted. RC10.5 remains deferred until the supported object-storage migration is implemented and accepted.
+Current decision: `IN PROGRESS`. RC10.1–RC10.4 are accepted. RC10.5 remains deferred until the supported object-storage migration is accepted.
 
-Exactly one next priority: implement the bounded migration from legacy `minio/minio` to the accepted AIStor target using an immutable supported release and external license/secret boundary, then execute relevant security, recovery, storage-integrity and full regression gates with retained exact-head evidence. Only after that gate is accepted should Phase 7 resume with RC10.5 API-error alerting.
+Exactly one next priority: verify the complete exact-head CI matrix and retained migration evidence for RUN-133; merge only after all registered workflows succeed. After acceptance, perform one bounded post-migration security/recovery/storage-integrity reconciliation before RC10.5.
 
 ## Phase 8 — Staging acceptance
 
