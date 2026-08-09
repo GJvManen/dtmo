@@ -8,6 +8,7 @@ from fastapi import FastAPI, Request, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
 from dtmo.api.routes import close_services, router as intelligence_router
+from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
 from dtmo.logging import configure_logging, correlation_id, get_logger
@@ -64,6 +65,7 @@ app = FastAPI(
 )
 app.include_router(intelligence_router)
 app.include_router(ui_router)
+app.include_router(ciso_ui_router)
 
 
 @app.middleware("http")
