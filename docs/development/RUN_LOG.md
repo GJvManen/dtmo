@@ -4,9 +4,10 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260809-149 — Phase 8 staging-readiness regression remediation](runs/RUN-20260809-149.md) — `CI_VALIDATION_PENDING`: PR #102 exact head `afa10ddac6551b21f0c974dd807ed45849f8f323` had 45/46 successful workflows; RC4 failed because a stale test still required `CI_VALIDATION_PENDING` after RUN-147 had been accepted. The test now asserts the accepted readiness baseline while preserving the no-staging/no-production claim boundary. Fresh complete exact-head CI is required.
-- [RUN-20260809-148 — staging environment identification and deployment-parity evidence](runs/RUN-20260809-148.md) — `BLOCKED_EXTERNAL`: RUN-147/PR #101 accepted after 46/46 exact-head workflows and artifact `9043667776` (`sha256:62287683401694c130144873e7b0ac1c55f565c4e518dcb379e4b6e9bc56b564`, JUnit 3/3). Live repository and issue #1 inspection found no real staging endpoint/environment identifier or immutable deployment-parity evidence. Phase 8 is blocked until the required external staging environment and deployment evidence are supplied.
-- [RUN-20260809-147 — Phase 8 staging-readiness baseline](runs/RUN-20260809-147.md) — `PASS`: PR #101 exact head `fd87beb441c4e4ed71141ea9ae03717e859681e3` passed 46/46 workflows; retained artifact `9043667776` was exact-head bound with machine-readable PASS and JUnit 3/3; merged as `5f74bcac92738febfe327ea78f45c009d28e4d55`.
+- [RUN-20260809-150 — Phase 8 blocker acceptance reconciliation](runs/RUN-20260809-150.md) — `BLOCKED_EXTERNAL`: PR #102 exact head `c0bf83a8e0a9c51bdbd492fadfb60a71e25c7e9b` completed 46/46 workflows successfully and PR #102 merged as `60897cdfd36a78297cf90521f14ded5116ec9653`; RUN-149 is accepted. Live repository and issue #1 recheck found no real staging environment or ten deployment-parity evidence classes, so Phase 8 remains externally blocked.
+- [RUN-20260809-149 — Phase 8 staging-readiness regression remediation](runs/RUN-20260809-149.md) — `PASS`: stale lifecycle-state regression assertion repaired; final PR #102 exact head passed 46/46 workflows and merged as `60897cdfd36a78297cf90521f14ded5116ec9653`.
+- [RUN-20260809-148 — staging environment identification and deployment-parity evidence](runs/RUN-20260809-148.md) — `BLOCKED_EXTERNAL`: RUN-147/PR #101 accepted after 46/46 exact-head workflows and artifact `9043667776`; no real staging endpoint/environment identifier or immutable deployment-parity evidence was found.
+- [RUN-20260809-147 — Phase 8 staging-readiness baseline](runs/RUN-20260809-147.md) — `PASS`.
 - [RUN-20260809-146 — Phase 7 external operational-acceptance reconciliation](runs/RUN-20260809-146.md) — `PASS`.
 - [RUN-20260809-145 — RC10.11 acceptance and Phase 7 external blocker reconciliation](runs/RUN-20260809-145.md) — `PASS`.
 - [RUN-20260809-144 — on-call ownership and escalation handover baseline](runs/RUN-20260809-144.md) — `PASS`.
@@ -35,8 +36,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-Phase 1–5 are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA behavior. Phase 7 is `PASS`. Phase 8 is `BLOCKED_EXTERNAL` at real staging environment/deployment-parity acquisition; PR #102 also remains `CI_VALIDATION_PENDING` after RUN-149 repaired a stale RC4 regression assertion. DTMO is not production ready.
+Phase 1–5 are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA behavior. Phase 7 is `PASS`. Phase 8 is `BLOCKED_EXTERNAL` at real staging environment/deployment-parity acquisition. DTMO is not production ready.
 
 ## Exactly one next priority
 
-Verify every registered workflow on the new PR #102 exact head. Merge only on complete success. After merge, provide or provision the approved production-equivalent staging environment and retain the ten deployment-parity evidence classes defined in `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`.
+Provide or provision the approved production-equivalent staging environment and retain all ten deployment-parity evidence classes defined in `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`. Only then execute the first staging acceptance suite.
