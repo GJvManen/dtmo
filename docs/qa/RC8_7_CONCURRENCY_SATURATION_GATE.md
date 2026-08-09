@@ -31,6 +31,24 @@ The evidence output explicitly records:
 
 Therefore this gate cannot close issue #1's independent load/stress test, production OpenSearch hardening, staging acceptance, external assurance, or production go/no-go.
 
-## Current evidence
+## Inspected evidence
 
-Implementation and dedicated workflow are present on branch `rc8-7-concurrency-saturation`. No CI result is claimed until GitHub Actions executes on the final exact PR head and the retained artifact is inspected.
+PR #46 implementation head `adf18135e91c0e28c151f8255563aba69b8df008` executed all 19 registered workflows successfully. Dedicated workflow run `31293634918` retained artifact `9032235183`, digest `sha256:66099a09e34099c3befc63918bdea0a8d0baf2302368138303eb6c96ccc1852d`, explicitly bound to that same head.
+
+Independent artifact inspection recorded:
+
+- requested concurrency: 20;
+- maximum inflight operations: 20;
+- 40 synthetic read requests;
+- 40 synthetic ingest records and 40 unique ingested records;
+- read p95: 5.734 ms against a 300 ms production-contract budget;
+- error rate: 0.0% against a 1.0% budget;
+- data loss: 0 records;
+- publication disabled and publication state preserved;
+- JUnit: 6 tests, 0 failures, 0 errors, 0 skipped.
+
+The artifact correctly records `external_load_gate_satisfied=false` and `representative_production_saturation_satisfied=false`.
+
+## Current decision
+
+The implementation evidence satisfies the bounded RC8.7 contract, but the acceptance audit update itself changes PR #46's exact head. Therefore the gate remains `CI_VALIDATION_PENDING` until every registered workflow succeeds again on the final documentation head. Historical successful evidence is retained for audit but is not reused as final-head merge authorization.
