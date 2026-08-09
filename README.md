@@ -18,13 +18,12 @@ DTMO bevindt zich in **Phase 5 — performance en schaalbaarheid** van de produc
 - RC8.2 API-read performance: `PASS`;
 - RC8.3 OpenSearch search-read performance: `PASS`;
 - RC8.4 ingestion-throughput performance: `PASS`;
+- RC8.5 queue pressure en connector burst: `PASS` via RUN-20260809-083 / PR #42;
 - Apache-2.0/open-source-governance baseline: `PASS` via RUN-20260809-080 / PR #44.
 
-### Actieve gate
+### Actieve roadmapstatus
 
-**RC8.5 queue pressure en connector burst: `CI_VALIDATION_PENDING` in PR #42.**
-
-RC8.5 staat nog niet op `main` en wordt pas geaccepteerd nadat alle vereiste exact-head workflows zijn geslaagd en retained queue-burst evidence onafhankelijk is gecontroleerd.
+Phase 5 blijft `IN PROGRESS`. RC8.5 is nu op `main`; de volgende nog niet geëvidenceerde interne Phase-5-gate is degraded-dependency correctness/performance. De onafhankelijke representative load/stress-gate in issue #1 blijft afzonderlijk open.
 
 ## Roadmapstatus
 
@@ -34,7 +33,7 @@ RC8.5 staat nog niet op `main` en wordt pas geaccepteerd nadat alle vereiste exa
 | 2. Applicatiebeveiliging en identity | `PASS` |
 | 3. Data-integriteit, backup en recovery | `PASS` |
 | 4. Live connectorbetrouwbaarheid en provenance | `PASS` |
-| 5. Performance en schaalbaarheid | `IN PROGRESS` — RC8.1 t/m RC8.4 PASS, RC8.5 pending |
+| 5. Performance en schaalbaarheid | `IN PROGRESS` — RC8.1 t/m RC8.5 PASS; degraded-dependency gate open |
 | 6. Frontend accessibility en operationele UX | `NOT ACCEPTED` |
 | 7. Observability en incident operations | `NOT ACCEPTED` |
 | 8. Staging acceptance | `NOT ACCEPTED` |
@@ -52,9 +51,8 @@ Op `main` zijn onder andere de volgende Phase-5-workflows aanwezig:
 - `.github/workflows/api-read-performance.yml`;
 - `.github/workflows/search-read-performance.yml`;
 - `.github/workflows/ingestion-performance.yml`;
+- `.github/workflows/queue-burst-performance.yml`;
 - `.github/workflows/open-source-governance.yml`.
-
-De RC8.5 queue-burst workflow blijft onderdeel van PR #42 totdat die exact-head is geaccepteerd en gemerged.
 
 ## Governance-invarianten
 
@@ -82,8 +80,6 @@ Belangrijke governancebestanden:
 - `SUPPORTED_VERSIONS.md` — security support policy;
 - `docs/legal/LICENSING.md` — licentiebeleid en releasecontroles;
 - `docs/legal/THIRD_PARTY.md` — third-party software/data/terms policy.
-
-De Python-package metadata declareert eveneens `Apache-2.0`. Een toekomstige publieke release moet daarnaast version-specifieke dependency/SBOM- en third-party licence-evidence bevatten; de aanwezigheid van de projectlicentie alleen sluit die externe releasegate niet.
 
 ## Snel starten
 
@@ -118,4 +114,4 @@ Belangrijke endpoints:
 
 DTMO is nog niet productiegereed. Phase 5 is nog actief en Phases 6–10 plus resterende externe gates vereisen aanvullende objectieve evidence.
 
-**Precies één volgende prioriteit:** valideer PR #42 / RC8.5 exact-head; herstel uitsluitend de eerste deterministische fout of merge alleen na volledig groene workflows en onafhankelijk gecontroleerde retained queue-burst evidence.
+**Precies één volgende prioriteit:** implementeer één begrensde RC8.6 degraded-dependency performance/correctness gate die nul dataverlies en fail-closed governance bewijst wanneer een representatieve interne dependency unavailable of impaired is. Combineer dit niet met de externe load/stress-gate of Phase 6.
