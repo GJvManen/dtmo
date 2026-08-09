@@ -8,38 +8,32 @@ Prove one highest-risk Phase-6 user journey in a real browser: intelligence revi
 
 ## Scope
 
-The bounded journey covers:
+The bounded journey covers Chromium execution against the real FastAPI application, a synthetic PostgreSQL candidate, backend-derived UI capability visibility, review by an authenticated human, blocked same-principal share approval, successful approval by a distinct publisher, hidden service-account decision controls, distinct persisted reviewer/approver identities, and retained JUnit/server-log/machine-readable evidence.
 
-- Chromium browser execution against the real FastAPI application;
-- a synthetic candidate intelligence record persisted in PostgreSQL;
-- backend-derived UI capability visibility;
-- review by an authenticated human principal;
-- attempted self-approval by the same principal returning a governed conflict;
-- successful share approval by a different authorized publisher;
-- service-account approval controls remaining hidden;
-- final persisted `review_status=reviewed` and `share_approved=true` with distinct `reviewed_by` and `share_approved_by` principals;
-- retained JUnit, server-log and machine-readable browser evidence.
-
-Responsive testing, keyboard-only coverage, broad WCAG 2.2 AA validation, analyst/CISO/auditor journey breadth and cross-browser coverage are explicitly outside RC9.1.
+Responsive testing, keyboard-only coverage, broad WCAG 2.2 AA validation, analyst/CISO/auditor journey breadth and cross-browser coverage remain outside RC9.1.
 
 ## Governance invariants
 
-- UI actions are derived from the backend principal and permission model; the browser does not invent roles or permissions.
-- Permission to review/share does not override resource-state separation of duties.
-- The same human principal cannot review and then approve sharing of the same intelligence item.
-- A publisher distinct from the reviewer may approve sharing only after review.
+- UI actions derive from backend principal/permission resolution.
+- Possessing review and share permissions does not override resource-state separation of duties.
+- The same human principal cannot review and approve sharing of the same item.
+- A distinct authorized publisher may approve only after review.
 - Service accounts cannot review or approve external sharing.
-- Synthetic fixtures only; no production personal data is used.
+- Synthetic fixtures only; no production personal data.
 - Missing, queued, failed or unexecuted browser CI is never PASS.
 
 ## Acceptance evidence required
 
-PASS requires the exact final PR head to complete all repository-required regression workflows plus `RC9 Browser Share Approval E2E Gate` successfully. Retained `browser-share-approval-evidence` must be independently inspected and prove the exact head, Chromium execution, self-approval denial, distinct publisher approval, service-account control hiding and human share-approval requirement.
+PASS requires the exact final PR head to complete every repository-required regression workflow plus `RC9 Browser Share Approval E2E Gate` successfully. Retained `browser-share-approval-evidence` must be independently inspected and prove exact-head identity, Chromium execution, self-approval denial, distinct publisher approval, service-account control hiding and human share approval.
 
-## Threat/CVE/vendor context
+## RUN-20260809-093 evidence
 
-RC9.1 introduces Playwright only as a test dependency and Chromium only in the dedicated CI job. No production runtime dependency or live intelligence provider is added. A dependency/security scan remains part of the existing release-wide gates; any material browser automation or dependency advisory discovered there blocks acceptance rather than being waived by this UI test.
+Superseded head `5891fdc46b9076707467ca42b26553ecb67ea17e` executed 20 workflows. Eighteen succeeded. RC4 Quality Gate failed because the generic pytest job collected the browser E2E test without the dedicated database/browser environment; its actual failure was inability to resolve database host `postgres`. The dedicated RC9.1 gate also executed and failed separately during the browser journey.
+
+The first release-wide deterministic failure was remediated by making the browser test module conditional on explicit `DTMO_E2E_BASE_URL`. The dedicated RC9.1 workflow sets that variable and therefore continues to execute the E2E test; generic RC4 pytest does not.
+
+The separate superseded-head browser failure (`intelligence item not found`) is recorded but deliberately not remediated in RUN-20260809-093, preserving the one-failure-per-run rule. Fresh exact-head evidence determines whether it remains the next blocker.
 
 ## Current decision
 
-`CI_VALIDATION_PENDING` until exact-head GitHub Actions and retained evidence execute successfully.
+`CI_VALIDATION_PENDING`. The remediation changed PR #50's head, so superseded-head success and failure artifacts cannot authorize merge.
