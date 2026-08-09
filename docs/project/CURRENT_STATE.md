@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-09 — RUN-20260809-128 (`PASS` in the final protected merged state after final exact-head 36/36 validation)
+Last reconciled: 2026-08-09 — RUN-20260809-130 (`CI_VALIDATION_PENDING` for this documentation head; RC10.4 product evidence is accepted and merged)
 
 This document is the human-readable current-state view of DTMO. It complements the immutable run history in `docs/development/runs/`, the chronological `docs/development/RUN_LOG.md`, the production roadmap, QA gate records and GitHub issues #1–#3.
 
@@ -16,7 +16,8 @@ This document is the human-readable current-state view of DTMO. It complements t
   - RC10.1 request observability: `PASS`.
   - RC10.2 controlled connector-failure alerting: `PASS`.
   - RC10.3 bounded queue-backlog alerting: `PASS`.
-  - RC10.4 storage-integrity alerting: next bounded implementation objective.
+  - RC10.4 bounded storage-integrity alerting: `PASS`.
+  - normal next item RC10.5 API-error alerting is deferred behind a higher-severity MinIO security-maintenance blocker.
 - Phase 8 — staging acceptance: `NOT STARTED`.
 - Phase 9 — external assurance: `NOT COMPLETE`.
 - Phase 10 — production go/no-go: `NOT STARTED`.
@@ -54,7 +55,17 @@ PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243` passed all 35 workf
 
 PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74` passed all 36 workflows. Retained artifact `9040996591`, digest `sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`, independently proved bounded queue identifiers, depth/capacity/utilization metrics, raise at `>=80%`, clear at `<=50%`, hysteresis, structured correlated evidence, actionable guidance and accepted RC8 queue-pressure contract reuse. JUnit: 5/5. Merge: `42ccbe04cbc1081f93e4a155243627b5a3038573`.
 
-RC10.3 does not claim a separate deployed durable queue service, external notification delivery, storage/API/search alerting, dashboards, runbooks or Phase-7 completion.
+### RC10.4 — bounded storage-integrity alerting
+
+PR #86 exact head `8aa56dacd64583de5e96c0fda188ba954437ffda` passed all 37 workflows. Retained artifact `9041327884`, digest `sha256:456b09902727552d62fa7e1c96f119c6050a692d2519e0f8cecdd160e8b1dab3`, independently proved real `IntelligenceLake.verify()` reuse, critical storage-integrity signaling, safe correlation, recovery clear behavior, repeat-raise suppression and exclusion of object keys, expected digest and payload evidence. JUnit: 5/5. Merge: `4d7494e8b8fcdcddb73349bf87157d8c16763c33`.
+
+RC10.4 does not claim scheduled/fleet-wide production integrity scanning, external notification delivery, API/search alerting, dashboards, runbooks or Phase-7 completion.
+
+## Higher-severity security blocker
+
+The repository currently pins `minio/minio:RELEASE.2025-07-23T15-54-02Z`. Fresh public threat-intelligence/advisory review places that version within affected ranges for multiple later MinIO vulnerabilities, including CVE-2026-41145. This does not erase accepted bounded RC10.4 evidence, but it blocks further normal Phase-7 advancement until the object-storage runtime is moved to a supported/patched release or explicitly supported successor and the relevant security, recovery, storage-integrity and regression gates are re-executed.
+
+Affected-version match is high confidence. Exploitability of individual OIDC/STS/cluster-JWT-dependent advisories remains configuration-dependent and is not asserted without deployment evidence.
 
 ## Phase 6 external accessibility boundary
 
@@ -73,11 +84,11 @@ Issue #1 remains authoritative for externally executed production gates, includi
 - RBAC remains enforced.
 - Review and share approval remain separate human actions.
 - Connectors and service accounts cannot approve publication.
-- Ingestion, connector, queue, replay, retry, recovery, timeout, performance or observability success never implies publication approval.
+- Ingestion, connector, queue, storage, replay, retry, recovery, timeout, performance or observability success never implies publication approval.
 - Provenance, confidence and raw evidence remain retained according to their controls.
 - Performance and controlled-failure fixtures use synthetic or explicitly approved non-production data.
 - Missing, queued, cancelled, failed or unexecuted CI is never `PASS`.
 
 ## Exactly one current priority
 
-Phase 7 / RC10.4 — implement bounded storage-integrity alerting with controlled integrity-failure/recovery evidence, actionable correlation, no raw sensitive payload leakage and retained exact-head evidence. API-error and search-health alerting remain later Phase-7 objectives.
+Remediate the vulnerable MinIO runtime pin with a supported/patched object-storage release or explicitly supported successor, then run relevant security, recovery, storage-integrity and full regression gates with retained exact-head evidence before resuming Phase 7 / RC10.5 API-error alerting.
