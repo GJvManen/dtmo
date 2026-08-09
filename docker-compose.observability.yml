@@ -1,0 +1,27 @@
+services:
+  grafana:
+    # Local/staging observability overlay only. Production Grafana deployment,
+    # authentication, TLS, network exposure and lifecycle acceptance remain external gates.
+    image: ${GRAFANA_IMAGE:?Set GRAFANA_IMAGE to grafana/grafana:<supported-security-patched-version>@sha256:<vendor-verified-digest>}
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?Set a non-default Grafana admin user outside source control}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set a strong Grafana admin password outside source control}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_USERS_ALLOW_ORG_CREATE: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  grafana_data:

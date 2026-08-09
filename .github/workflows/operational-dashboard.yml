@@ -1,0 +1,99 @@
+name: RC10 Operational Dashboard Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  operational-dashboard:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Execute RC10.8 operational dashboard gate
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc10_8_operational_dashboard.py \
+            --junitxml=artifacts/operational-dashboard.xml \
+            | tee artifacts/operational-dashboard-pytest.log
+      - name: Record exact-head evidence
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+            "decision": "pass",
+            "exact_head": os.environ["EXACT_HEAD"],
+            "objective": "bounded provisioned operational dashboard",
+            "controls": {
+              "prometheus_only_datasource": True,
+              "dashboard_read_only": True,
+              "provisioning_read_only": True,
+              "bounded_operational_metrics_only": True,
+              "request_payload_dimensions_excluded": True,
+              "anonymous_access_disabled": True,
+              "self_signup_disabled": True,
+              "loopback_only_local_port": True,
+              "grafana_image_fail_closed": True,
+              "admin_credentials_external": True,
+              "no_new_privilege_enabled": True
+            },
+            "governance": {
+              "publication_approval_changed": False,
+              "rbac_changed": False,
+              "production_data_used": False,
+              "production_credentials_stored": False
+            },
+            "claim_boundary": {
+              "production_grafana_deployed": False,
+              "production_tls_complete": False,
+              "production_sso_complete": False,
+              "runbooks_complete": False,
+              "on_call_handover_complete": False,
+              "phase_7_complete": False
+            }
+          }
+          Path("artifacts/operational-dashboard-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+      - name: Validate evidence contract
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = json.loads(Path("artifacts/operational-dashboard-evidence.json").read_text())
+          assert evidence["decision"] == "pass"
+          assert evidence["exact_head"] == os.environ["EXPECTED_HEAD"]
+          assert all(evidence["controls"].values())
+          assert not any(evidence["governance"].values())
+          assert not any(evidence["claim_boundary"].values())
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: operational-dashboard-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  operational-dashboard-gate:
+    if: always()
+    needs: [operational-dashboard]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.operational-dashboard.result }}
+        run: test "$RESULT" = "success"
