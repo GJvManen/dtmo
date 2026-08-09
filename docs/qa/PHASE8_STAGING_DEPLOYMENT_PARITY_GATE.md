@@ -8,6 +8,12 @@
 
 Require independently observable, production-equivalent staging deployment evidence before any staging acceptance suite is treated as valid.
 
+## Latest reconciliation
+
+RUN-150 verified that PR #102 final exact head `c0bf83a8e0a9c51bdbd492fadfb60a71e25c7e9b` completed 46/46 registered workflows successfully and merged as `60897cdfd36a78297cf90521f14ded5116ec9653`. This closes the RUN-149 CI remediation only.
+
+A fresh repository and issue #1 review found no real staging environment or deployment-parity evidence. The gate therefore remains `BLOCKED_EXTERNAL`.
+
 ## Required external evidence
 
 1. approved staging environment identifier and accountable owner;
