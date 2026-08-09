@@ -1,0 +1,49 @@
+name: RC8 Degraded Dependency Performance Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  degraded-dependency-performance:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Run RC8.6 degraded dependency regressions
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc8_degraded_dependency_performance.py --junitxml=artifacts/degraded-dependency-performance-tests.xml
+      - name: Execute bounded degraded dependency load
+        run: |
+          python -m dtmo.performance.degraded_dependency \
+            --profile config/performance/phase5_workload_profile.json \
+            --duration-seconds 1 \
+            --outage-seconds 0.25 \
+            --delivery-records-per-second 100 \
+            --output artifacts/degraded-dependency-performance-evidence.json
+          python -m json.tool artifacts/degraded-dependency-performance-evidence.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: degraded-dependency-performance-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  degraded-dependency-performance-gate:
+    if: always()
+    needs: [degraded-dependency-performance]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed degraded dependency evidence
+        env:
+          DEGRADED_DEPENDENCY_RESULT: ${{ needs.degraded-dependency-performance.result }}
+        run: test "$DEGRADED_DEPENDENCY_RESULT" = "success"
