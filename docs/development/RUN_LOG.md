@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260809-094 — RC9.1 browser fixture persistence remediation](runs/RUN-20260809-094.md) — `CI_VALIDATION_PENDING`: remediated the next known deterministic RC9.1 browser failure by explicitly committing the synthetic candidate before the separately running Uvicorn/browser process consumes it; no prior CI result authorizes the new head.
 - [RUN-20260809-093 — RC9.1 first deterministic CI remediation](runs/RUN-20260809-093.md) — `CI_VALIDATION_PENDING`: superseded PR #50 head `5891fdc46b9076707467ca42b26553ecb67ea17e` ran 20 workflows; 18 succeeded while RC4 Quality and RC9 Browser E2E failed. Only the first release-wide deterministic failure was remediated: the browser E2E module now executes only when the dedicated `DTMO_E2E_BASE_URL` environment is present. The separate browser journey failure remains for fresh exact-head evidence. No prior workflow success authorizes merge after head movement.
 - [RUN-20260809-092 — RC9.1 governed browser share-approval E2E](runs/RUN-20260809-092.md) — `CI_VALIDATION_PENDING`: added a minimal governed browser decision UI, backend-derived permission visibility, Playwright Chromium E2E for review → blocked self-approval → separate publisher approval, service-account control hiding, persisted separation-of-duties assertions and a dedicated retained-evidence workflow.
 - [RUN-20260809-090 — RC8.8 capacity limits and scaling guidance](runs/RUN-20260809-090.md) — `CI_VALIDATION_PENDING`
@@ -31,8 +32,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260809-093` is `CI_VALIDATION_PENDING`. The first release-wide deterministic RC9.1 failure was a generic-suite isolation leak and has been remediated. The remediation changed PR #50's head; previous success/failure evidence cannot authorize merge. Phase 6 remains `IN PROGRESS`.
+`RUN-20260809-094` is `CI_VALIDATION_PENDING`. The cross-process fixture visibility failure has been remediated by committing the synthetic candidate before browser/API consumption. Because the remediation and audit documentation changed PR #50's head, previous success/failure evidence cannot authorize merge. Phase 6 remains `IN PROGRESS`.
 
 ## Exactly one next priority
 
-Inspect all workflows on the current PR #50 exact head. Repair only the earliest remaining deterministic failure, or—if all required workflows succeed—independently inspect retained `browser-share-approval-evidence` and merge with expected-head protection.
+Inspect all workflows on the final PR #50 exact head. Repair only the earliest remaining deterministic failure, or—if all required workflows succeed—independently inspect retained `browser-share-approval-evidence` and merge with expected-head protection.
