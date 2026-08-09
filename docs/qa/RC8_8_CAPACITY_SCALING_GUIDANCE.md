@@ -1,6 +1,6 @@
 # RC8.8 — Capacity Limits and Scaling Guidance
 
-Status: `CI_VALIDATION_PENDING`
+Status: `PASS`
 
 ## Objective
 
@@ -98,8 +98,12 @@ This guidance does **not** satisfy or close issue #1's:
 
 Representative external testing must determine actual production saturation points and may lower these planning ceilings. It must not raise them without retained evidence and explicit release approval.
 
+## Acceptance evidence
+
+PR #48 exact head `979191a7db64a97e4ccc250ff9a24e6735d63158` completed all 19 registered GitHub Actions workflows successfully. The PR was merged with expected-head protection as `62b34472948d0f301104ddd452e14efb945fa6bd`.
+
+This satisfies the internal Phase-5 blocking requirement that capacity limits and scaling guidance are documented. The internal Phase-5 roadmap gate is therefore `PASS` while issue #1's external load/stress, production OpenSearch hardening, staging, external assurance and production approval gates remain open.
+
 ## Decision rule
 
-RC8.8 may be `PASS` only when this exact documentation head passes all repository-required workflows and is merged to `main`. Before that, status remains `CI_VALIDATION_PENDING`.
-
-If accepted, the internal Phase-5 blocking requirement "Capacity limits and scaling guidance are documented" is satisfied. Phase 5 can then be marked internally complete while issue #1's external load/stress gate remains open and blocking overall production readiness.
+RC8.8 is `PASS` only for the bounded internal Phase-5 documentation gate described above. No production capacity certification or external assurance is implied.
