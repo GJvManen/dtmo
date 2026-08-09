@@ -73,7 +73,17 @@ jobs:
           assert e["decision"] == "pass"
           assert e["exact_head"] == os.environ["EXPECTED_HEAD"]
           assert all(e["scenarios"].values())
-          assert all(e["controls"].values())
+          required_true = (
+              "evidence_preservation",
+              "reversible_containment",
+              "known_good_recovery",
+              "objective_recovery_validation",
+              "human_share_approval_preserved",
+              "rbac_unchanged",
+          )
+          assert all(e["controls"][key] is True for key in required_true)
+          assert e["controls"]["production_data_used"] is False
+          assert e["controls"]["production_credentials_used"] is False
           assert not any(e["claim_boundary"].values())
           PY
       - uses: actions/upload-artifact@v7
