@@ -15,7 +15,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `PASS`.
-- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence; RUN-151 staging emulator remains `CI_VALIDATION_PENDING` after RUN-152 remediation.
+- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. The staging emulator configuration/topology baseline is `PASS`; RUN-153 runtime smoke is `CI_VALIDATION_PENDING`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
@@ -48,17 +48,23 @@ PR #102 final exact head `c0bf83a8e0a9c51bdbd492fadfb60a71e25c7e9b` completed 46
 
 PR #103 exact head `be9deb34255f6114430d76868c9bf82f0e039f15` completed 46/46 workflows successfully and merged as `1e957f7fa1e9910e5d258cd6d7ed5ce69e9203d1`. No real staging deployment-parity package was found.
 
-### RUN-151 production-equivalent staging emulator baseline — `CI_VALIDATION_PENDING`
+### RUN-151 production-equivalent staging emulator baseline — `PASS`
 
-RUN-151 adds a deterministic source-controlled staging emulator specification under `infrastructure/staging-emulator/`. It runs DTMO in `production` configuration mode and requires immutable digest-pinned images, external secrets/license/certificate inputs, backend network isolation, loopback-only TLS ingress, secured OpenSearch configuration, authenticated Redis, AIStor object storage, Prometheus/Grafana observability, disabled-by-default live connectors/AI analyst, and preserved human publication/share approval.
+PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47/47 registered workflows successfully. Retained artifact `9045039742`, digest `sha256:959586b389579dfd37bda60eecdfb67e0251eaf4a78daed214986cefe771ce65`, was exact-head bound with machine-readable PASS and JUnit 4/4 with zero failures/errors/skips. PR #104 merged as `3c7a4b7f56e8d8a757541963bbd261fe42a7269c`.
 
-The `Phase 8 Staging Emulator Gate` validates rendered Compose topology without pulling or running the declared images. Its evidence therefore proves only the emulator configuration contract, not runtime behavior or a real staging environment.
+The accepted emulator remains a configuration/topology contract. Its CI evidence does not prove a real staging environment or complete dependency runtime behavior.
 
-### RUN-152 staging emulator CI-integrity remediation — `CI_VALIDATION_PENDING`
+### RUN-152 staging emulator CI-integrity remediation — `PASS`
 
-PR #104 previous exact head `03611ee74eb2521a85942a34cec6e060ee989a0c` completed 46/47 workflows successfully. The dedicated staging-emulator gate succeeded; RC4 failed because the emulator QA document omitted the canonical phrase `human share approval` required by its governance regression test. The documentation contract was corrected without weakening the test or any governance control. Fresh complete exact-head CI and regenerated retained evidence are required.
+The first PR #104 head completed 46/47 workflows; RC4 failed solely because the emulator QA omitted the canonical phrase `human share approval`. The documentation contract was repaired without weakening the test or any governance control. The final exact head then passed 47/47 workflows and was accepted with RUN-151.
 
-Exactly one next priority: verify every registered workflow on PR #104's changed exact head and independently inspect `phase8-staging-emulator-evidence`. Merge only on full success. Real staging deployment and all ten deployment-parity evidence classes remain required afterward.
+### RUN-153 staging emulator runtime smoke — `CI_VALIDATION_PENDING`
+
+RUN-153 builds the DTMO application image from the exact PR head, runs it with production-only configuration validation active, loopback-only host exposure, read-only root filesystem, `/tmp` tmpfs, `no-new-privileges` and dropped Linux capabilities, then exercises health/readiness, disabled connector behavior, response-security headers, request correlation and Prometheus metrics. The gate retains privacy-safe JSON/JUnit/container-log evidence and fails if synthetic sensitive markers appear in retained logs.
+
+This bounded runtime smoke deliberately does not start PostgreSQL, Redis, OpenSearch, object storage or the external TLS gateway. It therefore does not prove the complete emulator topology, a real staging deployment, the ten deployment-parity evidence classes, Phase 8 completion or production acceptance.
+
+Exactly one next priority: verify every registered workflow on the RUN-153 exact PR head and independently inspect retained `phase8-staging-emulator-runtime-evidence`. Merge only on full success. After acceptance, complete dependency-topology emulation or approved real staging provisioning remains the next Phase 8 step, with all ten deployment-parity evidence classes still mandatory before real staging acceptance is credited.
 
 ## Phase 9 — External assurance
 
