@@ -32,8 +32,12 @@ Superseded head `5891fdc46b9076707467ca42b26553ecb67ea17e` executed 20 workflows
 
 The first release-wide deterministic failure was remediated by making the browser test module conditional on explicit `DTMO_E2E_BASE_URL`. The dedicated RC9.1 workflow sets that variable and therefore continues to execute the E2E test; generic RC4 pytest does not.
 
-The separate superseded-head browser failure (`intelligence item not found`) is recorded but deliberately not remediated in RUN-20260809-093, preserving the one-failure-per-run rule. Fresh exact-head evidence determines whether it remains the next blocker.
+## RUN-20260809-094 remediation
+
+The dedicated superseded-head browser run reached PostgreSQL migrations, Uvicorn startup and Chromium successfully, then failed on the first review request with `409 intelligence item not found`. The synthetic candidate had been flushed but not committed before the separately running application process attempted to read it.
+
+The fixture seed now explicitly commits after obtaining the candidate UUID and before browser interaction. This is the only behavioral change in RUN-20260809-094. It addresses cross-process transaction visibility without weakening RBAC, separation of duties, privacy, provenance, auditability or human share approval.
 
 ## Current decision
 
-`CI_VALIDATION_PENDING`. The remediation changed PR #50's head, so superseded-head success and failure artifacts cannot authorize merge.
+`CI_VALIDATION_PENDING`. Fresh exact-head GitHub Actions and retained evidence are required; superseded-head results cannot authorize merge.
