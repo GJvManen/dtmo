@@ -22,9 +22,19 @@ Acceptance requires all of the following on one final PR head:
 - dedicated `RC10 Operational Runbook Exercise Gate` succeeds and retains exact-head JUnit/log/JSON evidence;
 - every registered workflow succeeds on the exact final head.
 
+## Current CI evidence
+
+PR #97 exact head `1862b1c4e9e768da82baef3470464845cadf3967` completed **43/44 workflows successfully**. `RC10 Operational Runbook Exercise Gate` run `31331042196` failed even though its scenario tests passed **5/5** and evidence was produced.
+
+The deterministic defect was in `Validate evidence contract`: `assert all(e["controls"].values())` incorrectly treated the intentionally false safety controls `production_data_used=false` and `production_credentials_used=false` as failures. Artifact `9042942892` belongs to that failed head and cannot be used for acceptance.
+
+RUN-143 corrects the validator without changing scenario results or governance boundaries. Required-positive controls are asserted `True`; the two safety controls are asserted `False`; claim-boundary values must remain all false. No workflow or test is bypassed.
+
+The failed head is **not accepted**. All 44 workflows and retained evidence must regenerate on one new exact final head.
+
 ## Threat/exercise boundary
 
-CISA CTEP and cybersecurity-scenario guidance were reviewed. These sources support scenario-driven exercises and after-action capture. They do not make this synthetic CI exercise equivalent to a human tabletop or production operational acceptance.
+CISA CTEP and cybersecurity-scenario guidance reviewed in RUN-142 remains applicable. These sources support scenario-driven exercises and after-action capture. They do not make this synthetic CI exercise equivalent to a human tabletop or production operational acceptance.
 
 ## Claim boundary
 
@@ -39,4 +49,4 @@ This gate does **not** claim:
 
 ## Exactly one next priority
 
-Accept only after complete exact-head workflow success and independent retained `operational-runbook-exercise-evidence` inspection.
+Verify complete fresh exact-head workflow success and independently inspect regenerated `operational-runbook-exercise-evidence`; accept and merge PR #97 only if both are complete and internally consistent.
