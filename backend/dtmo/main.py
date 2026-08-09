@@ -12,6 +12,7 @@ from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
 from dtmo.logging import configure_logging, correlation_id, get_logger
 from dtmo.scheduler import ScheduledJob, SchedulerService
+from dtmo.ui import router as ui_router
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -62,6 +63,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 app.include_router(intelligence_router)
+app.include_router(ui_router)
 
 
 @app.middleware("http")
