@@ -8,13 +8,13 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 
 ## Current status — 2026-08-09
 
-- Phase 1 — CI and workflow integrity: `PASS`.
+- Phase 1 — CI and workflow integrity: `PASS` for accepted mainline evidence; PR #94 has an active exact-head CI acceptance blocker until the remediated full matrix passes.
 - Phase 2 — Application security and identity: `PASS` for internal gates.
 - Phase 3 — Data integrity and recovery: `PASS` for internal gates.
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.6 and the bounded object-storage remediation are accepted; RC10.7 distributed trace-context baseline is `CI_VALIDATION_PENDING`.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.6 and the bounded object-storage remediation are accepted; RC10.7 distributed trace-context baseline remains `CI_VALIDATION_PENDING` after RUN-138 quality-gate remediation.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -39,6 +39,8 @@ Production AIStor selection remains subject to the RUN-134 release/advisory floo
 Objectives: regression-protect release-critical workflows, validate triggers/jobs/permissions/services/artifacts, make execution observable, and fail closed on missing/malformed gates.
 
 Blocking gates: workflow contract tests pass; required jobs/triggers are validated; workflow evidence is observable; failed/absent workflows cannot be interpreted as success.
+
+RUN-138 is an active bounded Phase-1 remediation discovered during RC10.7 acceptance. PR #94 exact head `cb889d2e643f4f00386bb6281ae3082f47031b98` completed 40/41 workflows; `RC4 Quality Gate` failed in Ruff/Bandit `S105` because two synthetic privacy-test marker variable names resembled hardcoded secret variables. The test variables were renamed without disabling or suppressing the lint rule. A complete fresh exact-head matrix is mandatory.
 
 ## Phase 2 — Application security and identity
 
@@ -102,11 +104,11 @@ RUN-137 implements:
 
 Fresh standards/security review uses the W3C Trace Context Recommendation, which identifies privacy, information-exposure and denial-of-service risks and requires trace headers to be treated as potentially malicious input. The bounded implementation therefore accepts only the fixed identifier format and never uses trace context to carry personal or business data.
 
-RC10.7 is not accepted until every registered workflow succeeds on its exact final head and retained `distributed-trace-context-evidence` is independently verified.
+The first PR #94 exact-head matrix did not pass: 40/41 workflows succeeded and the RC4 Quality Gate failed in lint. RUN-138 remediates only that deterministic fixture-naming issue without weakening security scanning. RC10.7 remains unaccepted until every registered workflow succeeds on the new exact final head and regenerated `distributed-trace-context-evidence` is independently verified.
 
 Phase 7 remains incomplete after this baseline because collector/exporter/backend trace visualization acceptance, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open.
 
-Exactly one next priority: verify the complete exact-head workflow matrix and retained `distributed-trace-context-evidence` artifact for RUN-137; merge only after all registered workflows succeed and retained evidence is exact-head bound.
+Exactly one next priority: verify the complete exact-head workflow matrix and regenerated retained `distributed-trace-context-evidence` artifact for the remediated PR #94 head; merge only after all registered workflows succeed and retained evidence is exact-head bound.
 
 ## Phase 8 — Staging acceptance
 
