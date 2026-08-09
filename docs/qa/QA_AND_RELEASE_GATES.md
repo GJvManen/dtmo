@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Every DTMO development step defines and evaluates explicit quality gates. A configured, queued, cancelled or committed test that has not executed is `PENDING`, never `PASS`.
+Every DTMO development step defines and evaluates explicit quality gates. A configured, queued, cancelled, failed or committed test that has not executed successfully on the required exact head is never `PASS`.
 
 ## Baseline blocking gates
 
@@ -17,93 +17,91 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 | Recovery | Clean targets restore or reconstruct successfully with integrity and timing evidence |
 | Connector reliability | Live canary, persistent state, health history, isolation, provenance, governed contracts, retry, timeout, replay and quarantine recovery are evidenced |
 | Performance | Accepted workload profile plus executed latency, throughput, error, integrity and resource evidence |
-| Release | All release-critical jobs and retained evidence artifacts succeed |
+| Accessibility / UX | Critical journeys, keyboard, responsive, supported-browser and bounded accessibility evidence succeed; genuine AT remains separately evidenced |
+| Observability | Correlated structured telemetry, bounded metrics and controlled alerting evidence succeed |
+| Operations | Runbooks, alert exercises, ownership/escalation and handover evidence succeed |
+| Release | All release-critical exact-head jobs and required retained evidence artifacts succeed |
 
-## Current phase status
+## Current phase status — 2026-08-09
 
 - Phase 1 — CI and workflow integrity: `PASS`.
-- Phase 2 — application security and identity: `PASS`.
-- Phase 3 — data integrity, backup and recovery: `PASS`.
-- Phase 4 — live connector reliability and provenance: `PASS`.
-- Phase 5 — performance and scalability: `IN PROGRESS`.
-- Phases 6–9: `NOT ACCEPTED`.
-- Phase 10 — production go/no-go: `BLOCKED`.
+- Phase 2 — application security and identity: `PASS` for internal roadmap gates.
+- Phase 3 — data integrity and recovery: `PASS` for internal roadmap gates.
+- Phase 4 — live connector reliability and provenance: `PASS` for internal roadmap gates.
+- Phase 5 — performance and scalability: `PASS` for internal roadmap gates.
+- Phase 6 — frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA evidence on supported real hosts.
+- Phase 7 — observability and incident operations: `IN PROGRESS`.
+- Phase 8 — staging acceptance: `NOT STARTED`.
+- Phase 9 — external assurance: `NOT COMPLETE`.
+- Phase 10 — production go/no-go: `NOT STARTED`.
 
-## Phase 5 accepted gates
+## Accepted Phase 5 gates
 
-### RC8.1 workload profile — `PASS`
+RC8.1–RC8.8 are accepted for their bounded internal scopes. The accepted evidence includes workload definition, API/search reads, ingestion, queue burst/backpressure, degraded-dependency correctness, concurrency saturation and conservative capacity/scaling guidance.
 
-Representative synthetic education-sector CTI volumes and measurable latency, throughput, error-rate, correctness and resource budgets are defined in the machine-readable Phase 5 workload profile.
+RC8.8 does **not** certify production capacity. Issue #1's independent representative production load/stress gate remains open and separate.
 
-### RC8.2 API-read performance — `PASS`
+## Phase 6 gate status
 
-Accepted exact-head evidence recorded:
+RC9.1–RC9.15 contain accepted bounded browser/accessibility evidence, including:
 
-- 500/500 successful bounded requests;
-- 100.142 requests/s;
-- 0% errors;
-- p95 1.878 ms;
-- p99 11.059 ms;
-- limits p95 <= 300 ms, p99 <= 750 ms, errors <= 1%;
-- authentication/RBAC and mandatory human-publication governance preserved.
+- separate human share approval and backend RBAC consistency;
+- analyst loading/empty/success/error behavior;
+- CISO token revocation and auditor read-only evidence;
+- keyboard navigation and responsive behavior;
+- supported-browser coverage;
+- automated WCAG critical-journey checks;
+- contrast, 200% text resize, 320 CSS px reflow and text spacing;
+- complete focus-order evidence.
 
-### RC8.3 OpenSearch search-read performance — `PASS`
+RC9.16 records the remaining real assistive-technology requirement. Phase 6 remains `BLOCKED_EXTERNAL` until genuine VoiceOver/NVDA behavior is retained from supported real host/browser/screen-reader combinations. Browser/DOM automation is not accepted as a substitute.
 
-Accepted exact-head evidence recorded:
+## Accepted Phase 7 gates
 
-- 200/200 successful searches;
-- 40.161 searches/s;
-- 0% errors;
-- p95 7.700 ms;
-- p99 12.131 ms;
-- limits p95 <= 800 ms, p99 <= 1500 ms, errors <= 1%;
-- source provenance and non-publication state preserved.
+### RC10.1 request observability — `PASS`
 
-### RC8.4 ingestion throughput — `PASS`
+PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc` completed all 34 registered workflows successfully. Retained artifact `9040196394`, digest `sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`, independently evidenced safe correlation IDs, real structured request context, bounded route-template metrics, latency and in-flight metrics. JUnit: 5/5. Merge: `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
 
-Accepted exact-head evidence recorded:
+### RC10.2 controlled connector-failure alerting — `PASS`
 
-- 500/500 accepted synthetic records;
-- zero data loss;
-- zero duplicate candidate creation;
-- identical second pass quarantined as replay;
-- 0% errors;
-- measured bounded CI throughput 108081.257 records/s against minimum 100 records/s;
-- provenance and `publish_approved=false` preserved.
+PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243` completed all 35 registered workflows successfully. Retained artifact `9040485255`, digest `sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`, independently evidenced terminal failure signaling, Prometheus alert metric/rule, safe correlation evidence, actionable operator guidance, raw-error exclusion, repeat-raise suppression and successful recovery/clear behavior. JUnit: 4/4. Merge: `f6680423860389288d9feced34592294d774bf4a`.
 
-### RC8.5 queue pressure and connector burst — `CI_VALIDATION_PENDING`
-
-RC8.5 is implemented only in open PR #42. It is not yet an accepted `main` capability and must not be reported as PASS until its exact-head workflows and retained queue-burst evidence are independently verified and merged.
+RC10.2 does not claim pager/e-mail/chat delivery, queue/storage/API/search alerting, dashboards, runbooks or Phase-7 completion.
 
 ## Workflow presence versus workflow evidence
 
-The following Phase 5 workflow files were directly verified on `main` during RUN-20260808-077:
+Workflow configuration on `main` is not itself acceptance evidence. DTMO's release discipline requires:
 
-- `.github/workflows/api-read-performance.yml`;
-- `.github/workflows/search-read-performance.yml`;
-- `.github/workflows/ingestion-performance.yml`.
+1. a defined bounded gate;
+2. execution on the exact final pull-request head;
+3. successful completion of every registered required workflow;
+4. inspection of retained evidence when specified;
+5. expected-head protected merge;
+6. documentation reconciliation without inflating the accepted claim.
 
-Presence of a workflow file is not execution evidence. The current-state reconciliation itself remains `CI_VALIDATION_PENDING` until its exact-head required workflows run successfully.
+Missing, queued, cancelled, failed or unexecuted workflows are not PASS.
 
 ## Security, privacy and publication invariants
 
 - ingestion creates candidate intelligence only;
-- publication requires explicit human approval by a principal different from the reviewer;
+- publication requires explicit human share approval by a principal different from the reviewer;
 - service accounts and connectors may not review or approve sharing;
-- connector success, isolation recovery, quarantine release, contract validation, normalization, retry, timeout or performance success never implies publication approval;
+- connector success, isolation recovery, quarantine release, contract validation, normalization, retry, timeout, performance or observability success never implies publication approval;
 - provenance and confidence may not be silently discarded;
 - secret values may not be emitted into evidence;
-- performance fixtures must be synthetic or approved public fixtures;
-- missing, queued, cancelled or unexecuted CI/evidence may not be reported as successful.
+- performance and controlled-failure fixtures must use synthetic or explicitly approved non-production data;
+- missing or incomplete evidence blocks the corresponding acceptance claim.
 
 ## External assurance boundary
 
-The independent representative load/stress gate in issue #1 remains open. Bounded internal CI performance results do not satisfy that external gate. Other remaining issue #1 gates also require their own evidence.
+Issue #1 remains authoritative for independent/external production gates, including representative load/stress, penetration testing, full backup/restoration exercise, production OpenSearch hardening, staging/deployment acceptance, secrets-management acceptance where applicable and required operational/stakeholder approvals.
+
+Internal PASS does not close those external gates.
 
 ## Current reconciliation gate
 
-`RUN-20260808-077` is `CI_VALIDATION_PENDING`. It corrects stale README/current-state documentation, adds workflow inventory and Mermaid graphs, and explicitly distinguishes accepted `main` capabilities from RC8.5 work still in PR #42.
+RUN-20260809-126 is `CI_VALIDATION_PENDING` until its final documentation-only exact head passes every registered workflow. It reconciles README, current-state, roadmap, run log, QA records and missing historical acceptance records without changing the underlying product acceptance claims.
 
 ## Exactly one next priority
 
-Inspect exact-head CI for the current-state reconciliation PR. Merge only after every required workflow succeeds; otherwise remediate only the earliest deterministic failure. Do not advance RC8.5 within this documentation-only run.
+Complete RUN-20260809-126 exact-head CI and protected merge. After that, Phase 7 / RC10.3 is the next bounded implementation objective: queue-backlog alerting with threshold semantics, actionable correlated evidence and controlled breach/recovery behavior.
