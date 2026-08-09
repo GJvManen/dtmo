@@ -32,7 +32,7 @@ _PAGE = """<!doctype html>
 <body>
   <main>
     <h1>Read-only audit evidence</h1>
-    <p id="auditor-principal" data-testid="auditor-principal">Resolving authenticated principal…</p>
+    <p id="auditor-principal" data-testid="auditor-principal" role="status" aria-live="polite" aria-atomic="true">Resolving authenticated principal…</p>
     <section id="audit-panel" data-testid="audit-panel" hidden>
       <p>This surface is read-only. Audit records cannot be changed here.</p>
       <button id="load-audit" data-testid="load-audit" type="button">Load audit evidence</button>

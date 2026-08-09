@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260809-111 — RC9.10 A11Y-001 session-status remediation](runs/RUN-20260809-111.md) — `CI_VALIDATION_PENDING`: added polite atomic status semantics to asynchronous principal/session resolution on all four accepted critical surfaces plus a dedicated real-session Chromium regression gate; exact-head CI and retained `browser-a11y-session-status-evidence` are required before PASS.
 - [RUN-20260809-110 — RC9.9 manual/non-automatable WCAG 2.2 AA critical-journey review](runs/RUN-20260809-110.md) — `BLOCKED`: criterion-level review of the four accepted critical surfaces found `A11Y-001`: asynchronous principal/session resolution changes identity/role text and reveals RBAC-governed controls without live/status semantics; measured contrast, 200% resize, 320 CSS px reflow, text-spacing, full focus-order and genuine VoiceOver/NVDA evidence also remain explicitly unevidenced.
 - [RUN-20260809-109 — RC9.8 exact-head acceptance](runs/RUN-20260809-109.md) — `PASS`: PR #65 exact head `34d2cce17372843cb51229648d1e5e62a66e4c04` passed all 27 registered workflows; retained artifact `9038468839` (`sha256:c0ded460c73d6c10c8bb61fb4334711ef9f2723924034337b3b7a828b01eb97a`) independently proved the bounded automated accessibility subset across all four accepted critical surfaces with 1/1 JUnit test passing, real backend-session RBAC calls, preserved human share approval and no product-wide WCAG/assistive-technology certification claim; merged as `5ca5c5e2cffde0700dde8b5aabd6ee3940f1b9c8`.
 - [RUN-20260809-108 — RC9.8 WCAG 2.2 AA critical-journey gate](runs/RUN-20260809-108.md) — `CI_VALIDATION_PENDING`: added one bounded Chromium accessibility gate across the accepted share-approval, analyst-search, CISO-revocation and auditor-read-only surfaces; validates document language/title, landmark/heading structure, duplicate IDs, image alternatives, accessible control names, keyboard focusability and visible focus; exact-head CI and retained accessibility evidence are required before PASS, and no product-wide WCAG certification is claimed.
@@ -48,8 +49,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260809-110` is `BLOCKED`. RC9.1 through RC9.8 remain accepted for their bounded scopes, but Phase 6 remains `IN PROGRESS`. Manual/source-level review found `A11Y-001`: asynchronous session resolution updates principal/role state and reveals RBAC-governed controls without live/status semantics. Product-wide WCAG 2.2 AA remains unevidenced; measured contrast, 200% resize, 320 CSS px reflow, text-spacing, full focus-order and genuine assistive-technology evidence remain open. Issue #1 external production gates remain open.
+`RUN-20260809-111` is `CI_VALIDATION_PENDING`. `A11Y-001` has been remediated in source across all four critical surfaces, with a dedicated real-session regression gate added. Phase 6 remains `IN PROGRESS`: no PASS is claimed until exact-head CI and retained evidence execute, and the other RC9.9 accessibility evidence gaps remain open. Issue #1 external production gates remain open.
 
 ## Exactly one next priority
 
-Remediate `A11Y-001` by making asynchronous principal/session resolution programmatically announced on all four critical surfaces, add bounded regression evidence, and preserve backend-derived RBAC and separate human share approval.
+Inspect every registered workflow on the final RC9.10 PR head and independently inspect retained `browser-a11y-session-status-evidence`; repair only the first deterministic failure, or merge only after complete successful exact-head evidence.
