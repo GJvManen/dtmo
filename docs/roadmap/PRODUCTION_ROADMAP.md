@@ -15,7 +15,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `PASS`.
-- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` at production-equivalent staging environment/deployment-parity acquisition.
+- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence; RUN-151 staging emulator contract is `CI_VALIDATION_PENDING`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
@@ -42,15 +42,19 @@ No real staging endpoint/environment identifier or immutable deployment-parity e
 
 ### RUN-149 RC4 regression remediation — `PASS`
 
-PR #102 final exact head `c0bf83a8e0a9c51bdbd492fadfb60a71e25c7e9b` completed 46/46 workflows successfully, including RC4 and Phase 8 Staging Readiness Gate, and merged as `60897cdfd36a78297cf90521f14ded5116ec9653`. The remediation changed only the stale lifecycle-state regression assertion and preserved the external staging/deployment-parity claim boundary.
+PR #102 final exact head `c0bf83a8e0a9c51bdbd492fadfb60a71e25c7e9b` completed 46/46 workflows successfully and merged as `60897cdfd36a78297cf90521f14ded5116ec9653`.
 
 ### RUN-150 Phase 8 blocker acceptance reconciliation — `BLOCKED_EXTERNAL`
 
-A fresh live repository and issue #1 recheck after PR #102 acceptance found no approved staging environment, reachable endpoint, immutable deployed release/image digest inventory, infrastructure/configuration parity record, approved staging identity/secrets references, TLS/network evidence, data-class/no-production-credential statement, deployment change record, rollback target or deployment-time security/advisory review.
+PR #103 exact head `be9deb34255f6114430d76868c9bf82f0e039f15` completed 46/46 workflows successfully and merged as `1e957f7fa1e9910e5d258cd6d7ed5ce69e9203d1`. A fresh check still found no real staging deployment-parity package.
 
-Repository CI cannot substitute for these environment controls. No staging acceptance suite is considered executed.
+### RUN-151 production-equivalent staging emulator baseline — `CI_VALIDATION_PENDING`
 
-Exactly one next priority: provide or provision the approved production-equivalent staging environment and retain all ten deployment-parity evidence classes. Then execute the first bounded staging smoke/integration acceptance run.
+RUN-151 adds a deterministic source-controlled staging emulator specification under `infrastructure/staging-emulator/`. It deliberately runs DTMO in `production` configuration mode and requires immutable digest-pinned images, external secrets/license/certificate inputs, backend network isolation, loopback-only TLS ingress, secured OpenSearch configuration, authenticated Redis, AIStor object storage, Prometheus/Grafana observability, disabled-by-default live connectors/AI analyst, and preserved human publication/share approval.
+
+The new `Phase 8 Staging Emulator Gate` renders and validates the Compose topology in CI without pulling or running the declared images. Its retained evidence therefore proves only the emulator configuration contract. It does not prove runtime behavior, a real staging environment, production topology parity, the ten deployment-parity evidence classes, Phase 8 completion or production acceptance.
+
+Exactly one next priority: verify every registered workflow on the RUN-151 exact PR head and independently inspect retained `phase8-staging-emulator-evidence`. Merge only on full success. After acceptance, use this contract to provision the approved real staging environment and retain all ten deployment-parity evidence classes before any staging acceptance suite is accepted.
 
 ## Phase 9 — External assurance
 
