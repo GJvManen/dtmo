@@ -23,6 +23,7 @@ from dtmo.logging import (
     resolve_correlation_id,
 )
 from dtmo.scheduler import ScheduledJob, SchedulerService
+from dtmo.trace_context import begin_trace, end_trace
 from dtmo.ui import router as ui_router
 
 settings = get_settings()
@@ -96,8 +97,14 @@ app.include_router(auditor_ui_router)
 @app.middleware("http")
 async def request_context(request: Request, call_next):  # type: ignore[no-untyped-def]
     request_id = resolve_correlation_id(request.headers.get("x-correlation-id"))
-    token = correlation_id.set(request_id)
-    bind_request_context(request_id, request.method)
+    correlation_token = correlation_id.set(request_id)
+    trace_binding = begin_trace(request.headers.get("traceparent"))
+    bind_request_context(
+        request_id,
+        request.method,
+        trace_id=trace_binding.trace_id,
+        span_id=trace_binding.span_id,
+    )
     started = perf_counter()
     IN_FLIGHT.labels(request.method).inc()
     try:
@@ -134,8 +141,9 @@ async def request_context(request: Request, call_next):  # type: ignore[no-untyp
         return response
     finally:
         IN_FLIGHT.labels(request.method).dec()
-        correlation_id.reset(token)
         clear_request_context()
+        end_trace(trace_binding)
+        correlation_id.reset(correlation_token)
 
 
 @app.get("/health")
