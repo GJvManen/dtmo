@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-09 — RUN-20260809-126
+Last reconciled: 2026-08-09 — RUN-20260809-126 (`PASS` in the final merged state)
 
 This document is the human-readable current-state view of DTMO. It complements the immutable run history in `docs/development/runs/`, the chronological `docs/development/RUN_LOG.md`, the production roadmap, QA gate records and GitHub issues #1–#3.
 
@@ -15,7 +15,7 @@ This document is the human-readable current-state view of DTMO. It complements t
 - Phase 7 — observability and incident operations: `IN PROGRESS`.
   - RC10.1 request observability: `PASS`.
   - RC10.2 controlled connector-failure alerting: `PASS`.
-  - RC10.3 queue-backlog alerting: next bounded implementation objective after RUN-126 documentation acceptance.
+  - RC10.3 queue-backlog alerting: next bounded implementation objective.
 - Phase 8 — staging acceptance: `NOT STARTED`.
 - Phase 9 — external assurance: `NOT COMPLETE`.
 - Phase 10 — production go/no-go: `NOT STARTED`.
@@ -145,4 +145,4 @@ Issue #1 remains authoritative for externally executed production gates, includi
 
 ## Exactly one current priority
 
-Complete RUN-20260809-126 documentation reconciliation through exact-head CI and protected merge. After that, implement Phase 7 / RC10.3: a bounded queue-backlog alerting gate with explicit threshold semantics, actionable correlated evidence and controlled breach/recovery behavior. Storage-integrity, API-error and search-health alerting remain later Phase-7 objectives.
+Phase 7 / RC10.3 — implement a bounded queue-backlog alerting gate with explicit threshold semantics, actionable correlated evidence and controlled breach/recovery behavior. Storage-integrity, API-error and search-health alerting remain later Phase-7 objectives.
