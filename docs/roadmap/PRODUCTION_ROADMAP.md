@@ -14,7 +14,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.5 and the bounded object-storage remediation are accepted; RC10.6 search-health alerting is `CI_VALIDATION_PENDING`.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.6 and the bounded object-storage remediation are accepted; RC10.7 distributed trace-context baseline is `CI_VALIDATION_PENDING`.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -26,6 +26,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - RC10.3 bounded queue-backlog alerting: `PASS` — PR #84.
 - RC10.4 bounded storage-integrity alerting: `PASS` — PR #86.
 - RC10.5 bounded API-error alerting: `PASS` — PR #92 exact head `659fa022840e01ed6db4ebeb6a5e703f58a6d259`, 39/39 workflows, artifact `9041987610`, digest `sha256:6a6f2aa5ea2b0b3fb081a0b376f8187a799af726ba950bcbf6fd8618c54e2eca`, JUnit 6/6, merge `8d6297e17c93150dacb39428ed3580e7c8cc1579`.
+- RC10.6 bounded search-health alerting: `PASS` — PR #93 exact head `14990a8b5d40f975951cdcbba9296a2116fb254c`, 40/40 workflows, artifact `9042097760`, digest `sha256:9e317e6b7ad4ce75b50090fafbcb3297b19bcc5cea458761a6ad908ae827e847`, JUnit 6/6, merge `bb1bb3f2feaf79f4a5a73ffedb78f64294097602`.
 
 ## Object-storage remediation — internal gate accepted
 
@@ -83,28 +84,29 @@ Blocking gates:
 - runbooks complete and exercised;
 - operational ownership/escalation documented.
 
-### RC10.6 bounded search-health alerting — `CI_VALIDATION_PENDING`
+### RC10.7 bounded distributed trace-context baseline — `CI_VALIDATION_PENDING`
 
-RUN-136 implements:
+RUN-137 implements:
 
-- cluster-health-only observation using a bounded cluster identifier plus `green|yellow|red|unreachable` status;
-- raise after 2 consecutive `red`/`unreachable` observations;
-- clear after 2 consecutive `green`/`yellow` observations while active;
-- repeat-raise suppression;
-- bounded health-check/streak/active-state/transition Prometheus metrics;
-- `DTMOSearchHealthFailure` with actionable operator guidance;
-- `probe_opensearch_health()` which consumes only `/_cluster/health` status and maps HTTP/parse failure to `unreachable` without exposing response bodies;
-- structured correlation evidence with `publish_approved=false`;
-- controlled failure/recovery/privacy tests;
-- dedicated retained exact-head `RC10 Search Health Alerting Gate`.
+- strict W3C version-00 `traceparent` parsing with malformed/unsupported/all-zero/unbounded context rejected;
+- cryptographically random trace/span IDs when context is absent or rejected;
+- preservation of valid incoming trace ID with a fresh local span ID;
+- structured trace ID + span ID + existing correlation ID binding;
+- outbound connector `traceparent` propagation with a fresh child span ID;
+- no `tracestate` collection in this bounded baseline;
+- no raw URLs, query values, request/response bodies, credentials or identities in trace attributes;
+- no trace-header echo in HTTP responses;
+- bounded `accepted|generated|rejected` trace-context metrics;
+- no new runtime telemetry SDK dependency;
+- dedicated retained exact-head `RC10 Distributed Trace Context Gate`.
 
-Fresh first-party OpenSearch review confirms OpenSearch 2.19 remains in maintenance and 2.19.6 is the current 2.x maintenance release with security updates. This run does not close the separate issue #1 production OpenSearch hardening/version gate.
+Fresh standards/security review uses the W3C Trace Context Recommendation, which identifies privacy, information-exposure and denial-of-service risks and requires trace headers to be treated as potentially malicious input. The bounded implementation therefore accepts only the fixed identifier format and never uses trace context to carry personal or business data.
 
-RC10.6 is not accepted until every registered workflow succeeds on its exact final head and retained `search-health-alerting-evidence` is independently verified.
+RC10.7 is not accepted until every registered workflow succeeds on its exact final head and retained `distributed-trace-context-evidence` is independently verified.
 
-Phase 7 remains incomplete after RC10.6 because distributed tracing, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open.
+Phase 7 remains incomplete after this baseline because collector/exporter/backend trace visualization acceptance, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open.
 
-Exactly one next priority: verify the complete exact-head workflow matrix and retained `search-health-alerting-evidence` artifact for RUN-136; merge only after all registered workflows succeed and retained evidence is exact-head bound.
+Exactly one next priority: verify the complete exact-head workflow matrix and retained `distributed-trace-context-evidence` artifact for RUN-137; merge only after all registered workflows succeed and retained evidence is exact-head bound.
 
 ## Phase 8 — Staging acceptance
 
