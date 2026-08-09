@@ -97,4 +97,4 @@ No production dependency, provider or connector is introduced by this documentat
 
 `BLOCKED`. Phase 6 cannot be completed while `A11Y-001` is unresolved and while the explicitly listed WCAG evidence gaps remain unverified.
 
-Exactly one next priority: remediate `A11Y-001` by making asynchronous principal/session resolution programmatically announced on all four critical surfaces, add bounded regression evidence, and preserve backend-derived RBAC and separate human share approval.
+Exactly one next priority: verify every registered workflow on PR #67 exact head and merge the RC9.9 review record only after complete successful exact-head CI; after that, remediate `A11Y-001` as the next technical objective.
