@@ -14,6 +14,7 @@ This reconciliation corrects documentation drift that remained after accepted Ph
 - `docs/project/CURRENT_STATE.md` now reflects Phase 1–5 internal `PASS`, Phase 6 `BLOCKED_EXTERNAL`, and Phase 7 `IN PROGRESS`;
 - `docs/roadmap/PRODUCTION_ROADMAP.md` records accepted RC10.1 and RC10.2 evidence and RC10.3 as the next implementation priority after this gate;
 - `docs/development/RUN_LOG.md` records RC10.2 acceptance and the restored historical acceptance records;
+- `docs/qa/QA_AND_RELEASE_GATES.md` now reflects the current phase and gate model rather than the obsolete Phase-5/RC8.5 state;
 - `docs/qa/RC10_2_CONNECTOR_FAILURE_ALERTING_GATE.md` records RC10.2 `PASS` evidence;
 - stale `CI_VALIDATION_PENDING` QA decisions for accepted RC8.8, RC9.1 and RC9.2 are corrected;
 - missing historical runs RUN-20260809-088, RUN-20260809-089, RUN-20260809-091, RUN-20260809-095 and RUN-20260809-097 are restored from their superseded audit branches.
