@@ -2,47 +2,33 @@
 
 ## Decision
 
-`CI_VALIDATION_PENDING`
+`PASS`
 
-## Objective
+## Accepted exact-head evidence
 
-Validate the bounded repository migration from archived legacy `minio/minio` to the supported AIStor target selected in ADR-0001 without weakening credential, auditability, provenance or human-approval controls.
+PR #90 exact head `0fe5c5f0003211fe9df8535954d9276a2090af35` completed **38/38 registered workflows successfully** and was squash-merged with expected-head protection as `383702bec6ba07cba065524efa451fd89cbd3b50`.
 
-## Required evidence
+Dedicated workflow run `31326861369` (`Supported Object Storage Migration Gate`) succeeded. Retained artifact `9041774769`, digest `sha256:24e7241138dc0b293957f5e2cd06a4d3a6606b7ba68d688097795047f114ccf8`, is bound to the exact head. Independent inspection of `supported-object-storage-migration-junit.xml` recorded **4 tests, 0 failures, 0 errors and 0 skips**.
 
-Acceptance requires all of the following on one exact PR head:
+Evidence proves the bounded repository contract:
 
-- legacy `minio/minio` absent from the supported Compose path;
-- AIStor image input fail-closed and explicitly requiring an immutable `@sha256` digest-pinned vendor image reference;
-- no use of `latest` in the migrated Compose contract;
-- AIStor license supplied through an external file/secret boundary;
-- administrative user/password supplied externally with no runnable repository defaults;
-- existing DTMO S3 service name, `minio:9000` endpoint and persistent volume contract preserved;
-- human share approval invariant preserved;
-- dedicated `Supported Object Storage Migration Gate` succeeds and retains JUnit evidence;
-- complete registered workflow matrix succeeds on the final exact head;
-- relevant existing recovery and storage-integrity workflows remain green.
+- archived legacy `minio/minio` is absent from the supported Compose path;
+- `AISTOR_IMAGE` fails closed and requires a release-tag-plus-`@sha256` digest reference;
+- `latest` is prohibited by regression protection;
+- AIStor license is injected through an external file/Compose-secret boundary;
+- administrative credentials have no runnable repository defaults;
+- internal S3 endpoint `minio:9000`, `minio_data:/data` persistence and application S3 compatibility are preserved;
+- human share approval remains required;
+- recovery and storage-integrity workflows remained green on the same exact head.
 
-## Current implementation evidence
+## Fresh vulnerability boundary
 
-The migration branch removes `minio/minio:RELEASE.2025-07-23T15-54-02Z` and introduces required external `AISTOR_IMAGE`, `AISTOR_LICENSE_FILE`, `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` inputs. The Compose service retains the internal service name `minio`, `minio_data:/data` and the application endpoint contract `DTMO_MINIO_ENDPOINT=minio:9000`.
-
-`backend/tests/test_supported_object_storage_migration.py` provides bounded regression checks for legacy-image removal, digest-pinned fail-closed image configuration, secret/license boundaries, credential-default removal and S3/persistence/human-approval continuity.
+Post-merge public CVE review on 2026-08-09 found relevant MinIO/AIStor fixes through `RELEASE.2026-04-14T21-32-45Z`. Therefore any production deployment must select a vendor-supported release **at or after that threshold** and repeat advisory/CVE review immediately before deployment. The repository intentionally does not fabricate or freeze a production digest.
 
 ## Claim boundary
 
-This gate does **not** claim:
-
-- a paid AIStor entitlement has been purchased;
-- a production AIStor cluster is deployed;
-- the external registry digest has been independently attested for a selected production release;
-- production TLS/network encryption or server-side encryption is complete;
-- production topology, secrets manager or staging acceptance is complete;
-- issue #1 external gates are closed;
-- RC10.5 or Phase 7 is complete.
-
-The production digest is deliberately not fabricated. The deployer must resolve a vendor-supported release and verify its registry digest, then provide the complete release-tag-plus-digest image reference through the external deployment boundary.
+This PASS does **not** claim a paid entitlement has been purchased, a production AIStor cluster is deployed, production TLS/SSE is complete, a secrets manager is accepted, the deployment-time registry digest is externally attested, staging is accepted, or issue #1 external gates are closed.
 
 ## Exactly one next priority
 
-Accept this gate only after the migration PR's complete exact-head workflow matrix and retained dedicated evidence succeed; otherwise record the precise failing or missing gate. After acceptance, perform one bounded post-migration security/recovery/storage-integrity reconciliation before RC10.5.
+Complete RUN-134 post-migration security/recovery/storage-integrity reconciliation. If no new internal blocker is found and the reconciliation exact-head CI succeeds, resume Phase 7 with RC10.5 API-error alerting.
