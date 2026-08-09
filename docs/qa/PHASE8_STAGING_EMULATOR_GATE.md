@@ -2,11 +2,15 @@
 
 ## Decision
 
-`CI_VALIDATION_PENDING`
+`PASS`
 
 ## Objective
 
 Validate a repository-controlled production-equivalent staging emulator contract that exercises production-mode configuration, immutable image identity, network isolation, TLS ingress, external secrets, observability topology and human approval invariants without claiming a real staging deployment.
+
+## Accepted evidence
+
+PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47/47 registered workflows successfully, including RC4 and the dedicated Phase 8 Staging Emulator Gate. Retained artifact `9045039742`, digest `sha256:959586b389579dfd37bda60eecdfb67e0251eaf4a78daed214986cefe771ce65`, was exact-head bound with machine-readable PASS and JUnit 4/4 with zero failures/errors/skips. PR #104 merged as `3c7a4b7f56e8d8a757541963bbd261fe42a7269c`.
 
 ## Required controls
 
@@ -22,18 +26,12 @@ Validate a repository-controlled production-equivalent staging emulator contract
 
 ## Claim boundary
 
-A PASS for this gate does not prove a real staging environment, does not prove container runtime behavior, does not satisfy the ten deployment-parity evidence classes, does not prove production topology parity, and does not complete Phase 8 or production acceptance.
+This PASS proves the emulator configuration/topology contract only. It does not prove a real staging environment, container runtime behavior of the complete topology, the ten deployment-parity evidence classes, production topology parity, Phase 8 completion or production acceptance.
 
-The emulator is a deterministic rehearsal and configuration-control surface. Real staging deployment evidence remains required by `PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`.
+## RUN-152 remediation outcome
 
-## Acceptance rule
-
-PASS requires every registered workflow on the exact final PR head to succeed and the retained `phase8-staging-emulator-evidence` artifact to be exact-head bound and internally consistent. Missing, queued, cancelled, failed or stale-head evidence is not PASS.
-
-## RUN-152 CI-integrity remediation
-
-The first RUN-151 exact head completed 46/47 registered workflows successfully; RC4 failed because this QA document did not contain the canonical phrase `human share approval` required by the governance regression test. The documentation contract was corrected without weakening or suppressing the test. Fresh complete exact-head CI is required.
+The first RUN-151 exact head completed 46/47 workflows; RC4 failed because this QA document lacked the canonical phrase `human share approval`. RUN-152 corrected the wording without weakening the test. The regenerated exact-head matrix and artifact then passed and were independently accepted.
 
 ## Exactly one next priority
 
-Verify every registered workflow on the remediated PR #104 exact head and independently inspect regenerated `phase8-staging-emulator-evidence`. Merge only on complete success.
+Execute and independently verify the bounded staging-emulator runtime smoke gate while preserving the external deployment-parity claim boundary.
