@@ -1,0 +1,145 @@
+name: Phase 8 Staging Emulator Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staging-emulator:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_IMAGE: ghcr.io/example/dtmo:rc@sha256:0000000000000000000000000000000000000000000000000000000000000000
+      POSTGRES_IMAGE: postgres:17-alpine@sha256:1111111111111111111111111111111111111111111111111111111111111111
+      REDIS_IMAGE: redis:8-alpine@sha256:2222222222222222222222222222222222222222222222222222222222222222
+      OPENSEARCH_IMAGE: opensearchproject/opensearch:2.19.6@sha256:3333333333333333333333333333333333333333333333333333333333333333
+      AISTOR_IMAGE: quay.io/minio/aistor/minio:RELEASE.test@sha256:4444444444444444444444444444444444444444444444444444444444444444
+      PROMETHEUS_IMAGE: prom/prometheus:v3.5.0@sha256:5555555555555555555555555555555555555555555555555555555555555555
+      GRAFANA_IMAGE: grafana/grafana:test@sha256:6666666666666666666666666666666666666666666666666666666666666666
+      NGINX_IMAGE: nginx:test@sha256:7777777777777777777777777777777777777777777777777777777777777777
+      POSTGRES_PASSWORD: synthetic-postgres-secret
+      REDIS_PASSWORD: synthetic-redis-secret
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: Synthetic-OpenSearch-Secret-123!
+      AISTOR_ROOT_USER: synthetic-admin
+      AISTOR_ROOT_PASSWORD: synthetic-admin-secret
+      AISTOR_APP_ACCESS_KEY: synthetic-app
+      AISTOR_APP_SECRET_KEY: synthetic-app-secret
+      AISTOR_LICENSE_FILE: /tmp/aistor.license
+      AISTOR_CERTS_DIR: /tmp/aistor-certs
+      DTMO_API_KEY: synthetic-api-key
+      DTMO_JWT_JWKS_JSON: '{"keys":[{"kty":"RSA","kid":"synthetic"}]}'
+      DTMO_JWT_ISSUER: https://identity.staging-emulator.invalid
+      DTMO_PRIVACY_PSEUDONYMIZATION_SECRET: synthetic-privacy-secret-at-least-32-characters
+      GRAFANA_ADMIN_USER: synthetic-admin
+      GRAFANA_ADMIN_PASSWORD: synthetic-grafana-secret
+      STAGING_EMULATOR_TLS_CERT: /tmp/staging-emulator.crt
+      STAGING_EMULATOR_TLS_KEY: /tmp/staging-emulator.key
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Execute staging emulator regression tests
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_phase8_staging_emulator.py \
+            --junitxml=artifacts/phase8-staging-emulator.xml \
+            | tee artifacts/phase8-staging-emulator-pytest.log
+      - name: Validate Compose topology without pulling or running images
+        run: |
+          mkdir -p /tmp/aistor-certs
+          touch /tmp/aistor.license /tmp/staging-emulator.crt /tmp/staging-emulator.key
+          docker compose -f infrastructure/staging-emulator/docker-compose.yml config --format json \
+            > artifacts/phase8-staging-emulator-compose.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          cfg = json.loads(Path("artifacts/phase8-staging-emulator-compose.json").read_text())
+          services = cfg["services"]
+          required = {"migrate","api","postgres","redis","opensearch","objectstore","prometheus","grafana","gateway"}
+          assert required <= set(services)
+          for name, service in services.items():
+              image = service.get("image")
+              assert image and "@sha256:" in image, (name, image)
+          assert cfg["networks"]["backend"]["internal"] is True
+          assert "ports" not in services["api"]
+          assert "ports" not in services["postgres"]
+          assert "ports" not in services["redis"]
+          assert "ports" not in services["opensearch"]
+          assert "ports" not in services["objectstore"]
+          gateway_ports = services["gateway"]["ports"]
+          assert len(gateway_ports) == 1
+          published = str(gateway_ports[0].get("host_ip", ""))
+          assert published == "127.0.0.1"
+          env = services["api"]["environment"]
+          assert env["DTMO_ENVIRONMENT"] == "production"
+          assert env["DTMO_MINIO_SECURE"] == "true"
+          assert env["DTMO_PUBLISH_REQUIRES_HUMAN_APPROVAL"] == "true"
+          assert env["DTMO_FEATURE_LIVE_CONNECTORS"] == "false"
+          PY
+      - name: Record exact-head evidence
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+            "decision": "pass",
+            "exact_head": os.environ["EXACT_HEAD"],
+            "objective": "Phase 8 production-equivalent staging emulator contract",
+            "controls": {
+              "production_mode_configuration": True,
+              "immutable_image_contract": True,
+              "backend_network_isolation": True,
+              "loopback_only_tls_gateway": True,
+              "opensearch_security_not_disabled": True,
+              "external_secret_contract": True,
+              "live_connectors_default_off": True,
+              "human_share_approval_preserved": True
+            },
+            "claim_boundary": {
+              "containers_executed": False,
+              "real_staging_environment_proven": False,
+              "deployment_parity_proven": False,
+              "ten_external_evidence_classes_satisfied": False,
+              "phase_8_complete": False,
+              "production_acceptance_complete": False
+            }
+          }
+          Path("artifacts/phase8-staging-emulator-evidence.json").write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n")
+          PY
+      - name: Validate evidence contract
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          e = json.loads(Path("artifacts/phase8-staging-emulator-evidence.json").read_text())
+          assert e["decision"] == "pass"
+          assert e["exact_head"] == os.environ["EXPECTED_HEAD"]
+          assert all(e["controls"].values())
+          assert not any(e["claim_boundary"].values())
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: phase8-staging-emulator-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  staging-emulator-gate:
+    if: always()
+    needs: [staging-emulator]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.staging-emulator.result }}
+        run: test "$RESULT" = "success"
