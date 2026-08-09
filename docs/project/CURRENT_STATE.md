@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-09 — RUN-20260809-148 (`BLOCKED_EXTERNAL`; RUN-147 accepted, no real staging environment/deployment-parity evidence found)
+Last reconciled: 2026-08-09 — RUN-20260809-149 (`CI_VALIDATION_PENDING`; stale Phase 8 readiness regression assertion repaired, external staging blocker unchanged)
 
 ## Executive status
 
@@ -11,7 +11,7 @@ Last reconciled: 2026-08-09 — RUN-20260809-148 (`BLOCKED_EXTERNAL`; RUN-147 ac
 - Phase 5 — performance and scalability: `PASS` for internal roadmap gates.
 - Phase 6 — frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior.
 - Phase 7 — observability and incident operations: `PASS`.
-- Phase 8 — staging acceptance: `BLOCKED_EXTERNAL` at real staging environment/deployment-parity acquisition.
+- Phase 8 — staging acceptance: `BLOCKED_EXTERNAL` at real staging environment/deployment-parity acquisition; PR #102 remediation requires fresh exact-head CI.
 - Phase 9 — external assurance: `NOT COMPLETE`.
 - Phase 10 — production go/no-go: `NOT STARTED`.
 
@@ -23,9 +23,13 @@ RUN-147 / PR #101 exact head `fd87beb441c4e4ed71141ea9ae03717e859681e3` complete
 
 The artifact claim boundary correctly recorded that no staging environment, deployment parity, staging test execution, Phase 8 completion or production acceptance was proven.
 
-## Phase 8 staging deployment-parity blocker
+## RUN-149 CI-integrity remediation
 
-RUN-148 inspected the live repository and issue #1 coordination trail for a real production-equivalent staging environment and immutable deployment-parity evidence. None was found.
+PR #102 head `afa10ddac6551b21f0c974dd807ed45849f8f323` completed 45/46 workflows successfully. RC4 failed only because `backend/tests/test_phase8_staging_readiness.py` still required the transient text `CI_VALIDATION_PENDING` after the RUN-147 QA gate had correctly transitioned to `PASS`. Lint and mypy succeeded; the stale lifecycle-state assertion failed during pytest.
+
+The regression now asserts the accepted RUN-147 evidence state and keeps the invariant claim boundary: no staging environment exists by repository evidence, no staging suite is considered executed, and production acceptance is not complete. No release control was suppressed or weakened. The changed PR head requires a complete fresh workflow matrix before merge.
+
+## Phase 8 staging deployment-parity blocker
 
 Before staging acceptance suites can execute, external/environment evidence must establish:
 - approved staging environment identifier and owner;
@@ -56,4 +60,4 @@ Genuine VoiceOver/NVDA evidence, the Phase 8 staging environment/deployment-pari
 
 ## Exactly one current priority
 
-Provide or provision the approved production-equivalent staging environment and retain all ten deployment-parity evidence classes in `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`. Only then execute the first bounded staging acceptance run.
+Verify every registered workflow on the new PR #102 exact head. Merge only if every workflow succeeds. After merge, provide or provision the approved production-equivalent staging environment and retain all ten deployment-parity evidence classes in `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`.
