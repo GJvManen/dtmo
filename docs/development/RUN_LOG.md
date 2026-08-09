@@ -4,7 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260809-098 — RC9.3 bounded CISO token-revocation browser journey](runs/RUN-20260809-098.md) — `CI_VALIDATION_PENDING`: added one critical CISO browser journey with backend-derived `revoke:tokens` visibility, analyst UI denial plus direct backend `403`, real CISO revocation, Redis token-state verification and persistent audit-chain verification; exact-head CI and retained browser evidence are required before PASS.
+- [RUN-20260809-099 — RC9.3 exact-head acceptance](runs/RUN-20260809-099.md) — `PASS`: PR #55 exact head `e945702adff884f174a40393b3121f3aed99648b` passed all 22 registered workflows; retained artifact `9037014726` (`sha256:69256fdcaa01c5b9832bd711a669ff73ef4db5923cc0bc66beab47034cf2b795`) independently proved Chromium execution, backend-derived CISO revoke capability, analyst UI denial plus backend `403`, successful CISO revocation, Redis state and persistent audit-chain integrity; merged as `3743203bc1a6d93743af53fcb8d4257af153a710`.
+- [RUN-20260809-098 — RC9.3 bounded CISO token-revocation browser journey](runs/RUN-20260809-098.md) — `CI_VALIDATION_PENDING`
 - [RUN-20260809-097 — RC9.2 exact-head acceptance](runs/RUN-20260809-097.md) — `PASS`: PR #53 exact head `ebc9a7ca2ebb1c0e9b55c057eaad82d3f04e5afd` passed all 21 registered workflows; retained artifact `9036721912` (`sha256:308f98282c5520b3d96bc04f9b14c382dbdb83c1fc8817809c87ea03ce94a82e`) independently proved Chromium execution, backend-derived `read:intelligence`, loading/empty/success states and real backend 503 behavior; merged as `22bf74bb6c5c367195a3e67b0c8db4ec0489a449`.
 - [RUN-20260809-096 — RC9.2 analyst browser operational states](runs/RUN-20260809-096.md) — `CI_VALIDATION_PENDING`
 - [RUN-20260809-095 — RC9.1 exact-head acceptance](runs/RUN-20260809-095.md) — `PASS`: PR #50 exact head `005512e124ff6c37a5acd3d2b8e4ba8c823d4a01` passed all 20 required workflows; retained browser artifact `9036392289` (`sha256:111d879e048f5978927472da996020f398448dd0752407f60a3366dbfbbf0fd6`) independently proved Chromium execution, blocked reviewer self-approval, distinct-publisher approval, hidden service-account approval controls and backend-derived permissions; merged as `ef59eba29d7fa8b2d88b5674e7bb00e98c0dab18`.
@@ -36,8 +37,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260809-098` is `CI_VALIDATION_PENDING`. RC9.1 and RC9.2 are accepted. Phase 6 remains `IN PROGRESS`. RC9.3 adds one critical CISO security-token-revocation browser journey but is not accepted until every required workflow succeeds on the exact final PR head and retained `browser-ciso-token-revocation-evidence` is independently inspected. Issue #1 external production gates remain open.
+`RUN-20260809-099` is `PASS`. RC9.1, RC9.2 and RC9.3 are accepted. Phase 6 remains `IN PROGRESS`; auditor journey breadth, responsive behavior, keyboard navigation, supported-browser breadth and WCAG 2.2 AA remain open. Issue #1 external production gates remain open.
 
 ## Exactly one next priority
 
-Inspect every registered workflow on the final RC9.3 PR head and independently inspect retained `browser-ciso-token-revocation-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful exact-head evidence.
+Phase 6 / RC9.4 — implement one bounded critical auditor browser journey with backend `read:audit` RBAC consistency and read-only audit evidence. Responsive, keyboard, cross-browser and broad WCAG 2.2 AA scope remain separate later objectives.
