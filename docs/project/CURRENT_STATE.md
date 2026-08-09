@@ -1,16 +1,16 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-09 — RUN-20260809-142 (`CI_VALIDATION_PENDING`; RC10.9 accepted, controlled synthetic runbook exercise implemented but not yet accepted)
+Last reconciled: 2026-08-09 — RUN-20260809-143 (`CI_VALIDATION_PENDING`; RC10.10 first-head evidence-validator failure remediated, fresh exact-head CI required)
 
 ## Executive status
 
-- Phase 1 — CI/workflow integrity: `PASS`.
+- Phase 1 — CI/workflow integrity: `PASS` for accepted mainline evidence, with an active exact-head acceptance condition on PR #97 until the remediated full matrix passes.
 - Phase 2 — application security and identity: `PASS` for internal roadmap gates.
 - Phase 3 — data integrity and recovery: `PASS` for internal roadmap gates.
 - Phase 4 — connector reliability and provenance: `PASS` for internal roadmap gates.
 - Phase 5 — performance and scalability: `PASS` for internal roadmap gates.
 - Phase 6 — frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior.
-- Phase 7 — observability and incident operations: `IN PROGRESS`; RC10.1–RC10.9 are accepted; RC10.10 controlled synthetic runbook exercise is `CI_VALIDATION_PENDING`.
+- Phase 7 — observability and incident operations: `IN PROGRESS`; RC10.1–RC10.9 are accepted; RC10.10 remains `CI_VALIDATION_PENDING` after RUN-143 evidence-validator remediation.
 - Phase 8 — staging acceptance: `NOT STARTED`.
 - Phase 9 — external assurance: `NOT COMPLETE`.
 - Phase 10 — production go/no-go: `NOT STARTED`.
@@ -25,9 +25,11 @@ RC10.9 / PR #96 exact head `625757de118878d7c7b7b60847959c17d3c7c844` completed 
 
 RUN-142 exercises four bounded scenarios: API elevated 5xx, connector/source degradation, search red/unreachable and storage-integrity failure. Each scenario requires classification, evidence preservation, reversible containment, known-good recovery, objective validation, approved communication and residual-risk handoff.
 
-The exercise uses no production data or credentials and cannot modify RBAC or publication/share approval. It is explicitly **not** equivalent to a human tabletop, on-call handover or operational ownership acceptance.
+PR #97 exact head `1862b1c4e9e768da82baef3470464845cadf3967` completed **43/44 workflows successfully**. The scenario tests themselves passed **5/5**, but `RC10 Operational Runbook Exercise Gate` failed in evidence validation because a blanket `all()` assertion incorrectly rejected the required safety values `production_data_used=false` and `production_credentials_used=false`.
 
-Fresh CISA CTEP/cybersecurity-scenario guidance supports scenario-driven exercises with evaluator and after-action capture. Confidence is high for these first-party exercise principles.
+RUN-143 fixes the validator rather than changing the evidence: required-positive controls are explicitly asserted `True`, while production-data and production-credential use are explicitly asserted `False`. The failed head remains unaccepted and prior-head artifact `9042942892` cannot be reused.
+
+The exercise uses no production data or credentials and cannot modify RBAC or publication/share approval. It remains explicitly **not** equivalent to a human tabletop, on-call handover or operational ownership acceptance.
 
 ## External/open gates
 
@@ -44,4 +46,4 @@ Human on-call handover, operational ownership/escalation acceptance, approved pr
 
 ## Exactly one current priority
 
-Verify the complete exact-head workflow matrix and retained `operational-runbook-exercise-evidence` artifact for RUN-142; merge only after every registered workflow succeeds and retained evidence is exact-head bound and internally consistent.
+Verify all 44 workflows on the new exact PR #97 head and independently inspect regenerated `operational-runbook-exercise-evidence`; merge only if every registered workflow succeeds and retained evidence is exact-head bound and internally consistent.
