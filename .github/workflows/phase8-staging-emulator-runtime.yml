@@ -1,0 +1,123 @@
+name: Phase 8 Staging Emulator Runtime Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staging-emulator-runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install test tooling
+        run: python -m pip install -e '.[test]'
+      - name: Static runtime-contract regression tests
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_phase8_staging_emulator_runtime.py \
+            --junitxml=artifacts/phase8-staging-emulator-runtime-contract.xml \
+            | tee artifacts/phase8-staging-emulator-runtime-contract.log
+      - name: Build exact-head DTMO runtime image
+        run: docker build --progress=plain -t dtmo:staging-runtime-${{ github.sha }} .
+      - name: Start production-mode runtime emulator
+        run: |
+          docker run -d --name dtmo-staging-runtime \
+            --read-only \
+            --tmpfs /tmp \
+            --security-opt no-new-privileges:true \
+            --cap-drop ALL \
+            -p 127.0.0.1:18000:8000 \
+            -e DTMO_ENVIRONMENT=production \
+            -e DTMO_DATABASE_URL=postgresql+psycopg://dtmo:runtime-postgres-marker@postgres.invalid:5432/dtmo \
+            -e DTMO_REDIS_URL=redis://:runtime-redis-marker@redis.invalid:6379/0 \
+            -e DTMO_OPENSEARCH_URL=https://opensearch.invalid:9200 \
+            -e DTMO_MINIO_ENDPOINT=objectstore.invalid:9000 \
+            -e DTMO_MINIO_ACCESS_KEY=runtime-objectstore-user \
+            -e DTMO_MINIO_SECRET_KEY=runtime-objectstore-marker \
+            -e DTMO_MINIO_SECURE=true \
+            -e DTMO_API_KEY=runtime-api-key-marker \
+            -e DTMO_JWT_JWKS_JSON='{"keys":[{"kty":"RSA","kid":"runtime"}]}' \
+            -e DTMO_JWT_ISSUER=https://identity.staging-runtime.invalid \
+            -e DTMO_JWT_AUDIENCE=dtmo-api \
+            -e DTMO_PRIVACY_PSEUDONYMIZATION_SECRET=runtime-privacy-marker-0123456789abcdef \
+            -e DTMO_PUBLISH_REQUIRES_HUMAN_APPROVAL=true \
+            -e DTMO_FEATURE_LIVE_CONNECTORS=false \
+            -e DTMO_FEATURE_AI_ANALYST=false \
+            dtmo:staging-runtime-${{ github.sha }}
+      - name: Execute bounded runtime smoke
+        run: python tools/phase8_staging_emulator_runtime_smoke.py --output-dir artifacts
+      - name: Capture privacy-safe runtime logs
+        if: always()
+        run: docker logs dtmo-staging-runtime > artifacts/phase8-staging-emulator-runtime-container.log 2>&1 || true
+      - name: Fail on synthetic secret leakage
+        if: always()
+        run: |
+          ! grep -E 'runtime-(postgres|redis|objectstore|api-key|privacy)-marker' artifacts/phase8-staging-emulator-runtime-container.log
+      - name: Record exact-head runtime evidence
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          IMAGE_ID=$(docker image inspect --format '{{.Id}}' dtmo:staging-runtime-${{ github.sha }})
+          export IMAGE_ID
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          runtime = json.loads(Path("artifacts/phase8-staging-emulator-runtime.json").read_text())
+          evidence = {
+            "decision": runtime["decision"],
+            "exact_head": os.environ["EXACT_HEAD"],
+            "local_image_id": os.environ["IMAGE_ID"],
+            "objective": runtime["objective"],
+            "checks": runtime["checks"],
+            "claim_boundary": runtime["claim_boundary"] | {
+              "external_tls_gateway_executed": False,
+              "postgres_runtime_executed": False,
+              "redis_runtime_executed": False,
+              "opensearch_runtime_executed": False,
+              "object_storage_runtime_executed": False,
+            },
+          }
+          Path("artifacts/phase8-staging-emulator-runtime-evidence.json").write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n")
+          PY
+      - name: Validate runtime evidence contract
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          e = json.loads(Path("artifacts/phase8-staging-emulator-runtime-evidence.json").read_text())
+          assert e["decision"] == "pass"
+          assert e["exact_head"] == os.environ["EXPECTED_HEAD"]
+          assert e["local_image_id"].startswith("sha256:")
+          assert all(e["checks"].values())
+          assert not any(e["claim_boundary"].values())
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: phase8-staging-emulator-runtime-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Stop runtime emulator
+        if: always()
+        run: docker rm -f dtmo-staging-runtime || true
+
+  staging-emulator-runtime-gate:
+    if: always()
+    needs: [staging-emulator-runtime]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed runtime evidence
+        env:
+          RESULT: ${{ needs.staging-emulator-runtime.result }}
+        run: test "$RESULT" = "success"
