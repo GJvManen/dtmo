@@ -52,3 +52,17 @@ groups:
           threshold_policy: "Raise after 3 consecutive HTTP 5xx outcomes; clear after 2 consecutive non-5xx outcomes."
           action: "Inspect the correlated request trace, recent deploys and downstream dependency health; do not retry destructive operations until the failure mode is understood."
           clear_condition: "The alert clears only after two consecutive non-5xx outcomes for the same bounded route template."
+
+  - name: dtmo.search.alerts
+    rules:
+      - alert: DTMOSearchHealthFailure
+        expr: dtmo_search_health_alert_active == 1
+        for: 0m
+        labels:
+          severity: critical
+          service: dtmo
+        annotations:
+          summary: "DTMO search cluster {{ $labels.cluster }} is red or unreachable"
+          threshold_policy: "Raise after 2 consecutive red/unreachable health checks; clear after 2 consecutive green/yellow checks."
+          action: "Inspect OpenSearch cluster health, node availability, shard allocation and recent changes; avoid treating incomplete search results as authoritative until health recovers."
+          clear_condition: "The alert clears only after two consecutive green/yellow cluster-health observations."
