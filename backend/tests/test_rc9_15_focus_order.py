@@ -91,10 +91,18 @@ async def test_wcag_2_4_3_complete_focus_order() -> None:
 
             await page.keyboard.press("Shift+Tab")
             reverse_target = await page.evaluate(IDENTITY_JS, await page.evaluate_handle("() => document.activeElement"))
-            reverse_expected = expected_keys[-2] if len(expected_keys) > 1 else expected_keys[-1]
-            assert _key(reverse_target) == reverse_expected, {
-                "surface": surface["name"], "reason": "reverse focus order mismatch", "target": reverse_target
-            }
+            if len(expected_keys) > 1:
+                assert _key(reverse_target) == expected_keys[-2], {
+                    "surface": surface["name"], "reason": "reverse focus order mismatch", "target": reverse_target
+                }
+                reverse_result = "previous_tabbable"
+            else:
+                assert reverse_target["tag"] in {"body", "html"}, {
+                    "surface": surface["name"],
+                    "reason": "single-control reverse navigation did not exit to document boundary",
+                    "target": reverse_target,
+                }
+                reverse_result = "document_boundary"
 
             evidence.append({
                 "surface": surface["name"],
@@ -103,6 +111,7 @@ async def test_wcag_2_4_3_complete_focus_order() -> None:
                 "all_tabbables_reached_once": True,
                 "positive_tabindex_present": False,
                 "reverse_navigation_checked": True,
+                "reverse_navigation_result": reverse_result,
                 "session_subject": surface["subject"],
                 "session_role": surface["roles"],
             })
