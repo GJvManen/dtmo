@@ -10,9 +10,9 @@ Require independently observable, production-equivalent staging deployment evide
 
 ## Latest reconciliation
 
-RUN-150 / PR #103 exact head `be9deb34255f6114430d76868c9bf82f0e039f15` completed 46/46 registered workflows successfully and merged as `1e957f7fa1e9910e5d258cd6d7ed5ce69e9203d1`. A fresh repository and issue #1 review still found no real staging environment or deployment-parity evidence.
+PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47/47 registered workflows successfully; retained emulator artifact `9045039742` was exact-head bound with machine-readable PASS and JUnit 4/4; PR #104 merged as `3c7a4b7f56e8d8a757541963bbd261fe42a7269c`. The repository-controlled emulator configuration/topology baseline is therefore accepted.
 
-RUN-151 adds a source-controlled production-equivalent staging emulator contract. RUN-152 repaired a governance-document wording defect after RC4 failed on the first emulator head. Even if the emulator CI gate ultimately passes, emulator configuration evidence does not satisfy this gate because it does not prove a real deployed environment or runtime behavior.
+RUN-153 adds a bounded runtime smoke for the actual DTMO application container. Even if RUN-153 passes, application-container runtime evidence does not satisfy this gate because it does not prove the complete dependency topology or a real deployed staging environment.
 
 ## Required external evidence
 
@@ -29,9 +29,9 @@ RUN-151 adds a source-controlled production-equivalent staging emulator contract
 
 ## Acceptance rule
 
-All ten evidence classes must be retained, reviewable and tied to the same staging deployment identity. Missing, stale, inaccessible, contradictory or inferred evidence blocks staging acceptance. Repository CI or emulator configuration evidence cannot substitute for a real deployed environment.
+All ten evidence classes must be retained, reviewable and tied to the same staging deployment identity. Missing, stale, inaccessible, contradictory or inferred evidence blocks staging acceptance. Repository CI, emulator configuration evidence or bounded runtime-smoke evidence cannot substitute for a real deployed environment.
 
-No smoke, integration, migration, connector, recovery, performance, accessibility or observability staging result is valid for Phase 8 until this gate is satisfied.
+No smoke, integration, migration, connector, recovery, performance, accessibility or observability result is credited as real staging acceptance until this gate is satisfied.
 
 ## Governance and privacy
 
@@ -43,4 +43,4 @@ No smoke, integration, migration, connector, recovery, performance, accessibilit
 
 ## Exactly one next priority
 
-Verify RUN-151/RUN-152 on the changed PR #104 exact head. Merge only after complete CI and retained emulator evidence; then provide or provision the approved real staging environment and retain all ten deployment-parity evidence classes.
+Verify RUN-153 exact-head CI and retained runtime evidence. After acceptance, complete dependency-topology emulation or provide/provision the approved real staging environment; all ten evidence classes remain mandatory for real Phase 8 staging acceptance.
