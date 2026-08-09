@@ -74,7 +74,7 @@ Workflow presence is not PASS: exact-head uitvoering en retained evidence blijve
 
 ## Open-source licentie en projectgovernance
 
-DTMO is Apache-2.0 gelicenseerd. Zie `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` en `docs/legal/THIRD_PARTY.md`.
+DTMO is gelicenseerd onder de **Apache License, Version 2.0** (`Apache-2.0`). Zie `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` en `docs/legal/THIRD_PARTY.md`.
 
 ## Snel starten
 
