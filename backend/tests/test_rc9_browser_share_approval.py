@@ -43,6 +43,7 @@ async def _seed_candidate() -> str:
         session.add(item)
         await session.flush()
         item_id = str(item.id)
+        await session.commit()
         break
     await database.close()
     return item_id
