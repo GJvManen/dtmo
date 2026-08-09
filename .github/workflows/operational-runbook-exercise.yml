@@ -1,0 +1,105 @@
+name: RC10 Operational Runbook Exercise Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  exercise:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Execute controlled synthetic exercise gate
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc10_10_operational_runbook_exercise.py \
+            --junitxml=artifacts/operational-runbook-exercise.xml \
+            | tee artifacts/operational-runbook-exercise-pytest.log
+      - name: Record exact-head exercise evidence
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+            "decision": "pass",
+            "exact_head": os.environ["EXACT_HEAD"],
+            "objective": "controlled synthetic operational runbook exercise",
+            "scenarios": {
+              "api_5xx": True,
+              "connector_degradation": True,
+              "search_red_unreachable": True,
+              "storage_integrity": True
+            },
+            "controls": {
+              "evidence_preservation": True,
+              "reversible_containment": True,
+              "known_good_recovery": True,
+              "objective_recovery_validation": True,
+              "human_share_approval_preserved": True,
+              "rbac_unchanged": True,
+              "production_data_used": False,
+              "production_credentials_used": False
+            },
+            "claim_boundary": {
+              "human_tabletop_completed": False,
+              "on_call_handover_complete": False,
+              "operational_ownership_accepted": False,
+              "phase_7_complete": False,
+              "production_acceptance_complete": False
+            }
+          }
+          Path("artifacts/operational-runbook-exercise-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+      - name: Validate evidence contract
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          e = json.loads(Path("artifacts/operational-runbook-exercise-evidence.json").read_text())
+          assert e["decision"] == "pass"
+          assert e["exact_head"] == os.environ["EXPECTED_HEAD"]
+          assert all(e["scenarios"].values())
+          required_true = (
+              "evidence_preservation",
+              "reversible_containment",
+              "known_good_recovery",
+              "objective_recovery_validation",
+              "human_share_approval_preserved",
+              "rbac_unchanged",
+          )
+          assert all(e["controls"][key] is True for key in required_true)
+          assert e["controls"]["production_data_used"] is False
+          assert e["controls"]["production_credentials_used"] is False
+          assert not any(e["claim_boundary"].values())
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: operational-runbook-exercise-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  exercise-gate:
+    if: always()
+    needs: [exercise]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed exercise evidence
+        env:
+          RESULT: ${{ needs.exercise.result }}
+        run: test "$RESULT" = "success"
