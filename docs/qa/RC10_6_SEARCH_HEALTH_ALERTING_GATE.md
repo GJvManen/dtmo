@@ -2,31 +2,31 @@
 
 ## Decision
 
-`CI_VALIDATION_PENDING`
+`PASS`
 
 ## Objective
 
 Validate bounded OpenSearch search-health alerting using coarse cluster-health state only, with controlled failure/recovery behavior and no search data or publication authority entering the alert surface.
 
-## Required evidence
+## Accepted evidence
 
-Acceptance requires all of the following on one exact PR head:
+PR #93 exact head `14990a8b5d40f975951cdcbba9296a2116fb254c` completed **40/40 registered workflows successfully**. Dedicated `RC10 Search Health Alerting Gate` run `31328060183` retained artifact `9042097760`, digest `sha256:9e317e6b7ad4ce75b50090fafbcb3297b19bcc5cea458761a6ad908ae827e847`, exact-head bound. Independent inspection recorded machine-readable PASS evidence and JUnit **6/6**, zero failures/errors/skips. PR #93 merged as `bb1bb3f2feaf79f4a5a73ffedb78f64294097602`.
 
-- only bounded cluster identifier plus `green|yellow|red|unreachable` health state enters the observer;
-- two consecutive `red`/`unreachable` observations raise the alert;
-- two consecutive `green`/`yellow` observations clear an active alert;
-- repeated unhealthy observations do not repeat the raise transition;
-- Prometheus metrics and `DTMOSearchHealthFailure` rule are present;
-- structured evidence includes safe correlation and actionable guidance;
-- query text, document/index identifiers, response bodies, credentials and identities do not enter alert labels/logs;
-- `publish_approved=false` and human share approval remain unchanged;
-- dedicated `RC10 Search Health Alerting Gate` succeeds and retains JUnit/log/JSON evidence;
-- complete registered exact-head workflow matrix succeeds.
+Accepted controls:
+
+- only bounded cluster identifier plus `green|yellow|red|unreachable` enters the observer;
+- two consecutive unhealthy observations raise;
+- two consecutive healthy observations clear;
+- repeated unhealthy observations do not repeat raise transitions;
+- Prometheus metrics and `DTMOSearchHealthFailure` are present;
+- correlation/action evidence is structured and privacy bounded;
+- query text, index/document identifiers, response bodies, credentials and identities do not enter the alert contract;
+- `publish_approved=false` and human share approval remain unchanged.
 
 ## Claim boundary
 
-This gate does not claim external notification delivery, production OpenSearch hardening, distributed tracing, dashboards, runbooks, on-call handover, Phase 7 completion, Phase 6 assistive-technology completion or any issue #1 external production gate.
+This PASS does not claim external notification delivery, production OpenSearch hardening, distributed tracing, dashboards, runbooks, on-call handover, Phase 7 completion, Phase 6 assistive-technology completion or any issue #1 external production gate.
 
 ## Exactly one next priority
 
-Accept only after complete exact-head workflow success and independent retained-artifact inspection. After acceptance, proceed to bounded distributed tracing.
+RC10.7 bounded distributed trace-context baseline.

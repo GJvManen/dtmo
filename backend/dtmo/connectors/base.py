@@ -11,6 +11,7 @@ import httpx
 
 from dtmo.config import Settings
 from dtmo.logging import get_logger
+from dtmo.trace_context import outbound_traceparent
 
 
 @dataclass(slots=True)
@@ -66,7 +67,10 @@ class Connector(ABC):
                 async with httpx.AsyncClient(
                     timeout=self.settings.connector_timeout_seconds,
                     follow_redirects=True,
-                    headers={"User-Agent": "DTMO-RC4/1.0"},
+                    headers={
+                        "User-Agent": "DTMO-RC4/1.0",
+                        "traceparent": outbound_traceparent(),
+                    },
                 ) as client:
                     payload = await self.fetch(client)
                 records = self.parse(payload)

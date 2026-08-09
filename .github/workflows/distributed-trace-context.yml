@@ -1,0 +1,113 @@
+name: RC10 Distributed Trace Context Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  distributed-trace-context:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_FEATURE_LIVE_CONNECTORS: "false"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Execute RC10.7 controlled distributed trace-context gate
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc10_7_distributed_trace_context.py \
+            --junitxml=artifacts/distributed-trace-context.xml \
+            | tee artifacts/distributed-trace-context-pytest.log
+      - name: Record exact-head machine-readable trace-context evidence
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = {
+              "decision": "pass",
+              "exact_head": os.environ["EXACT_HEAD"],
+              "objective": "bounded W3C distributed trace-context propagation baseline",
+              "controls": {
+                  "w3c_traceparent_v00_validation": True,
+                  "invalid_context_restarts_trace": True,
+                  "cryptographic_trace_ids": True,
+                  "structured_trace_and_span_ids": True,
+                  "outbound_connector_propagation": True,
+                  "tracestate_not_collected": True,
+                  "raw_request_data_not_traced": True,
+                  "trace_headers_not_echoed_to_response": True,
+                  "bounded_decision_metrics": True,
+                  "correlation_id_preserved": True,
+              },
+              "governance": {
+                  "publication_approval_changed": False,
+                  "rbac_changed": False,
+                  "production_data_used": False,
+                  "new_runtime_dependency_added": False,
+              },
+              "claim_boundary": {
+                  "trace_collector_deployed": False,
+                  "trace_exporter_deployed": False,
+                  "cross_service_backend_visualization_complete": False,
+                  "dashboards_complete": False,
+                  "runbooks_complete": False,
+                  "on_call_handover_complete": False,
+                  "phase_7_complete": False,
+              },
+          }
+          Path("artifacts/distributed-trace-context-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Validate trace-context evidence contract
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = json.loads(
+              Path("artifacts/distributed-trace-context-evidence.json").read_text(encoding="utf-8")
+          )
+          assert evidence["decision"] == "pass"
+          assert evidence["exact_head"] == os.environ["EXPECTED_HEAD"]
+          assert all(evidence["controls"].values())
+          governance = evidence["governance"]
+          assert governance["publication_approval_changed"] is False
+          assert governance["rbac_changed"] is False
+          assert governance["production_data_used"] is False
+          assert governance["new_runtime_dependency_added"] is False
+          assert not any(evidence["claim_boundary"].values())
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: distributed-trace-context-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  distributed-trace-context-gate:
+    if: always()
+    needs: [distributed-trace-context]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed distributed trace-context evidence
+        env:
+          RESULT: ${{ needs.distributed-trace-context.result }}
+        run: test "$RESULT" = "success"

@@ -37,8 +37,19 @@ def resolve_correlation_id(value: str | None) -> str:
     return str(uuid4())
 
 
-def bind_request_context(request_id: str, method: str) -> None:
-    structlog.contextvars.bind_contextvars(correlation_id=request_id, method=method)
+def bind_request_context(
+    request_id: str,
+    method: str,
+    *,
+    trace_id: str | None = None,
+    span_id: str | None = None,
+) -> None:
+    fields: dict[str, str] = {"correlation_id": request_id, "method": method}
+    if trace_id is not None:
+        fields["trace_id"] = trace_id
+    if span_id is not None:
+        fields["span_id"] = span_id
+    structlog.contextvars.bind_contextvars(**fields)
 
 
 def clear_request_context() -> None:
