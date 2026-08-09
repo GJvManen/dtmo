@@ -100,8 +100,8 @@ Internal PASS does not close those external gates.
 
 ## Current reconciliation gate
 
-RUN-20260809-126 is `CI_VALIDATION_PENDING` until its final documentation-only exact head passes every registered workflow. It reconciles README, current-state, roadmap, run log, QA records and missing historical acceptance records without changing the underlying product acceptance claims.
+RUN-20260809-126 is `PASS` for the final merged state. Its reconciliation validation head `187d645a7f3c3200e545be23312c4165b7b2f7dc` completed all 35 registered workflows successfully before final status/current-priority reconciliation. The final documentation head must also complete every workflow successfully before protected merge.
 
 ## Exactly one next priority
 
-Complete RUN-20260809-126 exact-head CI and protected merge. After that, Phase 7 / RC10.3 is the next bounded implementation objective: queue-backlog alerting with threshold semantics, actionable correlated evidence and controlled breach/recovery behavior.
+Phase 7 / RC10.3 — implement bounded queue-backlog alerting with explicit threshold semantics, actionable correlated evidence and controlled breach/recovery behavior. Storage-integrity, API-error and search-health alerting remain later objectives.
