@@ -1,0 +1,178 @@
+name: dtmo-staging-emulator
+
+x-dtmo-env: &dtmo-env
+  DTMO_ENVIRONMENT: production
+  DTMO_LOG_LEVEL: INFO
+  DTMO_DATABASE_URL: postgresql+psycopg://dtmo:${POSTGRES_PASSWORD:?Set staging-emulator PostgreSQL password}@postgres:5432/dtmo
+  DTMO_REDIS_URL: redis://:${REDIS_PASSWORD:?Set staging-emulator Redis password}@redis:6379/0
+  DTMO_OPENSEARCH_URL: https://opensearch:9200
+  DTMO_MINIO_ENDPOINT: objectstore:9000
+  DTMO_MINIO_ACCESS_KEY: ${AISTOR_APP_ACCESS_KEY:?Set least-privilege staging-emulator object-store access key}
+  DTMO_MINIO_SECRET_KEY: ${AISTOR_APP_SECRET_KEY:?Set least-privilege staging-emulator object-store secret outside source control}
+  DTMO_MINIO_SECURE: "true"
+  DTMO_API_KEY: ${DTMO_API_KEY:?Set staging-emulator API key outside source control}
+  DTMO_AUTH_HEADER_NAME: x-dtmo-api-key
+  DTMO_JWT_JWKS_JSON: ${DTMO_JWT_JWKS_JSON:?Set non-production staging-emulator JWKS JSON}
+  DTMO_JWT_ISSUER: ${DTMO_JWT_ISSUER:?Set HTTPS staging-emulator issuer}
+  DTMO_JWT_AUDIENCE: dtmo-api
+  DTMO_PRIVACY_PSEUDONYMIZATION_SECRET: ${DTMO_PRIVACY_PSEUDONYMIZATION_SECRET:?Set >=32-character non-production privacy secret}
+  DTMO_PUBLISH_REQUIRES_HUMAN_APPROVAL: "true"
+  DTMO_FEATURE_LIVE_CONNECTORS: "false"
+  DTMO_FEATURE_AI_ANALYST: "false"
+
+services:
+  migrate:
+    image: ${DTMO_IMAGE:?Set immutable DTMO image tag@sha256:digest}
+    command: ["alembic", "upgrade", "head"]
+    environment: *dtmo-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [backend]
+    restart: "no"
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+
+  api:
+    image: ${DTMO_IMAGE:?Set immutable DTMO image tag@sha256:digest}
+    environment: *dtmo-env
+    expose: ["8000"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+      objectstore:
+        condition: service_started
+    networks: [backend]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: ["no-new-privileges:true"]
+
+  postgres:
+    image: ${POSTGRES_IMAGE:?Set immutable PostgreSQL image tag@sha256:digest}
+    environment:
+      POSTGRES_DB: dtmo
+      POSTGRES_USER: dtmo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set staging-emulator PostgreSQL password}
+    volumes: ["postgres_data:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dtmo -d dtmo"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+
+  redis:
+    image: ${REDIS_IMAGE:?Set immutable Redis image tag@sha256:digest}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set staging-emulator Redis password}
+    command: ["sh", "-c", "exec redis-server --appendonly yes --requirepass \"$$REDIS_PASSWORD\""]
+    volumes: ["redis_data:/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$$REDIS_PASSWORD\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [backend]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+
+  opensearch:
+    image: ${OPENSEARCH_IMAGE:?Set immutable OpenSearch image tag@sha256:digest}
+    environment:
+      discovery.type: single-node
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: ${OPENSEARCH_INITIAL_ADMIN_PASSWORD:?Set non-production OpenSearch admin bootstrap password}
+      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes: ["opensearch_data:/usr/share/opensearch/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -kfsS -u admin:\"$$OPENSEARCH_INITIAL_ADMIN_PASSWORD\" https://localhost:9200/_cluster/health >/dev/null"]
+      interval: 20s
+      timeout: 10s
+      retries: 20
+    networks: [backend]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+
+  objectstore:
+    image: ${AISTOR_IMAGE:?Set vendor-supported AIStor image tag@sha256:digest}
+    command: server /data --console-address ":9001" --license /run/secrets/aistor_license
+    environment:
+      MINIO_ROOT_USER: ${AISTOR_ROOT_USER:?Set non-default emulator admin user outside source control}
+      MINIO_ROOT_PASSWORD: ${AISTOR_ROOT_PASSWORD:?Set emulator admin password outside source control}
+    secrets: [aistor_license]
+    volumes:
+      - objectstore_data:/data
+      - ${AISTOR_CERTS_DIR:?Set host path containing emulator TLS certificates}:/root/.minio/certs:ro
+    networks: [backend]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+
+  prometheus:
+    image: ${PROMETHEUS_IMAGE:?Set immutable Prometheus image tag@sha256:digest}
+    command: ["--config.file=/etc/prometheus/prometheus.yml"]
+    volumes:
+      - ../../infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    expose: ["9090"]
+    depends_on: [api]
+    networks: [backend]
+    restart: unless-stopped
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+
+  grafana:
+    image: ${GRAFANA_IMAGE:?Set supported Grafana image tag@sha256:digest}
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?Set non-default emulator Grafana admin user}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set emulator Grafana admin password outside source control}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_USERS_ALLOW_ORG_CREATE: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ../../infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../../infrastructure/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    expose: ["3000"]
+    depends_on: [prometheus]
+    networks: [backend]
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+
+  gateway:
+    image: ${NGINX_IMAGE:?Set immutable nginx image tag@sha256:digest}
+    ports:
+      - "127.0.0.1:${STAGING_EMULATOR_HTTPS_PORT:-8443}:8443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${STAGING_EMULATOR_TLS_CERT:?Set emulator TLS certificate path}:/run/tls/tls.crt:ro
+      - ${STAGING_EMULATOR_TLS_KEY:?Set emulator TLS private-key path}:/run/tls/tls.key:ro
+    depends_on: [api]
+    networks: [edge, backend]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/var/cache/nginx, /var/run]
+    security_opt: ["no-new-privileges:true"]
+
+secrets:
+  aistor_license:
+    file: ${AISTOR_LICENSE_FILE:?Set emulator AIStor license path outside source control}
+
+networks:
+  edge: {}
+  backend:
+    internal: true
+
+volumes:
+  postgres_data: {}
+  redis_data: {}
+  opensearch_data: {}
+  objectstore_data: {}
+  grafana_data: {}
