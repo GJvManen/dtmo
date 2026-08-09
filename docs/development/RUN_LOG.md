@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260809-092 — RC9.1 governed browser share-approval E2E](runs/RUN-20260809-092.md) — `CI_VALIDATION_PENDING`: added a minimal governed browser decision UI, backend-derived permission visibility, Playwright Chromium E2E for review → blocked self-approval → separate publisher approval, service-account control hiding, persisted separation-of-duties assertions and a dedicated retained-evidence workflow; no browser or CI execution is treated as PASS until exact-head GitHub Actions completes
 - [RUN-20260809-090 — RC8.8 capacity limits and scaling guidance](runs/RUN-20260809-090.md) — `CI_VALIDATION_PENDING`: documented conservative internal capacity ceilings, scaling/headroom rules and revalidation triggers from accepted RC8.1–RC8.7 evidence; explicitly preserves issue #1's external representative load/stress gate and fail-closed governance; exact-head GitHub Actions must succeed before PASS/merge
 - [RUN-20260809-089 — RC8.7 acceptance and merge](runs/RUN-20260809-087.md) — `PASS`: PR #46 final exact head `ba99df99ccfa2afba940a410b301bda0b493d0b2` passed all 19 registered workflows; retained artifact `9032891744` (`sha256:01b07d36a4c9ae86f9e5361c6f2b7735cfaa29693adbf44aa62b12544132b1aa`) independently verified concurrency 20/20, 40 reads, 40 unique ingests, read p95 5.876 ms, 0.0% errors, zero data loss and preserved non-publication; PR #46 merged with expected-head protection as `7ecd1bf88d0577074390a173847186c8a92e48b6`
 - [RUN-20260809-087 — RC8.7 exact-head evidence acceptance](runs/RUN-20260809-087.md) — `CI_VALIDATION_PENDING`: PR #46 implementation head `adf18135e91c0e28c151f8255563aba69b8df008` passed all 19 registered workflows; retained artifact `9032235183` (`sha256:66099a09e34099c3befc63918bdea0a8d0baf2302368138303eb6c96ccc1852d`) independently verified concurrency 20, 40 reads, 40 ingests, 5.734 ms read p95, 0.0% errors, zero data loss, preserved non-publication, and JUnit 6 tests with 0 failures/errors/skips; because this audit record changed the PR head, fresh exact-head CI was required before final acceptance
@@ -29,8 +30,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260809-090` is `CI_VALIDATION_PENDING`. RC8.7 is accepted on `main` as `7ecd1bf88d0577074390a173847186c8a92e48b6`. RC8.8 now documents conservative capacity limits and scaling guidance from accepted internal evidence, but no PASS or Phase-5 completion is authorized until every registered workflow succeeds on the final RC8.8 PR head and the documentation is merged. Issue #1's independent representative load/stress and production OpenSearch hardening gates remain open.
+`RUN-20260809-092` is `CI_VALIDATION_PENDING`. Phase 5 is accepted in issue #3, and RC9.1 starts Phase 6 with one bounded browser journey. The new browser UI and E2E gate are not accepted until every required workflow executes successfully on the exact final PR head and retained browser evidence is independently inspected.
 
 ## Exactly one next priority
 
-Validate every registered workflow on the final RC8.8 PR head; if all are successful, merge with expected-head protection and mark internal Phase 5 `PASS`. If any workflow fails, repair only the first deterministic failure.
+Inspect all exact-head workflows for the RC9.1 PR and retained `browser-share-approval-evidence`; repair only the earliest deterministic failure, or accept/merge only after complete successful evidence.
