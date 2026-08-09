@@ -14,7 +14,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.7 and bounded object-storage remediation are accepted; RC10.8 operational dashboard provisioning is `CI_VALIDATION_PENDING`.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.8 and bounded object-storage remediation are accepted; RC10.9 operational runbooks are `CI_VALIDATION_PENDING` and not yet exercised.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -25,9 +25,10 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - RC10.2 controlled connector-failure alerting: `PASS` — PR #82.
 - RC10.3 bounded queue-backlog alerting: `PASS` — PR #84.
 - RC10.4 bounded storage-integrity alerting: `PASS` — PR #86.
-- RC10.5 bounded API-error alerting: `PASS` — PR #92 exact head `659fa022840e01ed6db4ebeb6a5e703f58a6d259`, 39/39 workflows, artifact `9041987610`, JUnit 6/6.
-- RC10.6 bounded search-health alerting: `PASS` — PR #93 exact head `14990a8b5d40f975951cdcbba9296a2116fb254c`, 40/40 workflows, artifact `9042097760`, JUnit 6/6.
-- RC10.7 bounded distributed trace-context baseline: `PASS` — PR #94 exact head `5a2f60749f6eaf6ece9dcfcc3b70c866887c6cb8`, 41/41 workflows, artifact `9042398103`, digest `sha256:2014a035338de6bc6ac474581279c06c15cafc6a49f3c86cfbeed111e666575a`, JUnit 10/10, merge `e52af08204d212cdfba0e9338bacb7a1c5fcfac7`.
+- RC10.5 bounded API-error alerting: `PASS` — PR #92, 39/39 workflows, artifact `9041987610`.
+- RC10.6 bounded search-health alerting: `PASS` — PR #93, 40/40 workflows, artifact `9042097760`.
+- RC10.7 bounded distributed trace-context baseline: `PASS` — PR #94 exact head `5a2f60749f6eaf6ece9dcfcc3b70c866887c6cb8`, 41/41 workflows, artifact `9042398103`, JUnit 10/10, merge `e52af08204d212cdfba0e9338bacb7a1c5fcfac7`.
+- RC10.8 bounded operational dashboard: `PASS` — PR #95 exact head `602c316e5dca2b17787523c70e8eb8e327e78b0d`, 42/42 workflows, artifact `9042548010`, digest `sha256:11125b626f0f6431bc40a9700333bdba8f5c07175981e427f87f62b279a4fddf`, JUnit 5/5, merge `2726adeed0762b38f3ce03817bcb68aea688e356`.
 
 ## Object-storage remediation — internal gate accepted
 
@@ -40,8 +41,6 @@ Production AIStor selection remains subject to the RUN-134 release/advisory floo
 Objectives: regression-protect release-critical workflows, validate triggers/jobs/permissions/services/artifacts, make execution observable, and fail closed on missing/malformed gates.
 
 Blocking gates: workflow contract tests pass; required jobs/triggers are validated; workflow evidence is observable; failed/absent workflows cannot be interpreted as success.
-
-RUN-138 is accepted: the RC10.7 Ruff/Bandit `S105` fixture-naming failure was remediated without scanner suppression, and the new exact head passed 41/41 workflows.
 
 ## Phase 2 — Application security and identity
 
@@ -87,19 +86,25 @@ Blocking gates:
 - runbooks complete and exercised;
 - operational ownership/escalation documented.
 
-### RC10.8 bounded operational dashboard — `CI_VALIDATION_PENDING`
+### RC10.9 bounded operational incident runbooks — `CI_VALIDATION_PENDING`
 
-RUN-139 provisions an opt-in Grafana observability overlay and a source-controlled, non-editable `DTMO Operations` dashboard over existing bounded Prometheus telemetry. It includes aggregate HTTP rate/p95/in-flight signals, API/connector/storage/search alert states, queue utilization, connector outcomes and bounded trace-context decisions.
+RUN-140 adds:
 
-The overlay fails closed unless an externally supplied supported security-patched `grafana/grafana` tag plus vendor-verified sha256 digest and external administrative credentials are provided. Anonymous access, self-signup and org creation are disabled; the local port binds only to loopback; no-new-privileges is enabled. Raw request/response bodies, raw URLs/query strings, credentials, identities, object keys and checksums are outside the dashboard contract.
+- common incident roles and SEV-1/2/3 severity guidance;
+- evidence/privacy rules and a universal acknowledge/correlate/preserve/contain/recover/validate/communicate/close sequence;
+- API outage/elevated-5xx runbook bound to `dtmo_api_error_alert_active`;
+- connector failure/source-degradation runbook bound to `dtmo_connector_alert_active`, preserving provenance, freshness, quarantine and human approval;
+- search-health degradation runbook bound to `dtmo_search_health_alert_active`, with explicit incomplete-result handling;
+- storage-integrity/recovery runbook bound to `dtmo_storage_integrity_alert_active`, quarantine and known-good restoration;
+- controlled regression tests and a dedicated retained `RC10 Operational Runbooks Gate`.
 
-Fresh first-party Grafana review identified material 2026 advisories including CVE-2026-27876, CVE-2026-28383 and CVE-2026-21721. No fixed source-controlled Grafana tag is claimed safe; deployment-time advisory review and digest verification remain mandatory.
+Fresh authoritative threat/historical review uses CISA education-sector ransomware material, the CISA #StopRansomware Guide and CISA/FBI PaperCut CVE-2023-27350 reporting. Those sources document education-sector disruption, student-data theft/extortion, credential/system compromise, exfiltration and encryption, supporting evidence preservation, account review, containment and known-good recovery. They do not imply any current DTMO compromise or future attribution.
 
-RC10.8 is not accepted until every registered workflow succeeds on its exact final head and retained `operational-dashboard-evidence` is independently verified.
+RC10.9 is not accepted until every registered workflow succeeds on its exact final head and retained `operational-runbooks-evidence` is independently verified. Document validation does not count as exercise evidence.
 
-Phase 7 remains incomplete after RC10.8 because runbooks, runbook exercise evidence, on-call handover, ownership/escalation and any required production observability-platform deployment acceptance remain open.
+Phase 7 remains incomplete after this baseline because the runbooks must still be exercised and operational ownership/escalation/on-call handover must be evidenced. Any required production observability-platform deployment acceptance also remains external/staging work.
 
-Exactly one next priority: verify the complete exact-head workflow matrix and retained `operational-dashboard-evidence` artifact for RUN-139; merge only after all registered workflows succeed and retained evidence is exact-head bound.
+Exactly one next priority: verify the complete exact-head workflow matrix and retained `operational-runbooks-evidence` artifact for RUN-140; merge only after all registered workflows succeed and retained evidence is exact-head bound.
 
 ## Phase 8 — Staging acceptance
 
