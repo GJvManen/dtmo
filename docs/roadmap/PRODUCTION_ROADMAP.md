@@ -14,7 +14,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.10 are accepted. RC10.11 on-call ownership/escalation handover baseline is `CI_VALIDATION_PENDING`.
+- Phase 7 — Observability and incident operations: `BLOCKED_EXTERNAL`; RC10.1–RC10.11 internal engineering gates are accepted, but human operational ownership/handover acceptance is not evidenced.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -30,7 +30,8 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - RC10.7 distributed trace-context baseline: `PASS` — PR #94.
 - RC10.8 operational dashboard: `PASS` — PR #95.
 - RC10.9 operational incident runbooks: `PASS` — PR #96.
-- RC10.10 controlled synthetic operational runbook exercise: `PASS` — PR #97 exact head `a332453e0ed9c2f413107cdadfed316b4ac6c2ce`, 44/44 workflows, artifact `9043082726`, digest `sha256:dd095787ed6624f628d0f030ac9af0ccc56d46e9a59ff840ac64ab261dace154`, JUnit 5/5, merge `788daad06879c1c99f22625569bd1b74abe9249f`.
+- RC10.10 controlled synthetic operational runbook exercise: `PASS` — PR #97.
+- RC10.11 on-call ownership and escalation handover baseline: `PASS` — PR #98 exact head `8574995796dd1d54cc6411227cdae83219f82122`, 45/45 workflows, artifact `9043200727`, digest `sha256:a33797bc61c6d08ba5fedc8010db4ebd0ded741153167fbd0fec163ceab675ac`, JUnit 5/5, merge `1e4e6a0a3fbe43ffcec5d421f0760467e3a53b4f`.
 
 ## Object-storage remediation — internal gate accepted
 
@@ -62,41 +63,27 @@ Current decision: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA evidence on
 
 ## Phase 7 — Observability and incident operations
 
-Objectives:
-- service-level metrics, structured logs and traces;
-- alerting for connector failures, queue backlog, storage integrity, API errors and search health;
-- incident/outage/recovery/connector-failure runbooks;
-- dashboards and on-call handover guidance.
+Internal engineering objectives are complete and accepted through RC10.11: metrics/logs/trace context, alerting, dashboards, runbooks, controlled technical exercise, and a source-controlled ownership/escalation/handover contract.
 
-Blocking gates:
-- alerts tested with controlled failures;
-- logs/metrics provide correlation IDs and actionable evidence;
-- runbooks complete and exercised;
-- operational ownership/escalation documented and human handover accepted.
+Phase 7 is nevertheless `BLOCKED_EXTERNAL` because the following cannot be proven by repository CI:
+- real staffed primary/secondary coverage;
+- tested primary/fallback contact and escalation paths;
+- real-participant handover with incoming acknowledgement;
+- human exercise/walkthrough of the escalation and handover process;
+- explicit ownership of unresolved operational gaps;
+- service-owner and operational-owner sign-off.
 
-### RC10.11 on-call ownership and escalation handover baseline — `CI_VALIDATION_PENDING`
+These requirements must be retained as external human evidence. Named contact data and credentials remain outside the repository. CI success must not be interpreted as staffing/reachability/acceptance.
 
-RUN-144 defines the source-controlled handover contract:
-
-- primary/secondary responder, Incident Commander, security lead, service owner, communications approver and business/stakeholder owner responsibilities;
-- severity escalation matrix and coverage requirements;
-- shift-handover checklist with explicit incoming acknowledgement;
-- privacy-safe incident/handover evidence rules;
-- RBAC and human share approval remain unchanged;
-- named people/contact details remain outside the repository;
-- human acceptance requires staffed coverage, tested paging/contact and escalation paths, real-participant handover, a human exercise/walkthrough, unresolved-gap ownership and service/operational-owner sign-off.
-
-CI validates only the documentation/governance contract. It does not prove staffing, reachability, training, tested contacts or human acceptance.
-
-Phase 7 remains incomplete until RC10.11 exact-head evidence is accepted and the external/human operational ownership/handover evidence is supplied. If that human evidence cannot be produced in the repository workflow, Phase 7 becomes `BLOCKED_EXTERNAL` at that point rather than being falsely marked complete.
-
-Exactly one next priority: verify the complete exact-head workflow matrix and retained `oncall-handover-evidence` for RUN-144; merge only after all registered workflows succeed and retained evidence is exact-head bound.
+Exactly one next priority: obtain and retain external human operational-acceptance evidence for Phase 7. If unavailable, Phase 7 remains `BLOCKED_EXTERNAL` and production readiness remains blocked.
 
 ## Phase 8 — Staging acceptance
 
 Objectives: production-equivalent deployment, smoke/integration/migration/connector/recovery/performance/accessibility tests, secrets/TLS/network restrictions.
 
 Blocking gates: reproducible staging; all internal gates pass; no unresolved blockers; deployment evidence retained.
+
+Phase 8 is `NOT STARTED`. RUN-145 deliberately does not begin Phase 8 because its single bounded objective is Phase 7 acceptance/blocker reconciliation.
 
 ## Phase 9 — External assurance
 
