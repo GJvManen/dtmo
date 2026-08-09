@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-09 — RUN-20260809-145 (`BLOCKED_EXTERNAL`; RC10.11 accepted, Phase 7 awaits human operational acceptance)
+Last reconciled: 2026-08-09 — RUN-20260809-146 (`CI_VALIDATION_PENDING`; all six Phase 7 human operational-acceptance evidence classes accepted by operator/project authority)
 
 ## Executive status
 
@@ -10,36 +10,36 @@ Last reconciled: 2026-08-09 — RUN-20260809-145 (`BLOCKED_EXTERNAL`; RC10.11 ac
 - Phase 4 — connector reliability and provenance: `PASS` for internal roadmap gates.
 - Phase 5 — performance and scalability: `PASS` for internal roadmap gates.
 - Phase 6 — frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior.
-- Phase 7 — observability and incident operations: `BLOCKED_EXTERNAL`; RC10.1–RC10.11 internal engineering gates are accepted, but real staffed coverage, tested contact paths, real-participant handover and owner sign-off remain external human evidence.
+- Phase 7 — observability and incident operations: `PASS_PENDING_CI_RECONCILIATION`; RC10.1–RC10.11 are accepted and the operator/project authority confirmed all six external human operational-acceptance evidence classes are accepted.
 - Phase 8 — staging acceptance: `NOT STARTED`.
 - Phase 9 — external assurance: `NOT COMPLETE`.
 - Phase 10 — production go/no-go: `NOT STARTED`.
 
-DTMO is **not production ready**. Issue #1 remains authoritative for external production-acceptance gates.
+DTMO is **not production ready**. Issue #1 remains authoritative for remaining external production-acceptance gates.
 
 ## Latest accepted evidence
 
 RC10.11 / PR #98 exact head `8574995796dd1d54cc6411227cdae83219f82122` completed **45/45 registered workflows successfully**. Artifact `9043200727`, digest `sha256:a33797bc61c6d08ba5fedc8010db4ebd0ded741153167fbd0fec163ceab675ac`, is exact-head bound. Independent inspection showed machine-readable `pass` and JUnit **5/5** with zero failures/errors/skips. PR #98 merged as `1e4e6a0a3fbe43ffcec5d421f0760467e3a53b4f`.
 
-The retained claim boundary remains false for named staffing acceptance, tested contact paths, completed human handover, operational ownership acceptance, Phase 7 completion and production acceptance.
+PR #99 / RUN-145 subsequently reconciled RC10.11 and the external Phase 7 blocker and merged as `d30d52c979f6f9daf61f62b435bdc1fdb48f4623` after **45/45 exact-head workflows succeeded**.
 
-## Phase 7 external blocker
+## Phase 7 human operational acceptance
 
-The repository can prove the operational ownership/escalation/handover contract exists and preserves privacy, RBAC, separation of duties and human share approval. It cannot prove that real people are staffed, reachable, trained, have completed a real handover/walkthrough, own unresolved gaps, or have signed off operational ownership.
-
-Required external evidence before Phase 7 can become `PASS`:
-- named staffed primary/secondary coverage through the approved operational roster;
-- tested primary and fallback paging/contact/escalation paths;
-- real participant shift handover with incoming acknowledgement;
-- human exercise/walkthrough of the handover and escalation process;
-- explicit ownership for unresolved operational gaps;
+On 2026-08-09 the operator/project authority explicitly confirmed that all six required operational-acceptance evidence classes were accepted externally:
+- staffed primary/secondary coverage;
+- tested primary/fallback contact and escalation paths;
+- real-participant handover with incoming acknowledgement;
+- human walkthrough/exercise;
+- accountable ownership and resolution path for unresolved gaps;
 - service-owner and operational-owner acceptance/sign-off.
 
-Named contact details and credentials remain outside source control.
+The repository records the scope, decision and provenance of that acceptance. Underlying roster/contact/handover/exercise/sign-off records remain in approved operational systems and are intentionally not copied into source control.
+
+Phase 7 becomes final `PASS` only after the RUN-146 reconciliation PR itself succeeds on the complete exact-head workflow matrix.
 
 ## External/open gates
 
-Phase 7 human operational acceptance, genuine VoiceOver/NVDA evidence, paid AIStor support, production topology, deployment-time image digest verification, secrets management, TLS/SSE/KMS, production Grafana/OpenSearch hardening, staging/production acceptance, penetration testing, representative load/stress, full backup/restoration and stakeholder approvals remain open in issue #1 or the applicable external process.
+Genuine VoiceOver/NVDA evidence, paid AIStor support, production topology, deployment-time image digest verification, secrets management, TLS/SSE/KMS, production Grafana/OpenSearch hardening, staging/production acceptance, penetration testing, representative load/stress, full backup/restoration and remaining stakeholder approvals remain open in issue #1 or the applicable external process.
 
 ## Security and governance invariants
 
@@ -52,4 +52,4 @@ Phase 7 human operational acceptance, genuine VoiceOver/NVDA evidence, paid AISt
 
 ## Exactly one current priority
 
-Obtain and retain the external human operational-acceptance evidence required to clear Phase 7. Until then Phase 7 remains `BLOCKED_EXTERNAL`.
+Verify the complete exact-head CI matrix for RUN-146. If it succeeds, Phase 7 is `PASS` and the next bounded objective is the Phase 8 staging-readiness baseline.
