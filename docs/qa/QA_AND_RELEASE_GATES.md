@@ -37,24 +37,11 @@ Every DTMO development step defines and evaluates explicit quality gates. A conf
 
 ## Accepted Phase 5 gates
 
-RC8.1–RC8.8 are accepted for their bounded internal scopes. The accepted evidence includes workload definition, API/search reads, ingestion, queue burst/backpressure, degraded-dependency correctness, concurrency saturation and conservative capacity/scaling guidance.
-
-RC8.8 does **not** certify production capacity. Issue #1's independent representative production load/stress gate remains open and separate.
+RC8.1–RC8.8 are accepted for their bounded internal scopes. RC8.8 does **not** certify production capacity. Issue #1's independent representative production load/stress gate remains open and separate.
 
 ## Phase 6 gate status
 
-RC9.1–RC9.15 contain accepted bounded browser/accessibility evidence, including:
-
-- separate human share approval and backend RBAC consistency;
-- analyst loading/empty/success/error behavior;
-- CISO token revocation and auditor read-only evidence;
-- keyboard navigation and responsive behavior;
-- supported-browser coverage;
-- automated WCAG critical-journey checks;
-- contrast, 200% text resize, 320 CSS px reflow and text spacing;
-- complete focus-order evidence.
-
-RC9.16 records the remaining real assistive-technology requirement. Phase 6 remains `BLOCKED_EXTERNAL` until genuine VoiceOver/NVDA behavior is retained from supported real host/browser/screen-reader combinations. Browser/DOM automation is not accepted as a substitute.
+RC9.1–RC9.15 contain accepted bounded browser/accessibility evidence. RC9.16 records the remaining real assistive-technology requirement. Phase 6 remains `BLOCKED_EXTERNAL` until genuine VoiceOver/NVDA behavior is retained from supported real host/browser/screen-reader combinations. Browser/DOM automation is not accepted as a substitute.
 
 ## Accepted Phase 7 gates
 
@@ -66,7 +53,11 @@ PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc` completed all 34 re
 
 PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243` completed all 35 registered workflows successfully. Retained artifact `9040485255`, digest `sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`, independently evidenced terminal failure signaling, Prometheus alert metric/rule, safe correlation evidence, actionable operator guidance, raw-error exclusion, repeat-raise suppression and successful recovery/clear behavior. JUnit: 4/4. Merge: `f6680423860389288d9feced34592294d774bf4a`.
 
-RC10.2 does not claim pager/e-mail/chat delivery, queue/storage/API/search alerting, dashboards, runbooks or Phase-7 completion.
+### RC10.3 bounded queue-backlog alerting — `PASS`
+
+PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74` completed all 36 registered workflows successfully. Retained artifact `9040996591`, digest `sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`, independently evidenced bounded queue identifiers, queue depth/capacity/utilization metrics, 80% raise/50% clear hysteresis, safe correlation evidence, actionable operator guidance, accepted RC8 queue-pressure reuse and observer-only behavior. JUnit: 5/5. Merge: `42ccbe04cbc1081f93e4a155243627b5a3038573`.
+
+RC10.2/RC10.3 do not claim pager/e-mail/chat delivery. RC10.3 does not claim a separate deployed durable queue service. Storage-integrity, API-error and search-health alerting remain open Phase-7 objectives.
 
 ## Workflow presence versus workflow evidence
 
@@ -86,9 +77,9 @@ Missing, queued, cancelled, failed or unexecuted workflows are not PASS.
 - ingestion creates candidate intelligence only;
 - publication requires explicit human share approval by a principal different from the reviewer;
 - service accounts and connectors may not review or approve sharing;
-- connector success, isolation recovery, quarantine release, contract validation, normalization, retry, timeout, performance or observability success never implies publication approval;
+- connector, queue, recovery, replay, retry, timeout, performance or observability success never implies publication approval;
 - provenance and confidence may not be silently discarded;
-- secret values may not be emitted into evidence;
+- secret or sensitive payload values may not be emitted into evidence;
 - performance and controlled-failure fixtures must use synthetic or explicitly approved non-production data;
 - missing or incomplete evidence blocks the corresponding acceptance claim.
 
@@ -100,8 +91,8 @@ Internal PASS does not close those external gates.
 
 ## Current reconciliation gate
 
-RUN-20260809-126 is `PASS` for the final merged state. Its reconciliation validation head `187d645a7f3c3200e545be23312c4165b7b2f7dc` completed all 35 registered workflows successfully before final status/current-priority reconciliation. The final documentation head must also complete every workflow successfully before protected merge.
+RUN-20260809-128 is `CI_VALIDATION_PENDING`. RC10.3 product acceptance is already `PASS` and merged, but the authoritative documentation update must independently complete all 36 registered workflows on its final exact head before protected merge.
 
 ## Exactly one next priority
 
-Phase 7 / RC10.3 — implement bounded queue-backlog alerting with explicit threshold semantics, actionable correlated evidence and controlled breach/recovery behavior. Storage-integrity, API-error and search-health alerting remain later objectives.
+Complete RUN-128 exact-head CI and protected merge. After that, Phase 7 / RC10.4 — implement bounded storage-integrity alerting with controlled integrity-failure/recovery evidence, actionable correlation, no raw sensitive payload leakage and retained exact-head evidence. API-error and search-health alerting remain later objectives.
