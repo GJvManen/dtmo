@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from threading import Lock
 
@@ -23,8 +24,43 @@ CONNECTOR_ALERT_TRANSITIONS = Counter(
     "Connector alert state transitions",
     ["connector", "transition"],
 )
+QUEUE_BACKLOG_DEPTH = Gauge(
+    "dtmo_queue_backlog_depth",
+    "Observed queue backlog depth",
+    ["queue"],
+)
+QUEUE_BACKLOG_CAPACITY = Gauge(
+    "dtmo_queue_backlog_capacity",
+    "Configured queue backlog capacity",
+    ["queue"],
+)
+QUEUE_BACKLOG_UTILIZATION = Gauge(
+    "dtmo_queue_backlog_utilization_ratio",
+    "Observed queue backlog depth divided by capacity",
+    ["queue"],
+)
+QUEUE_BACKLOG_ALERT_ACTIVE = Gauge(
+    "dtmo_queue_backlog_alert_active",
+    "Whether the queue backlog alert is active",
+    ["queue"],
+)
+QUEUE_BACKLOG_ALERT_TRANSITIONS = Counter(
+    "dtmo_queue_backlog_alert_transitions_total",
+    "Queue backlog alert state transitions",
+    ["queue", "transition"],
+)
 
-_ACTION = "Inspect connector health, upstream availability, credentials and rate limits."
+_CONNECTOR_ACTION = "Inspect connector health, upstream availability, credentials and rate limits."
+_QUEUE_ACTION = (
+    "Inspect consumers and downstream dependency health; drain backlog before increasing "
+    "producer throughput."
+)
+_QUEUE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$")
+
+
+def _current_correlation(value: str | None) -> str:
+    current = value or correlation_id.get()
+    return resolve_correlation_id(None) if current == "-" else current
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,6 +69,19 @@ class ConnectorAlertSignal:
     state: str
     transitioned: bool
     correlation_id: str
+    action: str
+    publish_approved: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class QueueBacklogAlertSignal:
+    queue_name: str
+    state: str
+    transitioned: bool
+    correlation_id: str
+    depth: int
+    capacity: int
+    utilization_ratio: float
     action: str
     publish_approved: bool = False
 
@@ -63,10 +112,7 @@ class ConnectorAlertManager:
         if result.status not in {"completed", "failed"}:
             raise ValueError("connector result status must be completed or failed")
 
-        current_correlation = correlation or correlation_id.get()
-        if current_correlation == "-":
-            current_correlation = resolve_correlation_id(None)
-
+        current_correlation = _current_correlation(correlation)
         CONNECTOR_RUNS.labels(connector_id, result.status).inc()
 
         with self._lock:
@@ -85,7 +131,7 @@ class ConnectorAlertManager:
                         severity="warning",
                         attempts=result.attempts,
                         error_present=result.error is not None,
-                        action=_ACTION,
+                        action=_CONNECTOR_ACTION,
                         publish_approved=False,
                     )
                 else:
@@ -95,7 +141,7 @@ class ConnectorAlertManager:
                         correlation_id=current_correlation,
                         severity="warning",
                         attempts=result.attempts,
-                        action=_ACTION,
+                        action=_CONNECTOR_ACTION,
                         publish_approved=False,
                     )
             else:
@@ -120,9 +166,130 @@ class ConnectorAlertManager:
             state=state,
             transitioned=transitioned,
             correlation_id=current_correlation,
-            action=_ACTION if state == "active" else "Continue normal source-health monitoring.",
+            action=(
+                _CONNECTOR_ACTION
+                if state == "active"
+                else "Continue normal source-health monitoring."
+            ),
+            publish_approved=False,
+        )
+
+
+class QueueBacklogAlertManager:
+    """Observe bounded queue utilization and emit hysteretic backlog alert evidence.
+
+    The queue implementation remains authoritative for backpressure and recovery. This
+    observer consumes only queue depth/capacity measurements. It raises at the configured
+    utilization threshold and clears only at or below the lower recovery threshold, which
+    prevents alert flapping near the raise boundary. It does not move queue items, change
+    producer/consumer behavior, deliver notifications or grant publication approval.
+    """
+
+    def __init__(self, *, raise_ratio: float = 0.80, clear_ratio: float = 0.50) -> None:
+        if not 0 <= clear_ratio < raise_ratio <= 1:
+            raise ValueError("queue backlog thresholds must satisfy 0 <= clear < raise <= 1")
+        self.raise_ratio = raise_ratio
+        self.clear_ratio = clear_ratio
+        self._active: set[str] = set()
+        self._lock = Lock()
+        self.log = get_logger("queue.alerts")
+
+    def observe(
+        self,
+        queue_name: str,
+        *,
+        depth: int,
+        capacity: int,
+        correlation: str | None = None,
+    ) -> QueueBacklogAlertSignal:
+        name = queue_name.strip()
+        if not _QUEUE_NAME.fullmatch(name):
+            raise ValueError("queue_name must be a bounded operational queue identifier")
+        if capacity <= 0:
+            raise ValueError("queue capacity must be positive")
+        if depth < 0 or depth > capacity:
+            raise ValueError("queue depth must be between zero and capacity")
+
+        current_correlation = _current_correlation(correlation)
+        utilization = depth / capacity
+        QUEUE_BACKLOG_DEPTH.labels(name).set(depth)
+        QUEUE_BACKLOG_CAPACITY.labels(name).set(capacity)
+        QUEUE_BACKLOG_UTILIZATION.labels(name).set(utilization)
+
+        with self._lock:
+            was_active = name in self._active
+            if was_active and utilization <= self.clear_ratio:
+                self._active.remove(name)
+                state = "clear"
+                transitioned = True
+                QUEUE_BACKLOG_ALERT_ACTIVE.labels(name).set(0)
+                QUEUE_BACKLOG_ALERT_TRANSITIONS.labels(name, "cleared").inc()
+                self.log.info(
+                    "queue_backlog_alert_cleared",
+                    queue_name=name,
+                    correlation_id=current_correlation,
+                    severity="info",
+                    depth=depth,
+                    capacity=capacity,
+                    utilization_ratio=round(utilization, 4),
+                    raise_threshold=self.raise_ratio,
+                    clear_threshold=self.clear_ratio,
+                    action="Continue normal queue monitoring.",
+                    publish_approved=False,
+                )
+            elif was_active:
+                state = "active"
+                transitioned = False
+                QUEUE_BACKLOG_ALERT_ACTIVE.labels(name).set(1)
+                self.log.warning(
+                    "queue_backlog_alert_active",
+                    queue_name=name,
+                    correlation_id=current_correlation,
+                    severity="warning",
+                    depth=depth,
+                    capacity=capacity,
+                    utilization_ratio=round(utilization, 4),
+                    raise_threshold=self.raise_ratio,
+                    clear_threshold=self.clear_ratio,
+                    action=_QUEUE_ACTION,
+                    publish_approved=False,
+                )
+            elif utilization >= self.raise_ratio:
+                self._active.add(name)
+                state = "active"
+                transitioned = True
+                QUEUE_BACKLOG_ALERT_ACTIVE.labels(name).set(1)
+                QUEUE_BACKLOG_ALERT_TRANSITIONS.labels(name, "raised").inc()
+                self.log.warning(
+                    "queue_backlog_alert_raised",
+                    queue_name=name,
+                    correlation_id=current_correlation,
+                    severity="warning",
+                    depth=depth,
+                    capacity=capacity,
+                    utilization_ratio=round(utilization, 4),
+                    raise_threshold=self.raise_ratio,
+                    clear_threshold=self.clear_ratio,
+                    action=_QUEUE_ACTION,
+                    publish_approved=False,
+                )
+            else:
+                state = "clear"
+                transitioned = False
+                QUEUE_BACKLOG_ALERT_ACTIVE.labels(name).set(0)
+
+        return QueueBacklogAlertSignal(
+            queue_name=name,
+            state=state,
+            transitioned=transitioned,
+            correlation_id=current_correlation,
+            depth=depth,
+            capacity=capacity,
+            utilization_ratio=utilization,
+            action=_QUEUE_ACTION if state == "active" else "Continue normal queue monitoring.",
             publish_approved=False,
         )
 
 
 connector_alerts = ConnectorAlertManager()
+queue_backlog_alerts = QueueBacklogAlertManager()

@@ -11,3 +11,17 @@ groups:
           summary: "DTMO connector {{ $labels.connector }} has a terminal failure"
           action: "Inspect connector health, upstream availability, credentials and rate limits."
           clear_condition: "The alert clears after a subsequent successful connector run sets the signal to 0."
+
+  - name: dtmo.queue.alerts
+    rules:
+      - alert: DTMOQueueBacklog
+        expr: dtmo_queue_backlog_alert_active == 1
+        for: 0m
+        labels:
+          severity: warning
+          service: dtmo
+        annotations:
+          summary: "DTMO queue {{ $labels.queue }} backlog crossed the governed threshold"
+          threshold_policy: "Raise at >=80% capacity; clear at <=50% capacity."
+          action: "Inspect consumers and downstream dependency health; drain backlog before increasing producer throughput."
+          clear_condition: "The alert clears only after observed utilization recovers to 50% capacity or lower."
