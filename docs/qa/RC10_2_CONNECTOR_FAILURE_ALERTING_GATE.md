@@ -2,29 +2,35 @@
 
 ## Decision
 
-`CI_VALIDATION_PENDING`
+`PASS`
 
 RC10.2 implements exactly one bounded Phase 7 objective: controlled connector-failure alerting after the connector's existing bounded retry policy reaches a terminal result.
 
-## Scope
+## Accepted exact-head evidence
 
-- terminal connector failure sets `dtmo_connector_alert_active{connector=...}` to `1`;
-- a Prometheus alert rule raises `DTMOConnectorFailure` from that bounded signal;
-- structured alert events retain a safe correlation ID and actionable operator guidance;
-- raw connector error text is not copied into alert logs;
-- repeated failures while an alert is active do not generate another raise transition;
-- a subsequent successful connector run clears the metric to `0` and emits `connector_alert_cleared`;
-- connector run and alert-transition counters remain bounded by connector/status/transition labels;
-- publication approval remains unchanged and false in the alert signal;
-- exact-head JUnit, pytest log and machine-readable evidence are retained as `connector-alerting-evidence`.
+PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243` completed all 35 registered workflows successfully.
+
+Retained artifact `9040485255`, digest `sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`, was independently inspected and is identity-bound to the accepted head.
+
+Evidence confirms all bounded controls:
+
+- terminal connector failure sets the active Prometheus alert signal;
+- Prometheus rule `DTMOConnectorFailure` is defined;
+- structured alert events carry safe correlation evidence;
+- operator guidance is actionable;
+- raw connector error text is excluded from alert logs;
+- repeated failures do not repeat the raise transition while already active;
+- a subsequent successful run clears the active signal and emits a clear transition;
+- publication approval is unchanged;
+- no production data is used;
+- JUnit: 4 tests, 0 failures, 0 errors, 0 skips;
+- pytest: 4/4 passing.
+
+PR #82 merged with expected-head protection as `f6680423860389288d9feced34592294d774bf4a`.
 
 ## Existing controls preserved
 
 RC7 connector retry/backoff and source-health/failure-isolation controls remain authoritative. RC10.2 observes the terminal result; it does not create a second retry policy, change circuit-breaker behavior or automatically publish intelligence.
-
-## Gate
-
-`PASS` requires every registered workflow on the exact final PR head to succeed and retained `connector-alerting-evidence` to be independently inspected. Missing, queued, cancelled, failed or unexecuted CI is never `PASS`.
 
 ## Claim boundary
 
@@ -45,4 +51,4 @@ No production credentials or production data are required. RBAC, separation of d
 
 ## Exactly one next priority
 
-Inspect every required workflow on the final RC10.2 pull-request head and independently inspect retained `connector-alerting-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful evidence.
+Phase 7 / RC10.3 — implement a bounded queue-backlog alerting gate with threshold semantics, actionable correlated evidence, controlled breach/recovery behavior and retained exact-head evidence. Storage-integrity, API-error and search-health alerting remain later objectives.
