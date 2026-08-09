@@ -15,7 +15,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `PASS`.
-- Phase 8 — Staging acceptance: `IN PROGRESS`; staging-readiness baseline is `CI_VALIDATION_PENDING` and no staging deployment/acceptance is yet claimed.
+- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` at production-equivalent staging environment/deployment-parity acquisition; PR #102 remains `CI_VALIDATION_PENDING` after RUN-149 repaired a stale RC4 regression assertion.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
@@ -70,11 +70,23 @@ Blocking gates:
 - rollback/recovery proven and evidence retained;
 - no unresolved blocker is interpreted as PASS.
 
-### RUN-147 staging-readiness baseline — `CI_VALIDATION_PENDING`
+### RUN-147 staging-readiness baseline — `PASS`
 
-RUN-147 adds the source-controlled staging acceptance plan, Phase 8 QA gate, regression tests and a dedicated retained `Phase 8 Staging Readiness Gate`. The baseline defines the evidence contract but explicitly does not claim that a staging environment exists or that staging acceptance tests have run.
+PR #101 exact head `fd87beb441c4e4ed71141ea9ae03717e859681e3` completed 46/46 registered workflows successfully. Retained artifact `9043667776`, digest `sha256:62287683401694c130144873e7b0ac1c55f565c4e518dcb379e4b6e9bc56b564`, was exact-head bound with machine-readable PASS and JUnit 3/3. PR #101 merged as `5f74bcac92738febfe327ea78f45c009d28e4d55`.
 
-Exactly one next priority: verify the complete exact-head workflow matrix and retained `phase8-staging-readiness-evidence`. After acceptance, provision or identify a production-equivalent staging environment and capture immutable deployment-parity evidence before running acceptance suites.
+The baseline proves only the staging acceptance contract; its retained claim boundary correctly states that no staging environment, deployment parity or staging test execution was proven.
+
+### RUN-148 staging environment and deployment-parity acquisition — `BLOCKED_EXTERNAL`
+
+Live repository and issue #1 inspection found no real staging endpoint/environment identifier or immutable deployment-parity evidence. Phase 8 cannot proceed to acceptance suites until all ten classes in `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md` are retained against one staging deployment identity.
+
+### RUN-149 RC4 regression remediation — `CI_VALIDATION_PENDING`
+
+PR #102 head `afa10ddac6551b21f0c974dd807ed45849f8f323` completed 45/46 workflows successfully. RC4 failed because a regression test still asserted the transient readiness-gate state `CI_VALIDATION_PENDING` after RUN-147 had correctly transitioned to `PASS`. The test now asserts the accepted RUN-147 evidence and preserves the invariant claim boundary that no staging environment, deployed staging tests, Phase 8 completion or production acceptance is claimed. No test category or release control was disabled.
+
+A fresh complete workflow matrix is required on the changed PR #102 head before merge. This CI remediation does not alter the external staging blocker.
+
+Exactly one next priority: verify every registered workflow on the new PR #102 exact head. If all succeed, merge with expected-head protection. Then provide or provision the approved production-equivalent staging environment and retain all ten deployment-parity evidence classes before any staging acceptance suite executes.
 
 ## Phase 9 — External assurance
 
