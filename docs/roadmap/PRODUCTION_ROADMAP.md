@@ -14,34 +14,39 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`, with normal progression blocked by the higher-severity supported object-storage remediation gate.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.4 accepted. Normal progression remains deferred until the higher-severity object-storage migration is accepted.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
 ## Accepted Phase 7 evidence
 
-### RC10.1 request observability — `PASS`
-PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc`; 34/34 workflows; artifact `9040196394`, digest `sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`; JUnit 5/5; merge `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
+- RC10.1 request observability: `PASS` — PR #80.
+- RC10.2 controlled connector-failure alerting: `PASS` — PR #82.
+- RC10.3 bounded queue-backlog alerting: `PASS` — PR #84.
+- RC10.4 bounded storage-integrity alerting: `PASS` — PR #86.
 
-### RC10.2 controlled connector-failure alerting — `PASS`
-PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243`; 35/35 workflows; artifact `9040485255`, digest `sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`; JUnit 4/4; merge `f6680423860389288d9feced34592294d774bf4a`.
+Phase 7 remains incomplete because distributed tracing, API-error/search-health alerting, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open.
 
-### RC10.3 bounded queue-backlog alerting — `PASS`
-PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74`; 36/36 workflows; artifact `9040996591`, digest `sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`; 80% raise/50% clear hysteresis, bounded queue metrics, correlated actionable evidence and RC8 queue-pressure reuse; JUnit 5/5; merge `42ccbe04cbc1081f93e4a155243627b5a3038573`.
+## Higher-severity object-storage remediation
 
-### RC10.4 bounded storage-integrity alerting — `PASS`
-PR #86 exact head `8aa56dacd64583de5e96c0fda188ba954437ffda`; 37/37 workflows; artifact `9041327884`, digest `sha256:456b09902727552d62fa7e1c96f119c6050a692d2519e0f8cecdd160e8b1dab3`; real `IntelligenceLake.verify()` reuse, critical integrity-failure signal, correlated actionable evidence, recovery clear behavior, repeat-raise suppression and exclusion of object key/digest/payload evidence; JUnit 5/5; merge `4d7494e8b8fcdcddb73349bf87157d8c16763c33`.
+Fresh storage-layer threat intelligence established that `docker-compose.yml` pins legacy MinIO `RELEASE.2025-07-23T15-54-02Z`, within affected ranges for later advisories. RUN-20260809-131 established that the former community runtime is archived/unmaintained and therefore cannot satisfy the supported-runtime production gate.
 
-Phase 7 remains incomplete because distributed tracing, API-error/search-health alerting, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open. RC10.2–RC10.4 do not claim external notification delivery; RC10.4 does not claim scheduled/fleet-wide production integrity scanning.
+RUN-20260809-132 resolves the **target-selection** blocker by accepting ADR-0001:
 
-## Higher-severity object-storage blocker
+**Supported target:** MinIO AIStor Enterprise Lite or AIStor Enterprise with an active paid support entitlement. For Enterprise Lite, DTMO requires the separately purchased direct-to-engineer support option for production acceptance.
 
-Fresh storage-layer threat intelligence established that `docker-compose.yml` pins MinIO `RELEASE.2025-07-23T15-54-02Z`, which is inside documented affected-version ranges for later MinIO advisories. RUN-20260809-131 further verified that upstream `minio/minio` is archived and explicitly no longer maintained and that legacy binary/container releases are unmaintained.
+Production migration constraints:
 
-Therefore the remediation gate is now `BLOCKED_EXTERNAL`: replacing the pin with another legacy image or a patched-but-unsupported community source build would not satisfy the supported-runtime production gate. Upstream points to successor offerings, but DTMO currently has no evidenced supported target, deployment contract, entitlement or lifecycle support source accepted in-repository.
+- vendor-supported production topology;
+- `quay.io/minio/aistor/minio` or approved private mirror;
+- current supported release pinned by immutable release tag and image digest; `latest` prohibited for accepted production manifests;
+- license/SUBNET, administrative/root and least-privilege application S3 credentials separated and injected outside source control;
+- TLS/network encryption and server-side encryption required before production acceptance;
+- AIStor Free rejected for production because vendor documentation states no SLA/SLO/service agreement and an insufficient distributed/support profile;
+- legacy `minio/minio` and unsupported source builds remain rejected.
 
-Affected-version and upstream-maintenance-status findings are high confidence. Configuration-specific exploitability of individual advisories remains separately bounded and is not overstated.
+The target decision does not accept the migration. Security, recovery, storage-integrity and full-regression evidence must be rerun on the migration exact head. Commercial entitlement/support and remaining deployment/secrets gates remain external.
 
 ## Phase 1 — CI and workflow integrity
 
@@ -71,7 +76,7 @@ Blocking gates: connector contracts pass; canaries repeat; malformed/duplicate r
 
 Objectives: representative education-sector volumes, API/PostgreSQL/OpenSearch/ingestion load tests, latency/throughput/resource budgets, queue pressure and degraded dependencies.
 
-Current decision: `PASS` for bounded internal gates. RC8.8 capacity guidance does not close issue #1's independent representative production load/stress gate.
+Current decision: `PASS` for bounded internal gates. Issue #1 retains independent representative production load/stress acceptance.
 
 ## Phase 6 — Frontend accessibility and operational UX
 
@@ -93,9 +98,9 @@ Blocking gates:
 - runbooks complete and exercised;
 - operational ownership/escalation documented.
 
-Current decision: `IN PROGRESS`. RC10.1, RC10.2, RC10.3 and RC10.4 are accepted. Normal RC10.5 execution is deferred while the higher-severity supported object-storage remediation remains `BLOCKED_EXTERNAL`.
+Current decision: `IN PROGRESS`. RC10.1–RC10.4 are accepted. RC10.5 remains deferred until the supported object-storage migration is implemented and accepted.
 
-Exactly one next priority: obtain and record an explicit supported object-storage target for DTMO, including supported product/image or deployment method, lifecycle/support source, and required entitlement/credential boundary. Once evidenced, perform one bounded migration implementation and rerun relevant security, recovery, storage-integrity and full regression gates with retained exact-head evidence. Only after that gate is accepted should Phase 7 resume with RC10.5 API-error alerting.
+Exactly one next priority: implement the bounded migration from legacy `minio/minio` to the accepted AIStor target using an immutable supported release and external license/secret boundary, then execute relevant security, recovery, storage-integrity and full regression gates with retained exact-head evidence. Only after that gate is accepted should Phase 7 resume with RC10.5 API-error alerting.
 
 ## Phase 8 — Staging acceptance
 
@@ -105,7 +110,7 @@ Blocking gates: reproducible staging; all internal gates pass; no unresolved blo
 
 ## Phase 9 — External assurance
 
-Tracked in issue #1: independent penetration test, representative load/stress, full backup/restoration exercise, production OpenSearch hardening, required secrets-management acceptance, operational/stakeholder approvals.
+Tracked in issue #1: independent penetration test, representative load/stress, full backup/restoration exercise, production OpenSearch hardening, required secrets-management acceptance, operational/stakeholder approvals and production deployment acceptance.
 
 ## Phase 10 — Production go/no-go
 
