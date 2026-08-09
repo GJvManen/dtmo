@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260809-107 — RC9.7 exact-head acceptance](runs/RUN-20260809-107.md) — `PASS`: PR #63 exact head `6da6f5b6d2e65c7b6be99697f564eb76d5d1ec51` passed all 26 registered workflows; retained artifact `9038307443` (`sha256:fab6f3c93359cb5f3effd363bbb86c99dc632a5c6b3a78f006ad5e07f92d1d86`) independently proved Chromium, Firefox and WebKit execution across all four accepted critical surfaces, with 3/3 JUnit cases passing, real backend-session RBAC calls and preserved human share approval; merged as `1e886ac3fbb1d6711a7bfe191aeaff919d648451`.
 - [RUN-20260809-106 — RC9.7 supported-browser critical-journey gate](runs/RUN-20260809-106.md) — `CI_VALIDATION_PENDING`: added one bounded Playwright compatibility gate across Chromium, Firefox and WebKit for the accepted share-approval, analyst-search, CISO-revocation and auditor-read-only journeys; real backend-session RBAC is preserved, business-operation calls are synthetic, and exact-head CI plus retained browser evidence are required before PASS.
 - [RUN-20260809-105 — RC9.6 exact-head acceptance](runs/RUN-20260809-105.md) — `PASS`: PR #61 exact head `7e75f45fca15dc11be3a3c10d2d26797bdcdf92a` passed all 25 registered workflows; retained artifact `9038042763` (`sha256:9a0f218d68ea82a6cd564c923e8b5e90ec6550a43de853999faee87be8bfa62c`) independently proved responsive usability across 360×800, 768×1024 and 1440×900 viewports for all four accepted critical surfaces, with no blocking horizontal overflow, viewport-contained controls, minimum 24 px control dimensions, real backend-derived RBAC and no business mutations; merged as `a21cd14033f89a9294b060ef7bd071f7f026b281`.
 - [RUN-20260809-104 — RC9.6 responsive-layout browser gate](runs/RUN-20260809-104.md) — `CI_VALIDATION_PENDING`: added one bounded Chromium responsive-layout gate across the accepted share-approval, analyst-search, CISO-revocation and auditor-read-only surfaces at representative mobile/tablet/desktop viewports; verifies no blocking horizontal overflow and viewport-contained usable controls; exact-head CI and retained browser evidence are required before PASS.
@@ -44,8 +45,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260809-106` is `CI_VALIDATION_PENDING`. RC9.1 through RC9.6 are accepted. Phase 6 remains `IN PROGRESS`. RC9.7 adds a bounded Chromium/Firefox/WebKit critical-journey gate but is not accepted until all required exact-head workflows succeed and retained evidence is independently inspected. Broad WCAG 2.2 AA remains open. Issue #1 external production gates remain open.
+`RUN-20260809-107` is `PASS`. RC9.1 through RC9.7 are accepted. Phase 6 remains `IN PROGRESS`. RC9.7 is evidenced by 26/26 successful exact-head workflows and independently inspected retained Chromium/Firefox/WebKit evidence. Broad WCAG 2.2 AA remains open. Issue #1 external production gates remain open.
 
 ## Exactly one next priority
 
-Inspect every registered workflow on the final RC9.7 PR head and independently inspect retained `browser-supported-browsers-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful exact-head evidence.
+Implement one bounded WCAG 2.2 AA critical-journey gate across the already accepted Phase-6 surfaces, retaining exact-head accessibility evidence and making no product-wide certification claim.

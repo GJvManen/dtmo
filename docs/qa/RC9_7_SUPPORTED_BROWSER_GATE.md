@@ -1,6 +1,6 @@
 # RC9.7 — Supported-Browser Critical-Journey Gate
 
-Status: `CI_VALIDATION_PENDING`
+Status: `PASS`
 
 ## Objective
 
@@ -19,9 +19,22 @@ The dedicated gate runs governed share approval, analyst search, CISO token revo
 - Existing accepted gates remain authoritative for backend authorization, persistence and audit-chain behavior.
 - Missing, queued, failed or unexecuted CI is never PASS.
 
-## Acceptance evidence required
+## Acceptance evidence
 
-PASS requires every registered repository workflow plus `RC9 Supported Browsers E2E Gate` to complete successfully on the exact final PR head. Retained `browser-supported-browsers-evidence` must be independently inspected and show Chromium, Firefox and WebKit execution, all four accepted surfaces, exact-head identity, real backend-session RBAC and no unsupported broad WCAG claim.
+PR #63 exact head `6da6f5b6d2e65c7b6be99697f564eb76d5d1ec51` completed all 26 registered workflows successfully, including `RC9 Supported Browsers E2E Gate`.
+
+Retained artifact `9038307443`, digest `sha256:fab6f3c93359cb5f3effd363bbb86c99dc632a5c6b3a78f006ad5e07f92d1d86`, was independently inspected and proves:
+
+- exact-head identity;
+- Chromium, Firefox and WebKit execution;
+- all four accepted critical surfaces;
+- 3 browser-specific JUnit cases with 0 failures, 0 errors and 0 skips;
+- real backend `/api/v1/ui/session` calls for each surface in each browser;
+- preserved `human-approval-required` publication gate;
+- synthetic business-operation calls only inside the compatibility test;
+- no product-wide or broad WCAG 2.2 AA claim.
+
+PR #63 was merged using expected-head protection as `1e886ac3fbb1d6711a7bfe191aeaff919d648451`.
 
 ## Threat/CVE/vendor context
 
@@ -29,4 +42,4 @@ RC9.7 adds no production dependency, external connector, credential or productio
 
 ## Current decision
 
-`CI_VALIDATION_PENDING` until exact-head GitHub Actions and retained evidence execute successfully.
+`PASS` for the bounded supported-browser critical-journey objective. Phase 6 remains `IN PROGRESS`; broad WCAG 2.2 AA validation remains a separate later objective.
