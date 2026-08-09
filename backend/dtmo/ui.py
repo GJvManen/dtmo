@@ -29,7 +29,7 @@ _PAGE = """<!doctype html>
 <body>
   <main>
     <h1>Governed intelligence decision</h1>
-    <p id="principal" data-testid="principal">Resolving authenticated principal…</p>
+    <p id="principal" data-testid="principal" role="status" aria-live="polite" aria-atomic="true">Resolving authenticated principal…</p>
     <fieldset>
       <legend>Intelligence item</legend>
       <label for="item-id">Item ID</label>
@@ -104,7 +104,7 @@ _ANALYST_PAGE = """<!doctype html>
 <body>
   <main>
     <h1>Analyst intelligence search</h1>
-    <p id="analyst-principal" data-testid="analyst-principal">Resolving authenticated principal…</p>
+    <p id="analyst-principal" data-testid="analyst-principal" role="status" aria-live="polite" aria-atomic="true">Resolving authenticated principal…</p>
     <section id="search-panel" data-testid="search-panel" hidden>
       <form id="search-form">
         <label for="query">Search intelligence
