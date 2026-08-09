@@ -11,7 +11,7 @@ Use these runbooks for:
 - [Search-health degradation](SEARCH_HEALTH_DEGRADATION.md)
 - [Storage-integrity failure and recovery](STORAGE_INTEGRITY_RECOVERY.md)
 
-These documents do **not** authorize destructive remediation, production publication, disclosure to external parties, or bypass of RBAC/change controls. Human review/share approval remains mandatory and separate from incident handling.
+These documents do **not** authorize destructive remediation, production publication, disclosure to external parties, or bypass of RBAC/change controls. Human review/share approval remains mandatory and separate from incident handling; **human share approval** is never granted to technical responders, connectors, observability components or service accounts by incident status alone.
 
 ## Common incident roles
 
