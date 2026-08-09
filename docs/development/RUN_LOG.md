@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260809-143 — RC10.10 exercise evidence-validator remediation](runs/RUN-20260809-143.md) — `CI_VALIDATION_PENDING`: PR #97 head `1862b1c4e9e768da82baef3470464845cadf3967` completed 43/44 workflows; the dedicated exercise gate failed because a blanket truthiness assertion rejected the intentionally false safety controls `production_data_used=false` and `production_credentials_used=false`. The validator now asserts required-true and required-false controls separately; complete fresh exact-head CI and regenerated retained evidence are required.
 - [RUN-20260809-142 — controlled operational runbook exercise](runs/RUN-20260809-142.md) — `CI_VALIDATION_PENDING`: PR #96 accepted after 43/43 exact-head workflows plus independently inspected artifact `9042812326`; RC10.10 adds a bounded synthetic technical exercise across API, connector, search and storage incident runbooks with retained exact-head evidence.
 - [RUN-20260809-141 — RC10.9 CI-integrity remediation](runs/RUN-20260809-141.md) — `PASS`: corrected the canonical `human share approval` documentation contract without weakening tests; final PR #96 head `625757de118878d7c7b7b60847959c17d3c7c844` passed 43/43 workflows and merged as `28ffdc1d0c510ab57ea42751eb74261192899438`.
 - [RUN-20260809-140 — bounded operational incident runbook baseline](runs/RUN-20260809-140.md) — `PASS`: PR #96 final exact head `625757de118878d7c7b7b60847959c17d3c7c844` passed 43/43 workflows; artifact `9042812326` (`sha256:05b77e93d415396519771ddae319c95353d124dc3346d5cc756c508046b0a8cb`) independently showed exact-head PASS plus JUnit 6/6; merged as `28ffdc1d0c510ab57ea42751eb74261192899438`.
@@ -28,10 +29,10 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-Phase 1–5 internal roadmap gates are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior. Phase 7 is `IN PROGRESS`; RC10.1–RC10.9 are accepted. RC10.10 controlled synthetic runbook exercise is implemented but remains exact-head CI/artifact gated. Human on-call handover and operational ownership/escalation acceptance remain open after this exercise.
+Phase 1–5 internal roadmap gates are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior. Phase 7 is `IN PROGRESS`; RC10.1–RC10.9 are accepted. RC10.10 remains `CI_VALIDATION_PENDING` after RUN-143 corrected a deterministic evidence-validator bug; the failed prior head is not accepted. Human on-call handover and operational ownership/escalation acceptance remain open after this exercise.
 
 Commercial entitlement/support, production topology, deployment-time image digest verification, TLS/network encryption, secrets-manager acceptance, staging/production acceptance and other issue #1 external gates remain open.
 
 ## Exactly one next priority
 
-Verify the complete exact-head workflow matrix and retained `operational-runbook-exercise-evidence` artifact for RUN-142; merge only after every registered workflow succeeds and retained evidence is exact-head bound and internally consistent.
+Verify all 44 workflows on the new exact PR #97 head and independently inspect regenerated `operational-runbook-exercise-evidence`; merge only after every registered workflow succeeds and retained evidence is exact-head bound and internally consistent.
