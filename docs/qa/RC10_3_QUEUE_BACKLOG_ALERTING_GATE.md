@@ -2,30 +2,38 @@
 
 ## Decision
 
-`CI_VALIDATION_PENDING`
+`PASS`
 
 RC10.3 implements exactly one bounded Phase 7 objective: explicit queue-backlog alerting semantics that reuse the accepted RC8 queue-pressure/backpressure model without changing queue mutation, producer/consumer behavior or publication controls.
 
-## Scope
+## Accepted exact-head evidence
 
-- observe bounded operational queue identifiers only;
-- expose queue depth, configured capacity and utilization ratio as Prometheus metrics;
-- raise a queue-backlog alert at `>= 80%` utilization;
-- retain the alert while utilization remains above the recovery threshold;
-- clear only at `<= 50%` utilization to provide hysteresis and prevent threshold flapping;
-- emit structured `queue_backlog_alert_raised`, `queue_backlog_alert_active` and `queue_backlog_alert_cleared` events with safe correlation evidence;
-- retain actionable operator guidance without queue payload contents;
-- define Prometheus rule `DTMOQueueBacklog`;
-- reuse the accepted RC8 queue-burst/backpressure harness in controlled breach/recovery regression evidence;
-- retain exact-head JSON, JUnit and pytest evidence as `queue-backlog-alerting-evidence`.
+PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74` completed all 36 registered workflows successfully.
+
+Retained artifact `9040996591`, digest `sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`, was independently inspected and is identity-bound to the accepted head.
+
+Evidence confirms:
+
+- raise threshold `>= 80%` queue utilization;
+- clear threshold `<= 50%` queue utilization;
+- hysteresis prevents threshold flapping between those values;
+- bounded operational queue identifiers;
+- queue depth, capacity and utilization Prometheus metrics;
+- active-alert and transition metrics;
+- structured correlated raise/active/clear events;
+- actionable operator guidance without queue payload contents;
+- accepted RC8 queue-pressure/backpressure contract reused in controlled breach/recovery testing;
+- observer-only behavior does not mutate queue items or producer/consumer policy;
+- publication approval unchanged;
+- no production data used;
+- JUnit: 5 tests, 0 failures, 0 errors, 0 skips;
+- pytest: 5/5 passing.
+
+PR #84 merged with expected-head protection as `42ccbe04cbc1081f93e4a155243627b5a3038573`.
 
 ## Existing controls preserved
 
 RC8 queue pressure/backpressure, zero-loss, duplicate protection, provenance and recovery behavior remain authoritative for the bounded queue harness. RC10.3 is an observer only: it does not dequeue/enqueue records, alter producer/consumer throughput, change retry/backpressure behavior, or approve publication.
-
-## Gate
-
-`PASS` requires every registered workflow on the exact final pull-request head to complete successfully and retained `queue-backlog-alerting-evidence` to be independently inspected. Missing, queued, cancelled, failed or unexecuted CI is never `PASS`.
 
 ## Claim boundary
 
@@ -46,4 +54,4 @@ No production credentials or production data are required. RBAC, separation of d
 
 ## Exactly one next priority
 
-Inspect every registered workflow on the final RC10.3 pull-request head and independently inspect retained `queue-backlog-alerting-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful evidence.
+Phase 7 / RC10.4 — implement bounded storage-integrity alerting with controlled integrity-failure/recovery evidence, actionable correlation and retained exact-head evidence. API-error and search-health alerting remain later Phase-7 objectives.
