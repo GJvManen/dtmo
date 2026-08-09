@@ -4,7 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260809-130 — RC10.4 exact-head acceptance and security-blocker reconciliation](runs/RUN-20260809-130.md) — `CI_VALIDATION_PENDING`: accepted and merged RC10.4 only after 37/37 exact-head workflows plus independent artifact inspection, then identified a higher-severity MinIO affected-version blocker during the required fresh threat-intelligence review. The reconciliation itself remains exact-head CI gated.
+- [RUN-20260809-131 — supported object-storage remediation blocker](runs/RUN-20260809-131.md) — `BLOCKED_EXTERNAL`: verified PR #87 after 37/37 exact-head workflows and protected merge, then confirmed the vulnerable MinIO pin cannot truthfully be remediated with another legacy/community runtime while satisfying the production support gate; upstream MinIO is archived/no longer maintained and legacy binaries are unmaintained. No unsupported substitution was made.
+- [RUN-20260809-130 — RC10.4 exact-head acceptance and security-blocker reconciliation](runs/RUN-20260809-130.md) — `PASS`: reconciliation exact head `036e3a6035794bb115d578919327f0d87fa1c596` passed 37/37 workflows and was squash-merged with expected-head protection as `4af2f1ceb24ead103690584473118db738f169d3`; the higher-severity MinIO affected-version blocker remains open.
 - [RUN-20260809-129 — RC10.4 bounded storage-integrity alerting](runs/RUN-20260809-129.md) — `PASS`: PR #86 exact head `8aa56dacd64583de5e96c0fda188ba954437ffda` passed 37/37 registered workflows; artifact `9041327884` (`sha256:456b09902727552d62fa7e1c96f119c6050a692d2519e0f8cecdd160e8b1dab3`) independently proved real lake-verifier reuse, critical storage-integrity alerting, recovery clear behavior, repeat-raise suppression and exclusion of object key/digest/payload evidence; JUnit 5/5; merged as `4d7494e8b8fcdcddb73349bf87157d8c16763c33`.
 - [RUN-20260809-128 — RC10.3 exact-head acceptance and documentation reconciliation](runs/RUN-20260809-128.md) — `PASS` in the final merged state: RC10.3 product evidence is accepted; the final repaired documentation head passed all 36 registered workflows before protected merge.
 - [RUN-20260809-127 — RC10.3 bounded queue-backlog alerting](runs/RUN-20260809-127.md) — `PASS`: PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74` passed all 36 workflows; retained artifact `9040996591` (`sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`) independently proved bounded queue depth/capacity/utilization metrics, 80% raise/50% clear hysteresis, correlated actionable evidence and RC8 queue-pressure reuse with 5/5 JUnit tests; merged as `42ccbe04cbc1081f93e4a155243627b5a3038573`.
@@ -13,19 +14,6 @@ This file is the chronological audit record for continuous development runs. Det
 - [RUN-20260809-124 — RC10.1 exact-head acceptance and documentation reconciliation](runs/RUN-20260809-124.md) — `PASS`: PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc` passed all 34 registered workflows; retained artifact `9040196394` (`sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`) independently proved the bounded request-observability controls with 5/5 JUnit tests; merged as `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
 - [RUN-20260809-123 — RC10.1 request observability baseline](runs/RUN-20260809-123.md) — `PASS`: implementation later accepted by RUN-124.
 - [RUN-20260809-122 — RC9.16 genuine assistive-technology behavior](runs/RUN-20260809-122.md) — `BLOCKED_EXTERNAL`: real VoiceOver and NVDA behavior cannot be truthfully executed in the current automation environment; the required supported-host evidence matrix remains open.
-- [RUN-20260809-121 — RC9.15 complete focus-order evidence](runs/RUN-20260809-121.md) — `PASS`: PR #78 exact head `d2480293f605e8701fb677071c206cc25da97098` passed all 33 workflows; retained artifact `9039862032` independently proved bounded SC 2.4.3 focus order; merged as `17a43175d6beda4fdf0156f701844d2c25ea4aec`.
-- [RUN-20260809-120 — RC9.14 exact-head acceptance](runs/RUN-20260809-120.md) — `PASS`: PR #76 exact head `de52730b9b5165f7815e2c6c19c803413bbfcc60` passed all 32 workflows; retained artifact `9039432903` independently proved bounded text-spacing behavior; merged as `7d4816658159fac3b2b773fa6151b6274b510351`.
-- [RUN-20260809-118 — RC9.13 exact-head acceptance](runs/RUN-20260809-118.md) — `PASS`: bounded SC 1.4.10 reflow accepted for PR #74.
-- [RUN-20260809-116 — RC9.12 exact-head acceptance](runs/RUN-20260809-116.md) — `PASS`: bounded SC 1.4.4 200% text resize accepted for PR #72.
-- [RUN-20260809-114 — RC9.11 exact-head acceptance](runs/RUN-20260809-114.md) — `PASS`: bounded text/UI/focus contrast accepted for PR #70.
-- [RUN-20260809-112 — RC9.10 exact-head acceptance](runs/RUN-20260809-112.md) — `PASS`: A11Y-001 session-status remediation accepted for PR #68.
-- [RUN-20260809-103 — RC9.5 exact-head acceptance](runs/RUN-20260809-103.md) — `PASS`: PR #59 passed all 24 workflows and merged as `187928c66143e0c8470082097fafba740da691c6`.
-- [RUN-20260809-101 — RC9.4 exact-head acceptance](runs/RUN-20260809-101.md) — `PASS`: PR #57 passed all 23 workflows and merged as `c7877015869bf58dec3a5f2628d71c4b0c2cf97a`.
-- [RUN-20260809-099 — RC9.3 exact-head acceptance](runs/RUN-20260809-099.md) — `PASS`: PR #55 passed all 22 workflows and merged as `3743203bc1a6d93743af53fcb8d4257af153a710`.
-- [RUN-20260809-097 — RC9.2 exact-head acceptance](runs/RUN-20260809-097.md) — `PASS`: PR #53 passed all 21 workflows and merged as `22bf74bb6c5c367195a3e67b0c8db4ec0489a449`.
-- [RUN-20260809-095 — RC9.1 exact-head acceptance](runs/RUN-20260809-095.md) — `PASS`: PR #50 passed all 20 workflows and merged as `ef59eba29d7fa8b2d88b5674e7bb00e98c0dab18`.
-- [RUN-20260809-091 — RC8.8 exact-head acceptance and Phase 5 closure](runs/RUN-20260809-091.md) — `PASS`: PR #48 passed all 19 workflows and merged as `62b34472948d0f301104ddd452e14efb945fa6bd`.
-- [RUN-20260809-089 — RC8.7 expected-head acceptance](runs/RUN-20260809-089.md) — `PASS`: PR #46 passed all 19 workflows and merged as `7ecd1bf88d0577074390a173847186c8a92e48b6`.
 
 ## Current decision
 
@@ -35,8 +23,8 @@ Phase 6 remains `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior on r
 
 Phase 7 is `IN PROGRESS`. RC10.1 request observability, RC10.2 connector-failure alerting, RC10.3 queue-backlog alerting and RC10.4 storage-integrity alerting are accepted as `PASS` for their bounded internal scopes. Issue #1 external production gates remain independently open.
 
-Fresh storage-layer threat intelligence identified that `docker-compose.yml` pins MinIO `RELEASE.2025-07-23T15-54-02Z`, a version inside documented affected ranges for multiple later MinIO advisories. This higher-severity security blocker supersedes the normal RC10.5 roadmap item until remediated and revalidated.
+The object-storage remediation is now `BLOCKED_EXTERNAL`: `docker-compose.yml` still pins affected MinIO `RELEASE.2025-07-23T15-54-02Z`, while upstream MinIO is archived/no longer maintained and its legacy binary/container releases are unmaintained. A patched but unsupported source build is not accepted as production-ready lifecycle evidence.
 
 ## Exactly one next priority
 
-Remediate the vulnerable MinIO runtime pin with a supported/patched object-storage release or explicitly supported successor, then run relevant security, recovery, storage-integrity and full regression gates with retained exact-head evidence before resuming Phase 7 / RC10.5 API-error alerting.
+Obtain and record an explicit supported object-storage target for DTMO, including supported product/image or deployment method, lifecycle/support source, and required entitlement/credential boundary. Only then implement the bounded migration and rerun security, recovery, storage-integrity and full regression gates before resuming Phase 7 / RC10.5 API-error alerting.
