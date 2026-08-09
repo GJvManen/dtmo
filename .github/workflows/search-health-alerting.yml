@@ -1,0 +1,93 @@
+name: RC10 Search Health Alerting Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  search-health-alerting:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Execute RC10.6 search-health alerting gate
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc10_6_search_health_alerting.py \
+            --junitxml=artifacts/search-health-alerting.xml \
+            | tee artifacts/search-health-alerting-pytest.log
+      - name: Record exact-head evidence
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+            "decision": "pass",
+            "exact_head": os.environ["EXACT_HEAD"],
+            "objective": "bounded controlled search-health alerting",
+            "controls": {
+              "cluster_status_only": True,
+              "raise_after_red_or_unreachable": 2,
+              "clear_after_green_or_yellow": 2,
+              "prometheus_alert_metric": True,
+              "prometheus_alert_rule": True,
+              "structured_correlation_evidence": True,
+              "actionable_operator_guidance": True,
+              "recovery_clear_behavior": True,
+              "repeat_raise_suppression": True,
+              "raw_search_data_not_observed": True
+            },
+            "governance": {"publication_approval_changed": False, "production_data_used": False},
+            "claim_boundary": {
+              "notification_delivery_complete": False,
+              "distributed_tracing_complete": False,
+              "dashboards_complete": False,
+              "runbooks_complete": False,
+              "on_call_handover_complete": False,
+              "phase_7_complete": False
+            }
+          }
+          Path("artifacts/search-health-alerting-evidence.json").write_text(json.dumps(evidence, indent=2, sort_keys=True)+"\n")
+          PY
+      - name: Validate evidence contract
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          e=json.loads(Path("artifacts/search-health-alerting-evidence.json").read_text())
+          assert e["decision"] == "pass"
+          assert e["exact_head"] == os.environ["EXPECTED_HEAD"]
+          assert e["controls"]["raise_after_red_or_unreachable"] == 2
+          assert e["controls"]["clear_after_green_or_yellow"] == 2
+          assert e["governance"]["publication_approval_changed"] is False
+          assert e["governance"]["production_data_used"] is False
+          assert not any(e["claim_boundary"].values())
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: search-health-alerting-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  search-health-alerting-gate:
+    if: always()
+    needs: [search-health-alerting]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.search-health-alerting.result }}
+        run: test "$RESULT" = "success"
