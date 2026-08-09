@@ -2,36 +2,34 @@
 
 ## Decision
 
-`CI_VALIDATION_PENDING`
+`PASS`
 
 ## Objective
 
 Validate a bounded, read-only operational dashboard over existing DTMO Prometheus telemetry without exposing sensitive request data, introducing production credentials or granting publication authority.
 
-## Required exact-head evidence
+## Accepted exact-head evidence
 
-Acceptance requires all of the following on one final PR head:
+PR #95 exact head `602c316e5dca2b17787523c70e8eb8e327e78b0d` completed **42/42 registered workflows successfully**, including `RC10 Operational Dashboard Gate` and `RC4 Quality Gate`.
 
-- non-editable provisioned Prometheus datasource and dashboard provider;
-- dashboard covers HTTP rate/latency/in-flight, API alert, connector alert/outcome, queue utilization, storage-integrity alert, search-health alert and bounded trace-context signals;
-- raw request/response bodies, raw URLs/query strings, credentials, identities, object keys and checksums are excluded from dashboard queries/configuration;
-- anonymous access, self-signup and org creation are disabled in the local overlay;
-- local Grafana port is loopback-only;
-- Grafana runtime image fails closed to an externally supplied supported security-patched tag plus sha256 digest;
-- administrative credentials are externally supplied and not stored in source;
-- no-new-privileges is enabled;
-- RBAC, separation of duties, provenance and human share approval are unchanged;
-- dedicated `RC10 Operational Dashboard Gate` succeeds and retains exact-head JUnit/log/JSON evidence;
-- every registered workflow succeeds on the exact final head.
+Retained artifact `9042548010`, digest `sha256:11125b626f0f6431bc40a9700333bdba8f5c07175981e427f87f62b279a4fddf`, is bound to that exact head. Independent inspection showed:
+
+- machine-readable `decision: pass`;
+- all declared dashboard controls true;
+- governance fields keep RBAC/publication authority unchanged and production credentials/data absent;
+- claim-boundary fields remain false;
+- JUnit **5 tests, 0 failures, 0 errors, 0 skips**.
+
+PR #95 merged as `2726adeed0762b38f3ce03817bcb68aea688e356`.
 
 ## Security/vendor boundary
 
-First-party Grafana advisories reviewed for this run include CVE-2026-27876, CVE-2026-28383 and CVE-2026-21721. The repository therefore does not claim any fixed Grafana tag is currently safe; deployment must select a supported security-patched release, verify the image digest and repeat advisory review at deployment time.
+First-party Grafana advisories reviewed for this run include CVE-2026-27876, CVE-2026-28383 and CVE-2026-21721. The repository does not claim any fixed Grafana tag is currently safe; deployment must select a supported security-patched release, verify the image digest and repeat advisory review at deployment time.
 
 ## Claim boundary
 
-This gate does not claim production Grafana deployment, production TLS/network controls, SSO/RBAC integration, runbook completion, on-call handover, Phase 7 completion, Phase 6 assistive-technology completion or any issue #1 external production gate.
+This PASS does not claim production Grafana deployment, production TLS/network controls, SSO/RBAC integration, runbook completion/exercise, on-call handover, Phase 7 completion, Phase 6 assistive-technology completion or any issue #1 external production gate.
 
 ## Exactly one next priority
 
-Accept only after complete exact-head workflow success and independent retained-artifact inspection.
+Execute and independently validate the bounded operational incident runbook baseline.

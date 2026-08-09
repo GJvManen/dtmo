@@ -1,0 +1,98 @@
+name: RC10 Operational Runbooks Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  operational-runbooks:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Execute RC10.9 operational runbook gate
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc10_9_operational_runbooks.py \
+            --junitxml=artifacts/operational-runbooks.xml \
+            | tee artifacts/operational-runbooks-pytest.log
+      - name: Record exact-head evidence
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+            "decision": "pass",
+            "exact_head": os.environ["EXACT_HEAD"],
+            "objective": "bounded operational incident runbook baseline",
+            "controls": {
+              "api_outage_runbook": True,
+              "connector_failure_runbook": True,
+              "search_health_runbook": True,
+              "storage_integrity_recovery_runbook": True,
+              "severity_and_roles_defined": True,
+              "evidence_preservation_defined": True,
+              "known_good_recovery_required": True,
+              "privacy_safe_incident_records": True,
+              "human_share_approval_preserved": True,
+              "alert_metrics_bound": True
+            },
+            "governance": {
+              "rbac_changed": False,
+              "publication_approval_changed": False,
+              "production_data_used": False
+            },
+            "claim_boundary": {
+              "runbooks_exercised": False,
+              "on_call_handover_complete": False,
+              "operational_ownership_accepted": False,
+              "phase_7_complete": False,
+              "production_acceptance_complete": False
+            }
+          }
+          Path("artifacts/operational-runbooks-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+      - name: Validate evidence contract
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          e = json.loads(Path("artifacts/operational-runbooks-evidence.json").read_text())
+          assert e["decision"] == "pass"
+          assert e["exact_head"] == os.environ["EXPECTED_HEAD"]
+          assert all(e["controls"].values())
+          assert e["governance"]["rbac_changed"] is False
+          assert e["governance"]["publication_approval_changed"] is False
+          assert e["governance"]["production_data_used"] is False
+          assert not any(e["claim_boundary"].values())
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: operational-runbooks-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  operational-runbooks-gate:
+    if: always()
+    needs: [operational-runbooks]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.operational-runbooks.result }}
+        run: test "$RESULT" = "success"
