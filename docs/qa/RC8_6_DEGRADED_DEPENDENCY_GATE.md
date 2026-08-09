@@ -39,27 +39,40 @@ The retained artifact must contain JUnit results plus machine-readable degraded-
 - dedicated workflow succeeds and retained evidence is inspectable;
 - all other required regression workflows succeed.
 
-## First exact-head execution
+## Superseded first execution
 
-Superseded PR head `fd5739d7ae03a7e8574282afc39c3a0c83a205b8` registered 18 workflows.
+Superseded PR head `fd5739d7ae03a7e8574282afc39c3a0c83a205b8` produced technically successful dedicated evidence but was correctly blocked by RC4 Quality due to Ruff `F841`. The deterministic lint defect was removed; evidence from that older head is retained only as diagnostic history.
 
-Dedicated RC8.6 run `31289553204` succeeded. Artifact `9030943239`, digest `sha256:9de7af1dfe2eb6666601152b0452607e3a427af5224f4b33d59eed777eeeb39f`, was independently inspected and contained:
+## Final exact-head acceptance
+
+Final PR #45 head: `e3c157505f4619ef2accbd1e2990fdc673c1cf86`.
+
+All 18 registered required workflows completed with `success`, including:
+
+- RC4 Quality Gate;
+- both RC6 recovery gates;
+- all RC7 connector, provenance, retry, timeout and failure-isolation gates;
+- RC8 API-read, OpenSearch search-read, ingestion-throughput and queue-burst regression gates;
+- Open Source Governance Gate;
+- `RC8 Degraded Dependency Performance Gate` run `31289663568`.
+
+Retained artifact `9030972060`, digest `sha256:f8ca3ccaac5b3bfb5ad9fbc30004d02f45b57ea6c84f4a7f33899178f160abbf`, was independently inspected and records:
 
 - 100 submitted / 100 delivered;
-- 20 buffered during outage;
-- 298 dependency-failure/retry events;
+- 20 buffered during a 0.25 s injected outage;
+- 300 dependency-failure events;
 - dependency unavailability observed;
 - 0 data loss;
 - 0 duplicate candidate deliveries;
-- 0.25 s injected outage;
 - 1.013 s recovery against a 900 s budget;
 - provenance preserved;
 - publication state preserved;
-- JUnit 6 tests, 0 failures/errors/skips.
+- `load_test_may_publish=false`;
+- `external_load_gate_satisfied=false`;
+- `production_opensearch_hardening_satisfied=false`;
+- JUnit 6 tests, 0 failures, 0 errors and 0 skipped.
 
-The overall RC4 Quality Gate nevertheless failed because Ruff reported `F841` for an unused local `dependency_name` variable. That failure blocks acceptance and caused later type-check/full-test steps in that job to be skipped.
-
-The first deterministic failure was remediated by removing the unused variable in commit `682a876a4339485ac1ee3708deaeef0ca70c0f65`. Subsequent documentation commits also change exact-head identity, so all superseded evidence is retained only as diagnostic history and cannot be used to mark the final head PASS.
+PR #45 was merged with expected-head protection as `fc42e76e60783bdf1670fe2e208ef9eff70e68bc`.
 
 ## Fail-closed rule
 
@@ -67,4 +80,4 @@ Any absent, queued, cancelled, failed or unexecuted required workflow is **not P
 
 ## Current status
 
-`CI_VALIDATION_PENDING` for RUN-20260809-084 after deterministic lint remediation and audit documentation update. Acceptance is deferred until the final exact head executes all required workflows successfully and the new retained artifact is independently inspected.
+`PASS` via RUN-20260809-085. RC8.6 proves only the bounded synthetic degraded-dependency gate. The independent representative production load/stress test, production OpenSearch hardening, staging acceptance and later roadmap phases remain open.
