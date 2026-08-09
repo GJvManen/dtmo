@@ -17,7 +17,7 @@ Validate a repository-controlled production-equivalent staging emulator contract
 - OpenSearch security is not disabled by configuration.
 - Secrets, license material, certificates and credentials are external inputs and never committed.
 - Live connectors and AI analyst features default off in the emulator.
-- Human publication/share approval remains required and separate from technical access.
+- Human publication/share approval remains required and separate from technical access; human share approval is never granted by emulator access, CI success, service identity, or technical responder status.
 - CI validates the rendered Compose topology without pulling or executing the declared images.
 
 ## Claim boundary
@@ -30,6 +30,10 @@ The emulator is a deterministic rehearsal and configuration-control surface. Rea
 
 PASS requires every registered workflow on the exact final PR head to succeed and the retained `phase8-staging-emulator-evidence` artifact to be exact-head bound and internally consistent. Missing, queued, cancelled, failed or stale-head evidence is not PASS.
 
+## RUN-152 CI-integrity remediation
+
+The first RUN-151 exact head completed 46/47 registered workflows successfully; RC4 failed because this QA document did not contain the canonical phrase `human share approval` required by the governance regression test. The documentation contract was corrected without weakening or suppressing the test. Fresh complete exact-head CI is required.
+
 ## Exactly one next priority
 
-After emulator acceptance, use the emulator contract as the deployment specification for a real approved staging environment and retain the ten deployment-parity evidence classes before executing staging acceptance suites.
+Verify every registered workflow on the remediated PR #104 exact head and independently inspect regenerated `phase8-staging-emulator-evidence`. Merge only on complete success.
