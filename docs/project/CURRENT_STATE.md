@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-09 — RUN-20260809-126 (`PASS` in the final merged state)
+Last reconciled: 2026-08-09 — RUN-20260809-128 (`CI_VALIDATION_PENDING` until final documentation exact-head CI)
 
 This document is the human-readable current-state view of DTMO. It complements the immutable run history in `docs/development/runs/`, the chronological `docs/development/RUN_LOG.md`, the production roadmap, QA gate records and GitHub issues #1–#3.
 
@@ -15,7 +15,8 @@ This document is the human-readable current-state view of DTMO. It complements t
 - Phase 7 — observability and incident operations: `IN PROGRESS`.
   - RC10.1 request observability: `PASS`.
   - RC10.2 controlled connector-failure alerting: `PASS`.
-  - RC10.3 queue-backlog alerting: next bounded implementation objective.
+  - RC10.3 bounded queue-backlog alerting: `PASS`.
+  - RC10.4 storage-integrity alerting: next bounded implementation objective after RUN-128 documentation acceptance.
 - Phase 8 — staging acceptance: `NOT STARTED`.
 - Phase 9 — external assurance: `NOT COMPLETE`.
 - Phase 10 — production go/no-go: `NOT STARTED`.
@@ -88,35 +89,30 @@ Configured or queued workflows are not evidence of success. The accepted state r
 
 ### RC10.1 — request observability
 
-PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc` passed all 34 registered workflows. Retained artifact `9040196394`, digest `sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`, independently proved:
-
-- validated/safe correlation IDs;
-- correlation ID and method in real `structlog` request context;
-- structured request completion/failure events;
-- bounded route-template Prometheus request metrics;
-- request latency metrics;
-- in-flight request metric;
-- JUnit 5 tests, 0 failures/errors/skips.
-
-PR #80 merged as `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
+PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc` passed all 34 registered workflows. Retained artifact `9040196394`, digest `sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`, independently proved safe correlation IDs, real structured request context, bounded route-template metrics, latency and in-flight request metrics. JUnit: 5/5. Merge: `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
 
 ### RC10.2 — controlled connector-failure alerting
 
-PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243` passed all 35 registered workflows. Retained artifact `9040485255`, digest `sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`, independently proved:
+PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243` passed all 35 registered workflows. Retained artifact `9040485255`, digest `sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`, independently proved terminal failure signaling, Prometheus alert metric/rule, structured correlation evidence, actionable operator guidance, raw-error exclusion, repeat-raise suppression and recovery/clear behavior. JUnit: 4/4. Merge: `f6680423860389288d9feced34592294d774bf4a`.
 
-- terminal connector failure sets an active bounded alert signal;
-- Prometheus alert metric and `DTMOConnectorFailure` rule;
-- structured safe correlation evidence;
+### RC10.3 — bounded queue-backlog alerting
+
+PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74` passed all 36 registered workflows. Retained artifact `9040996591`, digest `sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`, independently proved:
+
+- bounded operational queue identifiers;
+- queue depth, capacity and utilization metrics;
+- alert raise at `>=80%` utilization;
+- recovery clear at `<=50%` utilization;
+- hysteresis between raise/clear thresholds;
+- structured correlated raise/active/clear evidence;
 - actionable operator guidance;
-- raw connector error text excluded from alert logs;
-- repeated failure does not create another raise transition while already active;
-- subsequent success clears the signal and emits clear evidence;
-- publication approval remains unchanged;
-- JUnit 4 tests, 0 failures/errors/skips.
+- accepted RC8 queue-pressure/backpressure contract reuse;
+- observer-only behavior with no queue-item mutation or publication approval change;
+- JUnit: 5 tests, 0 failures/errors/skips.
 
-PR #82 merged as `f6680423860389288d9feced34592294d774bf4a`.
+PR #84 merged as `42ccbe04cbc1081f93e4a155243627b5a3038573`.
 
-RC10.2 does not claim pager/e-mail/chat notification delivery, queue/storage/API/search alerting, dashboards, runbooks or Phase-7 completion.
+RC10.3 does not claim a separate deployed durable queue service, external notification delivery, storage/API/search alerting, dashboards, runbooks or Phase-7 completion.
 
 ## Phase 6 external accessibility boundary
 
@@ -138,11 +134,11 @@ Issue #1 remains authoritative for externally executed production gates, includi
 - Review and share approval remain separate human actions.
 - The same principal may not review and share-approve the same item.
 - Connectors and service accounts cannot approve publication.
-- Ingestion, replay, retry, recovery, timeout, performance or observability success never implies publication approval.
+- Ingestion, connector, queue, replay, retry, recovery, timeout, performance or observability success never implies publication approval.
 - Provenance, confidence and raw evidence remain retained according to their controls.
 - Performance and controlled-failure fixtures use synthetic or explicitly approved non-production data.
 - Missing, queued, cancelled, failed or unexecuted CI is never `PASS`.
 
 ## Exactly one current priority
 
-Phase 7 / RC10.3 — implement a bounded queue-backlog alerting gate with explicit threshold semantics, actionable correlated evidence and controlled breach/recovery behavior. Storage-integrity, API-error and search-health alerting remain later Phase-7 objectives.
+Complete RUN-20260809-128 documentation exact-head CI and protected merge. After that, Phase 7 / RC10.4 — implement bounded storage-integrity alerting with controlled integrity-failure/recovery evidence, actionable correlation, no raw sensitive payload leakage and retained exact-head evidence. API-error and search-health alerting remain later Phase-7 objectives.
