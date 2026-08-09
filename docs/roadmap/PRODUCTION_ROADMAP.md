@@ -164,7 +164,7 @@ Phase 7 remains incomplete because distributed tracing, queue-backlog/storage-in
 
 ### Current decision
 
-`IN PROGRESS`. RC10.1 request observability and RC10.2 controlled connector-failure alerting are accepted. Exactly one next implementation priority after the documentation reconciliation gate is RC10.3 bounded queue-backlog alerting with threshold semantics, actionable correlated evidence and controlled breach/recovery behavior.
+`IN PROGRESS`. RC10.1 request observability and RC10.2 controlled connector-failure alerting are accepted. Exactly one next priority is RC10.3 bounded queue-backlog alerting with explicit threshold semantics, actionable correlated evidence and controlled breach/recovery behavior. Storage-integrity, API-error and search-health alerting remain later objectives.
 
 ## Phase 8 — Staging acceptance
 
