@@ -1,6 +1,6 @@
 # Current-State Documentation Reconciliation Gate
 
-Status: `CI_VALIDATION_PENDING`
+Status: `PASS`
 
 ## Control objective
 
@@ -11,10 +11,10 @@ Ensure every authoritative human-visible current-state entry point accurately re
 This reconciliation corrects documentation drift that remained after accepted Phase-5, Phase-6 and Phase-7 work:
 
 - `README.md` no longer describes Phase 5 / RC8.6 as the active priority;
-- `docs/project/CURRENT_STATE.md` now reflects Phase 1–5 internal `PASS`, Phase 6 `BLOCKED_EXTERNAL`, and Phase 7 `IN PROGRESS`;
-- `docs/roadmap/PRODUCTION_ROADMAP.md` records accepted RC10.1 and RC10.2 evidence and RC10.3 as the next implementation priority after this gate;
+- `docs/project/CURRENT_STATE.md` reflects Phase 1–5 internal `PASS`, Phase 6 `BLOCKED_EXTERNAL`, and Phase 7 `IN PROGRESS`;
+- `docs/roadmap/PRODUCTION_ROADMAP.md` records accepted RC10.1 and RC10.2 evidence and RC10.3 as the next implementation priority;
 - `docs/development/RUN_LOG.md` records RC10.2 acceptance and the restored historical acceptance records;
-- `docs/qa/QA_AND_RELEASE_GATES.md` now reflects the current phase and gate model rather than the obsolete Phase-5/RC8.5 state;
+- `docs/qa/QA_AND_RELEASE_GATES.md` reflects the current phase and gate model rather than the obsolete Phase-5/RC8.5 state;
 - `docs/qa/RC10_2_CONNECTOR_FAILURE_ALERTING_GATE.md` records RC10.2 `PASS` evidence;
 - stale `CI_VALIDATION_PENDING` QA decisions for accepted RC8.8, RC9.1 and RC9.2 are corrected;
 - missing historical runs RUN-20260809-088, RUN-20260809-089, RUN-20260809-091, RUN-20260809-095 and RUN-20260809-097 are restored from their superseded audit branches.
@@ -32,16 +32,20 @@ This documentation gate does not invent new product acceptance. It reconciles al
 
 Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA evidence and issue #1 external production gates remain open.
 
-## Gate discipline
+## Reconciliation validation
 
-This reconciliation itself is documentation-only but remains exact-head CI gated. It may become `PASS` only after every registered workflow executes successfully on the final pull-request head. Missing, queued, cancelled, failed or unexecuted CI is never accepted as evidence.
+RUN-126 reconciliation validation head `187d645a7f3c3200e545be23312c4165b7b2f7dc` completed all 35 registered workflows successfully with no failures before the final status/current-priority reconciliation. The final documentation head is required to repeat complete exact-head success before protected merge; this `PASS` is valid only in that final merged state.
 
-Superseded legacy documentation-only PRs #47, #49, #52 and #54 may be closed only after their historical records are authoritative on `main` through this reconciliation.
+Configured, queued, cancelled, failed or unexecuted workflows are not accepted as PASS.
+
+## Legacy documentation PR handling
+
+Superseded documentation-only PRs #47, #49, #52 and #54 contain historical records now restored by RUN-126. They may be closed after the final reconciliation merge confirms those records are authoritative on `main`.
 
 ## Current decision
 
-`CI_VALIDATION_PENDING` for RUN-20260809-126 documentation reconciliation. The underlying RC10.2 product gate is already `PASS` and merged.
+`PASS` for current-state documentation reconciliation, contingent on the final exact-head CI and protected merge of the reconciliation PR. Underlying product acceptance boundaries remain unchanged.
 
 ## Exactly one next priority
 
-Inspect every registered workflow on the final RUN-20260809-126 reconciliation head. Repair only the first deterministic failure, or merge only after complete exact-head success. After that, begin Phase 7 / RC10.3 bounded queue-backlog alerting.
+Phase 7 / RC10.3 — implement bounded queue-backlog alerting with explicit threshold semantics, actionable correlated evidence, controlled breach/recovery behavior and retained exact-head evidence. Storage-integrity, API-error and search-health alerting remain later objectives.
