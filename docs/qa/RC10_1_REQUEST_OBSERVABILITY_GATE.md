@@ -2,38 +2,35 @@
 
 ## Decision
 
-`CI_VALIDATION_PENDING`
+`PASS`
 
 RC10.1 starts Phase 7 with exactly one bounded objective: make HTTP request telemetry correlation-safe, structured and operationally bounded without changing business behavior.
 
-## Scope
+## Accepted exact-head evidence
 
-- validate or replace inbound `X-Correlation-ID` values before they enter logs;
-- bind the accepted correlation ID and HTTP method into the real `structlog` context;
-- emit structured `http_request_completed` and `http_request_failed` events with route template, status and duration;
-- expose bounded Prometheus request counters and latency histograms keyed by route templates rather than raw URL paths;
-- expose an in-flight HTTP request gauge;
-- retain exact-head JUnit, pytest log and machine-readable evidence in `request-observability-evidence`.
+PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc` completed all 34 registered workflows successfully.
+
+Retained artifact `9040196394`, digest `sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`, was independently inspected and is identity-bound to the accepted exact head.
+
+Evidence confirms:
+
+- safe inbound correlation-ID handling;
+- correlation ID and HTTP method bound into the real `structlog.contextvars` context;
+- structured `http_request_completed` and `http_request_failed` events;
+- bounded Prometheus request counters and latency histograms keyed by route templates instead of raw URL paths;
+- HTTP in-flight request gauge;
+- exact-head machine-readable decision `pass`;
+- JUnit: 5 tests, 0 failures, 0 errors, 0 skipped;
+- no production data used;
+- no business mutation added.
+
+PR #80 merged with expected-head protection as `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
 
 ## Risk addressed
 
-The previous implementation stored correlation IDs in a standalone Python `ContextVar` while the logging pipeline used `structlog.contextvars.merge_contextvars`. That does not by itself bind the standalone value into structlog's context, so correlation could not be relied on as structured-log evidence.
+The prior implementation stored correlation IDs in a standalone Python `ContextVar` while the logging pipeline consumed structlog context variables, so correlation could not be relied on as structured-log evidence. The prior HTTP metrics also labelled requests by raw URL path, creating a risk of high-cardinality Prometheus series for dynamic paths.
 
-The previous HTTP metrics also labelled requests by raw URL path. Dynamic path values can create unbounded Prometheus label cardinality and weaken operational usefulness.
-
-## Gate
-
-The dedicated `RC10 Request Observability Gate` must pass on the exact pull-request head. Its retained evidence must show:
-
-- safe correlation-ID handling;
-- structured log context containing correlation ID and method;
-- route-template request counters;
-- route-template request latency metrics;
-- in-flight request metrics;
-- no production data;
-- no added business mutation.
-
-Missing, queued, cancelled, failed or unexecuted CI is never `PASS`.
+RC10.1 closes those two bounded gaps.
 
 ## Claim boundary
 
@@ -51,4 +48,4 @@ RBAC, separation of duties, privacy, provenance, persistent audit evidence and s
 
 ## Exactly one next priority
 
-Inspect every required workflow on the exact RC10.1 pull-request head and independently inspect retained `request-observability-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful evidence.
+Phase 7 / RC10.2 — add one bounded controlled-failure alerting gate for connector failures, including actionable alert signal, correlation evidence, recovery/clear behavior and retained exact-head evidence. Queue backlog, storage integrity, API-error and search-health alerting remain later objectives.
