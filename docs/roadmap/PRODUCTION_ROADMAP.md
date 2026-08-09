@@ -21,17 +21,25 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 
 ### Latest accepted Phase 7 evidence
 
-RC10.1 request observability is `PASS`:
+**RC10.1 request observability — PASS**
 
 - PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc`;
 - 34/34 registered workflows successful;
-- retained artifact `9040196394`;
-- digest `sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`;
+- retained artifact `9040196394`, digest `sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`;
 - 5/5 JUnit tests successful;
 - safe correlation IDs, structured request-log context, bounded route-template request metrics, request-latency metrics and in-flight request metrics evidenced;
 - merged as `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
 
-Phase 7 remains incomplete because distributed tracing, controlled alerting, operational dashboards, runbooks, on-call handover and ownership/escalation evidence remain open.
+**RC10.2 controlled connector-failure alerting — PASS**
+
+- PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243`;
+- 35/35 registered workflows successful;
+- retained artifact `9040485255`, digest `sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`;
+- 4/4 JUnit tests successful;
+- terminal failure signal, Prometheus alert metric/rule, structured correlation evidence, actionable guidance, raw-error exclusion, repeat-raise suppression and recovery/clear behavior evidenced;
+- merged as `f6680423860389288d9feced34592294d774bf4a`.
+
+Phase 7 remains incomplete because distributed tracing, queue-backlog/storage-integrity/API-error/search-health alerting, operational dashboards, runbooks, on-call handover and ownership/escalation evidence remain open. Pager/email/chat delivery is not claimed by RC10.2.
 
 ## Phase 1 — CI and workflow integrity
 
@@ -113,6 +121,10 @@ Phase 7 remains incomplete because distributed tracing, controlled alerting, ope
 - No data loss occurs during dependency degradation.
 - Capacity limits and scaling guidance are documented.
 
+### Current decision
+
+`PASS` for the bounded internal roadmap gates. RC8.8 capacity/scaling guidance remains explicitly separate from issue #1's independent representative production load/stress gate.
+
 ## Phase 6 — Frontend accessibility and operational UX
 
 ### Objectives
@@ -152,7 +164,7 @@ Phase 7 remains incomplete because distributed tracing, controlled alerting, ope
 
 ### Current decision
 
-`IN PROGRESS`. RC10.1 request observability is accepted. Exactly one next priority is RC10.2 controlled connector-failure alerting with actionable alert, correlation and recovery/clear evidence.
+`IN PROGRESS`. RC10.1 request observability and RC10.2 controlled connector-failure alerting are accepted. Exactly one next implementation priority after the documentation reconciliation gate is RC10.3 bounded queue-backlog alerting with threshold semantics, actionable correlated evidence and controlled breach/recovery behavior.
 
 ## Phase 8 — Staging acceptance
 
