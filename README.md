@@ -18,6 +18,7 @@ DTMO bevindt zich in **Phase 7 — observability en incident operations** van de
 - RC9.1–RC9.15 — browser/accessibility critical-journey evidence: geaccepteerd binnen de beschreven bounded scopes;
 - RC10.1 — request observability: `PASS`;
 - RC10.2 — controlled connector-failure alerting: `PASS`;
+- RUN-20260809-126 — authoritative documentation reconciliation: `PASS` in de final merged state;
 - Apache-2.0/open-source-governance baseline: `PASS`.
 
 ### Open en geblokkeerd
@@ -112,4 +113,4 @@ Belangrijke endpoints:
 
 DTMO is nog niet productiegereed. Phase 6 heeft een expliciete externe assistive-technology blocker, Phase 7 is nog in uitvoering, en Phases 8–10 plus issue #1 vereisen aanvullende evidence.
 
-**Precies één volgende implementatieprioriteit na documentatiereconciliatie:** RC10.3 — bounded queue-backlog alerting met threshold semantics, actionable correlation evidence en controlled breach/recovery behavior. Storage-integrity, API-error en search-health alerting blijven latere objectives.
+**Precies één volgende prioriteit:** RC10.3 — bounded queue-backlog alerting met expliciete threshold semantics, actionable correlation evidence en controlled breach/recovery behavior. Storage-integrity, API-error en search-health alerting blijven latere Phase-7 objectives.
