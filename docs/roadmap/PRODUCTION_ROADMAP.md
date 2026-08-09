@@ -8,13 +8,13 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 
 ## Current status — 2026-08-09
 
-- Phase 1 — CI and workflow integrity: `PASS`.
+- Phase 1 — CI and workflow integrity: `PASS` for accepted mainline evidence; PR #97 has an active exact-head acceptance blocker until RUN-143's remediated full matrix passes.
 - Phase 2 — Application security and identity: `PASS` for internal gates.
 - Phase 3 — Data integrity and recovery: `PASS` for internal gates.
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.9 are accepted. RC10.10 controlled synthetic runbook exercise is `CI_VALIDATION_PENDING`.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.9 are accepted. RC10.10 remains `CI_VALIDATION_PENDING` after RUN-143 evidence-validator remediation.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -28,8 +28,8 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - RC10.5 API-error alerting: `PASS` — PR #92.
 - RC10.6 search-health alerting: `PASS` — PR #93.
 - RC10.7 distributed trace-context baseline: `PASS` — PR #94.
-- RC10.8 operational dashboard: `PASS` — PR #95 exact head `602c316e5dca2b17787523c70e8eb8e327e78b0d`, 42/42 workflows, artifact `9042548010`.
-- RC10.9 operational incident runbooks: `PASS` — PR #96 exact head `625757de118878d7c7b7b60847959c17d3c7c844`, 43/43 workflows, artifact `9042812326`, digest `sha256:05b77e93d415396519771ddae319c95353d124dc3346d5cc756c508046b0a8cb`, JUnit 6/6, merge `28ffdc1d0c510ab57ea42751eb74261192899438`.
+- RC10.8 operational dashboard: `PASS` — PR #95.
+- RC10.9 operational incident runbooks: `PASS` — PR #96 exact head `625757de118878d7c7b7b60847959c17d3c7c844`, 43/43 workflows, artifact `9042812326`, merge `28ffdc1d0c510ab57ea42751eb74261192899438`.
 
 RUN-141 is accepted as the Phase-1 CI-integrity remediation that fixed the initial RC10.9 governance-text regression without weakening tests or policy.
 
@@ -43,29 +43,23 @@ Objectives: regression-protect release-critical workflows, validate triggers/job
 
 Blocking gates: workflow contract tests pass; required jobs/triggers are validated; workflow evidence is observable; failed/absent workflows cannot be interpreted as success.
 
-Current decision: `PASS`.
+RUN-143 is an active bounded Phase-1 remediation discovered during RC10.10 acceptance. PR #97 exact head `1862b1c4e9e768da82baef3470464845cadf3967` completed 43/44 workflows. The dedicated `RC10 Operational Runbook Exercise Gate` failed after its scenario tests passed 5/5 because its evidence validator used `assert all(e["controls"].values())`, which incorrectly rejected the intentionally false safety controls `production_data_used=false` and `production_credentials_used=false`.
+
+The validator is corrected without weakening the gate: required-positive controls are asserted `True`; required-negative safety controls are asserted `False`; all claim-boundary values must remain false. A complete fresh exact-head matrix and regenerated retained artifact are mandatory. The failed prior head is not accepted.
 
 ## Phase 2 — Application security and identity
-
-Objectives: enterprise identity or hardened trust boundary, strong RBAC/separation of duties, privileged audit logging, SAST/dependency/secrets/container scanning.
 
 Current decision: `PASS` for internal gates.
 
 ## Phase 3 — Data integrity and recovery
 
-Objectives: PostgreSQL migration/constraint integrity, raw-object immutability/checksums, backup/retention/restoration and clean restoration.
-
 Current decision: `PASS` for internal gates; full representative external restore acceptance remains in issue #1.
 
 ## Phase 4 — Live connector reliability and provenance
 
-Objectives: controlled live canaries, retry/backoff/dedup/source health/failure isolation, retained source/timestamp/confidence/raw evidence and human publication approval.
-
 Current decision: `PASS` for internal gates.
 
 ## Phase 5 — Performance and scalability
-
-Objectives: API/PostgreSQL/OpenSearch/ingestion performance, queue pressure and degraded dependency behavior.
 
 Current decision: `PASS` for bounded internal gates; representative production load/stress remains external.
 
@@ -89,22 +83,15 @@ Blocking gates:
 
 ### RC10.10 controlled synthetic operational runbook exercise — `CI_VALIDATION_PENDING`
 
-RUN-142 adds a scenario-driven technical exercise over the accepted runbooks:
+RUN-142 adds a scenario-driven technical exercise over the accepted runbooks for API elevated-5xx, connector/source degradation, search red/unreachable, and storage-integrity failure. Each scenario requires severity/scope classification, evidence preservation, reversible containment, security/privacy branching, known-good recovery, objective validation, human communication/share approval and residual-risk handoff. No production data, production credentials, destructive remediation or external communication is used.
 
-- API elevated-5xx;
-- connector/source degradation;
-- search red/unreachable;
-- storage-integrity failure.
+The first PR #97 exact head is not accepted: 43/44 workflows succeeded, while the dedicated exercise gate failed only in its evidence validator. RUN-143 fixes that validator logic; every workflow and retained `operational-runbook-exercise-evidence` must regenerate on one new exact final head.
 
-Each scenario requires severity/scope classification, evidence preservation, reversible containment, security/privacy branching, known-good recovery, objective validation, human communication/share approval and residual-risk handoff. No production data, production credentials, destructive remediation or external communication is used.
-
-Fresh CISA CTEP and cybersecurity-scenario guidance was reviewed. The exercise is deliberately characterized as a **controlled synthetic technical exercise**; it does not claim human tabletop participation, response-time evidence, on-call handover or operational ownership acceptance.
-
-RC10.10 is not accepted until every registered workflow succeeds on one exact final head and retained `operational-runbook-exercise-evidence` is independently verified.
+The exercise remains a **controlled synthetic technical exercise** and does not claim human tabletop participation, response-time evidence, on-call handover or operational ownership acceptance.
 
 Phase 7 will remain incomplete after RC10.10 until operational ownership/escalation and on-call handover are evidenced. Any production observability-platform deployment acceptance remains staging/external work.
 
-Exactly one next priority: verify the complete exact-head workflow matrix and retained `operational-runbook-exercise-evidence` for RUN-142; merge only after all registered workflows succeed and retained evidence is exact-head bound.
+Exactly one next priority: verify all 44 workflows on the new exact PR #97 head and independently inspect regenerated `operational-runbook-exercise-evidence`; merge only after all registered workflows succeed and retained evidence is exact-head bound.
 
 ## Phase 8 — Staging acceptance
 
