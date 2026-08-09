@@ -1,0 +1,92 @@
+name: RC9 Reflow Accessibility Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reflow-e2e:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_FEATURE_LIVE_CONNECTORS: "false"
+      DTMO_E2E_BASE_URL: http://127.0.0.1:8765
+      DTMO_REFLOW_EVIDENCE_PATH: artifacts/browser-reflow-320-evidence.json
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+      - name: Start bounded DTMO reflow target
+        run: |
+          mkdir -p artifacts
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/reflow-server.log 2>&1 &
+          echo $! > artifacts/reflow-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/health.json; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat artifacts/reflow-server.log
+          exit 1
+      - name: Execute RC9.13 320 CSS px reflow gate
+        env:
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python -m pytest -q backend/tests/test_rc9_13_reflow_320.py --junitxml=artifacts/browser-reflow-320.xml
+      - name: Validate machine-readable reflow evidence
+        if: success()
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = json.loads(Path('artifacts/browser-reflow-320-evidence.json').read_text(encoding='utf-8'))
+          assert evidence['decision'] == 'pass'
+          assert evidence['exact_head'] == os.environ['EXPECTED_HEAD']
+          assert evidence['wcag_success_criterion'] == '1.4.10 Reflow'
+          assert evidence['viewport_css_px'] == {'width': 320, 'height': 900}
+          assert evidence['covered_surfaces'] == ['share_approval', 'analyst_search', 'ciso_token_revocation', 'auditor_read_only']
+          assert evidence['two_dimensional_content_exception_used'] is False
+          assert evidence['backend_session_rbac_real'] is True
+          assert evidence['human_share_approval_preserved'] is True
+          assert evidence['product_wide_wcag_2_2_aa_claimed'] is False
+          for surface in evidence['surfaces']:
+              metrics = surface['document_metrics']
+              assert metrics['documentClientWidth'] == 320
+              assert metrics['documentScrollWidth'] <= 321
+              assert metrics['bodyScrollWidth'] <= 321
+              assert metrics['overflowingVisibleElements'] == []
+              assert all(control['focusable'] for control in surface['critical_controls'])
+          PY
+      - name: Stop reflow target
+        if: always()
+        run: |
+          if test -f artifacts/reflow-server.pid; then
+            kill "$(cat artifacts/reflow-server.pid)" || true
+          fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: browser-reflow-320-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  reflow-gate:
+    if: always()
+    needs: [reflow-e2e]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed reflow evidence
+        env:
+          RESULT: ${{ needs.reflow-e2e.result }}
+        run: test "$RESULT" = "success"
