@@ -51,4 +51,4 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Exactly one next priority
 
-Perform one bounded manual/non-automatable WCAG 2.2 AA critical-journey review for the four accepted surfaces, retain criterion-level evidence, and block Phase 6 completion on any unresolved accessibility defect.
+Verify every registered workflow on the final PR #66 audit-record head and merge that documentation-only acceptance record only after complete successful exact-head CI; after that, the next technical objective is the bounded manual/non-automatable WCAG 2.2 AA critical-journey review.
