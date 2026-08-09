@@ -14,7 +14,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`, with normal progression blocked by the higher-severity supported object-storage remediation gate.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -35,7 +35,13 @@ PR #86 exact head `8aa56dacd64583de5e96c0fda188ba954437ffda`; 37/37 workflows; a
 
 Phase 7 remains incomplete because distributed tracing, API-error/search-health alerting, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open. RC10.2–RC10.4 do not claim external notification delivery; RC10.4 does not claim scheduled/fleet-wide production integrity scanning.
 
-A fresh storage-layer threat-intelligence review found that `docker-compose.yml` pins MinIO `RELEASE.2025-07-23T15-54-02Z`, which is inside documented affected-version ranges for multiple later MinIO advisories, including CVE-2026-41145. Because this is a higher-severity security-maintenance blocker, roadmap order is temporarily superseded: the vulnerable object-storage runtime must be remediated and revalidated before RC10.5 API-error alerting proceeds. Affected-version match is high confidence; configuration-specific exploitability of individual advisories remains separately bounded and must not be overstated.
+## Higher-severity object-storage blocker
+
+Fresh storage-layer threat intelligence established that `docker-compose.yml` pins MinIO `RELEASE.2025-07-23T15-54-02Z`, which is inside documented affected-version ranges for later MinIO advisories. RUN-20260809-131 further verified that upstream `minio/minio` is archived and explicitly no longer maintained and that legacy binary/container releases are unmaintained.
+
+Therefore the remediation gate is now `BLOCKED_EXTERNAL`: replacing the pin with another legacy image or a patched-but-unsupported community source build would not satisfy the supported-runtime production gate. Upstream points to successor offerings, but DTMO currently has no evidenced supported target, deployment contract, entitlement or lifecycle support source accepted in-repository.
+
+Affected-version and upstream-maintenance-status findings are high confidence. Configuration-specific exploitability of individual advisories remains separately bounded and is not overstated.
 
 ## Phase 1 — CI and workflow integrity
 
@@ -87,9 +93,9 @@ Blocking gates:
 - runbooks complete and exercised;
 - operational ownership/escalation documented.
 
-Current decision: `IN PROGRESS`. RC10.1, RC10.2, RC10.3 and RC10.4 are accepted. The normal next Phase-7 item is RC10.5 bounded API-error alerting, but execution is temporarily blocked by the higher-severity MinIO affected-version finding described above.
+Current decision: `IN PROGRESS`. RC10.1, RC10.2, RC10.3 and RC10.4 are accepted. Normal RC10.5 execution is deferred while the higher-severity supported object-storage remediation remains `BLOCKED_EXTERNAL`.
 
-Exactly one next priority: remediate the vulnerable MinIO runtime pin with a supported/patched object-storage release or explicitly supported successor, then execute relevant security, recovery, storage-integrity and full regression gates with retained exact-head evidence. Only after that gate is accepted should Phase 7 resume with RC10.5 API-error alerting.
+Exactly one next priority: obtain and record an explicit supported object-storage target for DTMO, including supported product/image or deployment method, lifecycle/support source, and required entitlement/credential boundary. Once evidenced, perform one bounded migration implementation and rerun relevant security, recovery, storage-integrity and full regression gates with retained exact-head evidence. Only after that gate is accepted should Phase 7 resume with RC10.5 API-error alerting.
 
 ## Phase 8 — Staging acceptance
 
