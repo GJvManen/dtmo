@@ -4,7 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260809-100 — RC9.4 bounded auditor read-only browser journey](runs/RUN-20260809-100.md) — `CI_VALIDATION_PENDING`: added one critical auditor browser journey with backend-derived `read:audit`, independent API enforcement, analyst UI denial plus direct backend `403`, real persisted PostgreSQL audit rendering, audit-chain verification and proof that browser reads do not mutate audit row count; exact-head CI and retained browser evidence are required before PASS.
+- [RUN-20260809-101 — RC9.4 exact-head acceptance](runs/RUN-20260809-101.md) — `PASS`: PR #57 exact head `487dbe1320a4ef820ff32f1c9ef8f8c7652a4868` passed all 23 registered workflows; retained artifact `9037246175` (`sha256:884950bf6789ecccedda51f0b2ff956a64328b30a9922ecf72414cc923707dc6`) independently proved Chromium execution, backend-derived `read:audit`, analyst UI denial and direct API `403`, persisted PostgreSQL audit rendering, audit-chain validity and no browser-induced audit mutation; merged as `c7877015869bf58dec3a5f2628d71c4b0c2cf97a`.
+- [RUN-20260809-100 — RC9.4 bounded auditor read-only browser journey](runs/RUN-20260809-100.md) — `CI_VALIDATION_PENDING`
 - [RUN-20260809-099 — RC9.3 exact-head acceptance](runs/RUN-20260809-099.md) — `PASS`: PR #55 exact head `e945702adff884f174a40393b3121f3aed99648b` passed all 22 registered workflows; retained artifact `9037014726` (`sha256:69256fdcaa01c5b9832bd711a669ff73ef4db5923cc0bc66beab47034cf2b795`) independently proved Chromium execution, backend-derived `revoke:tokens`, analyst backend denial, CISO revocation, Redis token state and persistent audit-chain validity; merged as `3743203bc1a6d93743af53fcb8d4257af153a710`.
 - [RUN-20260809-098 — RC9.3 bounded CISO token-revocation browser journey](runs/RUN-20260809-098.md) — `CI_VALIDATION_PENDING`
 - [RUN-20260809-097 — RC9.2 exact-head acceptance](runs/RUN-20260809-097.md) — `PASS`: PR #53 exact head `ebc9a7ca2ebb1c0e9b55c057eaad82d3f04e5afd` passed all 21 registered workflows; retained artifact `9036721912` (`sha256:308f98282c5520b3d96bc04f9b14c382dbdb83c1fc8817809c87ea03ce94a82e`) independently proved Chromium execution, backend-derived `read:intelligence`, loading/empty/success states and real backend 503 behavior; merged as `22bf74bb6c5c367195a3e67b0c8db4ec0489a449`.
@@ -38,8 +39,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260809-100` is `CI_VALIDATION_PENDING`. RC9.1, RC9.2 and RC9.3 are accepted. Phase 6 remains `IN PROGRESS`. RC9.4 adds one critical auditor read-only browser journey but is not accepted until every required workflow succeeds on the exact final PR head and retained `browser-auditor-readonly-evidence` is independently inspected. Issue #1 external production gates remain open.
+`RUN-20260809-101` is `PASS`. RC9.1 through RC9.4 are accepted. Phase 6 remains `IN PROGRESS`. Keyboard navigation, responsive behavior, supported-browser breadth and broad WCAG 2.2 AA evidence remain open. Issue #1 external production gates remain open.
 
 ## Exactly one next priority
 
-Inspect every registered workflow on the final RC9.4 PR head and independently inspect retained `browser-auditor-readonly-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful exact-head evidence.
+Phase 6 / RC9.5 — add one bounded keyboard-navigation accessibility gate across the accepted critical browser journeys, proving all interactive controls are reachable and operable without a pointing device and that visible focus is preserved. Responsive behavior, supported-browser breadth and broad WCAG 2.2 AA remain separate later objectives.
