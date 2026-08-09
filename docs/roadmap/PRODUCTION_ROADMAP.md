@@ -8,13 +8,13 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 
 ## Current status — 2026-08-09
 
-- Phase 1 — CI and workflow integrity: `PASS`.
+- Phase 1 — CI and workflow integrity: `PASS` for accepted mainline evidence; PR #96 has an active exact-head acceptance blocker until the remediated full matrix passes.
 - Phase 2 — Application security and identity: `PASS` for internal gates.
 - Phase 3 — Data integrity and recovery: `PASS` for internal gates.
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.8 and bounded object-storage remediation are accepted; RC10.9 operational runbooks are `CI_VALIDATION_PENDING` and not yet exercised.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.8 and bounded object-storage remediation are accepted; RC10.9 operational runbooks remain `CI_VALIDATION_PENDING` after RUN-141 quality-gate remediation and are not yet exercised.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -41,6 +41,8 @@ Production AIStor selection remains subject to the RUN-134 release/advisory floo
 Objectives: regression-protect release-critical workflows, validate triggers/jobs/permissions/services/artifacts, make execution observable, and fail closed on missing/malformed gates.
 
 Blocking gates: workflow contract tests pass; required jobs/triggers are validated; workflow evidence is observable; failed/absent workflows cannot be interpreted as success.
+
+RUN-141 is an active bounded Phase-1 remediation discovered during RC10.9 acceptance. PR #96 exact head `42d7104915a5e424e9cebc2e4f0a093cf7948f94` completed 42/43 workflows. The `RC4 Quality Gate` failed in the full pytest step because the runbook index omitted the canonical machine-checked governance phrase `human share approval`, although it contained near-equivalent wording. The documentation contract was corrected without weakening the test, workflow, RBAC or separation-of-duties requirement. A complete fresh exact-head matrix is mandatory.
 
 ## Phase 2 — Application security and identity
 
@@ -100,11 +102,11 @@ RUN-140 adds:
 
 Fresh authoritative threat/historical review uses CISA education-sector ransomware material, the CISA #StopRansomware Guide and CISA/FBI PaperCut CVE-2023-27350 reporting. Those sources document education-sector disruption, student-data theft/extortion, credential/system compromise, exfiltration and encryption, supporting evidence preservation, account review, containment and known-good recovery. They do not imply any current DTMO compromise or future attribution.
 
-RC10.9 is not accepted until every registered workflow succeeds on its exact final head and retained `operational-runbooks-evidence` is independently verified. Document validation does not count as exercise evidence.
+The first PR #96 exact head is not accepted: 42/43 workflows succeeded, but the aggregate `RC4 Quality Gate` failed on the canonical governance-text assertion. RUN-141 updates the runbook index to state explicitly that **human share approval** is never granted to technical responders, connectors, observability components or service accounts by incident status alone. The dedicated runbook gate's prior-head success is insufficient after this change; every workflow and retained `operational-runbooks-evidence` must regenerate on one new exact final head.
 
-Phase 7 remains incomplete after this baseline because the runbooks must still be exercised and operational ownership/escalation/on-call handover must be evidenced. Any required production observability-platform deployment acceptance also remains external/staging work.
+Phase 7 remains incomplete because the runbooks must still be exercised and operational ownership/escalation/on-call handover must be evidenced. Any required production observability-platform deployment acceptance also remains external/staging work.
 
-Exactly one next priority: verify the complete exact-head workflow matrix and retained `operational-runbooks-evidence` artifact for RUN-140; merge only after all registered workflows succeed and retained evidence is exact-head bound.
+Exactly one next priority: verify the complete fresh exact-head workflow matrix and regenerated retained `operational-runbooks-evidence` artifact for PR #96; merge only after all registered workflows succeed and retained evidence is exact-head bound.
 
 ## Phase 8 — Staging acceptance
 
