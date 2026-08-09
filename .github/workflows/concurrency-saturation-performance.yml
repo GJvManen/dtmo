@@ -1,0 +1,50 @@
+name: RC8 Concurrency Saturation Performance Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  concurrency-saturation-performance:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Run RC8.7 concurrency saturation regressions
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc8_concurrency_saturation.py --junitxml=artifacts/concurrency-saturation-tests.xml
+      - name: Execute bounded sustained read and ingest saturation
+        run: |
+          python -m dtmo.performance.concurrency_saturation \
+            --profile config/performance/phase5_workload_profile.json \
+            --duration-seconds 1 \
+            --concurrency 20 \
+            --read-rps 40 \
+            --ingest-rps 40 \
+            --output artifacts/concurrency-saturation-evidence.json
+          python -m json.tool artifacts/concurrency-saturation-evidence.json
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: concurrency-saturation-performance-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  concurrency-saturation-performance-gate:
+    if: always()
+    needs: [concurrency-saturation-performance]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed concurrency saturation evidence
+        env:
+          SATURATION_RESULT: ${{ needs.concurrency-saturation-performance.result }}
+        run: test "$SATURATION_RESULT" = "success"
