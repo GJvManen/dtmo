@@ -9,6 +9,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, ge
 
 from dtmo.alerts import connector_alerts
 from dtmo.api.routes import close_services, router as intelligence_router
+from dtmo.api_alerts import api_error_alerts
 from dtmo.auditor_ui import router as auditor_ui_router
 from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
@@ -106,6 +107,7 @@ async def request_context(request: Request, call_next):  # type: ignore[no-untyp
         route = _route_template(request)
         REQUESTS.labels(request.method, route, "500").inc()
         LATENCY.labels(request.method, route).observe(duration)
+        api_error_alerts.observe(route, status_code=500, correlation=request_id)
         log.exception(
             "http_request_failed",
             route=route,
@@ -122,6 +124,7 @@ async def request_context(request: Request, call_next):  # type: ignore[no-untyp
         response.headers["referrer-policy"] = "no-referrer"
         REQUESTS.labels(request.method, route, str(response.status_code)).inc()
         LATENCY.labels(request.method, route).observe(duration)
+        api_error_alerts.observe(route, status_code=response.status_code, correlation=request_id)
         log.info(
             "http_request_completed",
             route=route,
