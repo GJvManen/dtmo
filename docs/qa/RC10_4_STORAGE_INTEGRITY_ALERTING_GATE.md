@@ -45,8 +45,14 @@ RC10.4 does **not** claim:
 - Phase 7 is complete;
 - Phase 6's genuine VoiceOver/NVDA external gate is closed.
 
-A separate fresh threat-intelligence review identified that the repository-pinned MinIO runtime is within affected ranges for multiple later advisories. That does not invalidate the bounded RC10.4 behavioral evidence, but it creates a higher-severity security remediation priority before further Phase-7 feature work.
+## Runtime security/lifecycle blocker — RUN-20260809-131
+
+The separate runtime gate is `BLOCKED_EXTERNAL`. The repository still pins `minio/minio:RELEASE.2025-07-23T15-54-02Z`, which remains inside documented affected-version ranges identified in the fresh advisory review. Upstream MinIO is now archived and explicitly no longer maintained; legacy binary/container releases are historical and unmaintained.
+
+This lifecycle finding does not invalidate RC10.4's bounded behavioral evidence, but it prevents treating the current object-storage runtime as production-ready. A patched community source build would not, by itself, satisfy the supported-runtime gate. No unsupported replacement was made.
+
+Affected-version and upstream-maintenance-status confidence are high. Suitability of a successor for DTMO is not yet evidenced and is not claimed.
 
 ## Exactly one next priority
 
-Remediate the vulnerable MinIO runtime pin with a supported/patched object-storage release or explicitly supported successor, then execute the relevant security, recovery, storage-integrity and full regression gates on the exact remediation head before resuming RC10.5 API-error alerting.
+Obtain and record an explicit supported object-storage target for DTMO, including its supported product/image or deployment method, lifecycle/support source, and required entitlement/credential boundary. Then perform one bounded migration implementation and rerun security, recovery, storage-integrity and full regression gates before resuming RC10.5 API-error alerting.
