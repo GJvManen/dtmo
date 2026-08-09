@@ -30,7 +30,12 @@ PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243`; 35/35 workflows; a
 ### RC10.3 bounded queue-backlog alerting — `PASS`
 PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74`; 36/36 workflows; artifact `9040996591`, digest `sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`; 80% raise/50% clear hysteresis, bounded queue metrics, correlated actionable evidence and RC8 queue-pressure reuse; JUnit 5/5; merge `42ccbe04cbc1081f93e4a155243627b5a3038573`.
 
-Phase 7 remains incomplete because distributed tracing, storage-integrity/API-error/search-health alerting, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open. RC10.2/RC10.3 do not claim external notification delivery; RC10.3 does not claim a separate deployed durable queue service.
+### RC10.4 bounded storage-integrity alerting — `PASS`
+PR #86 exact head `8aa56dacd64583de5e96c0fda188ba954437ffda`; 37/37 workflows; artifact `9041327884`, digest `sha256:456b09902727552d62fa7e1c96f119c6050a692d2519e0f8cecdd160e8b1dab3`; real `IntelligenceLake.verify()` reuse, critical integrity-failure signal, correlated actionable evidence, recovery clear behavior, repeat-raise suppression and exclusion of object key/digest/payload evidence; JUnit 5/5; merge `4d7494e8b8fcdcddb73349bf87157d8c16763c33`.
+
+Phase 7 remains incomplete because distributed tracing, API-error/search-health alerting, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open. RC10.2–RC10.4 do not claim external notification delivery; RC10.4 does not claim scheduled/fleet-wide production integrity scanning.
+
+A fresh storage-layer threat-intelligence review found that `docker-compose.yml` pins MinIO `RELEASE.2025-07-23T15-54-02Z`, which is inside documented affected-version ranges for multiple later MinIO advisories, including CVE-2026-41145. Because this is a higher-severity security-maintenance blocker, roadmap order is temporarily superseded: the vulnerable object-storage runtime must be remediated and revalidated before RC10.5 API-error alerting proceeds. Affected-version match is high confidence; configuration-specific exploitability of individual advisories remains separately bounded and must not be overstated.
 
 ## Phase 1 — CI and workflow integrity
 
@@ -82,7 +87,9 @@ Blocking gates:
 - runbooks complete and exercised;
 - operational ownership/escalation documented.
 
-Current decision: `IN PROGRESS`. RC10.1, RC10.2 and RC10.3 are accepted. Exactly one next priority is RC10.4 bounded storage-integrity alerting with controlled integrity-failure/recovery evidence, actionable correlation, no raw sensitive payload leakage and retained exact-head evidence. API-error and search-health alerting remain later objectives.
+Current decision: `IN PROGRESS`. RC10.1, RC10.2, RC10.3 and RC10.4 are accepted. The normal next Phase-7 item is RC10.5 bounded API-error alerting, but execution is temporarily blocked by the higher-severity MinIO affected-version finding described above.
+
+Exactly one next priority: remediate the vulnerable MinIO runtime pin with a supported/patched object-storage release or explicitly supported successor, then execute relevant security, recovery, storage-integrity and full regression gates with retained exact-head evidence. Only after that gate is accepted should Phase 7 resume with RC10.5 API-error alerting.
 
 ## Phase 8 — Staging acceptance
 
