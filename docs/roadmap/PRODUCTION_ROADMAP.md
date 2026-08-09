@@ -9,211 +9,94 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 ## Current status — 2026-08-09
 
 - Phase 1 — CI and workflow integrity: `PASS`.
-- Phase 2 — Application security and identity: `PASS` for the internal roadmap gates; production identity/secrets acceptance remains represented in external gates where applicable.
-- Phase 3 — Data integrity and recovery: `PASS` for internal automated gates; full external backup/restoration exercise remains tracked separately.
-- Phase 4 — Live connector reliability and provenance: `PASS` for internal gates; live-provider acceptance evidence is separately tracked in issue #1.
-- Phase 5 — Performance and scalability: `PASS` for internal automated gates.
-- Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts. Automated browser, keyboard, responsive, supported-browser, contrast, resize, reflow, text-spacing and focus-order evidence is accepted. Browser/DOM automation is not treated as a substitute for real assistive-technology behavior.
+- Phase 2 — Application security and identity: `PASS` for internal gates.
+- Phase 3 — Data integrity and recovery: `PASS` for internal gates.
+- Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
+- Phase 5 — Performance and scalability: `PASS` for internal gates.
+- Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `IN PROGRESS`.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
-### Latest accepted Phase 7 evidence
+## Accepted Phase 7 evidence
 
-**RC10.1 request observability — PASS**
+### RC10.1 request observability — `PASS`
+PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc`; 34/34 workflows; artifact `9040196394`, digest `sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`; JUnit 5/5; merge `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
 
-- PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc`;
-- 34/34 registered workflows successful;
-- retained artifact `9040196394`, digest `sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`;
-- 5/5 JUnit tests successful;
-- safe correlation IDs, structured request-log context, bounded route-template request metrics, request-latency metrics and in-flight request metrics evidenced;
-- merged as `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
+### RC10.2 controlled connector-failure alerting — `PASS`
+PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243`; 35/35 workflows; artifact `9040485255`, digest `sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`; JUnit 4/4; merge `f6680423860389288d9feced34592294d774bf4a`.
 
-**RC10.2 controlled connector-failure alerting — PASS**
+### RC10.3 bounded queue-backlog alerting — `PASS`
+PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74`; 36/36 workflows; artifact `9040996591`, digest `sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`; 80% raise/50% clear hysteresis, bounded queue metrics, correlated actionable evidence and RC8 queue-pressure reuse; JUnit 5/5; merge `42ccbe04cbc1081f93e4a155243627b5a3038573`.
 
-- PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243`;
-- 35/35 registered workflows successful;
-- retained artifact `9040485255`, digest `sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`;
-- 4/4 JUnit tests successful;
-- terminal failure signal, Prometheus alert metric/rule, structured correlation evidence, actionable guidance, raw-error exclusion, repeat-raise suppression and recovery/clear behavior evidenced;
-- merged as `f6680423860389288d9feced34592294d774bf4a`.
-
-Phase 7 remains incomplete because distributed tracing, queue-backlog/storage-integrity/API-error/search-health alerting, operational dashboards, runbooks, on-call handover and ownership/escalation evidence remain open. Pager/email/chat delivery is not claimed by RC10.2.
+Phase 7 remains incomplete because distributed tracing, storage-integrity/API-error/search-health alerting, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open. RC10.2/RC10.3 do not claim external notification delivery; RC10.3 does not claim a separate deployed durable queue service.
 
 ## Phase 1 — CI and workflow integrity
 
-### Objectives
+Objectives: regression-protect release-critical workflows, validate triggers/jobs/permissions/services/artifacts, make execution observable, and fail closed on missing/malformed gates.
 
-- Regression-protect all release-critical GitHub Actions workflow structure.
-- Validate required triggers, jobs, permissions, services, artifacts and gates.
-- Make workflow execution independently observable through commit statuses, workflow-run evidence and artifacts.
-- Add negative tests proving missing or malformed gates block release.
-
-### Blocking gates
-
-- Workflow contract tests pass.
-- Required jobs and triggers are validated.
-- Commit status or workflow-run evidence is observable.
-- Failed or absent workflows cannot be interpreted as success.
+Blocking gates: workflow contract tests pass; required jobs/triggers are validated; workflow evidence is observable; failed/absent workflows cannot be interpreted as success.
 
 ## Phase 2 — Application security and identity
 
-### Objectives
+Objectives: enterprise identity or hardened trust boundary, strong RBAC/separation of duties, privileged audit logging, SAST/dependency/secrets/container scanning.
 
-- Replace shared API-key-only trust with enterprise identity integration or a hardened reverse-proxy trust boundary.
-- Strengthen RBAC and separation of duties.
-- Add audit logging for all privileged operations.
-- Add SAST, dependency, secrets and container scanning.
-
-### Blocking gates
-
-- Authentication and authorization tests pass.
-- Privilege-escalation and negative RBAC tests pass.
-- No hardcoded or example production secrets remain.
-- Security scans have no unresolved critical findings.
+Blocking gates: authentication/authorization and negative RBAC tests pass; no hardcoded production secrets; no unresolved critical security-scan findings.
 
 ## Phase 3 — Data integrity and recovery
 
-### Objectives
+Objectives: validate PostgreSQL migrations/constraints, raw-object immutability/checksums, backup/retention/restoration, and full clean restoration.
 
-- Validate PostgreSQL migrations and constraints.
-- Verify MinIO raw-object immutability and checksums.
-- Add backup, retention and restoration automation.
-- Test full restoration of database, object storage and search index.
-
-### Blocking gates
-
-- Alembic upgrade/downgrade/upgrade succeeds.
-- Restore test succeeds from a clean environment.
-- Provenance and checksum integrity remain intact after recovery.
-- Recovery time and recovery point objectives are documented and tested.
+Blocking gates: migration cycle succeeds; restore test succeeds; provenance/checksum integrity survives; RTO/RPO are documented and tested.
 
 ## Phase 4 — Live connector reliability and provenance
 
-### Objectives
+Objectives: controlled live canaries, credentials/rate limits/licences/terms validation, retry/backoff/dedup/source health/failure isolation, retained source/timestamp/confidence/raw evidence.
 
-- Add controlled live canary runs for approved open-source connectors.
-- Validate credentials, rate limits, licences and terms.
-- Add retries, backoff, deduplication, source health and failure isolation.
-- Ensure every imported record retains source, timestamp, confidence and raw evidence.
-
-### Blocking gates
-
-- Connector contract tests pass.
-- Canary runs are observable and repeatable.
-- Duplicate and malformed records are quarantined.
-- No connector can publish intelligence without human review.
+Blocking gates: connector contracts pass; canaries repeat; malformed/duplicate records quarantine; connectors cannot publish without human review.
 
 ## Phase 5 — Performance and scalability
 
-### Objectives
+Objectives: representative education-sector volumes, API/PostgreSQL/OpenSearch/ingestion load tests, latency/throughput/resource budgets, queue pressure and degraded dependencies.
 
-- Define representative education-sector intelligence volumes.
-- Add API, PostgreSQL, OpenSearch and ingestion load tests.
-- Establish latency, throughput and resource-use budgets.
-- Test queue pressure, connector bursts and degraded dependencies.
-
-### Blocking gates
-
-- Search latency and dashboard response targets are met.
-- Ingestion remains correct under representative load.
-- No data loss occurs during dependency degradation.
-- Capacity limits and scaling guidance are documented.
-
-### Current decision
-
-`PASS` for the bounded internal roadmap gates. RC8.8 capacity/scaling guidance remains explicitly separate from issue #1's independent representative production load/stress gate.
+Current decision: `PASS` for bounded internal gates. RC8.8 capacity guidance does not close issue #1's independent representative production load/stress gate.
 
 ## Phase 6 — Frontend accessibility and operational UX
 
-### Objectives
+Objectives: browser E2E, critical analyst/CISO/audit workflows, responsive/keyboard behavior, bounded WCAG evidence and separately genuine assistive-technology behavior.
 
-- Add browser-based end-to-end tests.
-- Validate critical analyst, CISO and audit workflows.
-- Test responsive behavior and keyboard navigation.
-- Verify bounded WCAG 2.2 AA critical-journey evidence and genuine assistive-technology behavior separately.
-
-### Blocking gates
-
-- Critical user journeys pass in supported browsers.
-- No blocking automated accessibility defects remain.
-- Error, loading and empty states are tested.
-- UI permissions match backend RBAC.
-- Genuine VoiceOver/NVDA behavior is evidenced on supported real host/browser/screen-reader combinations.
-
-### Current decision
-
-`BLOCKED_EXTERNAL` only for the final genuine assistive-technology evidence requirement. RC9.16 defines the required execution matrix and evidence contract.
+Current decision: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA evidence on supported real host/browser/screen-reader combinations. Browser/DOM automation is not a substitute.
 
 ## Phase 7 — Observability and incident operations
 
-### Objectives
+Objectives:
+- service-level metrics, structured logs and traces;
+- alerting for connector failures, queue backlog, storage integrity, API errors and search health;
+- incident/outage/recovery/connector-failure runbooks;
+- dashboards and on-call handover guidance.
 
-- Add service-level metrics, structured logs and traces.
-- Define alerting for connector failures, queue backlog, storage integrity, API errors and search health.
-- Create incident, outage, recovery and connector-failure runbooks.
-- Add operational dashboards and on-call handover guidance.
+Blocking gates:
+- alerts tested with controlled failures;
+- logs/metrics provide correlation IDs and actionable evidence;
+- runbooks complete and exercised;
+- operational ownership/escalation documented.
 
-### Blocking gates
-
-- Alerts are tested with controlled failures.
-- Logs and metrics provide correlation IDs and actionable evidence.
-- Runbooks are complete and exercised.
-- Operational ownership and escalation paths are documented.
-
-### Current decision
-
-`IN PROGRESS`. RC10.1 request observability and RC10.2 controlled connector-failure alerting are accepted. Exactly one next priority is RC10.3 bounded queue-backlog alerting with explicit threshold semantics, actionable correlated evidence and controlled breach/recovery behavior. Storage-integrity, API-error and search-health alerting remain later objectives.
+Current decision: `IN PROGRESS`. RC10.1, RC10.2 and RC10.3 are accepted. Exactly one next priority is RC10.4 bounded storage-integrity alerting with controlled integrity-failure/recovery evidence, actionable correlation, no raw sensitive payload leakage and retained exact-head evidence. API-error and search-health alerting remain later objectives.
 
 ## Phase 8 — Staging acceptance
 
-### Objectives
+Objectives: production-equivalent deployment, smoke/integration/migration/connector/recovery/performance/accessibility tests, secrets/TLS/network restrictions.
 
-- Deploy an environment equivalent to production.
-- Run smoke, integration, migration, connector, recovery, performance and accessibility tests.
-- Validate secrets management, TLS and network restrictions.
-
-### Blocking gates
-
-- Staging deployment is reproducible.
-- All internal quality gates pass in staging.
-- No unresolved blocker defects remain.
-- Deployment acceptance evidence is retained.
+Blocking gates: reproducible staging; all internal gates pass; no unresolved blockers; deployment evidence retained.
 
 ## Phase 9 — External assurance
 
-### Objectives
-
-Complete the externally executed gates tracked in issue #1:
-
-- independent penetration test;
-- load and stress test;
-- full backup and restoration exercise;
-- connector licence, credential and terms validation;
-- OpenSearch production hardening;
-- operational acceptance by service owner, CISO/ISO and privacy function.
-
-### Blocking gates
-
-- Critical and high findings are resolved or formally accepted.
-- External evidence is attached to the release record.
-- Required stakeholders approve production use.
+Tracked in issue #1: independent penetration test, representative load/stress, full backup/restoration exercise, production OpenSearch hardening, required secrets-management acceptance, operational/stakeholder approvals.
 
 ## Phase 10 — Production go/no-go
 
-### Go criteria
-
-- All phases above are complete with evidence.
-- CI is green and independently observable.
-- Release notes, SBOM, deployment manifest and rollback plan are complete.
-- Backup and restoration are proven.
-- Security, privacy, service-owner and operational approvals are recorded.
-- No open blocker defects remain.
-
-### No-go criteria
-
-Any missing blocking evidence, unresolved critical defect, failed recovery test, inaccessible CI evidence, incomplete accessibility evidence, incomplete external assurance or absent approval results in `BLOCKED`.
+Go requires every prior phase and external gate complete with retained evidence, green CI, release notes/SBOM/deployment manifest/rollback plan, proven recovery and required approvals. Any missing blocking evidence is `NO-GO`.
 
 ## PDCA execution order
 
@@ -230,4 +113,4 @@ Each run performs exactly one bounded objective in roadmap order unless a higher
 9. Phase 9 — External assurance coordination.
 10. Phase 10 — Production go/no-go.
 
-Every run must document Plan, Do, Check and Act, update the run log and QA evidence, preserve explicit claim boundaries, and leave exactly one next priority.
+Every run must document Plan, Do, Check and Act, update run/QA evidence, preserve claim boundaries, and leave exactly one next priority.
