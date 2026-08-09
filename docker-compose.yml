@@ -74,16 +74,23 @@ services:
     restart: unless-stopped
 
   minio:
-    image: minio/minio:RELEASE.2025-07-23T15-54-02Z
-    command: server /data --console-address ":9001"
+    # Development/test/staging only. Production must use the vendor-supported
+    # topology accepted in ADR-0001. Fail closed unless the deployer supplies a
+    # vendor-verified AIStor release reference pinned by sha256 digest.
+    image: ${AISTOR_IMAGE:?Set AISTOR_IMAGE to quay.io/minio/aistor/minio:RELEASE.<timestamp>@sha256:<vendor-verified-digest>}
+    command: server /data --console-address ":9001" --license /run/secrets/aistor_license
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-dtmo}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-change-me-now}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Set a non-default AIStor administrative user outside source control}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set a strong AIStor administrative password outside source control}
+    secrets:
+      - aistor_license
     ports:
       - "9001:9001"
     volumes:
       - minio_data:/data
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
 
   prometheus:
     image: prom/prometheus:v3.5.0
@@ -95,6 +102,10 @@ services:
     depends_on:
       - api
     restart: unless-stopped
+
+secrets:
+  aistor_license:
+    file: ${AISTOR_LICENSE_FILE:?Set AISTOR_LICENSE_FILE to a local/vault-materialized AIStor license file outside source control}
 
 volumes:
   postgres_data:
