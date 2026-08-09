@@ -12,6 +12,12 @@ from dtmo.persistence.models import IntelligenceItem
 from dtmo.persistence.session import Database
 
 BASE_URL = os.environ.get("DTMO_E2E_BASE_URL", "http://127.0.0.1:8765")
+E2E_ENABLED = bool(os.environ.get("DTMO_E2E_BASE_URL"))
+
+pytestmark = pytest.mark.skipif(
+    not E2E_ENABLED,
+    reason="RC9 browser E2E executes only in the dedicated browser workflow",
+)
 
 
 async def _seed_candidate() -> str:
