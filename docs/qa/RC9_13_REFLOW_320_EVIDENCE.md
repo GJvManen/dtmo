@@ -1,21 +1,28 @@
 # RC9.13 — 320 CSS px Reflow Evidence
 
-Status: `CI_VALIDATION_PENDING`
+Status: `PASS`
 
 ## Objective
 
 Produce bounded retained evidence for WCAG 2.2 SC 1.4.10 Reflow on the four accepted critical surfaces: `/ui/share-approval`, `/ui/analyst-search`, `/ui/ciso-security`, and `/ui/auditor`.
 
-## Evidence method
+## Accepted exact-head evidence
 
-The dedicated Chromium gate runs each critical surface at a 320x900 CSS-pixel viewport using the appropriate real backend-derived session role. It waits for the governed critical control, then verifies:
+PR #74 exact head `c5b95597bd51867d5fb5af0477e984e3a4fc5be3` completed all 31 registered workflows successfully and was merged with expected-head protection as `fce31bd0032b1adab67f2877608680ce90117fe7`.
 
-- document/body horizontal scroll width does not exceed the 320 CSS px viewport beyond a 1 px rounding tolerance;
-- the main content region stays within the horizontal viewport;
-- no visible descendant of `main` extends outside the horizontal viewport;
-- all governed critical controls remain visible, horizontally contained and focusable.
+Retained artifact `9039233783`, digest `sha256:2f0cd4b7ba97c1dd0c72aa9b6a6d77cb7771c77d212a38e78862263ba08acbd8`, was independently inspected. JUnit reports 1 test, 0 failures, 0 errors and 0 skips.
 
-The gate retains exact-head JSON with per-surface layout metrics/control boxes, JUnit and server logs and fails closed on missing or non-conforming evidence.
+The machine-readable evidence is exact-head bound and records, for each accepted surface at 320x900 CSS px:
+
+- `documentClientWidth == 320` and `documentScrollWidth == 320`;
+- `bodyScrollWidth == 320`;
+- the `main` region remains horizontally contained;
+- `overflowingVisibleElements` is empty;
+- every governed critical control remains visible, horizontally contained and focusable;
+- the intended backend-derived session subject/role is resolved;
+- no two-dimensional-content exception is used.
+
+Retained server logs show successful real `/api/v1/ui/session` calls on all four surfaces.
 
 ## Governance invariants
 
@@ -23,8 +30,8 @@ Backend-derived RBAC remains authoritative. Separation of duties, auditability a
 
 ## Claim boundary
 
-A PASS covers only the tested SC 1.4.10 behavior on these four critical surfaces in Chromium at 320x900 CSS px. No two-dimensional-content exception is used. This does not establish text-spacing conformance, complete focus-order evidence, genuine assistive-technology behavior or product-wide WCAG 2.2 AA conformance.
+This PASS covers only the tested WCAG 2.2 SC 1.4.10 behavior on the four accepted critical surfaces in Chromium at 320x900 CSS px. It does not establish text-spacing conformance, complete focus-order evidence, genuine assistive-technology behavior or product-wide WCAG 2.2 AA conformance.
 
-## Acceptance gate
+## Acceptance decision
 
-PASS requires every registered workflow on the exact final PR head to complete successfully and retained `browser-reflow-320-evidence` to show zero horizontal overflow/off-viewport critical content with visible/focusable governed controls on all four surfaces. Missing, queued, failed, cancelled or unexecuted CI is not PASS.
+`PASS` for the bounded RC9.13 scope.
