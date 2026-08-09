@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-09 — RUN-20260809-135 (`CI_VALIDATION_PENDING`; RC10.5 API-error alerting implemented but not yet accepted)
+Last reconciled: 2026-08-09 — RUN-20260809-136 (`CI_VALIDATION_PENDING`; RC10.6 search-health alerting implemented but not yet accepted)
 
 ## Executive status
 
@@ -10,41 +10,39 @@ Last reconciled: 2026-08-09 — RUN-20260809-135 (`CI_VALIDATION_PENDING`; RC10.
 - Phase 4 — connector reliability and provenance: `PASS` for internal roadmap gates.
 - Phase 5 — performance and scalability: `PASS` for internal roadmap gates.
 - Phase 6 — frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior.
-- Phase 7 — observability and incident operations: `IN PROGRESS`; RC10.1–RC10.4 and the internal object-storage migration/reconciliation are accepted; RC10.5 is `CI_VALIDATION_PENDING`.
+- Phase 7 — observability and incident operations: `IN PROGRESS`; RC10.1–RC10.5 and the internal object-storage migration/reconciliation are accepted; RC10.6 is `CI_VALIDATION_PENDING`.
 - Phase 8 — staging acceptance: `NOT STARTED`.
 - Phase 9 — external assurance: `NOT COMPLETE`.
 - Phase 10 — production go/no-go: `NOT STARTED`.
 
 DTMO is **not production ready**. Issue #1 remains authoritative for external production-acceptance gates.
 
-## Latest accepted reconciliation
+## Latest accepted evidence
 
-PR #91 exact head `d81caaa372b0cf3e079023eb255a57fd4892d6e0` completed **38/38 registered workflows successfully** and was merged with expected-head protection as `23af430c041e3f0e203b7a7f7a6c69f3eea79055`.
+RC10.5 / PR #92 exact head `659fa022840e01ed6db4ebeb6a5e703f58a6d259` completed **39/39 registered workflows successfully**. Artifact `9041987610`, digest `sha256:6a6f2aa5ea2b0b3fb081a0b376f8187a799af726ba950bcbf6fd8618c54e2eca`, independently showed exact-head machine-readable PASS evidence and JUnit 6/6. PR #92 merged as `8d6297e17c93150dacb39428ed3580e7c8cc1579`.
 
-The bounded object-storage migration remains accepted from PR #90 exact head `0fe5c5f0003211fe9df8535954d9276a2090af35`, 38/38 workflows, artifact `9041774769`, digest `sha256:24e7241138dc0b293957f5e2cd06a4d3a6606b7ba68d688097795047f114ccf8`, JUnit 4/4.
+The bounded object-storage migration/reconciliation remains accepted. Production AIStor entitlement/topology/digest/TLS/SSE/KMS/secrets and other issue #1 deployment gates remain external.
 
-## RC10.5 API-error alerting
+## RC10.6 search-health alerting
 
-RUN-135 implements:
+RUN-136 implements:
 
-- normalized route-template-only API error observation;
-- 3 consecutive HTTP 5xx outcomes to raise;
-- 2 consecutive non-5xx outcomes to clear an active alert;
+- bounded cluster-health observation only (`green`, `yellow`, `red`, `unreachable`);
+- 2 consecutive red/unreachable observations to raise;
+- 2 consecutive green/yellow observations to clear an active alert;
 - repeat-raise suppression;
-- bounded request-result/streak/active-state/transition metrics;
-- `DTMOApiServerErrors` Prometheus rule;
-- safe correlation and actionable structured evidence with `publish_approved=false`;
-- middleware coverage for returned status codes and unhandled exception/500 outcomes;
-- controlled privacy tests asserting synthetic path/query values do not enter Prometheus alert evidence;
-- an independently observable `RC10 API Error Alerting Gate` retaining JUnit/log/machine-readable exact-head evidence.
+- bounded health-check/streak/active-state/transition Prometheus metrics;
+- `DTMOSearchHealthFailure` Prometheus rule;
+- safe correlation/action evidence with `publish_approved=false`;
+- an OpenSearch health probe that reads only `/_cluster/health` status and does not expose response bodies;
+- controlled failure, recovery and privacy tests;
+- an independently observable `RC10 Search Health Alerting Gate` retaining exact-head JUnit/log/JSON evidence.
 
 The implementation remains `CI_VALIDATION_PENDING`. Missing, queued, cancelled, failed or unexecuted CI is not PASS.
 
-## Fresh security/advisory boundary
+## Fresh security / vendor boundary
 
-Fresh dependency review identified Starlette CVE-2026-48817 and CVE-2026-48818 as affecting versions through 1.0.1 and fixed in 1.1.0. DTMO does not directly pin Starlette, so this is recorded as dependency provenance rather than an exploitability claim. Exact dependency resolution and security scanning remain CI acceptance gates.
-
-Production AIStor selection remains subject to the RUN-134 release/advisory floor and a fresh deployment-time advisory review.
+Current first-party OpenSearch release policy confirms 2.19 remains a maintained branch and 2.19.6 is the current 2.x maintenance release with security updates. This does **not** satisfy issue #1's separate production OpenSearch hardening/version acceptance gate.
 
 ## External gates still open
 
@@ -55,12 +53,11 @@ Paid AIStor entitlement/support, production topology, deployment-time registry d
 - RBAC remains enforced.
 - Review and share approval remain separate human actions.
 - Connectors and service accounts cannot approve publication.
-- API alerting cannot approve publication and reports `publish_approved=false`.
-- API alert labels use normalized route templates, not request URLs/query strings.
+- Search-health alerting cannot approve publication and reports `publish_approved=false`.
+- Search queries, document/index identifiers, response bodies, credentials and identities are outside the search-health alert contract.
 - Provenance, confidence and raw-evidence controls remain unchanged.
-- License/API/admin/application credentials must not enter source control or telemetry.
 - Missing, queued, cancelled, failed or unexecuted CI is never `PASS`.
 
 ## Exactly one current priority
 
-Verify the complete exact-head workflow matrix and retained `api-error-alerting-evidence` artifact for RUN-135; merge only after every registered workflow succeeds and retained evidence is exact-head bound and internally consistent.
+Verify the complete exact-head workflow matrix and retained `search-health-alerting-evidence` artifact for RUN-136; merge only after every registered workflow succeeds and retained evidence is exact-head bound and internally consistent.
