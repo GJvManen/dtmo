@@ -38,3 +38,17 @@ groups:
           summary: "DTMO storage {{ $labels.storage }} failed an integrity verification"
           action: "Stop trusting affected storage evidence; verify checksum and size receipts, then restore from known-good immutable evidence before reprocessing."
           clear_condition: "The alert clears after a subsequent successful integrity verification sets the signal to 0."
+
+  - name: dtmo.api.alerts
+    rules:
+      - alert: DTMOApiServerErrors
+        expr: dtmo_api_error_alert_active == 1
+        for: 0m
+        labels:
+          severity: warning
+          service: dtmo
+        annotations:
+          summary: "DTMO API route {{ $labels.route }} has repeated server errors"
+          threshold_policy: "Raise after 3 consecutive HTTP 5xx outcomes; clear after 2 consecutive non-5xx outcomes."
+          action: "Inspect the correlated request trace, recent deploys and downstream dependency health; do not retry destructive operations until the failure mode is understood."
+          clear_condition: "The alert clears only after two consecutive non-5xx outcomes for the same bounded route template."
