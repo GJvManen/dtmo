@@ -4,7 +4,9 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260809-096 — RC9.2 analyst browser operational states](runs/RUN-20260809-096.md) — `CI_VALIDATION_PENDING`: added one bounded analyst intelligence-search browser journey with backend-derived `read:intelligence` capability visibility and explicit loading, empty, success and backend-503 error states; exact-head GitHub Actions and retained browser evidence are required before PASS.
+- [RUN-20260809-098 — RC9.3 bounded CISO token-revocation browser journey](runs/RUN-20260809-098.md) — `CI_VALIDATION_PENDING`: added one critical CISO browser journey with backend-derived `revoke:tokens` visibility, analyst UI denial plus direct backend `403`, real CISO revocation, Redis token-state verification and persistent audit-chain verification; exact-head CI and retained browser evidence are required before PASS.
+- [RUN-20260809-097 — RC9.2 exact-head acceptance](runs/RUN-20260809-097.md) — `PASS`: PR #53 exact head `ebc9a7ca2ebb1c0e9b55c057eaad82d3f04e5afd` passed all 21 registered workflows; retained artifact `9036721912` (`sha256:308f98282c5520b3d96bc04f9b14c382dbdb83c1fc8817809c87ea03ce94a82e`) independently proved Chromium execution, backend-derived `read:intelligence`, loading/empty/success states and real backend 503 behavior; merged as `22bf74bb6c5c367195a3e67b0c8db4ec0489a449`.
+- [RUN-20260809-096 — RC9.2 analyst browser operational states](runs/RUN-20260809-096.md) — `CI_VALIDATION_PENDING`
 - [RUN-20260809-095 — RC9.1 exact-head acceptance](runs/RUN-20260809-095.md) — `PASS`: PR #50 exact head `005512e124ff6c37a5acd3d2b8e4ba8c823d4a01` passed all 20 required workflows; retained browser artifact `9036392289` (`sha256:111d879e048f5978927472da996020f398448dd0752407f60a3366dbfbbf0fd6`) independently proved Chromium execution, blocked reviewer self-approval, distinct-publisher approval, hidden service-account approval controls and backend-derived permissions; merged as `ef59eba29d7fa8b2d88b5674e7bb00e98c0dab18`.
 - [RUN-20260809-094 — RC9.1 browser fixture persistence remediation](runs/RUN-20260809-094.md) — `CI_VALIDATION_PENDING`
 - [RUN-20260809-093 — RC9.1 first deterministic CI remediation](runs/RUN-20260809-093.md) — `CI_VALIDATION_PENDING`
@@ -34,8 +36,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260809-096` is `CI_VALIDATION_PENDING`. RC9.1 is accepted. Phase 6 remains `IN PROGRESS`. RC9.2 adds one critical analyst browser journey but is not accepted until every required workflow succeeds on the exact final PR head and retained `browser-analyst-search-evidence` is independently inspected. Issue #1 external production gates remain open.
+`RUN-20260809-098` is `CI_VALIDATION_PENDING`. RC9.1 and RC9.2 are accepted. Phase 6 remains `IN PROGRESS`. RC9.3 adds one critical CISO security-token-revocation browser journey but is not accepted until every required workflow succeeds on the exact final PR head and retained `browser-ciso-token-revocation-evidence` is independently inspected. Issue #1 external production gates remain open.
 
 ## Exactly one next priority
 
-Inspect every registered workflow on the final RC9.2 PR head and independently inspect retained `browser-analyst-search-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful evidence.
+Inspect every registered workflow on the final RC9.3 PR head and independently inspect retained `browser-ciso-token-revocation-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful exact-head evidence.
