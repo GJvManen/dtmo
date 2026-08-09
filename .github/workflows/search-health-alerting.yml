@@ -68,8 +68,12 @@ jobs:
           e=json.loads(Path("artifacts/search-health-alerting-evidence.json").read_text())
           assert e["decision"] == "pass"
           assert e["exact_head"] == os.environ["EXPECTED_HEAD"]
-          assert e["controls"]["raise_after_red_or_unreachable"] == 2
-          assert e["controls"]["clear_after_green_or_yellow"] == 2
+          controls=e["controls"]
+          assert controls["raise_after_red_or_unreachable"] == 2
+          assert controls["clear_after_green_or_yellow"] == 2
+          assert all(value is True for key, value in controls.items() if key not in {
+              "raise_after_red_or_unreachable", "clear_after_green_or_yellow"
+          })
           assert e["governance"]["publication_approval_changed"] is False
           assert e["governance"]["production_data_used"] is False
           assert not any(e["claim_boundary"].values())
