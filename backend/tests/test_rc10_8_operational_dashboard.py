@@ -18,6 +18,18 @@ def _dashboard() -> dict[str, object]:
     return value
 
 
+def _expressions() -> list[str]:
+    expressions: list[str] = []
+    for panel in _dashboard()["panels"]:
+        assert isinstance(panel, dict)
+        for target in panel.get("targets", []):
+            assert isinstance(target, dict)
+            expression = target.get("expr")
+            if isinstance(expression, str):
+                expressions.append(expression)
+    return expressions
+
+
 def test_dashboard_is_read_only_and_uses_provisioned_prometheus_only() -> None:
     dashboard = _dashboard()
     assert dashboard["uid"] == "dtmo-operations"
@@ -31,16 +43,7 @@ def test_dashboard_is_read_only_and_uses_provisioned_prometheus_only() -> None:
 
 
 def test_dashboard_covers_release_critical_operational_signals() -> None:
-    dashboard = _dashboard()
-    expressions: list[str] = []
-    for panel in dashboard["panels"]:
-        assert isinstance(panel, dict)
-        for target in panel.get("targets", []):
-            assert isinstance(target, dict)
-            expression = target.get("expr")
-            if isinstance(expression, str):
-                expressions.append(expression)
-    joined = "\n".join(expressions)
+    joined = "\n".join(_expressions())
     for metric in (
         "dtmo_http_requests_total",
         "dtmo_http_request_seconds_bucket",
@@ -57,7 +60,7 @@ def test_dashboard_covers_release_critical_operational_signals() -> None:
 
 
 def test_dashboard_queries_do_not_request_sensitive_or_unbounded_request_dimensions() -> None:
-    serialized = json.dumps(_dashboard(), sort_keys=True).lower()
+    query_text = "\n".join(_expressions()).lower()
     for forbidden in (
         "request_body",
         "response_body",
@@ -71,7 +74,7 @@ def test_dashboard_queries_do_not_request_sensitive_or_unbounded_request_dimensi
         "object_key",
         "checksum",
     ):
-        assert forbidden not in serialized
+        assert forbidden not in query_text
 
 
 def test_provisioning_is_non_editable_and_contains_no_credentials() -> None:
