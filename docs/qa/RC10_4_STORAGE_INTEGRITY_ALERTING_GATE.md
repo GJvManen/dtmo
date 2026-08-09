@@ -2,30 +2,36 @@
 
 ## Decision
 
-`CI_VALIDATION_PENDING`
+`PASS`
 
 RC10.4 implements exactly one bounded Phase 7 objective: observe the existing immutable raw-evidence integrity verifier and raise a critical operational signal when checksum/size verification fails, without exposing object identity, digest or payload data.
 
-## Scope
+## Accepted exact-head evidence
 
-- reuse `IntelligenceLake.verify()` as the source of truth for raw-object size and SHA-256 integrity;
-- the alert observer consumes only a bounded storage name plus the boolean verification result;
-- expose bounded integrity check, active-alert and transition Prometheus metrics;
-- define critical Prometheus rule `DTMOStorageIntegrityFailure`;
-- emit structured `storage_integrity_alert_raised`, `storage_integrity_alert_active` and `storage_integrity_alert_cleared` events with safe correlation evidence;
-- never include raw object keys, SHA-256 receipts, payload bytes or payload text in alert labels/logs;
-- suppress duplicate raise transitions while the alert is already active;
-- clear only after a subsequent successful integrity verification;
-- controlled tamper/recovery tests use the real `IntelligenceLake.verify()` implementation;
-- retain exact-head JSON, JUnit and pytest evidence as `storage-integrity-alerting-evidence`.
+PR #86 exact head `8aa56dacd64583de5e96c0fda188ba954437ffda` completed all 37 registered workflows successfully.
+
+Dedicated workflow run `31325197952` completed both `storage-integrity-alerting` and fail-closed `storage-integrity-alerting-gate` successfully.
+
+Retained artifact `9041327884`, digest `sha256:456b09902727552d62fa7e1c96f119c6050a692d2519e0f8cecdd160e8b1dab3`, was independently inspected and exact-head bound. JUnit/pytest recorded 5 tests, 0 failures, 0 errors and 0 skips.
+
+Evidence confirms:
+
+- `IntelligenceLake.verify()` remains the size/SHA-256 integrity source of truth;
+- the alert observer consumes only bounded storage name plus boolean verification result;
+- integrity check, active-alert and transition Prometheus metrics are present;
+- critical rule `DTMOStorageIntegrityFailure` is defined;
+- structured raise/active/clear events retain safe correlation evidence and actionable guidance;
+- raw object keys, expected digest, original payload and tampered payload are absent from alert evidence;
+- repeated failures suppress duplicate raise transitions;
+- a later successful re-verification clears the alert;
+- the observer does not mutate storage or approve publication;
+- no production data was used.
+
+PR #86 was squash-merged with expected-head protection as `4d7494e8b8fcdcddb73349bf87157d8c16763c33`.
 
 ## Existing controls preserved
 
-`IntelligenceLake.land()` and `IntelligenceLake.verify()` remain authoritative for immutable raw-evidence receipts and size/SHA-256 verification. RC10.4 does not change how storage is written, restored or verified; the observer only receives the verification outcome.
-
-## Gate
-
-`PASS` requires every registered workflow on the exact final pull-request head to complete successfully and retained `storage-integrity-alerting-evidence` to be independently inspected. Missing, queued, cancelled, failed or unexecuted CI is never `PASS`.
+`IntelligenceLake.land()` and `IntelligenceLake.verify()` remain authoritative for immutable raw-evidence receipts and size/SHA-256 verification. RC10.4 does not change storage write, restore, verification, RBAC, separation of duties, provenance, auditability or human share approval.
 
 ## Claim boundary
 
@@ -39,10 +45,8 @@ RC10.4 does **not** claim:
 - Phase 7 is complete;
 - Phase 6's genuine VoiceOver/NVDA external gate is closed.
 
-## Governance
-
-No production credentials or production data are required. The observer does not mutate storage or approve publication. RBAC, separation of duties, privacy, provenance, persistent auditability and separate human share approval remain unchanged.
+A separate fresh threat-intelligence review identified that the repository-pinned MinIO runtime is within affected ranges for multiple later advisories. That does not invalidate the bounded RC10.4 behavioral evidence, but it creates a higher-severity security remediation priority before further Phase-7 feature work.
 
 ## Exactly one next priority
 
-Inspect every registered workflow on the final RC10.4 pull-request head and independently inspect retained `storage-integrity-alerting-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful evidence.
+Remediate the vulnerable MinIO runtime pin with a supported/patched object-storage release or explicitly supported successor, then execute the relevant security, recovery, storage-integrity and full regression gates on the exact remediation head before resuming RC10.5 API-error alerting.
