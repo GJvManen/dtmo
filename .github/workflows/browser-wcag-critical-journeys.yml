@@ -1,0 +1,109 @@
+name: RC9 WCAG Critical Journeys Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wcag-critical-journeys-e2e:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:dtmo@127.0.0.1:5432/dtmo
+      DTMO_REDIS_URL: redis://127.0.0.1:6379/0
+      DTMO_OPENSEARCH_URL: http://127.0.0.1:9200
+      DTMO_MINIO_ENDPOINT: 127.0.0.1:9000
+      DTMO_FEATURE_LIVE_CONNECTORS: "false"
+      DTMO_E2E_BASE_URL: http://127.0.0.1:8765
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+      - name: Start bounded DTMO accessibility target
+        run: |
+          mkdir -p artifacts
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/wcag-e2e-server.log 2>&1 &
+          echo $! > artifacts/wcag-e2e-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/health.json; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat artifacts/wcag-e2e-server.log
+          exit 1
+      - name: Execute RC9.8 WCAG critical journeys
+        run: |
+          python -m pytest -q backend/tests/test_rc9_8_wcag_critical_journeys.py \
+            --junitxml=artifacts/browser-wcag-critical-journeys.xml
+      - name: Record machine-readable WCAG evidence
+        if: success()
+        env:
+          GITHUB_SHA_VALUE: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+              "decision": "pass",
+              "exact_head": os.environ["GITHUB_SHA_VALUE"],
+              "journey": "accepted_critical_browser_wcag_subset",
+              "browser": "chromium",
+              "covered_surfaces": [
+                  "share_approval",
+                  "analyst_search",
+                  "ciso_token_revocation",
+                  "auditor_read_only",
+              ],
+              "checks": [
+                  "document_language",
+                  "document_title",
+                  "main_landmark",
+                  "heading_presence",
+                  "duplicate_ids",
+                  "image_alt_attributes",
+                  "control_accessible_names",
+                  "keyboard_focusability",
+                  "visible_focus",
+              ],
+              "wcag_2_2_aa_product_wide_certification_claimed": False,
+              "assistive_technology_certification_claimed": False,
+              "backend_session_rbac_real": True,
+              "human_share_approval_preserved": True,
+              "production_data_used": False,
+          }
+          Path("artifacts/browser-wcag-critical-journeys-evidence.json").write_text(
+              json.dumps(evidence, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+      - name: Stop accessibility target
+        if: always()
+        run: |
+          if test -f artifacts/wcag-e2e-server.pid; then
+            kill "$(cat artifacts/wcag-e2e-server.pid)" || true
+          fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: browser-wcag-critical-journeys-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  wcag-critical-journeys-gate:
+    if: always()
+    needs: [wcag-critical-journeys-e2e]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed WCAG evidence
+        env:
+          WCAG_RESULT: ${{ needs.wcag-critical-journeys-e2e.result }}
+        run: test "$WCAG_RESULT" = "success"

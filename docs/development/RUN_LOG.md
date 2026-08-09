@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260809-108 — RC9.8 WCAG 2.2 AA critical-journey gate](runs/RUN-20260809-108.md) — `CI_VALIDATION_PENDING`: added one bounded Chromium accessibility gate across the accepted share-approval, analyst-search, CISO-revocation and auditor-read-only surfaces; validates document language/title, landmark/heading structure, duplicate IDs, image alternatives, accessible control names, keyboard focusability and visible focus; exact-head CI and retained accessibility evidence are required before PASS, and no product-wide WCAG certification is claimed.
 - [RUN-20260809-107 — RC9.7 exact-head acceptance](runs/RUN-20260809-107.md) — `PASS`: PR #63 exact head `6da6f5b6d2e65c7b6be99697f564eb76d5d1ec51` passed all 26 registered workflows; retained artifact `9038307443` (`sha256:fab6f3c93359cb5f3effd363bbb86c99dc632a5c6b3a78f006ad5e07f92d1d86`) independently proved Chromium, Firefox and WebKit execution across all four accepted critical surfaces, with 3/3 JUnit cases passing, real backend-session RBAC calls and preserved human share approval; merged as `1e886ac3fbb1d6711a7bfe191aeaff919d648451`.
 - [RUN-20260809-106 — RC9.7 supported-browser critical-journey gate](runs/RUN-20260809-106.md) — `CI_VALIDATION_PENDING`: added one bounded Playwright compatibility gate across Chromium, Firefox and WebKit for the accepted share-approval, analyst-search, CISO-revocation and auditor-read-only journeys; real backend-session RBAC is preserved, business-operation calls are synthetic, and exact-head CI plus retained browser evidence are required before PASS.
 - [RUN-20260809-105 — RC9.6 exact-head acceptance](runs/RUN-20260809-105.md) — `PASS`: PR #61 exact head `7e75f45fca15dc11be3a3c10d2d26797bdcdf92a` passed all 25 registered workflows; retained artifact `9038042763` (`sha256:9a0f218d68ea82a6cd564c923e8b5e90ec6550a43de853999faee87be8bfa62c`) independently proved responsive usability across 360×800, 768×1024 and 1440×900 viewports for all four accepted critical surfaces, with no blocking horizontal overflow, viewport-contained controls, minimum 24 px control dimensions, real backend-derived RBAC and no business mutations; merged as `a21cd14033f89a9294b060ef7bd071f7f026b281`.
@@ -45,8 +46,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-`RUN-20260809-107` is `PASS`. RC9.1 through RC9.7 are accepted. Phase 6 remains `IN PROGRESS`. RC9.7 is evidenced by 26/26 successful exact-head workflows and independently inspected retained Chromium/Firefox/WebKit evidence. Broad WCAG 2.2 AA remains open. Issue #1 external production gates remain open.
+`RUN-20260809-108` is `CI_VALIDATION_PENDING`. RC9.1 through RC9.7 are accepted. Phase 6 remains `IN PROGRESS`. RC9.8 adds one bounded automated WCAG critical-journey gate across all four accepted surfaces but is not accepted until every required workflow succeeds on the exact final PR head and retained accessibility evidence is independently inspected. This is not product-wide WCAG 2.2 AA certification. Issue #1 external production gates remain open.
 
 ## Exactly one next priority
 
-Implement one bounded WCAG 2.2 AA critical-journey gate across the already accepted Phase-6 surfaces, retaining exact-head accessibility evidence and making no product-wide certification claim.
+Inspect every registered workflow on the final RC9.8 PR head and independently inspect retained `browser-wcag-critical-journeys-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful exact-head evidence.
