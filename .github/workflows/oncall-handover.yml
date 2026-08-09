@@ -1,0 +1,87 @@
+name: RC10 On-call Handover Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  oncall-handover:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Execute on-call handover contract tests
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc10_11_oncall_handover.py \
+            --junitxml=artifacts/oncall-handover.xml \
+            | tee artifacts/oncall-handover-pytest.log
+      - name: Record exact-head evidence
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+            "decision": "pass",
+            "exact_head": os.environ["EXACT_HEAD"],
+            "objective": "bounded on-call ownership and escalation handover baseline",
+            "controls": {
+              "roles_defined": True,
+              "severity_escalation_matrix_defined": True,
+              "shift_handover_checklist_defined": True,
+              "privacy_rules_defined": True,
+              "human_share_approval_preserved": True,
+              "rbac_unchanged": True
+            },
+            "claim_boundary": {
+              "named_staffing_accepted": False,
+              "contact_paths_tested": False,
+              "human_handover_completed": False,
+              "operational_ownership_accepted": False,
+              "phase_7_complete": False,
+              "production_acceptance_complete": False
+            }
+          }
+          Path("artifacts/oncall-handover-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+      - name: Validate evidence contract
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          e = json.loads(Path("artifacts/oncall-handover-evidence.json").read_text())
+          assert e["decision"] == "pass"
+          assert e["exact_head"] == os.environ["EXPECTED_HEAD"]
+          assert all(e["controls"].values())
+          assert not any(e["claim_boundary"].values())
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: oncall-handover-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  oncall-handover-gate:
+    if: always()
+    needs: [oncall-handover]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.oncall-handover.result }}
+        run: test "$RESULT" = "success"

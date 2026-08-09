@@ -8,13 +8,13 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 
 ## Current status — 2026-08-09
 
-- Phase 1 — CI and workflow integrity: `PASS` for accepted mainline evidence; PR #97 has an active exact-head acceptance blocker until RUN-143's remediated full matrix passes.
+- Phase 1 — CI and workflow integrity: `PASS`.
 - Phase 2 — Application security and identity: `PASS` for internal gates.
 - Phase 3 — Data integrity and recovery: `PASS` for internal gates.
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.9 are accepted. RC10.10 remains `CI_VALIDATION_PENDING` after RUN-143 evidence-validator remediation.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.10 are accepted. RC10.11 on-call ownership/escalation handover baseline is `CI_VALIDATION_PENDING`.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -29,9 +29,8 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - RC10.6 search-health alerting: `PASS` — PR #93.
 - RC10.7 distributed trace-context baseline: `PASS` — PR #94.
 - RC10.8 operational dashboard: `PASS` — PR #95.
-- RC10.9 operational incident runbooks: `PASS` — PR #96 exact head `625757de118878d7c7b7b60847959c17d3c7c844`, 43/43 workflows, artifact `9042812326`, merge `28ffdc1d0c510ab57ea42751eb74261192899438`.
-
-RUN-141 is accepted as the Phase-1 CI-integrity remediation that fixed the initial RC10.9 governance-text regression without weakening tests or policy.
+- RC10.9 operational incident runbooks: `PASS` — PR #96.
+- RC10.10 controlled synthetic operational runbook exercise: `PASS` — PR #97 exact head `a332453e0ed9c2f413107cdadfed316b4ac6c2ce`, 44/44 workflows, artifact `9043082726`, digest `sha256:dd095787ed6624f628d0f030ac9af0ccc56d46e9a59ff840ac64ab261dace154`, JUnit 5/5, merge `788daad06879c1c99f22625569bd1b74abe9249f`.
 
 ## Object-storage remediation — internal gate accepted
 
@@ -39,13 +38,7 @@ RUN-131 through RUN-134 established and implemented the supported object-storage
 
 ## Phase 1 — CI and workflow integrity
 
-Objectives: regression-protect release-critical workflows, validate triggers/jobs/permissions/services/artifacts, make execution observable, and fail closed on missing/malformed gates.
-
-Blocking gates: workflow contract tests pass; required jobs/triggers are validated; workflow evidence is observable; failed/absent workflows cannot be interpreted as success.
-
-RUN-143 is an active bounded Phase-1 remediation discovered during RC10.10 acceptance. PR #97 exact head `1862b1c4e9e768da82baef3470464845cadf3967` completed 43/44 workflows. The dedicated `RC10 Operational Runbook Exercise Gate` failed after its scenario tests passed 5/5 because its evidence validator used `assert all(e["controls"].values())`, which incorrectly rejected the intentionally false safety controls `production_data_used=false` and `production_credentials_used=false`.
-
-The validator is corrected without weakening the gate: required-positive controls are asserted `True`; required-negative safety controls are asserted `False`; all claim-boundary values must remain false. A complete fresh exact-head matrix and regenerated retained artifact are mandatory. The failed prior head is not accepted.
+Current decision: `PASS`.
 
 ## Phase 2 — Application security and identity
 
@@ -79,19 +72,25 @@ Blocking gates:
 - alerts tested with controlled failures;
 - logs/metrics provide correlation IDs and actionable evidence;
 - runbooks complete and exercised;
-- operational ownership/escalation documented.
+- operational ownership/escalation documented and human handover accepted.
 
-### RC10.10 controlled synthetic operational runbook exercise — `CI_VALIDATION_PENDING`
+### RC10.11 on-call ownership and escalation handover baseline — `CI_VALIDATION_PENDING`
 
-RUN-142 adds a scenario-driven technical exercise over the accepted runbooks for API elevated-5xx, connector/source degradation, search red/unreachable, and storage-integrity failure. Each scenario requires severity/scope classification, evidence preservation, reversible containment, security/privacy branching, known-good recovery, objective validation, human communication/share approval and residual-risk handoff. No production data, production credentials, destructive remediation or external communication is used.
+RUN-144 defines the source-controlled handover contract:
 
-The first PR #97 exact head is not accepted: 43/44 workflows succeeded, while the dedicated exercise gate failed only in its evidence validator. RUN-143 fixes that validator logic; every workflow and retained `operational-runbook-exercise-evidence` must regenerate on one new exact final head.
+- primary/secondary responder, Incident Commander, security lead, service owner, communications approver and business/stakeholder owner responsibilities;
+- severity escalation matrix and coverage requirements;
+- shift-handover checklist with explicit incoming acknowledgement;
+- privacy-safe incident/handover evidence rules;
+- RBAC and human share approval remain unchanged;
+- named people/contact details remain outside the repository;
+- human acceptance requires staffed coverage, tested paging/contact and escalation paths, real-participant handover, a human exercise/walkthrough, unresolved-gap ownership and service/operational-owner sign-off.
 
-The exercise remains a **controlled synthetic technical exercise** and does not claim human tabletop participation, response-time evidence, on-call handover or operational ownership acceptance.
+CI validates only the documentation/governance contract. It does not prove staffing, reachability, training, tested contacts or human acceptance.
 
-Phase 7 will remain incomplete after RC10.10 until operational ownership/escalation and on-call handover are evidenced. Any production observability-platform deployment acceptance remains staging/external work.
+Phase 7 remains incomplete until RC10.11 exact-head evidence is accepted and the external/human operational ownership/handover evidence is supplied. If that human evidence cannot be produced in the repository workflow, Phase 7 becomes `BLOCKED_EXTERNAL` at that point rather than being falsely marked complete.
 
-Exactly one next priority: verify all 44 workflows on the new exact PR #97 head and independently inspect regenerated `operational-runbook-exercise-evidence`; merge only after all registered workflows succeed and retained evidence is exact-head bound.
+Exactly one next priority: verify the complete exact-head workflow matrix and retained `oncall-handover-evidence` for RUN-144; merge only after all registered workflows succeed and retained evidence is exact-head bound.
 
 ## Phase 8 — Staging acceptance
 
