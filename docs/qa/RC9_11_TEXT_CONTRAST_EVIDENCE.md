@@ -1,6 +1,6 @@
 # RC9.11 — Measured WCAG 2.2 Contrast Evidence
 
-Status: `CI_VALIDATION_PENDING`
+Status: `PASS`
 
 ## Objective
 
@@ -24,9 +24,17 @@ References:
 - https://www.w3.org/WAI/WCAG22/Techniques/general/G18
 - https://www.w3.org/WAI/WCAG22/Techniques/general/G145.html
 
-## Evidence method
+## Accepted evidence
 
-The dedicated Chromium gate resolves the real backend session for each role, waits for the governed critical control, measures visible text foreground/background contrast, measures interactive component fill/border contrast against adjacent background, keyboard-tabs through every visible interactive control and measures the rendered focus outline against adjacent colors, then retains exact-head JSON plus JUnit and server logs. Transparent backgrounds are composited to the effective page background; unsupported background-image cases fail closed.
+PR #70 exact head `61fad60558a8700c8e80f6f657976aec1c0c081b` completed all 29 registered workflows successfully.
+
+Retained artifact: `9038987343`.
+Digest: `sha256:a82e08c90851b70c74b789d87be59607011827c8634286eab3a5dd7843aebd68`.
+JUnit: 1 test, 0 failures, 0 errors, 0 skips.
+
+The retained JSON is exact-head bound and records PASS for all measured text, UI-boundary and keyboard-focus-indicator contrast across the four critical surfaces. The artifact records real backend session RBAC and preserved separate human share approval.
+
+PR #70 was merged with expected-head protection as `9e66e864056a95eed135004ad0c12ad4f8da919b`.
 
 ## Governance invariants
 
@@ -34,8 +42,4 @@ Backend-derived RBAC, separation of duties, auditability and separate human shar
 
 ## Claim boundary
 
-A PASS covers only these measured contrast requirements on the four tested critical surfaces in Chromium. It does not establish product-wide WCAG 2.2 AA conformance, 200% resize, 320 CSS px reflow, text-spacing behavior, complete focus-order evidence or genuine assistive-technology behavior.
-
-## Acceptance gate
-
-PASS requires every registered exact-head workflow to succeed and retained `browser-contrast-evidence` to show zero text, UI-boundary or focus-indicator failures across all four surfaces. Missing, queued, failed, cancelled or unexecuted CI is not PASS.
+This PASS covers only the measured contrast requirements on the four tested critical surfaces in Chromium. It does not establish product-wide WCAG 2.2 AA conformance, 200% resize, 320 CSS px reflow, text-spacing behavior, complete focus-order evidence or genuine assistive-technology behavior.
