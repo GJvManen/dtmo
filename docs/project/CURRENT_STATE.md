@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-09 — RUN-20260809-132 (`CI_VALIDATION_PENDING` for this documentation head; supported object-storage target selected, migration not yet executed)
+Last reconciled: 2026-08-09 — RUN-20260809-133 (`CI_VALIDATION_PENDING`; supported object-storage migration implementation present, acceptance not yet claimed)
 
 This document is the human-readable current-state view of DTMO. It complements the immutable run history in `docs/development/runs/`, the chronological `docs/development/RUN_LOG.md`, the production roadmap, QA gate records and GitHub issues #1–#3.
 
@@ -21,25 +21,24 @@ DTMO is **not production ready**. Issue #1 remains authoritative for external pr
 
 ## Latest verified acceptance
 
-PR #88 exact head `e10eba331fca40b95bd3800fa1be93c9474ece2f` completed all 37 registered workflows successfully and was merged as `c11e37f5c166d698b0edf05ec1969dcfb3b0fe2d`.
+PR #89 exact head `79c5684b7e65064efe480e6da7913fd437d52b6d` completed all 37 registered workflows successfully and merged as `83e880a289467151c6604e28cd4141118fb538a9`.
 
-## Supported object-storage decision
+## Supported object-storage migration
 
-ADR-0001 selects **MinIO AIStor Enterprise Lite or AIStor Enterprise with an active paid support entitlement** as the supported successor to legacy `minio/minio`.
+ADR-0001 selects MinIO AIStor Enterprise Lite or AIStor Enterprise with active paid support as the supported successor to legacy `minio/minio`.
 
-Production acceptance requires:
+RUN-133 implements the repository migration contract:
 
-- vendor-supported production deployment topology;
-- current supported AIStor release pinned by immutable release tag and image digest;
-- no `latest` tag in accepted production manifests;
-- active license supplied outside source control;
-- separation of AIStor license/SUBNET, administrative/root and least-privilege application S3 credentials;
-- TLS/network encryption and server-side encryption before production acceptance;
-- retained security, recovery, storage-integrity and full-regression evidence.
+- removes the legacy `minio/minio` image from `docker-compose.yml`;
+- requires external `AISTOR_IMAGE` with a release-tag-plus-`@sha256` digest contract and no implicit runnable default;
+- prohibits `latest` through regression testing;
+- injects the AIStor license through a required external file and Compose secret;
+- requires external administrative user/password inputs with no legacy default credentials;
+- preserves the internal `minio` service name, `DTMO_MINIO_ENDPOINT=minio:9000`, `minio_data:/data` persistent volume and application S3 compatibility contract;
+- preserves `DTMO_PUBLISH_REQUIRES_HUMAN_APPROVAL=true` and does not alter RBAC, provenance or publication authority;
+- adds a dedicated `Supported Object Storage Migration Gate` with retained JUnit evidence.
 
-AIStor Free is not accepted for DTMO production because first-party documentation states it has no SLA/SLO/service agreement and does not provide the required distributed/support profile. The archived legacy `minio/minio` runtime and unsupported source builds remain rejected.
-
-This decision removes the target-selection ambiguity only. It does **not** claim that AIStor is deployed, licensed, hardened, recoverable or production accepted.
+The migration remains `CI_VALIDATION_PENDING`. No unexecuted workflow is treated as PASS.
 
 ## Security and governance invariants
 
@@ -53,8 +52,8 @@ This decision removes the target-selection ambiguity only. It does **not** claim
 
 ## External gates still open
 
-Issue #1 remains authoritative for independently executed production gates, including penetration testing, representative load/stress, full backup/restoration, production OpenSearch hardening, secrets-manager acceptance, deployment acceptance and operational/stakeholder approvals. The AIStor commercial entitlement/support purchase is also an external prerequisite for production deployment and does not close any issue #1 gate by itself.
+Issue #1 remains authoritative for independently executed production gates, including penetration testing, representative load/stress, full backup/restoration, production OpenSearch hardening, secrets-manager acceptance, deployment acceptance and operational/stakeholder approvals. AIStor commercial entitlement/support purchase, production topology, TLS/network encryption, server-side encryption and independent registry-digest attestation also remain outside this repository-only migration claim.
 
 ## Exactly one current priority
 
-Implement the bounded migration from legacy `minio/minio` to the accepted AIStor target using an immutable supported release and external license/secret boundary, then execute relevant security, recovery, storage-integrity and full regression gates with retained exact-head evidence before resuming Phase 7 / RC10.5 API-error alerting.
+Verify the complete exact-head CI matrix and retained evidence for the RUN-133 migration PR; merge only after every registered workflow succeeds. After acceptance, perform one bounded post-migration security/recovery/storage-integrity reconciliation before resuming Phase 7 / RC10.5 API-error alerting.
