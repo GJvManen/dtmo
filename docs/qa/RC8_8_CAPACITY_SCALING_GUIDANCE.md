@@ -1,6 +1,6 @@
 # RC8.8 — Capacity Limits and Scaling Guidance
 
-Status: `CI_VALIDATION_PENDING`
+Status: `PASS`
 
 ## Objective
 
@@ -37,8 +37,6 @@ All figures above are bounded synthetic CI observations. They must not be extrap
 
 Until representative staging and external load/stress evidence exists, DTMO must treat the RC8.1 profile as the maximum *unvalidated production planning envelope*, not as certified production capacity.
 
-The following fail-closed limits apply to planning and pre-production acceptance:
-
 | Dimension | Internal planning ceiling | Action at or above ceiling |
 |---|---:|---|
 | Peak concurrent users | 50 | scale test environment and run representative load/stress before production approval |
@@ -56,7 +54,7 @@ The following fail-closed limits apply to planning and pre-production acceptance
 
 ## Resource headroom rules
 
-The accepted workload profile sets pre-production average resource ceilings of 70% API CPU, 75% API memory, 70% PostgreSQL CPU and 75% OpenSearch heap. Production scaling must therefore preserve at least the complementary average headroom at representative load and must also inspect saturation/rejection indicators rather than CPU alone.
+The accepted workload profile sets pre-production average resource ceilings of 70% API CPU, 75% API memory, 70% PostgreSQL CPU and 75% OpenSearch heap. Production scaling must preserve at least the complementary average headroom at representative load and must inspect saturation/rejection indicators rather than CPU alone.
 
 A scale-out decision is triggered before a sustained resource ceiling is breached, or earlier when latency/error/queue budgets degrade. Scaling one tier is not accepted if it shifts saturation to PostgreSQL, OpenSearch, object storage or the queue.
 
@@ -88,18 +86,16 @@ Capacity changes cannot weaken RBAC, separation of duties, auditability, provena
 
 ## External assurance boundary
 
-This guidance does **not** satisfy or close issue #1's:
-
-- independent representative load/stress test;
-- production OpenSearch security/hardening gate;
-- staging/production deployment acceptance;
-- secrets-manager replacement gate;
-- operational acceptance by service owner, CISO/ISO and privacy function.
+This guidance does **not** satisfy or close issue #1's independent representative load/stress test, production OpenSearch security/hardening, staging/production deployment acceptance, secrets-manager replacement, or operational acceptance by service owner, CISO/ISO and privacy function.
 
 Representative external testing must determine actual production saturation points and may lower these planning ceilings. It must not raise them without retained evidence and explicit release approval.
 
+## Acceptance evidence
+
+PR #48 exact head `979191a7db64a97e4ccc250ff9a24e6735d63158` completed all 19 registered GitHub Actions workflows successfully. The PR was merged with expected-head protection as `62b34472948d0f301104ddd452e14efb945fa6bd`.
+
+This satisfies the internal Phase-5 blocking requirement that capacity limits and scaling guidance are documented. The internal Phase-5 roadmap gate is therefore `PASS` while issue #1's external load/stress, production OpenSearch hardening, staging, external assurance and production approval gates remain open.
+
 ## Decision rule
 
-RC8.8 may be `PASS` only when this exact documentation head passes all repository-required workflows and is merged to `main`. Before that, status remains `CI_VALIDATION_PENDING`.
-
-If accepted, the internal Phase-5 blocking requirement "Capacity limits and scaling guidance are documented" is satisfied. Phase 5 can then be marked internally complete while issue #1's external load/stress gate remains open and blocking overall production readiness.
+RC8.8 is `PASS` only for the bounded internal Phase-5 documentation gate described above. No production capacity certification or external assurance is implied.
