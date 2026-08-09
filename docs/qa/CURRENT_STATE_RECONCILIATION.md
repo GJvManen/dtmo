@@ -4,33 +4,48 @@ Status: `PASS`
 
 ## Control objective
 
-Ensure the repository's human-visible current-state documentation accurately reflects the implementation, workflows, accepted evidence and open work actually present on `main`.
+Ensure every authoritative human-visible current-state entry point accurately reflects implementation, exact-head acceptance evidence, open blockers and the actual state of `main`.
 
-## Verified repository facts
+## RUN-20260809-126 reconciliation scope
 
-- RC8.2 API-read performance workflow exists on `main` at `.github/workflows/api-read-performance.yml`.
-- RC8.3 OpenSearch search-read performance workflow exists on `main` at `.github/workflows/search-read-performance.yml`.
-- RC8.4 ingestion-performance workflow exists on `main` at `.github/workflows/ingestion-performance.yml`.
-- RC8.1 through RC8.4 have accepted mainline evidence and merge history.
-- PR #42 / RC8.5 remains open and therefore is not an accepted mainline capability.
-- Prior `README.md` content was stale, describing RC7.2 as active and Phase 5 as not started.
+This reconciliation corrects documentation drift that remained after accepted Phase-5, Phase-6 and Phase-7 work:
 
-## Reconciled documentation
+- `README.md` no longer describes Phase 5 / RC8.6 as the active priority;
+- `docs/project/CURRENT_STATE.md` reflects Phase 1–5 internal `PASS`, Phase 6 `BLOCKED_EXTERNAL`, and Phase 7 `IN PROGRESS`;
+- `docs/roadmap/PRODUCTION_ROADMAP.md` records accepted RC10.1 and RC10.2 evidence and RC10.3 as the next implementation priority;
+- `docs/development/RUN_LOG.md` records RC10.2 acceptance and the restored historical acceptance records;
+- `docs/qa/QA_AND_RELEASE_GATES.md` reflects the current phase and gate model rather than the obsolete Phase-5/RC8.5 state;
+- `docs/qa/RC10_2_CONNECTOR_FAILURE_ALERTING_GATE.md` records RC10.2 `PASS` evidence;
+- stale `CI_VALIDATION_PENDING` QA decisions for accepted RC8.8, RC9.1 and RC9.2 are corrected;
+- missing historical runs RUN-20260809-088, RUN-20260809-089, RUN-20260809-091, RUN-20260809-095 and RUN-20260809-097 are restored from their superseded audit branches.
 
-- `README.md` now states the current Phase 5 position.
-- `docs/project/CURRENT_STATE.md` provides roadmap, runtime/governance and CI/evidence Mermaid graphs.
-- Workflow inventory distinguishes mainline RC8.2–RC8.4 from pending RC8.5.
-- Accepted bounded RC8.2–RC8.4 measurements are summarized without claiming the independent external load/stress gate.
-- Security and governance invariants remain explicit.
+## Underlying accepted evidence preserved
 
-## Acceptance evidence
+This documentation gate does not invent new product acceptance. It reconciles already accepted facts, including:
 
-PR #43 exact head `b0260a17200d7a223a9a04403d6dcaaba92b726c` was re-verified before merge. All 15 registered required RC4/RC6/RC7/RC8 workflows were observed as `completed/success`. The PR was merged with expected-head protection as `c79a1c3d4a4664d8972f95bcb444f2cdef660b34`.
+- RC8.7 PR #46 accepted as `7ecd1bf88d0577074390a173847186c8a92e48b6` after 19/19 workflows and retained artifact `9032891744`;
+- RC8.8 PR #48 accepted as `62b34472948d0f301104ddd452e14efb945fa6bd` after 19/19 workflows;
+- RC9.1 PR #50 accepted as `ef59eba29d7fa8b2d88b5674e7bb00e98c0dab18` after 20/20 workflows and artifact `9036392289`;
+- RC9.2 PR #53 accepted as `22bf74bb6c5c367195a3e67b0c8db4ec0489a449` after 21/21 workflows and artifact `9036721912`;
+- RC10.1 PR #80 accepted as `1675d88bb24dcd50e20545f49b26dd7cc2810d97` after 34/34 workflows and artifact `9040196394`;
+- RC10.2 PR #82 accepted as `f6680423860389288d9feced34592294d774bf4a` after 35/35 workflows and artifact `9040485255`.
 
-Configured, queued, cancelled, missing or unexecuted workflows were not treated as PASS.
+Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA evidence and issue #1 external production gates remain open.
 
-No product behavior, RBAC, separation of duties, privacy, provenance, auditability or human share-approval control was modified by this gate.
+## Reconciliation validation
 
-## Decision
+RUN-126 reconciliation validation head `187d645a7f3c3200e545be23312c4165b7b2f7dc` completed all 35 registered workflows successfully with no failures before the final status/current-priority reconciliation. The final documentation head is required to repeat complete exact-head success before protected merge; this `PASS` is valid only in that final merged state.
 
-`PASS` for documentation reconciliation only. RC8.5, the remainder of Phase 5, external assurance and production go/no-go remain independently gated.
+Configured, queued, cancelled, failed or unexecuted workflows are not accepted as PASS.
+
+## Legacy documentation PR handling
+
+Superseded documentation-only PRs #47, #49, #52 and #54 contain historical records now restored by RUN-126. They may be closed after the final reconciliation merge confirms those records are authoritative on `main`.
+
+## Current decision
+
+`PASS` for current-state documentation reconciliation, contingent on the final exact-head CI and protected merge of the reconciliation PR. Underlying product acceptance boundaries remain unchanged.
+
+## Exactly one next priority
+
+Phase 7 / RC10.3 — implement bounded queue-backlog alerting with explicit threshold semantics, actionable correlated evidence, controlled breach/recovery behavior and retained exact-head evidence. Storage-integrity, API-error and search-health alerting remain later objectives.

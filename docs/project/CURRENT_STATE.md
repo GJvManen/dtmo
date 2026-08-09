@@ -1,35 +1,43 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-09
+Last reconciled: 2026-08-09 — RUN-20260809-126 (`PASS` in the final merged state)
 
-This document is the human-readable current-state view of DTMO. It complements the immutable run history in `docs/development/runs/`, the chronological `RUN_LOG.md`, the production roadmap, QA gate records and GitHub issues #1–#3.
+This document is the human-readable current-state view of DTMO. It complements the immutable run history in `docs/development/runs/`, the chronological `docs/development/RUN_LOG.md`, the production roadmap, QA gate records and GitHub issues #1–#3.
 
 ## Executive status
 
-- Phases 1–4: `PASS` with recorded evidence.
-- Phase 5 — performance and scalability: `IN PROGRESS`.
-- RC8.1 workload profile: `PASS`.
-- RC8.2 API-read performance: `PASS`.
-- RC8.3 OpenSearch search-read performance: `PASS`.
-- RC8.4 ingestion-throughput performance: `PASS`.
-- RC8.5 queue pressure and connector burst: `PASS` via RUN-20260809-083 / PR #42.
-- Phases 6–9: not yet accepted.
-- Phase 10 production go/no-go: `BLOCKED` until every remaining phase and external gate is evidenced.
+- Phase 1 — CI and workflow integrity: `PASS`.
+- Phase 2 — application security and identity: `PASS` for internal roadmap gates.
+- Phase 3 — data integrity and recovery: `PASS` for internal roadmap gates.
+- Phase 4 — connector reliability and provenance: `PASS` for internal roadmap gates.
+- Phase 5 — performance and scalability: `PASS` for internal roadmap gates. External representative production load/stress remains separate in issue #1.
+- Phase 6 — frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior on supported real host/browser/screen-reader combinations. Browser/DOM automation is not accepted as a substitute.
+- Phase 7 — observability and incident operations: `IN PROGRESS`.
+  - RC10.1 request observability: `PASS`.
+  - RC10.2 controlled connector-failure alerting: `PASS`.
+  - RC10.3 queue-backlog alerting: next bounded implementation objective.
+- Phase 8 — staging acceptance: `NOT STARTED`.
+- Phase 9 — external assurance: `NOT COMPLETE`.
+- Phase 10 — production go/no-go: `NOT STARTED`.
+
+DTMO is therefore **not production ready**. Issue #1 remains the source of truth for external production-acceptance gates.
 
 ## Roadmap graph
 
 ```mermaid
 flowchart LR
-    P1[Phase 1 CI/workflow integrity\nPASS] --> P2[Phase 2 Security & identity\nPASS]
-    P2 --> P3[Phase 3 Data integrity & recovery\nPASS]
-    P3 --> P4[Phase 4 Connector reliability & provenance\nPASS]
-    P4 --> P5[Phase 5 Performance & scalability\nIN PROGRESS]
-    P5 --> P6[Phase 6 Accessibility & operational UX\nNOT ACCEPTED]
-    P6 --> P7[Phase 7 Observability & incident operations\nNOT ACCEPTED]
-    P7 --> P8[Phase 8 Staging acceptance\nNOT ACCEPTED]
-    P8 --> P9[Phase 9 External assurance\nNOT ACCEPTED]
-    P9 --> P10[Phase 10 Production go/no-go\nBLOCKED]
+    P1[Phase 1 CI/workflow integrity\nPASS] --> P2[Phase 2 Security & identity\nPASS internal]
+    P2 --> P3[Phase 3 Data integrity & recovery\nPASS internal]
+    P3 --> P4[Phase 4 Connector reliability & provenance\nPASS internal]
+    P4 --> P5[Phase 5 Performance & scalability\nPASS internal]
+    P5 --> P6[Phase 6 Accessibility & operational UX\nBLOCKED_EXTERNAL]
+    P6 --> P7[Phase 7 Observability & incident operations\nIN PROGRESS]
+    P7 --> P8[Phase 8 Staging acceptance\nNOT STARTED]
+    P8 --> P9[Phase 9 External assurance\nNOT COMPLETE]
+    P9 --> P10[Phase 10 Production go/no-go\nNOT STARTED]
 ```
+
+Phase 7 work may proceed while Phase 6 remains externally blocked; the VoiceOver/NVDA requirement itself remains open and is not bypassed.
 
 ## Runtime and governance dataflow
 
@@ -51,100 +59,90 @@ flowchart TD
     HREC --> CAND
 ```
 
-## CI and evidence graph
+## CI and evidence model
 
 ```mermaid
 flowchart TB
     PR[Pull request exact head] --> QG[RC4 Quality Gate]
-    PR --> R6A[RC6 OpenSearch Recovery]
-    PR --> R6B[RC6 Multi-store Recovery]
-    PR --> R7[RC7 connector regression gates]
-    PR --> R82[RC8 API Read Performance]
-    PR --> R83[RC8 Search Read Performance]
-    PR --> R84[RC8 Ingestion Performance]
-    PR --> R85[RC8 Queue Burst Performance]
-    PR --> OSG[Open Source Governance]
+    PR --> REC[RC6 Recovery gates]
+    PR --> CON[RC7 Connector gates]
+    PR --> PERF[RC8 Performance gates]
+    PR --> UX[RC9 Browser/accessibility gates]
+    PR --> OBS[RC10 Observability gates]
 
-    QG --> ACCEPT{All required exact-head gates green?}
-    R6A --> ACCEPT
-    R6B --> ACCEPT
-    R7 --> ACCEPT
-    R82 --> ACCEPT
-    R83 --> ACCEPT
-    R84 --> ACCEPT
-    R85 --> ACCEPT
-    OSG --> ACCEPT
+    QG --> ACCEPT{All registered exact-head gates green?}
+    REC --> ACCEPT
+    CON --> ACCEPT
+    PERF --> ACCEPT
+    UX --> ACCEPT
+    OBS --> ACCEPT
 
     ACCEPT -- no --> BLOCK[BLOCKED / CI_VALIDATION_PENDING]
     ACCEPT -- yes --> ART[Inspect retained artifacts]
     ART --> MERGE[Expected-head protected merge]
 ```
 
-## Phase 5 workflows confirmed on `main`
+Configured or queued workflows are not evidence of success. The accepted state requires completed exact-head CI, retained evidence where specified, independent inspection and the actual protected merge.
 
-- `.github/workflows/api-read-performance.yml` — RC8.2 API Read Performance Gate;
-- `.github/workflows/search-read-performance.yml` — RC8.3 OpenSearch Search Read Performance Gate;
-- `.github/workflows/ingestion-performance.yml` — RC8.4 Ingestion Performance Gate;
-- `.github/workflows/queue-burst-performance.yml` — RC8.5 Queue Burst Performance Gate;
-- `.github/workflows/open-source-governance.yml` — project licensing/governance regression gate.
+## Latest accepted Phase 7 evidence
 
-Existing RC4/RC6/RC7 workflows continue to protect build quality, recovery and connector governance. A workflow being configured or present is not itself evidence of a successful execution.
+### RC10.1 — request observability
 
-## Accepted Phase 5 measurements
+PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc` passed all 34 registered workflows. Retained artifact `9040196394`, digest `sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`, independently proved:
 
-### RC8.2 API reads
+- validated/safe correlation IDs;
+- correlation ID and method in real `structlog` request context;
+- structured request completion/failure events;
+- bounded route-template Prometheus request metrics;
+- request latency metrics;
+- in-flight request metric;
+- JUnit 5 tests, 0 failures/errors/skips.
 
-- 500/500 successful requests;
-- 100.142 requests/s;
-- 0% errors;
-- p95 1.878 ms;
-- p99 11.059 ms.
+PR #80 merged as `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
 
-### RC8.3 OpenSearch search reads
+### RC10.2 — controlled connector-failure alerting
 
-- 200/200 successful searches;
-- 40.161 searches/s;
-- 0% errors;
-- p95 7.700 ms;
-- p99 12.131 ms.
+PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243` passed all 35 registered workflows. Retained artifact `9040485255`, digest `sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`, independently proved:
 
-### RC8.4 ingestion
+- terminal connector failure sets an active bounded alert signal;
+- Prometheus alert metric and `DTMOConnectorFailure` rule;
+- structured safe correlation evidence;
+- actionable operator guidance;
+- raw connector error text excluded from alert logs;
+- repeated failure does not create another raise transition while already active;
+- subsequent success clears the signal and emits clear evidence;
+- publication approval remains unchanged;
+- JUnit 4 tests, 0 failures/errors/skips.
 
-- 500/500 records accepted;
-- zero data loss;
-- zero duplicate candidate creation;
-- identical second pass quarantined as replay;
-- measured bounded synthetic throughput 108081.257 records/s.
+PR #82 merged as `f6680423860389288d9feced34592294d774bf4a`.
 
-### RC8.5 queue pressure / connector burst
+RC10.2 does not claim pager/e-mail/chat notification delivery, queue/storage/API/search alerting, dashboards, runbooks or Phase-7 completion.
 
-Exact head `65c7949624c3770ce91d00c34a957b6b2cb9946a` passed all 17 required workflows. Artifact `9029584698` (`sha256:a934d6179f347e3bf9a198fcb155e7996c42fc670959c2cfd50453969969b974`) recorded:
+## Phase 6 external accessibility boundary
 
-- 250/250 submitted and accepted;
-- 170 backpressure events;
-- queue depth 40/40;
-- zero data loss;
-- zero duplicate candidates;
-- recovery 0.602 s;
-- provenance and publication state preserved;
-- 6 focused tests, 0 failures/errors/skips.
+RC9.1–RC9.15 contain accepted bounded browser/accessibility evidence, including keyboard navigation, supported browsers, contrast, text resize, 320px reflow, text spacing and complete focus-order evidence. RC9.16 defines the remaining real-assistive-technology evidence contract.
 
-These are bounded internal CI measurements. They do not close issue #1's independent representative load/stress gate.
+Phase 6 remains `BLOCKED_EXTERNAL` until genuine VoiceOver and NVDA execution is retained from supported real host/browser/screen-reader combinations. Browser/DOM automation is not accepted as a substitute.
+
+## Phase 5 capacity boundary
+
+Internal Phase 5 is `PASS`, including capacity/scaling guidance. All performance figures are bounded internal/synthetic evidence and do not certify production capacity. Issue #1's independent representative production load/stress gate remains separate and open.
 
 ## External gates still open
 
-Issue #1 remains the source of truth for externally executed production gates. In particular, independent representative load/stress remains open. RC8.5 also explicitly did not test degraded dependencies, so Phase 5 cannot yet be closed.
+Issue #1 remains authoritative for externally executed production gates, including independent penetration testing, representative load/stress, full backup/restoration exercise, production OpenSearch hardening, secrets-manager replacement where required, staging/production deployment acceptance and operational/stakeholder approval.
 
 ## Security and governance invariants
 
-- RBAC remains enforced;
-- review and share approval remain separate human actions;
-- connectors and service accounts cannot approve publication;
-- ingestion, replay, retry, recovery, timeout or performance success never implies publication approval;
-- provenance, confidence and raw evidence are retained;
-- performance fixtures must be synthetic or specifically approved public fixtures;
-- absent, queued, cancelled or unexecuted CI is never `PASS`.
+- RBAC remains enforced.
+- Review and share approval remain separate human actions.
+- The same principal may not review and share-approve the same item.
+- Connectors and service accounts cannot approve publication.
+- Ingestion, replay, retry, recovery, timeout, performance or observability success never implies publication approval.
+- Provenance, confidence and raw evidence remain retained according to their controls.
+- Performance and controlled-failure fixtures use synthetic or explicitly approved non-production data.
+- Missing, queued, cancelled, failed or unexecuted CI is never `PASS`.
 
 ## Exactly one current priority
 
-Implement one bounded RC8.6 degraded-dependency performance/correctness gate proving zero data loss and preserved fail-closed governance when a representative internal dependency is unavailable or impaired. Do not combine this objective with the independent external load/stress gate or Phase 6 work.
+Phase 7 / RC10.3 — implement a bounded queue-backlog alerting gate with explicit threshold semantics, actionable correlated evidence and controlled breach/recovery behavior. Storage-integrity, API-error and search-health alerting remain later Phase-7 objectives.
