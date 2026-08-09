@@ -1,0 +1,13 @@
+groups:
+  - name: dtmo.connector.alerts
+    rules:
+      - alert: DTMOConnectorFailure
+        expr: dtmo_connector_alert_active == 1
+        for: 0m
+        labels:
+          severity: warning
+          service: dtmo
+        annotations:
+          summary: "DTMO connector {{ $labels.connector }} has a terminal failure"
+          action: "Inspect connector health, upstream availability, credentials and rate limits."
+          clear_condition: "The alert clears after a subsequent successful connector run sets the signal to 0."

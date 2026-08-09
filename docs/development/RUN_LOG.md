@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260809-125 — RC10.2 controlled connector-failure alerting](runs/RUN-20260809-125.md) — `CI_VALIDATION_PENDING`: added bounded terminal connector-failure metrics, structured correlated alert transitions, repeat-raise suppression, successful-run clear behavior, an actionable Prometheus alert rule, controlled regression tests and a dedicated retained exact-head alerting gate. Existing RC7 retry/backoff and failure isolation remain authoritative.
 - [RUN-20260809-124 — RC10.1 exact-head acceptance and documentation reconciliation](runs/RUN-20260809-124.md) — `PASS`: PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc` passed all 34 registered workflows; retained artifact `9040196394` (`sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`) independently proved the bounded request-observability controls with 5/5 JUnit tests passing; merged as `1675d88bb24dcd50e20545f49b26dd7cc2810d97`. Historical RC9.3–RC9.5 acceptance records were reconciled into the authoritative documentation set.
 - [RUN-20260809-123 — RC10.1 request observability baseline](runs/RUN-20260809-123.md) — `PASS`: implementation run later accepted by RUN-124; added safe correlation-ID handling, real structlog context binding, structured request completion/failure events, bounded route-template Prometheus request metrics, an in-flight gauge, regression tests and a retained exact-head observability gate.
 - [RUN-20260809-122 — RC9.16 genuine assistive-technology behavior](runs/RUN-20260809-122.md) — `BLOCKED_EXTERNAL`: real VoiceOver and NVDA behavior cannot be truthfully executed in the current automation environment. Defined the required macOS/Safari/VoiceOver and Windows/Firefox-or-Chrome/NVDA evidence matrix, criterion-level observations, privacy-safe retained evidence contract, RBAC checks and separate human share-approval verification.
@@ -23,8 +24,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 Phase 6 remains `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior on real supported hosts. Browser/DOM automation is not treated as a substitute.
 
-Phase 7 is `IN PROGRESS`. RC10.1 request observability is accepted as `PASS` after complete exact-head CI and retained evidence inspection. Issue #1 external production gates remain independently open.
+Phase 7 is `IN PROGRESS`. RC10.1 request observability is accepted as `PASS`. RC10.2 connector-failure alerting is `CI_VALIDATION_PENDING` and cannot be accepted until complete exact-head CI and retained evidence inspection succeed. Issue #1 external production gates remain independently open.
 
 ## Exactly one next priority
 
-Phase 7 / RC10.2 — add one bounded controlled-failure alerting gate for connector failures, including actionable alert signal, correlation evidence, recovery/clear behavior and retained exact-head evidence. Queue backlog, storage integrity, API-error and search-health alerting remain later Phase 7 objectives.
+Inspect every required workflow on the final RC10.2 pull-request head and retained `connector-alerting-evidence`; repair only the first deterministic failure, or accept/merge only after complete successful evidence.

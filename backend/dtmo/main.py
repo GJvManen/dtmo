@@ -7,6 +7,7 @@ from time import perf_counter
 from fastapi import FastAPI, Request, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
+from dtmo.alerts import connector_alerts
 from dtmo.api.routes import close_services, router as intelligence_router
 from dtmo.auditor_ui import router as auditor_ui_router
 from dtmo.ciso_ui import router as ciso_ui_router
@@ -42,12 +43,15 @@ def _route_template(request: Request) -> str:
 
 async def run_cisa_kev() -> dict[str, object]:
     result = await CisaKevConnector(settings).run()
+    alert = connector_alerts.record(result)
     log.info(
         "connector_run_finished",
         connector_id=result.connector_id,
         status=result.status,
         records=len(result.records),
         attempts=result.attempts,
+        alert_state=alert.state,
+        correlation_id=alert.correlation_id,
     )
     return {
         "connector_id": result.connector_id,
@@ -55,6 +59,8 @@ async def run_cisa_kev() -> dict[str, object]:
         "records": len(result.records),
         "attempts": result.attempts,
         "error": result.error,
+        "alert_state": alert.state,
+        "correlation_id": alert.correlation_id,
     }
 
 
