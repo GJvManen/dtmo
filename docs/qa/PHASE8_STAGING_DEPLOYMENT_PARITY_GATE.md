@@ -10,9 +10,9 @@ Require independently observable, production-equivalent staging deployment evide
 
 ## Latest reconciliation
 
-RUN-150 verified that PR #102 final exact head `c0bf83a8e0a9c51bdbd492fadfb60a71e25c7e9b` completed 46/46 registered workflows successfully and merged as `60897cdfd36a78297cf90521f14ded5116ec9653`. This closes the RUN-149 CI remediation only.
+RUN-150 / PR #103 exact head `be9deb34255f6114430d76868c9bf82f0e039f15` completed 46/46 registered workflows successfully and merged as `1e957f7fa1e9910e5d258cd6d7ed5ce69e9203d1`. A fresh repository and issue #1 review still found no real staging environment or deployment-parity evidence.
 
-A fresh repository and issue #1 review found no real staging environment or deployment-parity evidence. The gate therefore remains `BLOCKED_EXTERNAL`.
+RUN-151 adds a source-controlled production-equivalent staging emulator contract. Even if its CI gate passes, emulator configuration evidence does not satisfy this gate because it does not prove a real deployed environment or runtime behavior.
 
 ## Required external evidence
 
@@ -29,7 +29,7 @@ A fresh repository and issue #1 review found no real staging environment or depl
 
 ## Acceptance rule
 
-All ten evidence classes must be retained, reviewable and tied to the same staging deployment identity. Missing, stale, inaccessible, contradictory or inferred evidence blocks staging acceptance. Repository CI cannot substitute for a real deployed environment.
+All ten evidence classes must be retained, reviewable and tied to the same staging deployment identity. Missing, stale, inaccessible, contradictory or inferred evidence blocks staging acceptance. Repository CI or emulator configuration evidence cannot substitute for a real deployed environment.
 
 No smoke, integration, migration, connector, recovery, performance, accessibility or observability staging result is valid for Phase 8 until this gate is satisfied.
 
@@ -43,4 +43,4 @@ No smoke, integration, migration, connector, recovery, performance, accessibilit
 
 ## Exactly one next priority
 
-Provide or provision the approved production-equivalent staging environment and retain all ten deployment-parity evidence classes.
+Accept RUN-151 only after complete exact-head CI and retained emulator evidence, then provide or provision the approved real staging environment and retain all ten deployment-parity evidence classes.
