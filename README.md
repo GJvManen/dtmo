@@ -18,7 +18,8 @@ DTMO bevindt zich in **Phase 7 — observability en incident operations** van de
 - RC9.1–RC9.15 — browser/accessibility critical-journey evidence: geaccepteerd binnen de beschreven bounded scopes;
 - RC10.1 — request observability: `PASS`;
 - RC10.2 — controlled connector-failure alerting: `PASS`;
-- RUN-20260809-126 — authoritative documentation reconciliation: `PASS` in de final merged state;
+- RC10.3 — bounded queue-backlog alerting: `PASS`;
+- RUN-20260809-126 — authoritative historical/current-state reconciliation: `PASS`;
 - Apache-2.0/open-source-governance baseline: `PASS`.
 
 ### Open en geblokkeerd
@@ -40,7 +41,11 @@ PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc` passeerde 34/34 wor
 
 PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243` passeerde 35/35 workflows. Retained artifact `9040485255` (`sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`) bewijst terminal failure signaling, Prometheus metric/rule, structured correlation evidence, actionable operator guidance, raw-error exclusion, repeat-raise suppression en recovery/clear behavior. JUnit: 4/4. Merge: `f6680423860389288d9feced34592294d774bf4a`.
 
-RC10.2 configureert of certificeert geen pager/e-mail/chat delivery. Queue-, storage-, API-error- en search-health alerting blijven afzonderlijke Phase-7 objectives.
+### RC10.3 — queue-backlog alerting
+
+PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74` passeerde 36/36 workflows. Retained artifact `9040996591` (`sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`) bewijst bounded queue-identifiers en queue depth/capacity/utilization metrics, een 80% raise/50% clear threshold-policy met hysteresis, structured correlation evidence, actionable guidance en controlled RC8 queue-pressure breach/recovery behavior. JUnit: 5/5. Merge: `42ccbe04cbc1081f93e4a155243627b5a3038573`.
+
+RC10.2/RC10.3 configureren of certificeren geen pager/e-mail/chat delivery. RC10.3 claimt geen aparte deployed durable queue service. Storage-integrity, API-error en search-health alerting blijven afzonderlijke Phase-7 objectives.
 
 ## Roadmapstatus
 
@@ -52,7 +57,7 @@ RC10.2 configureert of certificeert geen pager/e-mail/chat delivery. Queue-, sto
 | 4. Connectorbetrouwbaarheid en provenance | `PASS` intern |
 | 5. Performance en schaalbaarheid | `PASS` intern |
 | 6. Frontend accessibility en operationele UX | `BLOCKED_EXTERNAL` — genuine VoiceOver/NVDA evidence open |
-| 7. Observability en incident operations | `IN PROGRESS` — RC10.1 en RC10.2 PASS |
+| 7. Observability en incident operations | `IN PROGRESS` — RC10.1, RC10.2 en RC10.3 PASS |
 | 8. Staging acceptance | `NOT STARTED` |
 | 9. External assurance | `NOT COMPLETE` |
 | 10. Production go/no-go | `NOT STARTED` |
@@ -64,7 +69,8 @@ De actuele runtime-, governance-, roadmap- en CI-grafieken staan in `docs/projec
 Belangrijke observability-workflows op `main`:
 
 - `.github/workflows/request-observability.yml`;
-- `.github/workflows/connector-alerting.yml`.
+- `.github/workflows/connector-alerting.yml`;
+- `.github/workflows/queue-backlog-alerting.yml`.
 
 De bestaande RC4/RC6/RC7/RC8/RC9 workflows blijven regressiebescherming leveren. De aanwezigheid van een workflow is geen PASS; exact-head uitvoering en retained evidence blijven vereist.
 
@@ -74,7 +80,7 @@ De bestaande RC4/RC6/RC7/RC8/RC9 workflows blijven regressiebescherming leveren.
 - review en share approval blijven afzonderlijke menselijke beslissingen;
 - dezelfde principal mag niet reviewen en share approval uitvoeren;
 - serviceaccounts en connectors mogen niet reviewen of delen goedkeuren;
-- connector-, replay-, retry-, timeout-, recovery-, performance- of observability-success mag nooit automatisch publiceren;
+- connector-, queue-, replay-, retry-, timeout-, recovery-, performance- of observability-success mag nooit automatisch publiceren;
 - raw evidence, provenance en confidence mogen niet stilzwijgend verdwijnen;
 - ontbrekende, queued, cancelled, failed of unexecuted CI-evidence blokkeert de bijbehorende acceptatieclaim.
 
@@ -113,4 +119,4 @@ Belangrijke endpoints:
 
 DTMO is nog niet productiegereed. Phase 6 heeft een expliciete externe assistive-technology blocker, Phase 7 is nog in uitvoering, en Phases 8–10 plus issue #1 vereisen aanvullende evidence.
 
-**Precies één volgende prioriteit:** RC10.3 — bounded queue-backlog alerting met expliciete threshold semantics, actionable correlation evidence en controlled breach/recovery behavior. Storage-integrity, API-error en search-health alerting blijven latere Phase-7 objectives.
+**Precies één volgende implementatieprioriteit na RUN-128 documentatieacceptatie:** RC10.4 — bounded storage-integrity alerting met controlled integrity-failure/recovery evidence, actionable correlation, geen raw sensitive payload leakage en retained exact-head evidence. API-error en search-health alerting blijven latere Phase-7 objectives.
