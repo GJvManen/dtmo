@@ -4,8 +4,9 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260809-145 — RC10.11 acceptance and Phase 7 external blocker reconciliation](runs/RUN-20260809-145.md) — `BLOCKED_EXTERNAL`: PR #98 exact head `8574995796dd1d54cc6411227cdae83219f82122` passed 45/45 workflows; artifact `9043200727` (`sha256:a33797bc61c6d08ba5fedc8010db4ebd0ded741153167fbd0fec163ceab675ac`) independently showed exact-head PASS plus JUnit 5/5; merged as `1e4e6a0a3fbe43ffcec5d421f0760467e3a53b4f`. RC10.11 internal contract is accepted; Phase 7 completion now depends on external human operational acceptance.
-- [RUN-20260809-144 — on-call ownership and escalation handover baseline](runs/RUN-20260809-144.md) — `PASS`: source-controlled operational ownership/escalation/handover contract accepted on PR #98 after 45/45 exact-head workflows and retained artifact `9043200727`.
+- [RUN-20260809-146 — Phase 7 external operational-acceptance reconciliation](runs/RUN-20260809-146.md) — `CI_VALIDATION_PENDING`: operator/project authority confirmed all six Phase 7 human operational-acceptance evidence classes were accepted externally; repository retains acceptance scope/provenance without sensitive operational records. Phase 7 becomes `PASS` only after this reconciliation PR passes complete exact-head CI.
+- [RUN-20260809-145 — RC10.11 acceptance and Phase 7 external blocker reconciliation](runs/RUN-20260809-145.md) — `BLOCKED_EXTERNAL`: PR #98 exact head `8574995796dd1d54cc6411227cdae83219f82122` passed 45/45 workflows; artifact `9043200727` (`sha256:a33797bc61c6d08ba5fedc8010db4ebd0ded741153167fbd0fec163ceab675ac`) independently showed exact-head PASS plus JUnit 5/5; merged as `1e4e6a0a3fbe43ffcec5d421f0760467e3a53b4f`. RC10.11 internal contract is accepted; Phase 7 completion depended on external human operational acceptance.
+- [RUN-20260809-144 — on-call ownership and escalation handover baseline](runs/RUN-20260809-144.md) — `PASS`.
 - [RUN-20260809-143 — RC10.10 exercise evidence-validator remediation](runs/RUN-20260809-143.md) — `PASS`.
 - [RUN-20260809-142 — controlled operational runbook exercise](runs/RUN-20260809-142.md) — `PASS`.
 - [RUN-20260809-141 — RC10.9 CI-integrity remediation](runs/RUN-20260809-141.md) — `PASS`.
@@ -31,8 +32,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-Phase 1–5 internal gates are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA behavior. Phase 7 internal engineering gates RC10.1–RC10.11 are accepted, but Phase 7 is now `BLOCKED_EXTERNAL` on real human operational ownership/handover acceptance. DTMO is not production ready.
+Phase 1–5 internal gates are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA behavior. Phase 7 internal engineering gates RC10.1–RC10.11 are accepted and all six external human operational-acceptance evidence classes are reported accepted by the operator/project authority. RUN-146 remains `CI_VALIDATION_PENDING` until the reconciliation PR passes complete exact-head CI. DTMO is not production ready.
 
 ## Exactly one next priority
 
-Obtain and retain external human operational-acceptance evidence for Phase 7: staffed coverage, tested contact/escalation paths, real participant handover, human exercise/walkthrough, unresolved-gap ownership and service/operational-owner sign-off.
+After RUN-146 exact-head acceptance, begin Phase 8 with a bounded staging-readiness baseline: inventory production-equivalent deployment prerequisites and fail closed on any missing deployment, secrets/TLS/network, migration, recovery or smoke-test prerequisite.
