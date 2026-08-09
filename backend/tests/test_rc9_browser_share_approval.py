@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from playwright.async_api import async_playwright, expect
@@ -45,7 +45,9 @@ async def _seed_candidate() -> str:
 async def _assert_persisted_decision(item_id: str) -> None:
     database = Database()
     async for session in database.session():
-        item = await session.scalar(select(IntelligenceItem).where(IntelligenceItem.id == item_id))
+        item = await session.scalar(
+            select(IntelligenceItem).where(IntelligenceItem.id == UUID(item_id))
+        )
         assert item is not None
         assert item.review_status == "reviewed"
         assert item.share_approved is True
