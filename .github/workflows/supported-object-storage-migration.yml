@@ -1,0 +1,32 @@
+name: Supported Object Storage Migration Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  object-storage-migration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install bounded test dependency
+        run: python -m pip install pytest==9.0.3
+      - name: Validate supported object-storage migration contract
+        run: |
+          mkdir -p artifacts
+          python -m pytest backend/tests/test_supported_object_storage_migration.py \
+            --junitxml=artifacts/supported-object-storage-migration-junit.xml
+      - name: Retain migration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supported-object-storage-migration-evidence
+          path: artifacts/supported-object-storage-migration-junit.xml
+          if-no-files-found: error
+          retention-days: 30
