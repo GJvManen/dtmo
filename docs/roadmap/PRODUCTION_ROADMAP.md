@@ -14,7 +14,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.4 accepted and internal object-storage migration blocker cleared.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.4 and the bounded object-storage remediation are accepted; RC10.5 API-error alerting is `CI_VALIDATION_PENDING`.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -28,13 +28,11 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 
 ## Object-storage remediation — internal gate accepted
 
-RUN-131 established that legacy MinIO was archived/unmaintained. RUN-132 accepted ADR-0001 and selected MinIO AIStor Enterprise Lite or Enterprise with active paid support. RUN-133 implemented the fail-closed migration contract.
+RUN-131 established that legacy MinIO was archived/unmaintained. RUN-132 accepted ADR-0001 and selected MinIO AIStor Enterprise Lite or Enterprise with active paid support. RUN-133 implemented the fail-closed migration contract; RUN-134 reconciled security/recovery/storage-integrity evidence.
 
-PR #90 exact head `0fe5c5f0003211fe9df8535954d9276a2090af35` completed **38/38 workflows successfully** and merged as `383702bec6ba07cba065524efa451fd89cbd3b50`. Dedicated run `31326861369` retained artifact `9041774769`, digest `sha256:24e7241138dc0b293957f5e2cd06a4d3a6606b7ba68d688097795047f114ccf8`; independent inspection recorded JUnit 4/4, 0 failures/errors/skips.
+PR #90 exact head `0fe5c5f0003211fe9df8535954d9276a2090af35` completed 38/38 workflows and merged as `383702bec6ba07cba065524efa451fd89cbd3b50`. Dedicated artifact `9041774769`, digest `sha256:24e7241138dc0b293957f5e2cd06a4d3a6606b7ba68d688097795047f114ccf8`, independently recorded JUnit 4/4. PR #91 exact head `d81caaa372b0cf3e079023eb255a57fd4892d6e0` subsequently completed 38/38 workflows and merged as `23af430c041e3f0e203b7a7f7a6c69f3eea79055`.
 
-Fresh CVE review in RUN-134 requires any production AIStor release selected after this repository migration to be at least `RELEASE.2026-04-14T21-32-45Z` and to undergo a fresh advisory review immediately before deployment. This is a deployment-time security floor, not a claim that production deployment is complete.
-
-Commercial entitlement/support, production topology, registry-digest verification for the chosen release, TLS/network encryption, server-side encryption/KMS, secrets-manager acceptance, staging/production deployment acceptance and other issue #1 external gates remain open.
+Production AIStor selection remains subject to the RUN-134 release/advisory floor and fresh deployment-time advisory review. Commercial entitlement/support, production topology, registry-digest verification, TLS/network encryption, server-side encryption/KMS, secrets-manager acceptance, staging/production deployment acceptance and other issue #1 external gates remain open.
 
 ## Phase 7 — Observability and incident operations
 
@@ -50,9 +48,26 @@ Blocking gates:
 - runbooks complete and exercised;
 - operational ownership/escalation documented.
 
-Current decision: `IN PROGRESS`. RC10.1–RC10.4 are accepted. The internal object-storage migration blocker is cleared for its bounded repository scope, so Phase 7 may resume.
+### RC10.5 bounded API-error alerting — `CI_VALIDATION_PENDING`
 
-Exactly one next priority: **RC10.5 bounded API-error alerting** with safe correlation, actionable evidence, controlled raise/clear behavior, no raw sensitive payload leakage and retained exact-head evidence.
+RUN-135 implements a bounded API-error observer integrated with existing request middleware:
+
+- route-template-only alert labels; raw request URL/query/body/header/identity data are outside the observer contract;
+- raise after 3 consecutive HTTP 5xx outcomes for one route template;
+- clear after 2 consecutive non-5xx outcomes while active;
+- repeat-raise suppression;
+- request-result/streak/active-state/transition Prometheus metrics;
+- structured correlation evidence, actionable guidance and `publish_approved=false`;
+- `DTMOApiServerErrors` Prometheus rule;
+- controlled middleware integration tests and dedicated retained-evidence workflow.
+
+Fresh dependency review recorded Starlette CVE-2026-48817 and CVE-2026-48818 as affecting versions through 1.0.1 and fixed in 1.1.0. DTMO does not directly pin Starlette, so exploitability is not asserted; the resolved dependency set remains governed by the existing security/dependency CI gates.
+
+RC10.5 is not accepted until every registered workflow succeeds on its exact final head and the retained `api-error-alerting-evidence` artifact is independently verified.
+
+Phase 7 remains incomplete after RC10.5 because search-health alerting, distributed tracing, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open.
+
+Exactly one next priority: verify the complete exact-head workflow matrix and retained `api-error-alerting-evidence` artifact for RUN-135; merge only after all registered workflows succeed and retained evidence is exact-head bound.
 
 ## Phase 8 — Staging acceptance
 
