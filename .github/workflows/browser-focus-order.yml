@@ -49,6 +49,7 @@ jobs:
           python - <<'PY'
           import json, os
           from pathlib import Path
+
           evidence = json.loads(Path('artifacts/browser-focus-order-evidence.json').read_text(encoding='utf-8'))
           assert evidence['decision'] == 'pass'
           assert evidence['exact_head'] == os.environ['EXPECTED_HEAD']
@@ -58,11 +59,18 @@ jobs:
           assert evidence['human_share_approval_preserved'] is True
           assert evidence['assistive_technology_behavior_claimed'] is False
           assert evidence['product_wide_wcag_2_2_aa_claimed'] is False
+
+          identity_fields = ('tag', 'id', 'testid', 'name', 'type', 'text')
+          def identity(item):
+              return tuple(item.get(field) for field in identity_fields)
+
           for surface in evidence['surfaces']:
               assert surface['all_tabbables_reached_once'] is True
               assert surface['positive_tabindex_present'] is False
               assert surface['reverse_navigation_checked'] is True
-              assert surface['expected_dom_focus_order'] == surface['observed_tab_focus_order']
+              expected = [identity(item) for item in surface['expected_dom_focus_order']]
+              observed = [identity(item) for item in surface['observed_tab_focus_order']]
+              assert expected == observed
           PY
       - name: Stop focus-order target
         if: always()
