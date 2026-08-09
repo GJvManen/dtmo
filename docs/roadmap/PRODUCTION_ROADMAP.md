@@ -8,13 +8,13 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 
 ## Current status — 2026-08-09
 
-- Phase 1 — CI and workflow integrity: `PASS` for accepted mainline evidence; PR #94 has an active exact-head CI acceptance blocker until the remediated full matrix passes.
+- Phase 1 — CI and workflow integrity: `PASS`.
 - Phase 2 — Application security and identity: `PASS` for internal gates.
 - Phase 3 — Data integrity and recovery: `PASS` for internal gates.
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.6 and the bounded object-storage remediation are accepted; RC10.7 distributed trace-context baseline remains `CI_VALIDATION_PENDING` after RUN-138 quality-gate remediation.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.7 and bounded object-storage remediation are accepted; RC10.8 operational dashboard provisioning is `CI_VALIDATION_PENDING`.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -25,8 +25,9 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - RC10.2 controlled connector-failure alerting: `PASS` — PR #82.
 - RC10.3 bounded queue-backlog alerting: `PASS` — PR #84.
 - RC10.4 bounded storage-integrity alerting: `PASS` — PR #86.
-- RC10.5 bounded API-error alerting: `PASS` — PR #92 exact head `659fa022840e01ed6db4ebeb6a5e703f58a6d259`, 39/39 workflows, artifact `9041987610`, digest `sha256:6a6f2aa5ea2b0b3fb081a0b376f8187a799af726ba950bcbf6fd8618c54e2eca`, JUnit 6/6, merge `8d6297e17c93150dacb39428ed3580e7c8cc1579`.
-- RC10.6 bounded search-health alerting: `PASS` — PR #93 exact head `14990a8b5d40f975951cdcbba9296a2116fb254c`, 40/40 workflows, artifact `9042097760`, digest `sha256:9e317e6b7ad4ce75b50090fafbcb3297b19bcc5cea458761a6ad908ae827e847`, JUnit 6/6, merge `bb1bb3f2feaf79f4a5a73ffedb78f64294097602`.
+- RC10.5 bounded API-error alerting: `PASS` — PR #92 exact head `659fa022840e01ed6db4ebeb6a5e703f58a6d259`, 39/39 workflows, artifact `9041987610`, JUnit 6/6.
+- RC10.6 bounded search-health alerting: `PASS` — PR #93 exact head `14990a8b5d40f975951cdcbba9296a2116fb254c`, 40/40 workflows, artifact `9042097760`, JUnit 6/6.
+- RC10.7 bounded distributed trace-context baseline: `PASS` — PR #94 exact head `5a2f60749f6eaf6ece9dcfcc3b70c866887c6cb8`, 41/41 workflows, artifact `9042398103`, digest `sha256:2014a035338de6bc6ac474581279c06c15cafc6a49f3c86cfbeed111e666575a`, JUnit 10/10, merge `e52af08204d212cdfba0e9338bacb7a1c5fcfac7`.
 
 ## Object-storage remediation — internal gate accepted
 
@@ -40,7 +41,7 @@ Objectives: regression-protect release-critical workflows, validate triggers/job
 
 Blocking gates: workflow contract tests pass; required jobs/triggers are validated; workflow evidence is observable; failed/absent workflows cannot be interpreted as success.
 
-RUN-138 is an active bounded Phase-1 remediation discovered during RC10.7 acceptance. PR #94 exact head `cb889d2e643f4f00386bb6281ae3082f47031b98` completed 40/41 workflows; `RC4 Quality Gate` failed in Ruff/Bandit `S105` because two synthetic privacy-test marker variable names resembled hardcoded secret variables. The test variables were renamed without disabling or suppressing the lint rule. A complete fresh exact-head matrix is mandatory.
+RUN-138 is accepted: the RC10.7 Ruff/Bandit `S105` fixture-naming failure was remediated without scanner suppression, and the new exact head passed 41/41 workflows.
 
 ## Phase 2 — Application security and identity
 
@@ -86,29 +87,19 @@ Blocking gates:
 - runbooks complete and exercised;
 - operational ownership/escalation documented.
 
-### RC10.7 bounded distributed trace-context baseline — `CI_VALIDATION_PENDING`
+### RC10.8 bounded operational dashboard — `CI_VALIDATION_PENDING`
 
-RUN-137 implements:
+RUN-139 provisions an opt-in Grafana observability overlay and a source-controlled, non-editable `DTMO Operations` dashboard over existing bounded Prometheus telemetry. It includes aggregate HTTP rate/p95/in-flight signals, API/connector/storage/search alert states, queue utilization, connector outcomes and bounded trace-context decisions.
 
-- strict W3C version-00 `traceparent` parsing with malformed/unsupported/all-zero/unbounded context rejected;
-- cryptographically random trace/span IDs when context is absent or rejected;
-- preservation of valid incoming trace ID with a fresh local span ID;
-- structured trace ID + span ID + existing correlation ID binding;
-- outbound connector `traceparent` propagation with a fresh child span ID;
-- no `tracestate` collection in this bounded baseline;
-- no raw URLs, query values, request/response bodies, credentials or identities in trace attributes;
-- no trace-header echo in HTTP responses;
-- bounded `accepted|generated|rejected` trace-context metrics;
-- no new runtime telemetry SDK dependency;
-- dedicated retained exact-head `RC10 Distributed Trace Context Gate`.
+The overlay fails closed unless an externally supplied supported security-patched `grafana/grafana` tag plus vendor-verified sha256 digest and external administrative credentials are provided. Anonymous access, self-signup and org creation are disabled; the local port binds only to loopback; no-new-privileges is enabled. Raw request/response bodies, raw URLs/query strings, credentials, identities, object keys and checksums are outside the dashboard contract.
 
-Fresh standards/security review uses the W3C Trace Context Recommendation, which identifies privacy, information-exposure and denial-of-service risks and requires trace headers to be treated as potentially malicious input. The bounded implementation therefore accepts only the fixed identifier format and never uses trace context to carry personal or business data.
+Fresh first-party Grafana review identified material 2026 advisories including CVE-2026-27876, CVE-2026-28383 and CVE-2026-21721. No fixed source-controlled Grafana tag is claimed safe; deployment-time advisory review and digest verification remain mandatory.
 
-The first PR #94 exact-head matrix did not pass: 40/41 workflows succeeded and the RC4 Quality Gate failed in lint. RUN-138 remediates only that deterministic fixture-naming issue without weakening security scanning. RC10.7 remains unaccepted until every registered workflow succeeds on the new exact final head and regenerated `distributed-trace-context-evidence` is independently verified.
+RC10.8 is not accepted until every registered workflow succeeds on its exact final head and retained `operational-dashboard-evidence` is independently verified.
 
-Phase 7 remains incomplete after this baseline because collector/exporter/backend trace visualization acceptance, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open.
+Phase 7 remains incomplete after RC10.8 because runbooks, runbook exercise evidence, on-call handover, ownership/escalation and any required production observability-platform deployment acceptance remain open.
 
-Exactly one next priority: verify the complete exact-head workflow matrix and regenerated retained `distributed-trace-context-evidence` artifact for the remediated PR #94 head; merge only after all registered workflows succeed and retained evidence is exact-head bound.
+Exactly one next priority: verify the complete exact-head workflow matrix and retained `operational-dashboard-evidence` artifact for RUN-139; merge only after all registered workflows succeed and retained evidence is exact-head bound.
 
 ## Phase 8 — Staging acceptance
 
