@@ -23,7 +23,7 @@ _PAGE = """<!doctype html>
 <body>
   <main>
     <h1>CISO security token revocation</h1>
-    <p id="ciso-principal" data-testid="ciso-principal">Resolving authenticated principal…</p>
+    <p id="ciso-principal" data-testid="ciso-principal" role="status" aria-live="polite" aria-atomic="true">Resolving authenticated principal…</p>
     <section id="revocation-panel" data-testid="revocation-panel" hidden>
       <form id="revocation-form">
         <label for="jti">Token identifier (JTI)
