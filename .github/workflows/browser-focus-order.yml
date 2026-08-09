@@ -1,0 +1,97 @@
+name: RC9 Focus Order Accessibility Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  focus-order-e2e:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_FEATURE_LIVE_CONNECTORS: "false"
+      DTMO_E2E_BASE_URL: http://127.0.0.1:8765
+      DTMO_FOCUS_ORDER_EVIDENCE_PATH: artifacts/browser-focus-order-evidence.json
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+      - name: Start bounded DTMO focus-order target
+        run: |
+          mkdir -p artifacts
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/focus-order-server.log 2>&1 &
+          echo $! > artifacts/focus-order-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/health.json; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat artifacts/focus-order-server.log
+          exit 1
+      - name: Execute RC9.15 complete focus-order gate
+        env:
+          GITHUB_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python -m pytest -q backend/tests/test_rc9_15_focus_order.py --junitxml=artifacts/browser-focus-order.xml
+      - name: Validate machine-readable focus-order evidence
+        if: success()
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          evidence = json.loads(Path('artifacts/browser-focus-order-evidence.json').read_text(encoding='utf-8'))
+          assert evidence['decision'] == 'pass'
+          assert evidence['exact_head'] == os.environ['EXPECTED_HEAD']
+          assert evidence['wcag_success_criterion'] == '2.4.3 Focus Order'
+          assert evidence['covered_surfaces'] == ['share_approval', 'analyst_search', 'ciso_token_revocation', 'auditor_read_only']
+          assert evidence['backend_session_rbac_real'] is True
+          assert evidence['human_share_approval_preserved'] is True
+          assert evidence['assistive_technology_behavior_claimed'] is False
+          assert evidence['product_wide_wcag_2_2_aa_claimed'] is False
+
+          identity_fields = ('tag', 'id', 'testid', 'name', 'type', 'text')
+          def identity(item):
+              return tuple(item.get(field) for field in identity_fields)
+
+          for surface in evidence['surfaces']:
+              assert surface['all_tabbables_reached_once'] is True
+              assert surface['positive_tabindex_present'] is False
+              assert surface['reverse_navigation_checked'] is True
+              expected = [identity(item) for item in surface['expected_dom_focus_order']]
+              observed = [identity(item) for item in surface['observed_tab_focus_order']]
+              assert expected == observed
+          PY
+      - name: Stop focus-order target
+        if: always()
+        run: |
+          if test -f artifacts/focus-order-server.pid; then
+            kill "$(cat artifacts/focus-order-server.pid)" || true
+          fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: browser-focus-order-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  focus-order-gate:
+    if: always()
+    needs: [focus-order-e2e]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed focus-order evidence
+        env:
+          RESULT: ${{ needs.focus-order-e2e.result }}
+        run: test "$RESULT" = "success"
