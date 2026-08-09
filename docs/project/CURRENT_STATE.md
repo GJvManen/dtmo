@@ -1,10 +1,10 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-09 — RUN-20260809-137 (`CI_VALIDATION_PENDING`; RC10.6 accepted, distributed trace-context baseline implemented but not yet accepted)
+Last reconciled: 2026-08-09 — RUN-20260809-138 (`CI_VALIDATION_PENDING`; RC10.7 quality-gate failure remediated, fresh exact-head CI required)
 
 ## Executive status
 
-- Phase 1 — CI/workflow integrity: `PASS`.
+- Phase 1 — CI/workflow integrity: `PASS` for accepted mainline evidence, with an active exact-head acceptance blocker on PR #94 until the remediated full matrix passes.
 - Phase 2 — application security and identity: `PASS` for internal roadmap gates.
 - Phase 3 — data integrity and recovery: `PASS` for internal roadmap gates.
 - Phase 4 — connector reliability and provenance: `PASS` for internal roadmap gates.
@@ -23,25 +23,15 @@ RC10.6 / PR #93 exact head `14990a8b5d40f975951cdcbba9296a2116fb254c` completed 
 
 ## RC10.7 distributed trace-context baseline
 
-RUN-137 implements:
+RUN-137 implements strict W3C version-00 `traceparent` validation, fresh random trace/span IDs, structured correlation, outbound connector propagation, no `tracestate` collection, no raw request/credential/identity data in trace context, bounded trace decision metrics, and no new runtime telemetry SDK dependency.
 
-- strict W3C version-00 `traceparent` validation;
-- fresh random trace context when inbound context is absent or rejected;
-- fresh local span ID while preserving a valid incoming trace ID;
-- structured trace ID/span ID correlation alongside existing correlation IDs;
-- outbound connector `traceparent` propagation;
-- no `tracestate` collection in this bounded baseline;
-- no raw URL/query/body/header credential/identity values in trace attributes;
-- no trace-header response echo;
-- bounded accepted/generated/rejected trace-context metrics;
-- no new runtime telemetry SDK dependency;
-- an independently observable `RC10 Distributed Trace Context Gate` retaining exact-head JUnit/log/JSON evidence.
+PR #94 head `cb889d2e643f4f00386bb6281ae3082f47031b98` completed 40/41 workflows successfully. `RC4 Quality Gate` failed in Ruff/Bandit `S105` because two synthetic privacy-test marker variables were named `secret_path` and `secret_query`. That head is not accepted.
 
-The implementation remains `CI_VALIDATION_PENDING`. Missing, queued, cancelled, failed or unexecuted CI is not PASS.
+RUN-138 renamed only those synthetic fixture variables to neutral `synthetic_*_marker` names. No lint suppression, scanner exception, skipped test or workflow bypass was introduced. Complete fresh exact-head CI and regenerated retained trace-context evidence are required.
 
 ## Fresh standards/security boundary
 
-W3C Trace Context explicitly treats propagated headers as potentially malicious input and documents privacy, information-exposure and denial-of-service risks. DTMO therefore accepts only fixed-format non-semantic identifiers and does not use tracing to carry personal data, request payloads, credentials or publication information.
+W3C Trace Context treats propagated headers as potentially malicious input and documents privacy, information-exposure and denial-of-service risks. DTMO therefore accepts only fixed-format non-semantic identifiers and does not use tracing to carry personal data, request payloads, credentials or publication information.
 
 Collector/exporter/backend visualization deployment remains outside this bounded baseline and must not be inferred from trace-context propagation success.
 
@@ -61,4 +51,4 @@ Paid AIStor entitlement/support, production topology, deployment-time registry d
 
 ## Exactly one current priority
 
-Verify the complete exact-head workflow matrix and retained `distributed-trace-context-evidence` artifact for RUN-137; merge only after every registered workflow succeeds and retained evidence is exact-head bound and internally consistent.
+Verify the complete exact-head workflow matrix and regenerated retained `distributed-trace-context-evidence` artifact for the remediated PR #94 head; merge only after every registered workflow succeeds and retained evidence is exact-head bound and internally consistent.
