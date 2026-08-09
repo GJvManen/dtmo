@@ -4,7 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260809-126 — RC10.2 acceptance and historical documentation reconciliation](runs/RUN-20260809-126.md) — `CI_VALIDATION_PENDING`: RC10.2 product acceptance is evidenced and PR #82 is merged; this run reconciles the remaining stale/missing current-state and historical documentation and is not complete until its documentation-only exact-head CI succeeds.
+- [RUN-20260809-126 — RC10.2 acceptance and historical documentation reconciliation](runs/RUN-20260809-126.md) — `PASS`: RC10.2 exact-head acceptance was recorded, stale/current-state documentation was reconciled, missing RUN-088/089/091/095/097 history was restored, and the reconciliation validation head `187d645a7f3c3200e545be23312c4165b7b2f7dc` passed all 35 registered workflows before final status reconciliation.
 - [RUN-20260809-125 — RC10.2 controlled connector-failure alerting](runs/RUN-20260809-125.md) — `PASS`: PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243` passed all 35 registered workflows; retained artifact `9040485255` (`sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`) independently proved terminal alert, Prometheus rule/metric, correlated actionable evidence, repeat-raise suppression, raw-error exclusion and recovery/clear behavior with 4/4 JUnit tests; merged as `f6680423860389288d9feced34592294d774bf4a`.
 - [RUN-20260809-124 — RC10.1 exact-head acceptance and documentation reconciliation](runs/RUN-20260809-124.md) — `PASS`: PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc` passed all 34 registered workflows; retained artifact `9040196394` (`sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`) independently proved the bounded request-observability controls with 5/5 JUnit tests; merged as `1675d88bb24dcd50e20545f49b26dd7cc2810d97`. Historical RC9.3–RC9.5 records were reconciled by PR #81.
 - [RUN-20260809-123 — RC10.1 request observability baseline](runs/RUN-20260809-123.md) — `PASS`: implementation later accepted by RUN-124.
@@ -32,8 +32,8 @@ Phase 1–5 internal roadmap gates are `PASS`.
 
 Phase 6 remains `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior on real supported hosts. Browser/DOM automation is not treated as a substitute.
 
-Phase 7 is `IN PROGRESS`. RC10.1 request observability and RC10.2 connector-failure alerting are accepted as `PASS`. RUN-126 documentation reconciliation remains `CI_VALIDATION_PENDING`. Issue #1 external production gates remain independently open.
+Phase 7 is `IN PROGRESS`. RC10.1 request observability and RC10.2 connector-failure alerting are accepted as `PASS`. Issue #1 external production gates remain independently open.
 
 ## Exactly one next priority
 
-Complete exact-head CI for RUN-126 documentation reconciliation. After that acceptance, Phase 7 / RC10.3 is the next bounded implementation objective: queue-backlog alerting with threshold semantics, actionable correlation evidence and controlled recovery/clear behavior.
+Phase 7 / RC10.3 — implement a bounded queue-backlog alerting gate with explicit threshold semantics, actionable correlated evidence, controlled breach/recovery behavior and retained exact-head evidence. Storage-integrity, API-error and search-health alerting remain later objectives.
