@@ -25,3 +25,16 @@ groups:
           threshold_policy: "Raise at >=80% capacity; clear at <=50% capacity."
           action: "Inspect consumers and downstream dependency health; drain backlog before increasing producer throughput."
           clear_condition: "The alert clears only after observed utilization recovers to 50% capacity or lower."
+
+  - name: dtmo.storage.alerts
+    rules:
+      - alert: DTMOStorageIntegrityFailure
+        expr: dtmo_storage_integrity_alert_active == 1
+        for: 0m
+        labels:
+          severity: critical
+          service: dtmo
+        annotations:
+          summary: "DTMO storage {{ $labels.storage }} failed an integrity verification"
+          action: "Stop trusting affected storage evidence; verify checksum and size receipts, then restore from known-good immutable evidence before reprocessing."
+          clear_condition: "The alert clears after a subsequent successful integrity verification sets the signal to 0."

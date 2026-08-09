@@ -49,13 +49,33 @@ QUEUE_BACKLOG_ALERT_TRANSITIONS = Counter(
     "Queue backlog alert state transitions",
     ["queue", "transition"],
 )
+STORAGE_INTEGRITY_CHECKS = Counter(
+    "dtmo_storage_integrity_checks_total",
+    "Observed storage integrity check results",
+    ["storage", "result"],
+)
+STORAGE_INTEGRITY_ALERT_ACTIVE = Gauge(
+    "dtmo_storage_integrity_alert_active",
+    "Whether a storage integrity failure alert is active",
+    ["storage"],
+)
+STORAGE_INTEGRITY_ALERT_TRANSITIONS = Counter(
+    "dtmo_storage_integrity_alert_transitions_total",
+    "Storage integrity alert state transitions",
+    ["storage", "transition"],
+)
 
 _CONNECTOR_ACTION = "Inspect connector health, upstream availability, credentials and rate limits."
 _QUEUE_ACTION = (
     "Inspect consumers and downstream dependency health; drain backlog before increasing "
     "producer throughput."
 )
+_STORAGE_ACTION = (
+    "Stop trusting the affected storage evidence, verify size and checksum receipts, and restore "
+    "from known-good immutable evidence before reprocessing."
+)
 _QUEUE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$")
+_STORAGE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$")
 
 
 def _current_correlation(value: str | None) -> str:
@@ -82,6 +102,17 @@ class QueueBacklogAlertSignal:
     depth: int
     capacity: int
     utilization_ratio: float
+    action: str
+    publish_approved: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class StorageIntegrityAlertSignal:
+    storage_name: str
+    state: str
+    transitioned: bool
+    correlation_id: str
+    integrity_ok: bool
     action: str
     publish_approved: bool = False
 
@@ -291,5 +322,85 @@ class QueueBacklogAlertManager:
         )
 
 
+class StorageIntegrityAlertManager:
+    """Observe trusted storage-verification outcomes without exposing stored evidence.
+
+    Existing storage services remain authoritative for checksum/size verification and
+    recovery. This observer consumes only a bounded storage name plus the boolean result.
+    It never receives object keys, hashes or payload bytes, preventing those values from
+    entering alert labels or logs. A failed verification raises/retains the alert and a
+    later successful verification clears it. It does not mutate storage or approve sharing.
+    """
+
+    def __init__(self) -> None:
+        self._active: set[str] = set()
+        self._lock = Lock()
+        self.log = get_logger("storage.alerts")
+
+    def observe(
+        self,
+        storage_name: str,
+        *,
+        integrity_ok: bool,
+        correlation: str | None = None,
+    ) -> StorageIntegrityAlertSignal:
+        name = storage_name.strip()
+        if not _STORAGE_NAME.fullmatch(name):
+            raise ValueError("storage_name must be a bounded operational storage identifier")
+
+        current_correlation = _current_correlation(correlation)
+        result = "pass" if integrity_ok else "fail"
+        STORAGE_INTEGRITY_CHECKS.labels(name, result).inc()
+
+        with self._lock:
+            was_active = name in self._active
+            if not integrity_ok:
+                self._active.add(name)
+                state = "active"
+                transitioned = not was_active
+                STORAGE_INTEGRITY_ALERT_ACTIVE.labels(name).set(1)
+                if transitioned:
+                    STORAGE_INTEGRITY_ALERT_TRANSITIONS.labels(name, "raised").inc()
+                    event = "storage_integrity_alert_raised"
+                else:
+                    event = "storage_integrity_alert_active"
+                self.log.warning(
+                    event,
+                    storage_name=name,
+                    correlation_id=current_correlation,
+                    severity="critical",
+                    integrity_ok=False,
+                    action=_STORAGE_ACTION,
+                    publish_approved=False,
+                )
+            else:
+                self._active.discard(name)
+                state = "clear"
+                transitioned = was_active
+                STORAGE_INTEGRITY_ALERT_ACTIVE.labels(name).set(0)
+                if transitioned:
+                    STORAGE_INTEGRITY_ALERT_TRANSITIONS.labels(name, "cleared").inc()
+                    self.log.info(
+                        "storage_integrity_alert_cleared",
+                        storage_name=name,
+                        correlation_id=current_correlation,
+                        severity="info",
+                        integrity_ok=True,
+                        action="Continue scheduled integrity verification.",
+                        publish_approved=False,
+                    )
+
+        return StorageIntegrityAlertSignal(
+            storage_name=name,
+            state=state,
+            transitioned=transitioned,
+            correlation_id=current_correlation,
+            integrity_ok=integrity_ok,
+            action=_STORAGE_ACTION if state == "active" else "Continue scheduled integrity verification.",
+            publish_approved=False,
+        )
+
+
 connector_alerts = ConnectorAlertManager()
 queue_backlog_alerts = QueueBacklogAlertManager()
+storage_integrity_alerts = StorageIntegrityAlertManager()

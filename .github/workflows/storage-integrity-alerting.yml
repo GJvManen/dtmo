@@ -1,0 +1,111 @@
+name: RC10 Storage Integrity Alerting Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  storage-integrity-alerting:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_FEATURE_LIVE_CONNECTORS: "false"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Execute RC10.4 controlled storage integrity alerting gate
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc10_4_storage_integrity_alerting.py \
+            --junitxml=artifacts/storage-integrity-alerting.xml \
+            | tee artifacts/storage-integrity-alerting-pytest.log
+      - name: Record exact-head machine-readable storage integrity evidence
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = {
+              "decision": "pass",
+              "exact_head": os.environ["EXACT_HEAD"],
+              "objective": "bounded storage-integrity alerting",
+              "controls": {
+                  "existing_lake_verify_reused": True,
+                  "checksum_and_size_verification_source": True,
+                  "storage_integrity_failure_signal": True,
+                  "prometheus_alert_metric": True,
+                  "prometheus_alert_rule": True,
+                  "structured_correlation_evidence": True,
+                  "actionable_operator_guidance": True,
+                  "recovery_clear_behavior": True,
+                  "repeated_raise_suppression": True,
+                  "raw_payload_key_digest_not_logged": True,
+                  "publication_approval_changed": False,
+              },
+              "governance": {
+                  "production_data_used": False,
+                  "storage_mutated_by_observer": False,
+              },
+              "claim_boundary": {
+                  "scheduled_integrity_scan_complete": False,
+                  "notification_delivery_complete": False,
+                  "api_error_alerting_complete": False,
+                  "search_alerting_complete": False,
+                  "phase_7_complete": False,
+              },
+          }
+          Path("artifacts/storage-integrity-alerting-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Validate storage integrity alerting evidence contract
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = json.loads(
+              Path("artifacts/storage-integrity-alerting-evidence.json").read_text(encoding="utf-8")
+          )
+          assert evidence["decision"] == "pass"
+          assert evidence["exact_head"] == os.environ["EXPECTED_HEAD"]
+          assert evidence["controls"]["publication_approval_changed"] is False
+          assert all(
+              value is True
+              for key, value in evidence["controls"].items()
+              if key != "publication_approval_changed"
+          )
+          assert not any(evidence["governance"].values())
+          assert not any(evidence["claim_boundary"].values())
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: storage-integrity-alerting-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  storage-integrity-alerting-gate:
+    if: always()
+    needs: [storage-integrity-alerting]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed storage integrity evidence
+        env:
+          RESULT: ${{ needs.storage-integrity-alerting.result }}
+        run: test "$RESULT" = "success"
