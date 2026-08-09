@@ -26,6 +26,12 @@ Acceptance requires all of the following on one final PR head:
 - dedicated `RC10 Distributed Trace Context Gate` succeeds and retains exact-head JUnit/log/JSON evidence;
 - every registered workflow succeeds on the exact final head.
 
+## Current CI evidence
+
+PR #94 head `cb889d2e643f4f00386bb6281ae3082f47031b98` completed 40 of 41 workflows successfully, but `RC4 Quality Gate` failed. Workflow run `31328513139`, job `93282799136`, failed in the Ruff lint step with two `S105` findings caused by test-only synthetic marker variable names (`secret_path`, `secret_query`). That head is **not accepted**.
+
+RUN-138 remediates the deterministic lint failure by renaming only those test fixture variables to neutral `synthetic_*_marker` names. No scanner suppression, ignore rule, skipped test or workflow bypass was introduced. The remediated exact head must rerun the complete workflow matrix and regenerate retained trace-context evidence before acceptance.
+
 ## Standards/security boundary
 
 W3C Trace Context identifies privacy, information-exposure and denial-of-service risks for trace headers and requires implementations to treat them as untrusted input. DTMO therefore accepts only the fixed version-00 identifier format and deliberately does not ingest `tracestate` in this baseline.
@@ -44,4 +50,4 @@ This gate does **not** claim:
 
 ## Exactly one next priority
 
-Verify the complete exact-head workflow matrix and retained `distributed-trace-context-evidence` artifact; accept and merge only if both are complete and internally consistent.
+Verify the complete exact-head workflow matrix and regenerated retained `distributed-trace-context-evidence` artifact on the remediated PR #94 head; accept and merge only if both are complete and internally consistent.
