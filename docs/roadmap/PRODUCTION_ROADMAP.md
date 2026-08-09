@@ -39,7 +39,16 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - terminal failure signal, Prometheus alert metric/rule, structured correlation evidence, actionable guidance, raw-error exclusion, repeat-raise suppression and recovery/clear behavior evidenced;
 - merged as `f6680423860389288d9feced34592294d774bf4a`.
 
-Phase 7 remains incomplete because distributed tracing, queue-backlog/storage-integrity/API-error/search-health alerting, operational dashboards, runbooks, on-call handover and ownership/escalation evidence remain open. Pager/email/chat delivery is not claimed by RC10.2.
+**RC10.3 bounded queue-backlog alerting — PASS**
+
+- PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74`;
+- 36/36 registered workflows successful;
+- retained artifact `9040996591`, digest `sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`;
+- 5/5 JUnit tests successful;
+- bounded queue identifiers, depth/capacity/utilization metrics, 80% raise and 50% clear thresholds, hysteresis, structured correlation evidence, actionable guidance and controlled RC8 queue-pressure breach/recovery behavior evidenced;
+- merged as `42ccbe04cbc1081f93e4a155243627b5a3038573`.
+
+Phase 7 remains incomplete because distributed tracing, storage-integrity/API-error/search-health alerting, operational dashboards, runbooks, on-call handover and ownership/escalation evidence remain open. Pager/email/chat delivery is not claimed by RC10.2 or RC10.3, and RC10.3 does not claim a separate deployed durable queue service.
 
 ## Phase 1 — CI and workflow integrity
 
@@ -164,7 +173,7 @@ Phase 7 remains incomplete because distributed tracing, queue-backlog/storage-in
 
 ### Current decision
 
-`IN PROGRESS`. RC10.1 request observability and RC10.2 controlled connector-failure alerting are accepted. Exactly one next priority is RC10.3 bounded queue-backlog alerting with explicit threshold semantics, actionable correlated evidence and controlled breach/recovery behavior. Storage-integrity, API-error and search-health alerting remain later objectives.
+`IN PROGRESS`. RC10.1 request observability, RC10.2 controlled connector-failure alerting and RC10.3 bounded queue-backlog alerting are accepted. RUN-128 documentation reconciliation remains exact-head CI gated. After that gate, exactly one next implementation priority is RC10.4 bounded storage-integrity alerting with controlled integrity-failure/recovery evidence, actionable correlation and retained exact-head evidence. API-error and search-health alerting remain later objectives.
 
 ## Phase 8 — Staging acceptance
 
