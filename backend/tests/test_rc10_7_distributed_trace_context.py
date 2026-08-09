@@ -121,11 +121,11 @@ def test_request_logs_bind_trace_and_do_not_echo_trace_headers_or_request_values
     def traced(record_id: str) -> dict[str, str]:
         return {"record_id": record_id}
 
-    secret_path = "student-secret-4711"
-    secret_query = "token-do-not-log"
+    synthetic_path_marker = "student-secret-4711"
+    synthetic_query_marker = "token-do-not-log"
     with TestClient(test_app) as client:
         response = client.get(
-            f"/trace/{secret_path}?access={secret_query}",
+            f"/trace/{synthetic_path_marker}?access={synthetic_query_marker}",
             headers={"traceparent": VALID, "tracestate": "vendor=private-value"},
         )
 
@@ -139,8 +139,8 @@ def test_request_logs_bind_trace_and_do_not_echo_trace_headers_or_request_values
     assert event["trace_id"] == VALID_TRACE_ID
     assert isinstance(event["span_id"], str) and len(event["span_id"]) == 16
     serialized = json.dumps(event, sort_keys=True)
-    assert secret_path not in serialized
-    assert secret_query not in serialized
+    assert synthetic_path_marker not in serialized
+    assert synthetic_query_marker not in serialized
     assert "private-value" not in serialized
     assert VALID not in serialized
 
