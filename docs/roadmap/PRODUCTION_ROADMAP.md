@@ -14,7 +14,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.4 accepted. Normal progression remains deferred until the higher-severity object-storage migration is accepted.
+- Phase 7 — Observability and incident operations: `IN PROGRESS`; RC10.1–RC10.4 accepted and internal object-storage migration blocker cleared.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -26,59 +26,15 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - RC10.3 bounded queue-backlog alerting: `PASS` — PR #84.
 - RC10.4 bounded storage-integrity alerting: `PASS` — PR #86.
 
-Phase 7 remains incomplete because distributed tracing, API-error/search-health alerting, dashboards, runbooks, on-call handover and ownership/escalation evidence remain open.
+## Object-storage remediation — internal gate accepted
 
-## Higher-severity object-storage remediation
+RUN-131 established that legacy MinIO was archived/unmaintained. RUN-132 accepted ADR-0001 and selected MinIO AIStor Enterprise Lite or Enterprise with active paid support. RUN-133 implemented the fail-closed migration contract.
 
-RUN-131 established that the legacy MinIO community runtime is archived/unmaintained. RUN-132 accepted ADR-0001 and selected MinIO AIStor Enterprise Lite or Enterprise with active paid support as the supported successor. PR #89 exact head `79c5684b7e65064efe480e6da7913fd437d52b6d` completed 37/37 workflows and merged as `83e880a289467151c6604e28cd4141118fb538a9`.
+PR #90 exact head `0fe5c5f0003211fe9df8535954d9276a2090af35` completed **38/38 workflows successfully** and merged as `383702bec6ba07cba065524efa451fd89cbd3b50`. Dedicated run `31326861369` retained artifact `9041774769`, digest `sha256:24e7241138dc0b293957f5e2cd06a4d3a6606b7ba68d688097795047f114ccf8`; independent inspection recorded JUnit 4/4, 0 failures/errors/skips.
 
-RUN-133 now implements the bounded repository migration contract:
+Fresh CVE review in RUN-134 requires any production AIStor release selected after this repository migration to be at least `RELEASE.2026-04-14T21-32-45Z` and to undergo a fresh advisory review immediately before deployment. This is a deployment-time security floor, not a claim that production deployment is complete.
 
-- legacy `minio/minio` removed from `docker-compose.yml`;
-- `AISTOR_IMAGE` is a required external input and must be a vendor-supported release pinned with `@sha256` digest;
-- `latest` is prohibited by regression test;
-- AIStor license is provided through required external `AISTOR_LICENSE_FILE` and Compose secret mounting;
-- administrative user/password have no runnable source-controlled defaults;
-- existing `minio` service name, `minio:9000` application endpoint, `minio_data:/data` persistence contract and human share-approval invariant are preserved;
-- a dedicated `Supported Object Storage Migration Gate` retains bounded JUnit evidence.
-
-The implementation is `CI_VALIDATION_PENDING`. It is not accepted until the dedicated migration workflow plus every registered workflow succeed on the final exact head. Production still requires vendor-supported topology, externally verified image digest, active entitlement, TLS/network encryption, server-side encryption, secrets-manager acceptance and external deployment assurance.
-
-## Phase 1 — CI and workflow integrity
-
-Objectives: regression-protect release-critical workflows, validate triggers/jobs/permissions/services/artifacts, make execution observable, and fail closed on missing/malformed gates.
-
-Blocking gates: workflow contract tests pass; required jobs/triggers are validated; workflow evidence is observable; failed/absent workflows cannot be interpreted as success.
-
-## Phase 2 — Application security and identity
-
-Objectives: enterprise identity or hardened trust boundary, strong RBAC/separation of duties, privileged audit logging, SAST/dependency/secrets/container scanning.
-
-Blocking gates: authentication/authorization and negative RBAC tests pass; no hardcoded production secrets; no unresolved critical security-scan findings.
-
-## Phase 3 — Data integrity and recovery
-
-Objectives: validate PostgreSQL migrations/constraints, raw-object immutability/checksums, backup/retention/restoration, and full clean restoration.
-
-Blocking gates: migration cycle succeeds; restore test succeeds; provenance/checksum integrity survives; RTO/RPO are documented and tested.
-
-## Phase 4 — Live connector reliability and provenance
-
-Objectives: controlled live canaries, credentials/rate limits/licences/terms validation, retry/backoff/dedup/source health/failure isolation, retained source/timestamp/confidence/raw evidence.
-
-Blocking gates: connector contracts pass; canaries repeat; malformed/duplicate records quarantine; connectors cannot publish without human review.
-
-## Phase 5 — Performance and scalability
-
-Objectives: representative education-sector volumes, API/PostgreSQL/OpenSearch/ingestion load tests, latency/throughput/resource budgets, queue pressure and degraded dependencies.
-
-Current decision: `PASS` for bounded internal gates. Issue #1 retains independent representative production load/stress acceptance.
-
-## Phase 6 — Frontend accessibility and operational UX
-
-Objectives: browser E2E, critical analyst/CISO/audit workflows, responsive/keyboard behavior, bounded WCAG evidence and separately genuine assistive-technology behavior.
-
-Current decision: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA evidence on supported real host/browser/screen-reader combinations. Browser/DOM automation is not a substitute.
+Commercial entitlement/support, production topology, registry-digest verification for the chosen release, TLS/network encryption, server-side encryption/KMS, secrets-manager acceptance, staging/production deployment acceptance and other issue #1 external gates remain open.
 
 ## Phase 7 — Observability and incident operations
 
@@ -94,9 +50,9 @@ Blocking gates:
 - runbooks complete and exercised;
 - operational ownership/escalation documented.
 
-Current decision: `IN PROGRESS`. RC10.1–RC10.4 are accepted. RC10.5 remains deferred until the supported object-storage migration is accepted.
+Current decision: `IN PROGRESS`. RC10.1–RC10.4 are accepted. The internal object-storage migration blocker is cleared for its bounded repository scope, so Phase 7 may resume.
 
-Exactly one next priority: verify the complete exact-head CI matrix and retained migration evidence for RUN-133; merge only after all registered workflows succeed. After acceptance, perform one bounded post-migration security/recovery/storage-integrity reconciliation before RC10.5.
+Exactly one next priority: **RC10.5 bounded API-error alerting** with safe correlation, actionable evidence, controlled raise/clear behavior, no raw sensitive payload leakage and retained exact-head evidence.
 
 ## Phase 8 — Staging acceptance
 
