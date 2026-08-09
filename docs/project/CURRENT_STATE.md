@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-08
+Last reconciled: 2026-08-09
 
 This document is the human-readable current-state view of DTMO. It complements the immutable run history in `docs/development/runs/`, the chronological `RUN_LOG.md`, the production roadmap, QA gate records and GitHub issues #1–#3.
 
@@ -12,7 +12,7 @@ This document is the human-readable current-state view of DTMO. It complements t
 - RC8.2 API-read performance: `PASS`.
 - RC8.3 OpenSearch search-read performance: `PASS`.
 - RC8.4 ingestion-throughput performance: `PASS`.
-- RC8.5 queue pressure and connector burst: `CI_VALIDATION_PENDING` in PR #42; not yet on `main`.
+- RC8.5 queue pressure and connector burst: `PASS` via RUN-20260809-083 / PR #42.
 - Phases 6–9: not yet accepted.
 - Phase 10 production go/no-go: `BLOCKED` until every remaining phase and external gate is evidenced.
 
@@ -62,7 +62,8 @@ flowchart TB
     PR --> R82[RC8 API Read Performance]
     PR --> R83[RC8 Search Read Performance]
     PR --> R84[RC8 Ingestion Performance]
-    PR -. PR #42 only .-> R85[RC8 Queue Burst Performance]
+    PR --> R85[RC8 Queue Burst Performance]
+    PR --> OSG[Open Source Governance]
 
     QG --> ACCEPT{All required exact-head gates green?}
     R6A --> ACCEPT
@@ -71,22 +72,21 @@ flowchart TB
     R82 --> ACCEPT
     R83 --> ACCEPT
     R84 --> ACCEPT
-    R85 -. when merged .-> ACCEPT
+    R85 --> ACCEPT
+    OSG --> ACCEPT
 
     ACCEPT -- no --> BLOCK[BLOCKED / CI_VALIDATION_PENDING]
     ACCEPT -- yes --> ART[Inspect retained artifacts]
     ART --> MERGE[Expected-head protected merge]
 ```
 
-## Workflows confirmed on `main`
-
-The current reconciliation verified that the following Phase 5 workflows are present on `main`:
+## Phase 5 workflows confirmed on `main`
 
 - `.github/workflows/api-read-performance.yml` — RC8.2 API Read Performance Gate;
 - `.github/workflows/search-read-performance.yml` — RC8.3 OpenSearch Search Read Performance Gate;
-- `.github/workflows/ingestion-performance.yml` — RC8.4 Ingestion Performance Gate.
-
-The RC8.5 queue-burst workflow belongs to open PR #42 and must not be described as present on `main` until that PR is accepted and merged.
+- `.github/workflows/ingestion-performance.yml` — RC8.4 Ingestion Performance Gate;
+- `.github/workflows/queue-burst-performance.yml` — RC8.5 Queue Burst Performance Gate;
+- `.github/workflows/open-source-governance.yml` — project licensing/governance regression gate.
 
 Existing RC4/RC6/RC7 workflows continue to protect build quality, recovery and connector governance. A workflow being configured or present is not itself evidence of a successful execution.
 
@@ -98,8 +98,7 @@ Existing RC4/RC6/RC7 workflows continue to protect build quality, recovery and c
 - 100.142 requests/s;
 - 0% errors;
 - p95 1.878 ms;
-- p99 11.059 ms;
-- accepted limits: p95 <= 300 ms, p99 <= 750 ms, errors <= 1%.
+- p99 11.059 ms.
 
 ### RC8.3 OpenSearch search reads
 
@@ -107,27 +106,34 @@ Existing RC4/RC6/RC7 workflows continue to protect build quality, recovery and c
 - 40.161 searches/s;
 - 0% errors;
 - p95 7.700 ms;
-- p99 12.131 ms;
-- accepted limits: p95 <= 800 ms, p99 <= 1500 ms, errors <= 1%.
+- p99 12.131 ms.
 
 ### RC8.4 ingestion
 
 - 500/500 records accepted;
 - zero data loss;
 - zero duplicate candidate creation;
-- identical second pass quarantined as replay rather than creating candidates;
-- measured throughput 108081.257 records/s in the bounded synthetic CI fixture;
-- accepted sustained minimum: 100 records/s.
+- identical second pass quarantined as replay;
+- measured bounded synthetic throughput 108081.257 records/s.
+
+### RC8.5 queue pressure / connector burst
+
+Exact head `65c7949624c3770ce91d00c34a957b6b2cb9946a` passed all 17 required workflows. Artifact `9029584698` (`sha256:a934d6179f347e3bf9a198fcb155e7996c42fc670959c2cfd50453969969b974`) recorded:
+
+- 250/250 submitted and accepted;
+- 170 backpressure events;
+- queue depth 40/40;
+- zero data loss;
+- zero duplicate candidates;
+- recovery 0.602 s;
+- provenance and publication state preserved;
+- 6 focused tests, 0 failures/errors/skips.
 
 These are bounded internal CI measurements. They do not close issue #1's independent representative load/stress gate.
 
-## Current active change
-
-PR #42 — RC8.5 queue pressure and connector burst performance — is open and mergeable but remains `CI_VALIDATION_PENDING` until every required exact-head workflow and retained queue-burst artifact have been verified. It is intentionally not included as an accepted `main` capability yet.
-
 ## External gates still open
 
-Issue #1 remains the source of truth for externally executed production gates. The live-connector credential/rate-limit/licence/terms gate was externally attested and closed for Phase 4. Remaining external assurance, staging/deployment, load/stress, hardening, secrets-management and operational acceptance gates require their own evidence.
+Issue #1 remains the source of truth for externally executed production gates. In particular, independent representative load/stress remains open. RC8.5 also explicitly did not test degraded dependencies, so Phase 5 cannot yet be closed.
 
 ## Security and governance invariants
 
@@ -141,4 +147,4 @@ Issue #1 remains the source of truth for externally executed production gates. T
 
 ## Exactly one current priority
 
-Complete exact-head validation of PR #42 / RC8.5. If every required workflow and retained queue-burst artifact succeeds, merge with expected-head protection. Otherwise remediate only the earliest deterministic failure.
+Implement one bounded RC8.6 degraded-dependency performance/correctness gate proving zero data loss and preserved fail-closed governance when a representative internal dependency is unavailable or impaired. Do not combine this objective with the independent external load/stress gate or Phase 6 work.
