@@ -14,7 +14,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
-- Phase 7 — Observability and incident operations: `BLOCKED_EXTERNAL`; RC10.1–RC10.11 internal engineering gates are accepted, but human operational ownership/handover acceptance is not evidenced.
+- Phase 7 — Observability and incident operations: `PASS_PENDING_CI_RECONCILIATION`; RC10.1–RC10.11 are accepted and all six external human operational-acceptance evidence classes were confirmed accepted by the operator/project authority.
 - Phase 8 — Staging acceptance: `NOT STARTED`.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -31,7 +31,8 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - RC10.8 operational dashboard: `PASS` — PR #95.
 - RC10.9 operational incident runbooks: `PASS` — PR #96.
 - RC10.10 controlled synthetic operational runbook exercise: `PASS` — PR #97.
-- RC10.11 on-call ownership and escalation handover baseline: `PASS` — PR #98 exact head `8574995796dd1d54cc6411227cdae83219f82122`, 45/45 workflows, artifact `9043200727`, digest `sha256:a33797bc61c6d08ba5fedc8010db4ebd0ded741153167fbd0fec163ceab675ac`, JUnit 5/5, merge `1e4e6a0a3fbe43ffcec5d421f0760467e3a53b4f`.
+- RC10.11 on-call ownership and escalation handover baseline: `PASS` — PR #98.
+- RUN-145 Phase 7 external-blocker reconciliation: `PASS` — PR #99, 45/45 exact-head workflows, merge `d30d52c979f6f9daf61f62b435bdc1fdb48f4623`.
 
 ## Object-storage remediation — internal gate accepted
 
@@ -65,17 +66,19 @@ Current decision: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA evidence on
 
 Internal engineering objectives are complete and accepted through RC10.11: metrics/logs/trace context, alerting, dashboards, runbooks, controlled technical exercise, and a source-controlled ownership/escalation/handover contract.
 
-Phase 7 is nevertheless `BLOCKED_EXTERNAL` because the following cannot be proven by repository CI:
-- real staffed primary/secondary coverage;
+On 2026-08-09 the operator/project authority explicitly confirmed that all six required external human operational-acceptance evidence classes were accepted:
+- staffed primary/secondary operational coverage;
 - tested primary/fallback contact and escalation paths;
 - real-participant handover with incoming acknowledgement;
-- human exercise/walkthrough of the escalation and handover process;
-- explicit ownership of unresolved operational gaps;
-- service-owner and operational-owner sign-off.
+- human walkthrough/exercise of the ownership and escalation process;
+- accountable ownership and target resolution path for unresolved operational gaps;
+- service-owner and operational-owner acceptance/sign-off.
 
-These requirements must be retained as external human evidence. Named contact data and credentials remain outside the repository. CI success must not be interpreted as staffing/reachability/acceptance.
+The repository retains the decision, scope and provenance of that external acceptance. Underlying roster/contact/handover/exercise/sign-off material remains in approved operational systems; named contact data and credentials are not copied into source control.
 
-Exactly one next priority: obtain and retain external human operational-acceptance evidence for Phase 7. If unavailable, Phase 7 remains `BLOCKED_EXTERNAL` and production readiness remains blocked.
+RUN-146 is the bounded reconciliation run. Phase 7 becomes final `PASS` only after RUN-146 itself completes the complete exact-head workflow matrix successfully. This preserves the rule that unexecuted or missing CI is never PASS.
+
+Exactly one next priority: verify RUN-146 exact-head CI; after acceptance begin Phase 8 with a bounded staging-readiness baseline.
 
 ## Phase 8 — Staging acceptance
 
@@ -83,7 +86,7 @@ Objectives: production-equivalent deployment, smoke/integration/migration/connec
 
 Blocking gates: reproducible staging; all internal gates pass; no unresolved blockers; deployment evidence retained.
 
-Phase 8 is `NOT STARTED`. RUN-145 deliberately does not begin Phase 8 because its single bounded objective is Phase 7 acceptance/blocker reconciliation.
+Phase 8 is `NOT STARTED`. The first bounded objective after RUN-146 acceptance is to inventory and evidence staging prerequisites and fail closed on missing deployment, secrets/TLS/network, migration, recovery or smoke-test prerequisites.
 
 ## Phase 9 — External assurance
 
