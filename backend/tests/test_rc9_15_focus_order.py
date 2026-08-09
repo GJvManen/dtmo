@@ -91,7 +91,10 @@ async def test_wcag_2_4_3_complete_focus_order() -> None:
 
             await page.keyboard.press("Shift+Tab")
             reverse_target = await page.evaluate(IDENTITY_JS, await page.evaluate_handle("() => document.activeElement"))
-            assert _key(reverse_target) == expected_keys[-2] if len(expected_keys) > 1 else expected_keys[-1]
+            reverse_expected = expected_keys[-2] if len(expected_keys) > 1 else expected_keys[-1]
+            assert _key(reverse_target) == reverse_expected, {
+                "surface": surface["name"], "reason": "reverse focus order mismatch", "target": reverse_target
+            }
 
             evidence.append({
                 "surface": surface["name"],
