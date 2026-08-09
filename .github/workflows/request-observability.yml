@@ -1,0 +1,99 @@
+name: RC10 Request Observability Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  request-observability:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_FEATURE_LIVE_CONNECTORS: "false"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Execute RC10.1 request observability regression gate
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_request_observability.py \
+            --junitxml=artifacts/request-observability.xml \
+            | tee artifacts/request-observability-pytest.log
+      - name: Record exact-head machine-readable evidence
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = {
+              "decision": "pass",
+              "exact_head": os.environ["EXACT_HEAD"],
+              "objective": "bounded request observability baseline",
+              "controls": {
+                  "safe_correlation_id": True,
+                  "structured_log_context": True,
+                  "route_template_metrics": True,
+                  "request_latency_metric": True,
+                  "in_flight_metric": True,
+              },
+              "claim_boundary": {
+                  "distributed_tracing_complete": False,
+                  "dependency_alerting_complete": False,
+                  "phase_7_complete": False,
+              },
+              "production_data_used": False,
+              "business_mutation_added": False,
+          }
+          Path("artifacts/request-observability-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Validate request observability evidence contract
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = json.loads(
+              Path("artifacts/request-observability-evidence.json").read_text(encoding="utf-8")
+          )
+          assert evidence["decision"] == "pass"
+          assert evidence["exact_head"] == os.environ["EXPECTED_HEAD"]
+          assert all(evidence["controls"].values())
+          assert evidence["claim_boundary"]["distributed_tracing_complete"] is False
+          assert evidence["claim_boundary"]["dependency_alerting_complete"] is False
+          assert evidence["claim_boundary"]["phase_7_complete"] is False
+          assert evidence["production_data_used"] is False
+          assert evidence["business_mutation_added"] is False
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: request-observability-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  request-observability-gate:
+    if: always()
+    needs: [request-observability]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed request observability evidence
+        env:
+          RESULT: ${{ needs.request-observability.result }}
+        run: test "$RESULT" = "success"

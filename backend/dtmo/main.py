@@ -2,17 +2,24 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from uuid import uuid4
+from time import perf_counter
 
 from fastapi import FastAPI, Request, Response
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
 from dtmo.api.routes import close_services, router as intelligence_router
 from dtmo.auditor_ui import router as auditor_ui_router
 from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
-from dtmo.logging import configure_logging, correlation_id, get_logger
+from dtmo.logging import (
+    bind_request_context,
+    clear_request_context,
+    configure_logging,
+    correlation_id,
+    get_logger,
+    resolve_correlation_id,
+)
 from dtmo.scheduler import ScheduledJob, SchedulerService
 from dtmo.ui import router as ui_router
 
@@ -20,8 +27,17 @@ settings = get_settings()
 configure_logging(settings.log_level)
 log = get_logger("api")
 scheduler = SchedulerService()
-REQUESTS = Counter("dtmo_http_requests_total", "HTTP requests", ["method", "path", "status"])
-LATENCY = Histogram("dtmo_http_request_seconds", "HTTP request latency", ["method", "path"])
+REQUESTS = Counter("dtmo_http_requests_total", "HTTP requests", ["method", "route", "status"])
+LATENCY = Histogram("dtmo_http_request_seconds", "HTTP request latency", ["method", "route"])
+IN_FLIGHT = Gauge("dtmo_http_requests_in_flight", "HTTP requests in flight", ["method"])
+
+
+def _route_template(request: Request) -> str:
+    route = request.scope.get("route")
+    route_path = getattr(route, "path", None)
+    if isinstance(route_path, str):
+        return route_path
+    return "<unmatched>"
 
 
 async def run_cisa_kev() -> dict[str, object]:
@@ -72,18 +88,45 @@ app.include_router(auditor_ui_router)
 
 @app.middleware("http")
 async def request_context(request: Request, call_next):  # type: ignore[no-untyped-def]
-    request_id = request.headers.get("x-correlation-id", str(uuid4()))
+    request_id = resolve_correlation_id(request.headers.get("x-correlation-id"))
     token = correlation_id.set(request_id)
-    path = request.url.path
-    with LATENCY.labels(request.method, path).time():
+    bind_request_context(request_id, request.method)
+    started = perf_counter()
+    IN_FLIGHT.labels(request.method).inc()
+    try:
         response = await call_next(request)
-    correlation_id.reset(token)
-    response.headers["x-correlation-id"] = request_id
-    response.headers["x-content-type-options"] = "nosniff"
-    response.headers["x-frame-options"] = "DENY"
-    response.headers["referrer-policy"] = "no-referrer"
-    REQUESTS.labels(request.method, path, response.status_code).inc()
-    return response
+    except Exception:
+        duration = perf_counter() - started
+        route = _route_template(request)
+        REQUESTS.labels(request.method, route, "500").inc()
+        LATENCY.labels(request.method, route).observe(duration)
+        log.exception(
+            "http_request_failed",
+            route=route,
+            status=500,
+            duration_ms=round(duration * 1000, 3),
+        )
+        raise
+    else:
+        duration = perf_counter() - started
+        route = _route_template(request)
+        response.headers["x-correlation-id"] = request_id
+        response.headers["x-content-type-options"] = "nosniff"
+        response.headers["x-frame-options"] = "DENY"
+        response.headers["referrer-policy"] = "no-referrer"
+        REQUESTS.labels(request.method, route, str(response.status_code)).inc()
+        LATENCY.labels(request.method, route).observe(duration)
+        log.info(
+            "http_request_completed",
+            route=route,
+            status=response.status_code,
+            duration_ms=round(duration * 1000, 3),
+        )
+        return response
+    finally:
+        IN_FLIGHT.labels(request.method).dec()
+        correlation_id.reset(token)
+        clear_request_context()
 
 
 @app.get("/health")
