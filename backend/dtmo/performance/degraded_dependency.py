@@ -120,7 +120,6 @@ async def run_degraded_dependency_harness(
     queue: asyncio.Queue[dict[str, Any] | None] = asyncio.Queue(maxsize=capacity)
     registry = InMemoryReplayRegistry()
     source_uri = "https://example.test/performance/degraded-dependency"
-    dependency_name = "opensearch-index-sink"
     total = max(1, math.ceil(budget.ingestion_records_per_second * duration_seconds))
     delivery_delay = budget.connector_parallelism / delivery_records_per_second
 
