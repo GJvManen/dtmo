@@ -4,8 +4,9 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260809-146 — Phase 7 external operational-acceptance reconciliation](runs/RUN-20260809-146.md) — `CI_VALIDATION_PENDING`: operator/project authority confirmed all six Phase 7 human operational-acceptance evidence classes were accepted externally; repository retains acceptance scope/provenance without sensitive operational records. Phase 7 becomes `PASS` only after this reconciliation PR passes complete exact-head CI.
-- [RUN-20260809-145 — RC10.11 acceptance and Phase 7 external blocker reconciliation](runs/RUN-20260809-145.md) — `BLOCKED_EXTERNAL`: PR #98 exact head `8574995796dd1d54cc6411227cdae83219f82122` passed 45/45 workflows; artifact `9043200727` (`sha256:a33797bc61c6d08ba5fedc8010db4ebd0ded741153167fbd0fec163ceab675ac`) independently showed exact-head PASS plus JUnit 5/5; merged as `1e4e6a0a3fbe43ffcec5d421f0760467e3a53b4f`. RC10.11 internal contract is accepted; Phase 7 completion depended on external human operational acceptance.
+- [RUN-20260809-147 — Phase 8 staging-readiness baseline](runs/RUN-20260809-147.md) — `CI_VALIDATION_PENDING`: Phase 7 accepted after PR #100 exact head `44d6f7deab2349ed879e9d7a1c12cb88872fb283` passed 45/45 workflows and merged as `30fab12f4e5978f1e5f7f1007a221239d604a8bb`; adds the fail-closed staging acceptance contract, regression tests and dedicated retained-evidence gate without claiming a staging environment or executed staging tests.
+- [RUN-20260809-146 — Phase 7 external operational-acceptance reconciliation](runs/RUN-20260809-146.md) — `PASS`: all six required human operational-acceptance evidence classes were accepted by the operator/project authority; PR #100 final exact head `44d6f7deab2349ed879e9d7a1c12cb88872fb283` passed 45/45 workflows and merged as `30fab12f4e5978f1e5f7f1007a221239d604a8bb`.
+- [RUN-20260809-145 — RC10.11 acceptance and Phase 7 external blocker reconciliation](runs/RUN-20260809-145.md) — `PASS`: RC10.11 internal contract accepted and the Phase 7 external evidence classes were subsequently accepted in RUN-146.
 - [RUN-20260809-144 — on-call ownership and escalation handover baseline](runs/RUN-20260809-144.md) — `PASS`.
 - [RUN-20260809-143 — RC10.10 exercise evidence-validator remediation](runs/RUN-20260809-143.md) — `PASS`.
 - [RUN-20260809-142 — controlled operational runbook exercise](runs/RUN-20260809-142.md) — `PASS`.
@@ -32,8 +33,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-Phase 1–5 internal gates are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA behavior. Phase 7 internal engineering gates RC10.1–RC10.11 are accepted and all six external human operational-acceptance evidence classes are reported accepted by the operator/project authority. RUN-146 remains `CI_VALIDATION_PENDING` until the reconciliation PR passes complete exact-head CI. DTMO is not production ready.
+Phase 1–5 are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA behavior. Phase 7 is `PASS`. Phase 8 is `IN PROGRESS` at readiness-contract level only; no staging deployment or staging acceptance has yet been evidenced. DTMO is not production ready.
 
 ## Exactly one next priority
 
-After RUN-146 exact-head acceptance, begin Phase 8 with a bounded staging-readiness baseline: inventory production-equivalent deployment prerequisites and fail closed on any missing deployment, secrets/TLS/network, migration, recovery or smoke-test prerequisite.
+Verify the complete exact-head CI matrix and retained `phase8-staging-readiness-evidence` for RUN-147. After acceptance, provision or identify a production-equivalent staging environment and capture immutable deployment-parity evidence.
