@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — RC10.3 / PR #118 is accepted and merged as `1377899e7096c01362ab803c502c1d40812ef581`; RUN-20260810-181 executes RC10.4 Source Center refinement.
+Last reconciled: 2026-08-10 — RC10.3 / PR #118 is accepted and merged as `1377899e7096c01362ab803c502c1d40812ef581`; RC10.4 Source Center refinement is under exact-head CI remediation.
 
 ## Executive status
 
@@ -21,10 +21,16 @@ The new `/ui/source-center` combines registered source identity, enabled state, 
 
 Secret references and raw evidence are deliberately absent. The Source Center contains no source mutation, manual-run, review or share-approval operation; those remain in the existing accepted governed control planes. Ingested intelligence remains subject to human review and separate external share approval.
 
+## RUN-182 CI remediation
+
+Exact head `294dcd6490a9e9dde6d21d648578214529dd9b07` failed only the RC4 Quality Gate. Lint passed, but mypy reported three unsafe `.isoformat()` calls on nullable connector runtime timestamps in `backend/dtmo/source_center.py`; tests and compile were therefore skipped and the aggregate release gate failed closed. The remediation retrieves the optional runtime state once and explicitly narrows each nullable timestamp before serialization. This is a type-safety correction only and does not change the RC10.4 authority boundary.
+
+A new exact head requires the complete registered workflow matrix before RC10.4 can be accepted.
+
 ## External blockers
 
 No approved real staging endpoint/environment identity and no complete ten-class deployment-parity package tied to one immutable release are available. Genuine assistive-technology execution, independent penetration testing and remaining external assurance also remain absent.
 
 ## Exactly one current priority
 
-Complete full exact-head CI validation for the RC10.4 Source Center PR. Merge only on complete success; otherwise remediate only the first concrete failing root cause.
+Complete full exact-head CI validation for the remediated RC10.4 Source Center PR. Merge only on complete success; otherwise remediate only the first concrete failing root cause.
