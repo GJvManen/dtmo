@@ -12,15 +12,22 @@ This directory is the authoritative documentation entry point for DTMO. Detailed
 - [Production roadmap](roadmap/PRODUCTION_ROADMAP.md)
 - [Development run log](development/RUN_LOG.md)
 
-## Current frontend release candidate
+## Current application and source releases
 
-- [16.0.0rc6 release notes](releases/16.0.0rc6.md)
+- [16.0.0rc9 release notes](releases/16.0.0rc9.md) — safe registered-source execution candidate
+- [Curated intelligence source catalog](intelligence/SOURCE_CATALOG.md)
+- [Safe source execution QA gate](qa/SAFE_SOURCE_EXECUTION_GATE.md)
+- [RUN-172 safe source execution](development/runs/RUN-20260810-172.md)
+- [16.0.0rc8 release notes](releases/16.0.0rc8.md) — accepted Admin Configuration & Source Registry baseline
+- [16.0.0rc6 release notes](releases/16.0.0rc6.md) — accepted professional frontend baseline
 - [Frontend UX architecture](ux/FRONTEND_UX.md)
 - [Frontend UX release gate](qa/FRONTEND_UX_RELEASE_GATE.md)
-- [RUN-162 professional frontend UX overhaul](development/runs/RUN-20260810-162.md)
-- [16.0.0rc5 release notes](releases/16.0.0rc5.md) — accepted predecessor baseline
 
-The primary DTMO Threat Operations Console is available at `http://localhost:8000/` after a successful local build. rc6 organizes the experience around Overview, Intelligence, Governance, Audit and Security and aligns the Analyst, Share Approval, Auditor and CISO role views to the same design system. The frontend remains a presentation layer over server-side RBAC and does not weaken human share-approval or separation-of-duties requirements.
+The primary DTMO Threat Operations Console is available at `http://localhost:8000/`. Source administration is available at `/ui/admin-sources`. The presentation layer remains subordinate to server-side RBAC, separation of duties and human share approval.
+
+## Intelligence sources
+
+The source catalog distinguishes catalogued, registered, enabled, executable, ingested, reviewed and share-approved states. Catalog membership or source execution never grants publication authority. rc9 directly supports CISA KEV, NIST NVD CVE API 2.0, GitHub Global Security Advisories and governed custom feeds implementing the DTMO JSON v1 contract. Additional NCSC-NL, CERT-EU, vendor and education-sector sources remain explicit onboarding targets until their parser/access contracts are evidenced.
 
 ## Architecture
 
@@ -33,6 +40,7 @@ The primary DTMO Threat Operations Console is available at `http://localhost:800
 - [External assurance gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md)
 - [Staging deployment-parity gate](qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md)
 - [Frontend UX release gate](qa/FRONTEND_UX_RELEASE_GATE.md)
+- [Safe source execution gate](qa/SAFE_SOURCE_EXECUTION_GATE.md)
 - [Security policy](../SECURITY.md)
 
 ## Operations
@@ -60,4 +68,4 @@ DTMO preserves RBAC, separation of duties, privacy, provenance, auditability and
 
 ## Current release posture
 
-Phases 1–5 are internally accepted. Phase 6 remains externally blocked for genuine VoiceOver/NVDA execution; the repository-controlled rc5 frontend baseline is accepted and rc6 professional UX remains `CI_VALIDATION_PENDING`. Phase 7 is accepted. Phase 8 remains externally blocked for one approved real staging deployment and the complete ten-class deployment-parity package. Phase 9 has an external-assurance intake contract but remains incomplete until the required independent evidence is produced. Phase 10 remains blocked until all prior gates and external acceptance requirements are complete.
+Phases 1–7 remain internally accepted within their documented claim boundaries. rc8 is the accepted Admin Configuration & Source Registry baseline; rc9 safe registered-source execution is `CI_VALIDATION_PENDING`. Phase 6 remains externally blocked for genuine VoiceOver/NVDA execution. Phase 8 remains externally blocked for one approved real staging deployment and the complete ten-class deployment-parity package. Phase 9 remains incomplete pending independent evidence. Phase 10 remains blocked until all prior gates and external acceptance requirements are complete.
