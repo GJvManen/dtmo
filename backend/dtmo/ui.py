@@ -11,36 +11,36 @@ from dtmo.auth.policy import Permission, Principal
 router = APIRouter()
 
 _PAGE = """<!doctype html>
-<html lang="en">
+<html lang="nl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DTMO governed share approval</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 52rem; margin: 2rem auto; padding: 0 1rem; }
-    fieldset { display: grid; gap: .75rem; padding: 1rem; }
-    label { font-weight: 600; }
-    input { padding: .65rem; font: inherit; }
-    button { padding: .65rem 1rem; font: inherit; cursor: pointer; }
-    .actions { display: flex; gap: .75rem; flex-wrap: wrap; }
-    pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #f4f4f4; padding: 1rem; }
-  </style>
+  <title>DTMO — Share approval</title>
+  <link rel="stylesheet" href="/ui/design-system.css">
 </head>
 <body>
-  <main>
-    <h1>Governed intelligence decision</h1>
-    <p id="principal" data-testid="principal" role="status" aria-live="polite" aria-atomic="true">Resolving authenticated principal…</p>
-    <fieldset>
-      <legend>Intelligence item</legend>
-      <label for="item-id">Item ID</label>
-      <input id="item-id" data-testid="item-id" autocomplete="off" required>
-      <div class="actions">
-        <button id="review" data-testid="review-button" type="button" hidden>Mark reviewed</button>
-        <button id="share" data-testid="share-button" type="button" hidden>Approve external sharing</button>
-      </div>
-    </fieldset>
-    <p>Review and share approval are separate governed decisions. A reviewer cannot approve their own review.</p>
-    <pre id="result" data-testid="result" aria-live="polite">No decision submitted.</pre>
+  <a class="skip-link" href="#main">Ga naar hoofdinhoud</a>
+  <header class="app-header">
+    <div><p class="eyebrow">Governance workspace</p><h1>Share approval</h1></div>
+    <div class="header-actions"><a class="button ghost" href="/">Terug naar console</a><span id="principal" data-testid="principal" class="status-pill neutral" role="status" aria-live="polite">Principal bepalen…</span></div>
+  </header>
+  <main id="main" class="workspace">
+    <section class="page-heading"><div><p class="eyebrow">Separation of duties</p><h2>Governed intelligence decision</h2><p>Review en externe share approval zijn twee afzonderlijke menselijke beslissingen. Dezelfde principal mag niet beide stappen voor hetzelfde item uitvoeren.</p></div></section>
+    <div class="content-grid equal">
+      <article class="surface decision-card">
+        <div class="surface-header"><div><span class="step-badge">Stap 1</span><h3>Review vastleggen</h3></div></div>
+        <p>Markeer een intelligence-item als inhoudelijk beoordeeld. Dit geeft geen toestemming voor extern delen.</p>
+        <label for="item-id">Intelligence item ID<input id="item-id" data-testid="item-id" autocomplete="off" required placeholder="UUID of canonical item ID"></label>
+        <button id="review" data-testid="review-button" class="button secondary full" type="button" hidden>Markeer als reviewed</button>
+      </article>
+      <article class="surface decision-card critical">
+        <div class="surface-header"><div><span class="step-badge danger">Stap 2</span><h3>Extern delen goedkeuren</h3></div></div>
+        <p>Geef expliciete menselijke toestemming voor externe distributie nadat een onafhankelijke review is vastgelegd.</p>
+        <div class="sod-notice"><strong>Menselijke goedkeuring verplicht</strong><span>DTMO blokkeert self-approval server-side en schrijft de beslissing naar de audit trail.</span></div>
+        <button id="share" data-testid="share-button" class="button danger full" type="button" hidden>Approve external sharing</button>
+      </article>
+    </div>
+    <article class="surface response-surface"><div class="surface-header"><h3>Besluitresultaat</h3></div><pre id="result" data-testid="result" class="console-output" aria-live="polite">Nog geen beslissing uitgevoerd.</pre></article>
   </main>
   <script src="/ui/share-approval.js" defer></script>
 </body>
@@ -58,7 +58,8 @@ _SCRIPT = r"""(() => {
     const response = await fetch('/api/v1/ui/session', {credentials: 'same-origin'});
     const body = await response.json();
     if (!response.ok) throw new Error(body.detail || `session failed: ${response.status}`);
-    principal.textContent = `${body.subject} — roles: ${body.roles.join(', ')}`;
+    principal.textContent = `${body.subject} · ${body.roles.join(', ') || 'geen rollen'}`;
+    principal.className = 'status-pill success';
     review.hidden = !body.permissions.includes('review:intelligence');
     share.hidden = !body.permissions.includes('approve:share');
   }
@@ -66,13 +67,13 @@ _SCRIPT = r"""(() => {
   async function decision(action) {
     const id = itemId.value.trim();
     if (!id) {
-      result.textContent = 'An intelligence item ID is required.';
+      result.textContent = 'Vul eerst een intelligence item ID in.';
+      itemId.focus();
       return;
     }
+    result.textContent = 'Beslissing wordt verwerkt…';
     const response = await fetch(`/api/v1/intelligence/${encodeURIComponent(id)}/${action}`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {'X-Request-ID': crypto.randomUUID()},
+      method: 'POST', credentials: 'same-origin', headers: {'X-Request-ID': crypto.randomUUID()},
     });
     let body;
     try { body = await response.json(); } catch (_) { body = {detail: 'invalid response'}; }
@@ -81,39 +82,37 @@ _SCRIPT = r"""(() => {
 
   review.addEventListener('click', () => decision('review'));
   share.addEventListener('click', () => decision('share-approval'));
-  session().catch((error) => { result.textContent = `Session error: ${error.message}`; });
+  session().catch((error) => {
+    principal.textContent = `Sessiefout: ${error.message}`;
+    principal.className = 'status-pill error';
+  });
 })();
 """
 
 _ANALYST_PAGE = """<!doctype html>
-<html lang="en">
+<html lang="nl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DTMO analyst intelligence search</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 60rem; margin: 2rem auto; padding: 0 1rem; }
-    form { display: flex; gap: .75rem; align-items: end; flex-wrap: wrap; }
-    label { display: grid; gap: .35rem; font-weight: 600; }
-    input, button { padding: .65rem; font: inherit; }
-    #status { margin: 1rem 0; padding: .75rem; border: 1px solid #bbb; }
-    #results { display: grid; gap: .75rem; padding: 0; list-style: none; }
-    #results li { border: 1px solid #bbb; padding: .75rem; }
-  </style>
+  <title>DTMO — Analyst workspace</title>
+  <link rel="stylesheet" href="/ui/design-system.css">
 </head>
 <body>
-  <main>
-    <h1>Analyst intelligence search</h1>
-    <p id="analyst-principal" data-testid="analyst-principal" role="status" aria-live="polite" aria-atomic="true">Resolving authenticated principal…</p>
-    <section id="search-panel" data-testid="search-panel" hidden>
-      <form id="search-form">
-        <label for="query">Search intelligence
-          <input id="query" data-testid="search-query" minlength="2" required autocomplete="off">
-        </label>
-        <button type="submit" data-testid="search-submit">Search</button>
+  <a class="skip-link" href="#main">Ga naar hoofdinhoud</a>
+  <header class="app-header">
+    <div><p class="eyebrow">Analyst workspace</p><h1>Intelligence explorer</h1></div>
+    <div class="header-actions"><a class="button ghost" href="/">Terug naar console</a><span id="analyst-principal" data-testid="analyst-principal" class="status-pill neutral" role="status" aria-live="polite">Principal bepalen…</span></div>
+  </header>
+  <main id="main" class="workspace">
+    <section class="page-heading"><div><p class="eyebrow">Threat intelligence</p><h2>Zoeken en triageren</h2><p>Doorzoek beschikbare intelligence en beoordeel resultaten op relevantie, provenance en confidence.</p></div></section>
+    <section id="search-panel" data-testid="search-panel" class="surface search-surface" hidden>
+      <form id="search-form" class="hero-search">
+        <label class="sr-only" for="query">Zoek intelligence</label><span class="search-icon" aria-hidden="true">⌕</span>
+        <input id="query" data-testid="search-query" minlength="2" required autocomplete="off" placeholder="Zoek op dreiging, CVE, actor of leverancier…">
+        <button type="submit" data-testid="search-submit" class="button primary">Zoeken</button>
       </form>
-      <div id="status" data-testid="search-status" role="status" aria-live="polite">Ready to search.</div>
-      <ul id="results" data-testid="search-results"></ul>
+      <div id="status" data-testid="search-status" class="inline-status" role="status" aria-live="polite">Klaar om te zoeken.</div>
+      <div id="results" data-testid="search-results" class="intel-results"></div>
     </section>
   </main>
   <script src="/ui/analyst-search.js" defer></script>
@@ -129,120 +128,74 @@ _ANALYST_SCRIPT = r"""(() => {
   const status = document.getElementById('status');
   const results = document.getElementById('results');
 
-  function setState(message, state) {
-    status.textContent = message;
-    status.dataset.state = state;
-  }
-
+  function setState(message, state) { status.textContent = message; status.dataset.state = state; }
   function render(items) {
     results.replaceChildren();
     for (const item of items) {
-      const row = document.createElement('li');
-      const title = document.createElement('strong');
-      title.textContent = String(item.title || 'Untitled intelligence');
-      row.appendChild(title);
-      if (item.summary) {
-        const summary = document.createElement('p');
-        summary.textContent = String(item.summary);
-        row.appendChild(summary);
+      const row = document.createElement('article'); row.className = 'intel-card';
+      const title = document.createElement('h3'); title.textContent = String(item.title || 'Untitled intelligence');
+      const summary = document.createElement('p'); summary.textContent = String(item.summary || 'Geen samenvatting beschikbaar.');
+      const meta = document.createElement('div'); meta.className = 'intel-meta';
+      for (const value of [item.id, item.confidence, item.source]) {
+        if (!value) continue; const tag = document.createElement('span'); tag.className = 'meta-tag'; tag.textContent = String(value); meta.appendChild(tag);
       }
-      results.appendChild(row);
+      row.append(title, summary, meta); results.appendChild(row);
     }
   }
-
   async function session() {
-    const response = await fetch('/api/v1/ui/session', {credentials: 'same-origin'});
-    const body = await response.json();
+    const response = await fetch('/api/v1/ui/session', {credentials: 'same-origin'}); const body = await response.json();
     if (!response.ok) throw new Error(body.detail || `session failed: ${response.status}`);
-    principal.textContent = `${body.subject} — roles: ${body.roles.join(', ')}`;
-    const allowed = body.permissions.includes('read:intelligence');
-    panel.hidden = !allowed;
-    if (!allowed) setState('Intelligence search is not permitted for this principal.', 'forbidden');
+    principal.textContent = `${body.subject} · ${body.roles.join(', ') || 'geen rollen'}`; principal.className = 'status-pill success';
+    const allowed = body.permissions.includes('read:intelligence'); panel.hidden = !allowed;
+    if (!allowed) setState('Intelligence search is niet toegestaan voor deze principal.', 'error');
   }
-
   async function search() {
-    const value = query.value.trim();
-    if (value.length < 2) return;
-    results.replaceChildren();
-    setState('Loading intelligence…', 'loading');
+    const value = query.value.trim(); if (value.length < 2) return; results.replaceChildren(); setState('Intelligence doorzoeken…', 'loading');
     try {
-      const response = await fetch(`/api/v1/intelligence/search?q=${encodeURIComponent(value)}`, {
-        credentials: 'same-origin',
-      });
-      let body;
-      try { body = await response.json(); } catch (_) { body = {detail: 'invalid response'}; }
+      const response = await fetch(`/api/v1/intelligence/search?q=${encodeURIComponent(value)}`, {credentials: 'same-origin'});
+      let body; try { body = await response.json(); } catch (_) { body = {detail: 'invalid response'}; }
       if (!response.ok) throw new Error(body.detail || `search failed: ${response.status}`);
-      render(body.results || []);
-      if (body.count === 0) {
-        setState('No intelligence matched this search.', 'empty');
-      } else {
-        setState(`${body.count} intelligence result${body.count === 1 ? '' : 's'} found.`, 'success');
-      }
-    } catch (error) {
-      results.replaceChildren();
-      setState(`Search unavailable: ${error.message}`, 'error');
-    }
+      render(body.results || []); setState(body.count ? `${body.count} resultaat${body.count === 1 ? '' : 'en'} gevonden.` : 'Geen intelligence gevonden.', body.count ? 'success' : '');
+    } catch (error) { results.replaceChildren(); setState(`Zoeken niet beschikbaar: ${error.message}`, 'error'); }
   }
-
-  form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    void search();
-  });
-  session().catch((error) => setState(`Session error: ${error.message}`, 'error'));
+  form.addEventListener('submit', (event) => { event.preventDefault(); void search(); });
+  session().catch((error) => { principal.textContent = `Sessiefout: ${error.message}`; principal.className = 'status-pill error'; setState('Geen geautoriseerde sessie.', 'error'); });
 })();
 """
 
 
+def _page_headers() -> dict[str, str]:
+    return {
+        "Cache-Control": "no-store",
+        "Content-Security-Policy": (
+            "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; "
+            "img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+        ),
+    }
+
+
 @router.get("/ui/share-approval", response_class=HTMLResponse, include_in_schema=False)
 def share_approval_page() -> HTMLResponse:
-    return HTMLResponse(
-        _PAGE,
-        headers={
-            "Cache-Control": "no-store",
-            "Content-Security-Policy": (
-                "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
-                "connect-src 'self'; img-src 'self'; frame-ancestors 'none'"
-            ),
-        },
-    )
+    return HTMLResponse(_PAGE, headers=_page_headers())
 
 
 @router.get("/ui/share-approval.js", include_in_schema=False)
 def share_approval_script() -> Response:
-    return Response(
-        _SCRIPT,
-        media_type="application/javascript",
-        headers={"Cache-Control": "no-store"},
-    )
+    return Response(_SCRIPT, media_type="application/javascript", headers={"Cache-Control": "no-store"})
 
 
 @router.get("/ui/analyst-search", response_class=HTMLResponse, include_in_schema=False)
 def analyst_search_page() -> HTMLResponse:
-    return HTMLResponse(
-        _ANALYST_PAGE,
-        headers={
-            "Cache-Control": "no-store",
-            "Content-Security-Policy": (
-                "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
-                "connect-src 'self'; img-src 'self'; frame-ancestors 'none'"
-            ),
-        },
-    )
+    return HTMLResponse(_ANALYST_PAGE, headers=_page_headers())
 
 
 @router.get("/ui/analyst-search.js", include_in_schema=False)
 def analyst_search_script() -> Response:
-    return Response(
-        _ANALYST_SCRIPT,
-        media_type="application/javascript",
-        headers={"Cache-Control": "no-store"},
-    )
+    return Response(_ANALYST_SCRIPT, media_type="application/javascript", headers={"Cache-Control": "no-store"})
 
 
 @router.get("/api/v1/ui/session")
-def ui_session(
-    principal: Annotated[Principal, Depends(resolve_principal)],
-) -> dict[str, object]:
+def ui_session(principal: Annotated[Principal, Depends(resolve_principal)]) -> dict[str, object]:
     permissions = sorted(permission.value for permission in Permission if principal.can(permission))
     return {
         "subject": principal.subject,
