@@ -15,7 +15,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `PASS`.
-- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. The repository-controlled staging-emulator configuration contract is accepted as `PASS`; RUN-155 bounded application-container runtime smoke is `CI_VALIDATION_PENDING`.
+- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. The repository-controlled staging-emulator configuration contract and bounded application-container runtime smoke are accepted as `PASS` for their explicit scopes only.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
@@ -56,15 +56,17 @@ PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47
 
 PR #106 final exact head `ff0a490e46c2f9529441d8a5294030af498dbe14` completed 47/47 workflows and merged as `b57a6daa775d2f1f88a2d1b67b191da757fa743f` after the stale lifecycle-state regression was corrected without weakening the claim boundary or human share approval.
 
-### RUN-155 staging-emulator runtime smoke fresh-base remediation — `CI_VALIDATION_PENDING`
+### RUN-155 staging-emulator application-container runtime smoke — `PASS`
 
-Existing PR #105 attempted the next bounded objective and its dedicated runtime gate succeeded, but RC4 failed at Ruff S310 in the runtime probe helper before type-check/tests; the branch then became stale against current `main`. RUN-155 ports the bounded runtime-smoke workflow/test/QA/probe onto current `main` and explicitly restricts probe URLs to loopback HTTP targets before request construction.
+PR #107 final exact head `52d7a37660c9bb1c9f8468f11010f36d17bd1fba` completed 48/48 registered workflows successfully and merged as `23d629964f55709845683e808f707998cc8d4aa2`. Retained artifact `9057259246`, digest `sha256:d577415a5b40952a305577c5a1fbeae1e3e154fcbf95a42030cdd19632d77aa5`, is exact-head bound with machine-readable PASS, contract JUnit 4/4 and runtime JUnit 12/12. The runtime checks cover production mode, health/readiness, human publication gate, authentication contract, security headers, correlation ID, connectors disabled/fail-closed and metrics. All real-staging/deployment-parity/Phase-8/production claim fields remain false.
 
-The runtime smoke executes only the DTMO application container. It does not execute PostgreSQL, Redis, OpenSearch, object storage or the external TLS gateway and does not satisfy any of the ten real deployment-parity evidence classes.
+The runtime smoke executes only the DTMO application container. It does not execute PostgreSQL, Redis, OpenSearch, object storage or the external TLS gateway and does not satisfy the real deployment-parity gate.
 
-Exactly one next priority: verify every registered workflow on the RUN-155 exact final PR head and independently inspect retained `phase8-staging-emulator-runtime-evidence`. Merge only on complete success.
+### RUN-156 real staging deployment-parity evidence acquisition — `BLOCKED_EXTERNAL`
 
-After runtime-smoke acceptance, return to acquisition/provisioning of one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity.
+A fresh repository and issue review found no approved real staging environment/deployment identity and no reviewable package satisfying all ten deployment-parity evidence classes against one immutable staging release. No missing evidence is treated as PASS and no downstream staging acceptance result is credited.
+
+Exactly one next priority: provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity. Do not begin or credit the staging acceptance suite before that gate is complete.
 
 ## Phase 9 — External assurance
 
