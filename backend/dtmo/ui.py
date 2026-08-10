@@ -17,12 +17,13 @@ _PAGE = """<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DTMO — Share approval</title>
   <link rel="stylesheet" href="/ui/design-system.css">
+  <link rel="stylesheet" href="/ui/rc9-compat.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Ga naar hoofdinhoud</a>
   <header class="app-header">
     <div><p class="eyebrow">Governance workspace</p><h1>Share approval</h1></div>
-    <div class="header-actions"><a class="button ghost" href="/">Terug naar console</a><span id="principal" data-testid="principal" class="status-pill neutral" role="status" aria-live="polite">Principal bepalen…</span></div>
+    <div class="header-actions"><a class="button ghost" href="/">Terug naar console</a><span id="principal" data-testid="principal" class="status-pill neutral" role="status" aria-live="polite" aria-atomic="true">Principal bepalen…</span></div>
   </header>
   <main id="main" class="workspace">
     <section class="page-heading"><div><p class="eyebrow">Separation of duties</p><h2>Governed intelligence decision</h2><p>Review en externe share approval zijn twee afzonderlijke menselijke beslissingen. Dezelfde principal mag niet beide stappen voor hetzelfde item uitvoeren.</p></div></section>
@@ -96,12 +97,13 @@ _ANALYST_PAGE = """<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DTMO — Analyst workspace</title>
   <link rel="stylesheet" href="/ui/design-system.css">
+  <link rel="stylesheet" href="/ui/rc9-compat.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Ga naar hoofdinhoud</a>
   <header class="app-header">
     <div><p class="eyebrow">Analyst workspace</p><h1>Intelligence explorer</h1></div>
-    <div class="header-actions"><a class="button ghost" href="/">Terug naar console</a><span id="analyst-principal" data-testid="analyst-principal" class="status-pill neutral" role="status" aria-live="polite">Principal bepalen…</span></div>
+    <div class="header-actions"><a class="button ghost" href="/">Terug naar console</a><span id="analyst-principal" data-testid="analyst-principal" class="status-pill neutral" role="status" aria-live="polite" aria-atomic="true">Principal bepalen…</span></div>
   </header>
   <main id="main" class="workspace">
     <section class="page-heading"><div><p class="eyebrow">Threat intelligence</p><h2>Zoeken en triageren</h2><p>Doorzoek beschikbare intelligence en beoordeel resultaten op relevantie, provenance en confidence.</p></div></section>
@@ -147,7 +149,7 @@ _ANALYST_SCRIPT = r"""(() => {
     if (!response.ok) throw new Error(body.detail || `session failed: ${response.status}`);
     principal.textContent = `${body.subject} · ${body.roles.join(', ') || 'geen rollen'}`; principal.className = 'status-pill success';
     const allowed = body.permissions.includes('read:intelligence'); panel.hidden = !allowed;
-    if (!allowed) setState('Intelligence search is niet toegestaan voor deze principal.', 'error');
+    if (!allowed) setState('Intelligence search is niet toegestaan voor deze principal.', 'forbidden');
   }
   async function search() {
     const value = query.value.trim(); if (value.length < 2) return; results.replaceChildren(); setState('Intelligence doorzoeken…', 'loading');
@@ -155,12 +157,45 @@ _ANALYST_SCRIPT = r"""(() => {
       const response = await fetch(`/api/v1/intelligence/search?q=${encodeURIComponent(value)}`, {credentials: 'same-origin'});
       let body; try { body = await response.json(); } catch (_) { body = {detail: 'invalid response'}; }
       if (!response.ok) throw new Error(body.detail || `search failed: ${response.status}`);
-      render(body.results || []); setState(body.count ? `${body.count} resultaat${body.count === 1 ? '' : 'en'} gevonden.` : 'Geen intelligence gevonden.', body.count ? 'success' : '');
+      render(body.results || []); setState(body.count ? `${body.count} resultaat${body.count === 1 ? '' : 'en'} gevonden.` : 'Geen intelligence gevonden.', body.count ? 'success' : 'empty');
     } catch (error) { results.replaceChildren(); setState(`Zoeken niet beschikbaar: ${error.message}`, 'error'); }
   }
   form.addEventListener('submit', (event) => { event.preventDefault(); void search(); });
   session().catch((error) => { principal.textContent = `Sessiefout: ${error.message}`; principal.className = 'status-pill error'; setState('Geen geautoriseerde sessie.', 'error'); });
 })();
+"""
+
+_RC9_COMPAT_CSS = """
+*, *::before, *::after { box-sizing: border-box; min-width: 0; }
+html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
+.app-header, .workspace, .page-heading, .content-grid, .surface, .header-actions,
+.hero-search, .form-grid, .security-heading, .table-wrap, table, pre, code { min-width: 0; max-width: 100%; }
+.surface, .surface.critical, .decision-card, .search-surface, .response-surface,
+.security-card, .table-surface, .intel-card { background-image: none !important; }
+input, textarea, button, a, pre, code { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
+input:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 3px solid #f8df6b !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 1px #08111f !important;
+}
+.content-grid.equal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hero-search { grid-template-columns: auto minmax(0, 1fr) auto; }
+.table-wrap { overflow-x: auto; }
+.inline-status[data-state="empty"] { border-color: #60758f; }
+.inline-status[data-state="forbidden"] { border-color: #d8a43a; }
+@media (max-width: 700px) {
+  .app-header, .header-actions { align-items: stretch; }
+  .app-header, .content-grid.equal, .form-grid, .form-grid.three { grid-template-columns: 1fr !important; }
+  .content-grid.equal { display: grid; }
+  .header-actions { width: 100%; }
+  .hero-search { grid-template-columns: 1fr; }
+  .hero-search .search-icon { display: none; }
+  .button, input, textarea { width: 100%; }
+}
+@media (max-width: 400px) {
+  .app-header, .workspace { padding-left: .75rem !important; padding-right: .75rem !important; }
+  .surface { padding-left: .8rem !important; padding-right: .8rem !important; }
+}
 """
 
 
@@ -192,6 +227,11 @@ def analyst_search_page() -> HTMLResponse:
 @router.get("/ui/analyst-search.js", include_in_schema=False)
 def analyst_search_script() -> Response:
     return Response(_ANALYST_SCRIPT, media_type="application/javascript", headers={"Cache-Control": "no-store"})
+
+
+@router.get("/ui/rc9-compat.css", include_in_schema=False)
+def rc9_compat_css() -> Response:
+    return Response(_RC9_COMPAT_CSS, media_type="text/css", headers={"Cache-Control": "no-store"})
 
 
 @router.get("/api/v1/ui/session")
