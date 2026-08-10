@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — 16.0.0rc10 RC10.2 / PR #117 is accepted and merged; RUN-20260810-178 executes RC10.3 Threat Intelligence Workspace.
+Last reconciled: 2026-08-10 — 16.0.0rc10 RC10.2 / PR #117 is accepted and merged; RUN-20260810-178/179 executes and remediates RC10.3 Threat Intelligence Workspace.
 
 ## Executive status
 
@@ -29,10 +29,14 @@ The detail projection exposes only stored canonical title/summary/source/severit
 
 The workspace adds no review, share-approval, source-management, connector-run, admin or security mutation authority. Existing server-side RBAC, human review, separate share approval and audit controls remain authoritative.
 
+## RUN-179 CI remediation
+
+Exact head `648bee0706d702683f388a6da34b9bbe34417bb4` produced two red RC4 jobs from one root cause: the `test` job stopped at Ruff `F401` because `typing.Any` was imported but unused in `threat_workspace.py`; the aggregate `release-gate` then failed closed. The unused import has been removed. Because type-check, tests and compile were skipped after lint failed, those stages are not retroactively claimed as pass. PR #118 requires a complete new exact-head run.
+
 ## External blockers
 
 No approved real staging endpoint/environment identity and no complete ten-class deployment-parity package tied to one immutable release are available. Genuine assistive-technology execution, independent penetration testing and remaining external assurance also remain absent.
 
 ## Exactly one current priority
 
-Complete exact-head CI validation for RUN-178 / RC10.3. Merge only on complete success; otherwise remediate the first concrete failing root cause only.
+Complete exact-head CI validation for PR #118 after RUN-179. Merge only on complete success; otherwise remediate the first concrete failing root cause only.
