@@ -8,6 +8,8 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, Request, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
+from dtmo.admin_sources import router as admin_sources_router
+from dtmo.admin_ui import router as admin_ui_router
 from dtmo.alerts import connector_alerts
 from dtmo.api.routes import close_services, ingest_connector_record, router as intelligence_router
 from dtmo.api_alerts import api_error_alerts
@@ -18,14 +20,7 @@ from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
 from dtmo.frontend import router as frontend_router
-from dtmo.logging import (
-    bind_request_context,
-    clear_request_context,
-    configure_logging,
-    correlation_id,
-    get_logger,
-    resolve_correlation_id,
-)
+from dtmo.logging import bind_request_context, clear_request_context, configure_logging, correlation_id, get_logger, resolve_correlation_id
 from dtmo.scheduler import ScheduledJob, SchedulerService
 from dtmo.trace_context import begin_trace, end_trace
 from dtmo.ui import router as ui_router
@@ -42,9 +37,7 @@ IN_FLIGHT = Gauge("dtmo_http_requests_in_flight", "HTTP requests in flight", ["m
 def _route_template(request: Request) -> str:
     route = request.scope.get("route")
     route_path = getattr(route, "path", None)
-    if isinstance(route_path, str):
-        return route_path
-    return "<unmatched>"
+    return route_path if isinstance(route_path, str) else "<unmatched>"
 
 
 async def run_cisa_kev() -> dict[str, object]:
@@ -57,54 +50,25 @@ async def run_cisa_kev() -> dict[str, object]:
             inserted += int(receipt.inserted)
             indexed += int(receipt.indexed)
     alert = connector_alerts.record(result)
-    log.info(
-        "connector_run_finished",
-        connector_id=result.connector_id,
-        status=result.status,
-        records=len(result.records),
-        inserted=inserted,
-        indexed=indexed,
-        attempts=result.attempts,
-        alert_state=alert.state,
-        correlation_id=alert.correlation_id,
-    )
-    return {
-        "connector_id": result.connector_id,
-        "status": result.status,
-        "records": len(result.records),
-        "inserted": inserted,
-        "indexed": indexed,
-        "attempts": result.attempts,
-        "error": result.error,
-        "alert_state": alert.state,
-        "correlation_id": alert.correlation_id,
-    }
+    log.info("connector_run_finished", connector_id=result.connector_id, status=result.status, records=len(result.records), inserted=inserted, indexed=indexed, attempts=result.attempts, alert_state=alert.state, correlation_id=alert.correlation_id)
+    return {"connector_id": result.connector_id, "status": result.status, "records": len(result.records), "inserted": inserted, "indexed": indexed, "attempts": result.attempts, "error": result.error, "alert_state": alert.state, "correlation_id": alert.correlation_id}
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if settings.feature_live_connectors:
-        scheduler.register(
-            ScheduledJob(
-                id="cisa-kev",
-                interval_seconds=settings.connector_poll_seconds,
-                handler=run_cisa_kev,
-            )
-        )
+        scheduler.register(ScheduledJob(id="cisa-kev", interval_seconds=settings.connector_poll_seconds, handler=run_cisa_kev))
         scheduler.start()
     yield
     scheduler.shutdown()
     await close_services()
 
 
-app = FastAPI(
-    title="DTMO API",
-    version="16.0.0rc7",
-    description="Education-focused cyber threat intelligence platform",
-    lifespan=lifespan,
-)
+app = FastAPI(title="DTMO API", version="16.0.0rc8", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
 app.include_router(frontend_router)
 app.include_router(intelligence_router)
+app.include_router(admin_sources_router)
+app.include_router(admin_ui_router)
 app.include_router(ui_router)
 app.include_router(ciso_ui_router)
 app.include_router(auditor_ui_router)
@@ -115,12 +79,7 @@ async def request_context(request: Request, call_next):  # type: ignore[no-untyp
     request_id = resolve_correlation_id(request.headers.get("x-correlation-id"))
     correlation_token = correlation_id.set(request_id)
     trace_binding = begin_trace(request.headers.get("traceparent"))
-    bind_request_context(
-        request_id,
-        request.method,
-        trace_id=trace_binding.trace_id,
-        span_id=trace_binding.span_id,
-    )
+    bind_request_context(request_id, request.method, trace_id=trace_binding.trace_id, span_id=trace_binding.span_id)
     started = perf_counter()
     IN_FLIGHT.labels(request.method).inc()
     try:
@@ -131,12 +90,7 @@ async def request_context(request: Request, call_next):  # type: ignore[no-untyp
         REQUESTS.labels(request.method, route, "500").inc()
         LATENCY.labels(request.method, route).observe(duration)
         api_error_alerts.observe(route, status_code=500, correlation=request_id)
-        log.exception(
-            "http_request_failed",
-            route=route,
-            status=500,
-            duration_ms=round(duration * 1000, 3),
-        )
+        log.exception("http_request_failed", route=route, status=500, duration_ms=round(duration * 1000, 3))
         raise
     else:
         duration = perf_counter() - started
@@ -148,12 +102,7 @@ async def request_context(request: Request, call_next):  # type: ignore[no-untyp
         REQUESTS.labels(request.method, route, str(response.status_code)).inc()
         LATENCY.labels(request.method, route).observe(duration)
         api_error_alerts.observe(route, status_code=response.status_code, correlation=request_id)
-        log.info(
-            "http_request_completed",
-            route=route,
-            status=response.status_code,
-            duration_ms=round(duration * 1000, 3),
-        )
+        log.info("http_request_completed", route=route, status=response.status_code, duration_ms=round(duration * 1000, 3))
         return response
     finally:
         IN_FLIGHT.labels(request.method).dec()
@@ -164,14 +113,7 @@ async def request_context(request: Request, call_next):  # type: ignore[no-untyp
 
 @app.get("/health")
 def health() -> dict[str, object]:
-    return {
-        "status": "healthy",
-        "version": app.version,
-        "environment": settings.environment,
-        "scheduler": scheduler.status(),
-        "publication_gate": "human-approval-required",
-        "authentication": "api-key-and-rbac",
-    }
+    return {"status": "healthy", "version": app.version, "environment": settings.environment, "scheduler": scheduler.status(), "publication_gate": "human-approval-required", "authentication": "api-key-and-rbac"}
 
 
 @app.get("/ready")
@@ -181,24 +123,11 @@ def ready() -> dict[str, str]:
 
 @app.get("/connectors")
 def connectors() -> list[dict[str, object]]:
-    return [
-        {
-            "id": "cisa-kev",
-            "enabled": settings.feature_live_connectors,
-            "reliability": "authoritative",
-            "schedule_seconds": settings.connector_poll_seconds,
-            "manual_run_available": not settings.production or settings.feature_live_connectors,
-        }
-    ]
+    return [{"id": "cisa-kev", "enabled": settings.feature_live_connectors, "reliability": "authoritative", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": not settings.production or settings.feature_live_connectors}]
 
 
 @app.post("/connectors/cisa-kev/run")
-async def run_connector(
-    principal: Annotated[
-        Principal,
-        Depends(require_permission(Permission.MANAGE_CONNECTORS)),
-    ],
-) -> dict[str, object]:
+async def run_connector(principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))]) -> dict[str, object]:
     del principal
     if settings.production and not settings.feature_live_connectors:
         return {"status": "disabled", "reason": "feature flag is off"}
