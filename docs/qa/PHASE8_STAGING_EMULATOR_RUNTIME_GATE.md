@@ -2,7 +2,7 @@
 
 ## Decision
 
-`CI_VALIDATION_PENDING`
+`PASS` for the bounded repository-controlled DTMO application-container runtime smoke only.
 
 ## Objective
 
@@ -21,18 +21,38 @@ Prove that the repository-built DTMO container can start in `production` configu
 - Retain the exact-head local image identity, runtime probe JSON/JUnit, contract-test JUnit/log and privacy-safe container log.
 - Fail if synthetic sensitive markers are present in retained runtime logs.
 
+## Acceptance evidence
+
+PR #107 final exact head `52d7a37660c9bb1c9f8468f11010f36d17bd1fba` completed 48/48 registered workflows successfully, including `RC4 Quality Gate`, `Phase 8 Staging Readiness Gate`, `Phase 8 Staging Emulator Gate` and `Phase 8 Staging Emulator Runtime Gate`. PR #107 merged with expected-head protection as `23d629964f55709845683e808f707998cc8d4aa2`.
+
+Retained artifact `phase8-staging-emulator-runtime-evidence`:
+- artifact id `9057259246`;
+- digest `sha256:d577415a5b40952a305577c5a1fbeae1e3e154fcbf95a42030cdd19632d77aa5`;
+- exact head `52d7a37660c9bb1c9f8468f11010f36d17bd1fba`;
+- machine-readable decision `pass`;
+- local image identity `sha256:aeaf09fff7b58e3eed225138bfec306c1c0aaeb8dadf4c8611d59eda3aa04223`;
+- contract JUnit 4/4 with zero failures/errors/skips;
+- runtime JUnit 12/12 with zero failures/errors/skips;
+- all runtime checks true, including production mode, health/readiness, human publication gate, authentication contract, security headers, correlation header, connectors disabled/fail-closed and metrics availability;
+- all real-staging/deployment-parity/Phase-8/production claim-boundary fields false;
+- retained container log contains no configured synthetic sensitive-marker leakage.
+
 ## Claim boundary
 
-A PASS proves only the bounded DTMO application-container runtime smoke described above. It does not prove that the complete emulator dependency topology was executed; it does not execute the external TLS gateway, PostgreSQL, Redis, OpenSearch or object-storage services; it does not prove a real staging environment; it does not satisfy the ten deployment-parity evidence classes; and it does not complete Phase 8 or production acceptance.
+This PASS proves only the bounded DTMO application-container runtime smoke described above. It does not prove that the complete emulator dependency topology was executed; it does not execute the external TLS gateway, PostgreSQL, Redis, OpenSearch or object-storage services; it does not prove a real staging environment; it does not satisfy the ten deployment-parity evidence classes; and it does not complete Phase 8 or production acceptance.
 
-## Acceptance rule
+## RUN-155 remediation history
 
-PASS requires every registered workflow on the exact final PR head to succeed and retained `phase8-staging-emulator-runtime-evidence` to be exact-head bound, machine-readable PASS, internally consistent, privacy-safe, and accompanied by zero-failure/zero-error/zero-skip runtime evidence. Missing, stale, queued, cancelled or failed evidence is not PASS.
+The original PR #105 runtime gate proved independently observable execution, but RC4 failed at Ruff S310 because the probe helper's URL construction was not explicitly constrained at the flagged request-creation line. RUN-155 ported the runtime gate onto current `main`, added explicit loopback-HTTP validation, preserved the narrow warning suppression only after validation, and then completed a fresh full exact-head matrix successfully on PR #107.
 
-## RUN-155 remediation context
+## RUN-157 lifecycle-regression remediation
 
-The original PR #105 runtime gate proved independently observable execution, but RC4 failed at Ruff S310 because the probe helper's URL construction was not explicitly constrained at the flagged request-creation line. RUN-155 ports the runtime gate onto current `main`, adds explicit loopback-HTTP validation, and keeps the security warning narrowly suppressed only after that validation. PR #105 is superseded by the fresh-base remediation PR.
+PR #108 previous exact head `c4c28938a49b2a3dcba90ab01e6bd1cb430a3439` completed 47/48 registered workflows. RC4 failed because `backend/tests/test_phase8_staging_emulator_runtime.py` still required the obsolete lifecycle token `CI_VALIDATION_PENDING` even though this QA gate had already advanced to bounded `PASS` from accepted PR #107 evidence.
+
+The regression was corrected to require this exact bounded PASS decision and to continue requiring human share approval plus the unchanged real-staging, deployment-parity, Phase-8 and production non-overclaim statements. PR #108 exact head `25ac24bfa40f2f9ccebb5d1307615c6fbd14cf05` then completed 48/48 workflows successfully, including RC4 and all three Phase 8 repository gates. RC4 pytest completed 292 passed / 16 skipped with 84.96% coverage. Retained runtime artifact `9057841831`, digest `sha256:0e68feb37e9937b574a6ef80affeff13aeda162eb83c8805a8f220cb082999b1`, is exact-head bound.
+
+RUN-157 is therefore accepted as `PASS` for its bounded lifecycle-regression scope. This does not alter the real-staging blocker or broaden this QA gate's claim.
 
 ## Exactly one next priority
 
-Verify every registered workflow on the RUN-155 exact final PR head and independently inspect retained `phase8-staging-emulator-runtime-evidence`. Merge only on complete success. Real staging deployment and the ten external deployment-parity evidence classes remain mandatory afterward.
+Verify all 48 workflows on PR #108's documentation-finalization exact head and merge only on complete success. After merge, provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity. Repository runtime evidence is not a substitute for that gate.
