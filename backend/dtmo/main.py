@@ -14,6 +14,7 @@ from dtmo.auditor_ui import router as auditor_ui_router
 from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
+from dtmo.frontend import router as frontend_router
 from dtmo.logging import (
     bind_request_context,
     clear_request_context,
@@ -84,10 +85,11 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(
     title="DTMO API",
-    version="16.0.0rc4",
+    version="16.0.0rc5",
     description="Education-focused cyber threat intelligence platform",
     lifespan=lifespan,
 )
+app.include_router(frontend_router)
 app.include_router(intelligence_router)
 app.include_router(ui_router)
 app.include_router(ciso_ui_router)
