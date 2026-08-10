@@ -4,11 +4,12 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260810-154 — Phase 8 staging-emulator lifecycle regression remediation](runs/RUN-20260810-154.md) — `CI_VALIDATION_PENDING`: PR #106 previous exact head `469dcca367dc3fcdb2baf114afe91f903164736b` completed 46/47 workflows; RC4 failed because the emulator regression still required obsolete `CI_VALIDATION_PENDING` wording after evidence-based acceptance. The assertion now requires the bounded accepted `PASS` wording plus the unchanged real-staging/Phase-8 non-overclaim boundary. Fresh complete exact-head CI is required.
-- [RUN-20260810-153 — Phase 8 staging emulator acceptance reconciliation](runs/RUN-20260810-153.md) — `CI_VALIDATION_PENDING` for the documentation reconciliation: PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47/47 workflows successfully; retained artifact `9045039742` is exact-head bound with decision `pass`, JUnit 4/4 and explicit false overclaim fields. RUN-151/RUN-152 staging-emulator gate is therefore accepted as `PASS`, while Phase 8 remains `BLOCKED_EXTERNAL` for a real staging deployment and all ten deployment-parity evidence classes.
-- [RUN-20260809-152 — Phase 8 staging emulator CI-integrity remediation](runs/RUN-20260809-152.md) — `PASS`: PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47/47 workflows after the RC4 governance-wording remediation; retained emulator artifact `9045039742` independently verified.
-- [RUN-20260809-151 — production-equivalent staging emulator baseline](runs/RUN-20260809-151.md) — `PASS` for the repository-controlled emulator contract only. The emulator remains non-substitutive for real staging deployment evidence.
-- [RUN-20260809-150 — Phase 8 blocker acceptance reconciliation](runs/RUN-20260809-150.md) — `BLOCKED_EXTERNAL`: PR #102 exact head `c0bf83a8e0a9c51bdbd492fadfb60a71e25c7e9b` completed 46/46 workflows successfully and PR #102 merged as `60897cdfd36a78297cf90521f14ded5116ec9653`; RUN-149 is accepted. Live repository and issue #1 recheck found no real staging environment or ten deployment-parity evidence classes, so Phase 8 remains externally blocked.
+- [RUN-20260810-155 — Phase 8 staging-emulator runtime smoke fresh-base remediation](runs/RUN-20260810-155.md) — `CI_VALIDATION_PENDING`: PR #106 final exact head `ff0a490e46c2f9529441d8a5294030af498dbe14` passed 47/47 workflows and merged as `b57a6daa775d2f1f88a2d1b67b191da757fa743f`. Existing PR #105 had a successful dedicated runtime gate but RC4 failed at Ruff S310 and the branch became stale against `main`; RUN-155 ports that bounded runtime-smoke work onto current `main` and adds executable loopback-HTTP validation before URL requests. Fresh complete exact-head CI is required.
+- [RUN-20260810-154 — Phase 8 staging-emulator lifecycle regression remediation](runs/RUN-20260810-154.md) — `PASS`: PR #106 final exact head `ff0a490e46c2f9529441d8a5294030af498dbe14` completed 47/47 workflows successfully and merged as `b57a6daa775d2f1f88a2d1b67b191da757fa743f`.
+- [RUN-20260810-153 — Phase 8 staging emulator acceptance reconciliation](runs/RUN-20260810-153.md) — `PASS`: authoritative documentation reconciled with accepted PR #104 emulator evidence; finalized through PR #106.
+- [RUN-20260809-152 — Phase 8 staging emulator CI-integrity remediation](runs/RUN-20260809-152.md) — `PASS`: PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47/47 workflows; retained artifact `9045039742` independently verified.
+- [RUN-20260809-151 — production-equivalent staging emulator baseline](runs/RUN-20260809-151.md) — `PASS` for the repository-controlled emulator contract only.
+- [RUN-20260809-150 — Phase 8 blocker acceptance reconciliation](runs/RUN-20260809-150.md) — `BLOCKED_EXTERNAL`: no real staging deployment-parity package found.
 - [RUN-20260809-149 — Phase 8 staging-readiness regression remediation](runs/RUN-20260809-149.md) — `PASS`.
 - [RUN-20260809-148 — staging environment identification and deployment-parity evidence](runs/RUN-20260809-148.md) — `BLOCKED_EXTERNAL`.
 - [RUN-20260809-147 — Phase 8 staging-readiness baseline](runs/RUN-20260809-147.md) — `PASS`.
@@ -22,8 +23,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-Phase 1–5 are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA behavior. Phase 7 is `PASS`. The RUN-151/RUN-152 repository-controlled staging emulator is accepted as `PASS`, but PR #106 remains `CI_VALIDATION_PENDING` after RUN-154 lifecycle-regression remediation. Phase 8 remains `BLOCKED_EXTERNAL` for a real staging deployment and all ten deployment-parity evidence classes. DTMO is not production ready.
+Phase 1–5 are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA behavior. Phase 7 is `PASS`. The repository-controlled staging emulator configuration contract is accepted as `PASS`. Phase 8 remains `BLOCKED_EXTERNAL` for a real staging deployment and all ten deployment-parity evidence classes; the bounded application-container runtime-smoke extension is `CI_VALIDATION_PENDING` on RUN-155. DTMO is not production ready.
 
 ## Exactly one next priority
 
-Verify every registered workflow on PR #106's changed exact head and merge only on complete success. Real staging deployment and the ten deployment-parity evidence classes remain required afterward.
+Verify every registered workflow on the RUN-155 exact final PR head and independently inspect retained `phase8-staging-emulator-runtime-evidence`. Merge only on complete success.
