@@ -11,8 +11,8 @@ This roadmap defines the controlled path from DTMO's release-candidate state to 
 - Phase 3 — Data integrity and recovery: `PASS` for internal gates.
 - Phase 4 — Live connector reliability and provenance: `PASS` for the accepted built-in and governed registered-source execution baseline through rc9.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
-- Phase 6 — Frontend accessibility and operational UX: rc6 role-workspace, rc8 source-admin and RC10.1 unified Operations Workspace shell baselines are accepted. Genuine VoiceOver/NVDA remains `BLOCKED_EXTERNAL`.
-- Phase 7 — Observability and incident operations: `PASS` for internal gates; RC10.2 will surface accepted operational building blocks as real-data dashboard widgets without changing evidence boundaries.
+- Phase 6 — Frontend accessibility and operational UX: rc6 role-workspace, rc8 source-admin and RC10.1 unified Operations Workspace shell baselines are accepted. RUN-176 / RC10.2 adds live graphical operational telemetry and is `CI_VALIDATION_PENDING`. Genuine VoiceOver/NVDA remains `BLOCKED_EXTERNAL`.
+- Phase 7 — Observability and incident operations: `PASS` for internal gates; RC10.2 surfaces already accepted operational building blocks through a bounded aggregate API without changing evidence or authority boundaries.
 - Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence.
 - Phase 9 — External assurance: `NOT COMPLETE`.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -32,14 +32,16 @@ PR #114 exact head `95fed1e663bdf256def58020f11529f383c8efe5` completed all 48 r
 PR #115 final exact head `c01611a48648ec73e14975337dd549bef86abe88` completed the complete registered workflow matrix and merged as `66f5faecb95b80add4ed4d28a6769592b1a18ddb`.
 
 ### RUN-174 / RUN-175 — 16.0.0rc10 RC10.1 Unified Operations Workspace shell — `PASS`
-PR #116 exact head `d41d9e60a4a67ddb30345eecee4042d1c19a6cf5` completed every registered workflow successfully and merged as `b000ef2275d52ff098d2d2bd8df76136cea3b051`. `/ui/operations` is now the accepted unified shell. It reads existing operational endpoints and introduces no privileged write path.
+PR #116 exact head `d41d9e60a4a67ddb30345eecee4042d1c19a6cf5` completed every registered workflow successfully and merged as `b000ef2275d52ff098d2d2bd8df76136cea3b051`.
+
+### RUN-176 — 16.0.0rc10 RC10.2 Unified graphical dashboards — `CI_VALIDATION_PENDING`
+
+The current bounded objective adds a GET-only `/api/v1/operations/summary` projection over the in-process Prometheus registry and binds it to `/ui/operations`. The dashboard now displays real request volume, average latency, in-flight work, queue backlog utilization, connector-run totals, trace-context totals and active API/connector/storage/search alert state. Raw Prometheus label sets and sensitive request data are not exposed to the browser.
 
 ## RC10 staged workspace programme
 
-RC10 is intentionally decomposed into reviewable objectives rather than delivered as one unbounded frontend rewrite:
-
 1. **RC10.1 Operations Workspace shell** — `PASS` via RUN-175.
-2. **RC10.2 Unified graphical dashboards** — current next priority: bind existing operational metrics/building blocks to accessible real-data widgets.
+2. **RC10.2 Unified graphical dashboards** — current RUN-176, `CI_VALIDATION_PENDING`.
 3. **RC10.3 Threat Intelligence Workspace** — search/investigation flow with related CVE, KEV, vendor and provenance context.
 4. **RC10.4 Source Center refinement** — integrate source catalog, execution health, scheduling and provenance into the unified shell.
 5. **RC10.5 Administration consolidation** — bring governed configuration surfaces into one admin center without weakening RBAC/separation of duties.
@@ -78,4 +80,4 @@ Every run must document Plan, Do, Check and Act, update run/QA evidence, preserv
 
 ## Exactly one next priority
 
-RC10.2 — bind accepted operational metrics/building blocks to accessible real-data dashboard widgets inside `/ui/operations`; require complete exact-head CI before acceptance.
+Complete exact-head CI validation for RUN-176 / RC10.2. Merge only on complete success. If accepted, start RC10.3 Threat Intelligence Workspace; otherwise remediate the first concrete failing root cause only.
