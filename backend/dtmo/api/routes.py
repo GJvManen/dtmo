@@ -82,33 +82,41 @@ async def _persist_intelligence(
     ]
     item, inserted = await repository.ingest_candidate(payload)
 
+    # PUT-by-ID in OpenSearch is idempotent. Always attempt indexing so that an
+    # operator can replay a connector after a previous index outage or mapping
+    # failure and repair search without duplicating the canonical DB record.
     indexed = False
-    if inserted:
-        try:
-            await search_service.index_document(
-                str(item.id),
-                {
-                    "title": item.title,
-                    "summary": item.summary,
-                    "item_type": item.item_type,
-                    "source_id": item.source_id,
-                    "severity": item.severity,
-                    "confidence_score": item.confidence_score,
-                    "confidence_level": item.confidence_level,
-                    "confidence_rationale": item.confidence_rationale,
-                    "education_relevance": item.education_relevance,
-                    "published_at": item.published_at.isoformat() if item.published_at else None,
-                    "canonical_url": item.canonical_url,
-                    "tags": item.tags,
-                },
-            )
-            indexed = True
-        except Exception as exc:
+    try:
+        await search_service.index_document(
+            str(item.id),
+            {
+                "title": item.title,
+                "summary": item.summary,
+                "item_type": item.item_type,
+                "source_id": item.source_id,
+                "severity": item.severity,
+                "confidence_score": item.confidence_score,
+                "confidence_level": item.confidence_level,
+                "confidence_rationale": item.confidence_rationale,
+                "education_relevance": item.education_relevance,
+                "published_at": item.published_at.isoformat() if item.published_at else None,
+                "canonical_url": item.canonical_url,
+                "tags": item.tags,
+            },
+        )
+        indexed = True
+        if item.metadata_json.get("search_index_status") == "failed":
             item.metadata_json = {
-                **item.metadata_json,
-                "search_index_status": "failed",
-                "search_index_error": type(exc).__name__,
+                key: value
+                for key, value in item.metadata_json.items()
+                if key not in {"search_index_status", "search_index_error"}
             }
+    except Exception as exc:
+        item.metadata_json = {
+            **item.metadata_json,
+            "search_index_status": "failed",
+            "search_index_error": type(exc).__name__,
+        }
 
     return IntelligenceIngestResponse(
         id=str(item.id),
