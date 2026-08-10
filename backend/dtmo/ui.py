@@ -175,16 +175,24 @@ html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
 .page-heading h2 { font-size: 2rem !important; }
 .sr-only {
   position: absolute !important;
-  left: -10000px !important;
-  top: auto !important;
-  width: auto !important;
-  height: auto !important;
-  overflow: visible !important;
-  clip: auto !important;
-  clip-path: none !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(50%) !important;
   white-space: nowrap !important;
+  border: 0 !important;
 }
-.button.primary { background-color: #57baff !important; background-image: none !important; color: #04101c !important; }
+.button.primary {
+  background-color: #0b4f7a !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border: 2px solid #57baff !important;
+}
 .button.danger { background-color: #8f3141 !important; background-image: none !important; color: #ffffff !important; }
 .button.ghost, .button.secondary, .button.danger, input, textarea {
   border: 2px solid #eef5ff !important;
