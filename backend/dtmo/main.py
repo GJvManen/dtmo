@@ -85,7 +85,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(
     title="DTMO API",
-    version="16.0.0rc5",
+    version="16.0.0rc6",
     description="Education-focused cyber threat intelligence platform",
     lifespan=lifespan,
 )

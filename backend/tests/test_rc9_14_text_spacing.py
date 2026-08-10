@@ -31,7 +31,11 @@ async def test_text_spacing_overrides_preserve_content_and_function() -> None:
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         for name, path, subject, roles, ready, controls in SURFACES:
-            context = await browser.new_context(viewport={"width": 1440, "height": 900}, extra_http_headers={"X-DTMO-Subject": subject, "X-DTMO-Roles": roles})
+            context = await browser.new_context(
+                viewport={"width": 1440, "height": 900},
+                extra_http_headers={"X-DTMO-Subject": subject, "X-DTMO-Roles": roles},
+                bypass_csp=True,
+            )
             page = await context.new_page()
             response = await page.goto(f"{BASE_URL}{path}")
             assert response is not None and response.ok
@@ -42,6 +46,9 @@ async def test_text_spacing_overrides_preserve_content_and_function() -> None:
               const visible = el => { const s=getComputedStyle(el), r=el.getBoundingClientRect(); return s.display!=='none' && s.visibility!=='hidden' && r.width>0 && r.height>0; };
               const clipped = [];
               for (const el of document.querySelectorAll('main *')) {
+                // `.sr-only` content remains available to assistive technology but is
+                // intentionally outside this visual text-spacing clipping measurement.
+                if (el.classList.contains('sr-only')) continue;
                 if (!visible(el) || !(el.textContent||'').trim()) continue;
                 const s=getComputedStyle(el);
                 if ((s.overflowX==='hidden' && el.scrollWidth>el.clientWidth+1) || (s.overflowY==='hidden' && el.scrollHeight>el.clientHeight+1)) clipped.push(el.getAttribute('data-testid') || el.tagName.toLowerCase());

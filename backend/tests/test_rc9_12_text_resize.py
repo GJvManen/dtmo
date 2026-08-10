@@ -23,7 +23,9 @@ SURFACES = (
     ("auditor_read_only", "/ui/auditor", "resize-auditor", "auditor", "load-audit"),
 )
 
-TEXT_SELECTORS = "h1,h2,h3,h4,h5,h6,p,label,button,legend,pre,[role='status'],li,strong,code,input,textarea"
+# RC9.12 measures visually rendered text geometry. Screen-reader-only labels remain in
+# the accessibility tree but are intentionally excluded from visual resize/clipping evidence.
+TEXT_SELECTORS = "h1,h2,h3,h4,h5,h6,p,label:not(.sr-only),button,legend,pre,[role='status'],li,strong,code,input,textarea"
 
 
 async def _snapshot(page):
@@ -57,6 +59,7 @@ async def test_wcag_1_4_4_text_resizes_to_200_percent_without_loss() -> None:
             context = await browser.new_context(
                 viewport={"width": 1440, "height": 900},
                 extra_http_headers={"X-DTMO-Subject": subject, "X-DTMO-Roles": roles},
+                bypass_csp=True,
             )
             page = await context.new_page()
             response = await page.goto(f"{BASE_URL}{path}")

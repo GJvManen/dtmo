@@ -12,24 +12,27 @@ This directory is the authoritative documentation entry point for DTMO. Detailed
 - [Production roadmap](roadmap/PRODUCTION_ROADMAP.md)
 - [Development run log](development/RUN_LOG.md)
 
-## Current release candidate
+## Current frontend release candidate
 
-- [16.0.0rc5 release notes](releases/16.0.0rc5.md)
-- [Frontend release gate](qa/FRONTEND_RELEASE_GATE.md)
-- [RUN-161 frontend productionization](development/runs/RUN-20260810-161.md)
+- [16.0.0rc6 release notes](releases/16.0.0rc6.md)
+- [Frontend UX architecture](ux/FRONTEND_UX.md)
+- [Frontend UX release gate](qa/FRONTEND_UX_RELEASE_GATE.md)
+- [RUN-162 professional frontend UX overhaul](development/runs/RUN-20260810-162.md)
+- [16.0.0rc5 release notes](releases/16.0.0rc5.md) — accepted predecessor baseline
 
-After a successful 16.0.0rc5 build, the governed DTMO Console is available at `http://localhost:8000/`. The console is a presentation layer over existing server-side RBAC and does not change authorization or human share-approval requirements.
+The primary DTMO Threat Operations Console is available at `http://localhost:8000/` after a successful local build. rc6 organizes the experience around Overview, Intelligence, Governance, Audit and Security and aligns the Analyst, Share Approval, Auditor and CISO role views to the same design system. The frontend remains a presentation layer over server-side RBAC and does not weaken human share-approval or separation-of-duties requirements.
 
 ## Architecture
 
 - [System architecture](architecture/SYSTEM_ARCHITECTURE.md)
+- [Frontend UX architecture](ux/FRONTEND_UX.md)
 
 ## Security and governance
 
 - [Security overview](security/SECURITY_OVERVIEW.md)
 - [External assurance gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md)
 - [Staging deployment-parity gate](qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md)
-- [Frontend release gate](qa/FRONTEND_RELEASE_GATE.md)
+- [Frontend UX release gate](qa/FRONTEND_UX_RELEASE_GATE.md)
 - [Security policy](../SECURITY.md)
 
 ## Operations
@@ -57,4 +60,4 @@ DTMO preserves RBAC, separation of duties, privacy, provenance, auditability and
 
 ## Current release posture
 
-Phases 1–5 are internally accepted. Phase 6 remains externally blocked for genuine VoiceOver/NVDA execution; the 16.0.0rc5 root-console candidate is separately `CI_VALIDATION_PENDING`. Phase 7 is accepted. Phase 8 remains externally blocked for one approved real staging deployment and the complete ten-class deployment-parity package. Phase 9 has an external-assurance intake contract but remains incomplete until the required independent evidence is produced. Phase 10 remains blocked until all prior gates and external acceptance requirements are complete.
+Phases 1–5 are internally accepted. Phase 6 remains externally blocked for genuine VoiceOver/NVDA execution; the repository-controlled rc5 frontend baseline is accepted and rc6 professional UX remains `CI_VALIDATION_PENDING`. Phase 7 is accepted. Phase 8 remains externally blocked for one approved real staging deployment and the complete ten-class deployment-parity package. Phase 9 has an external-assurance intake contract but remains incomplete until the required independent evidence is produced. Phase 10 remains blocked until all prior gates and external acceptance requirements are complete.

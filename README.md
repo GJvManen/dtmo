@@ -21,22 +21,28 @@ DTMO is **not production ready**.
 | 9. External assurance | `NOT COMPLETE`; readiness/intake contract accepted |
 | 10. Production go/no-go | `NOT STARTED` |
 
-PR #110 exact head `5549ac1f28307c8bfa8c2ea1bf39341bb33983a0` completed all 48 registered workflows successfully and merged as `0b9a6d51dcd6e4fa984888d172e1fb5f5d6d52f2`, making RUN-159's Phase 9 external-assurance intake baseline authoritative on `main`.
+PR #111 delivered the first governed web-console baseline as 16.0.0rc5. Release candidate **16.0.0rc6** is the professional UX overhaul and remains `CI_VALIDATION_PENDING` until its final exact-head workflow matrix completes successfully.
 
-## 16.0.0rc5 web console
+## 16.0.0rc6 Threat Operations Console
 
-Release candidate 16.0.0rc5 adds a governed operational web console at the application root. After `docker compose up --build`, open:
+After `docker compose up --build`, open:
 
-- `http://localhost:8000/` — DTMO operational console;
+- `http://localhost:8000/` — DTMO Threat Operations Console;
+- `http://localhost:8000/ui/analyst-search` — focused Analyst workspace;
+- `http://localhost:8000/ui/share-approval` — governed Share Approval workspace;
+- `http://localhost:8000/ui/auditor` — read-only Auditor workspace;
+- `http://localhost:8000/ui/ciso-security` — CISO Security workspace;
 - `http://localhost:8000/docs` — OpenAPI/Swagger;
 - `http://localhost:8000/health` — health status;
 - `http://localhost:8000/metrics` — Prometheus metrics;
 - `http://localhost:9001/` — AIStor/MinIO console;
 - `http://localhost:9090/` — Prometheus.
 
-The DTMO console provides API/runtime status, connector status, role-aware intelligence search, governed review/share decisions, read-only audit evidence, CISO token revocation and links to the existing dedicated role surfaces. Browser-side test identity material is stored only in `sessionStorage`; production authentication remains the configured bearer-token/identity-provider path. Review and external share approval remain separate human decisions.
+The rc6 console is organized around five operator tasks: **Overview, Intelligence, Governance, Audit and Security**. It adds persistent navigation, clear status/KPI cards, professional search/results, explicit review/share decision steps, a read-only audit table, isolated privileged security actions, responsive mobile/tablet behavior and a shared design system across all role-specific views.
 
-For OpenSearch 2.12+ the local Compose bootstrap requires `OPENSEARCH_INITIAL_ADMIN_PASSWORD` in `.env`. The Compose file now explicitly passes this value to the OpenSearch container. Real credentials, AIStor license material and image digests must remain outside source control.
+Browser-side local/dev/staging test identity material is stored only in per-tab `sessionStorage`; production authentication remains the configured bearer-token/identity-provider path. Client-side permission presentation is UX only: server-side RBAC remains authoritative. Review and external share approval remain separate human decisions and self-approval remains prohibited.
+
+For OpenSearch 2.12+ the local Compose bootstrap requires `OPENSEARCH_INITIAL_ADMIN_PASSWORD` in `.env`. Real credentials, AIStor license material and image digests must remain outside source control.
 
 ## Documentation
 
@@ -50,12 +56,13 @@ Key documents:
 - [Production acceptance checklist](docs/project/PRODUCTION_CHECKLIST.md)
 - [Production roadmap](docs/roadmap/PRODUCTION_ROADMAP.md)
 - [Development run log](docs/development/RUN_LOG.md)
+- [Frontend UX architecture](docs/ux/FRONTEND_UX.md)
+- [Frontend UX release gate](docs/qa/FRONTEND_UX_RELEASE_GATE.md)
 - [Evidence index](docs/evidence/EVIDENCE_INDEX.md)
 - [Traceability matrix](docs/traceability/TRACEABILITY_MATRIX.md)
 - [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
 - [Security overview](docs/security/SECURITY_OVERVIEW.md)
 - [Operations manual](docs/operations/OPERATIONS_MANUAL.md)
-- [Frontend release gate](docs/qa/FRONTEND_RELEASE_GATE.md)
 - [Lessons learned](docs/project/LESSONS_LEARNED.md)
 - [ADR-001 — Evidence and claim boundaries](docs/project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md)
 
@@ -95,7 +102,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Then open `http://localhost:8000/` for the DTMO console.
+Then open `http://localhost:8000/` for the DTMO Threat Operations Console.
 
 ## Open source
 
@@ -103,4 +110,4 @@ DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). See `
 
 ## Exactly one next priority
 
-Complete exact-head CI and browser/accessibility validation for the 16.0.0rc5 frontend release. Do not merge or claim the release accepted until every registered workflow succeeds on the final PR head.
+Complete exact-head CI and browser/accessibility validation for the 16.0.0rc6 professional frontend release. Do not merge or claim the release accepted until every registered workflow succeeds on the final PR head.
