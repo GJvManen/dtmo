@@ -15,7 +15,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `PASS`.
-- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. The RUN-151/RUN-152 staging emulator is accepted as `PASS` for its bounded configuration-contract scope only.
+- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. The RUN-151/RUN-152 staging emulator is accepted as `PASS` for its bounded configuration-contract scope only; PR #106 reconciliation remains `CI_VALIDATION_PENDING` after RUN-154 lifecycle-regression remediation.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
@@ -62,9 +62,13 @@ PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` then complet
 
 ### RUN-153 emulator acceptance documentation reconciliation — `CI_VALIDATION_PENDING`
 
-Authoritative documentation is being reconciled with the accepted PR #104 evidence. This run changes no runtime or governance control and does not change Phase 8's external blocker. Fresh exact-head CI is required for the documentation PR before merge.
+PR #106 reconciles authoritative documentation with the accepted PR #104 evidence without changing runtime or governance controls. Previous exact head `469dcca367dc3fcdb2baf114afe91f903164736b` completed 46/47 workflows; RC4 failed on one stale lifecycle-state assertion.
 
-Exactly one next priority: verify every registered workflow on the exact final head of the RUN-153 documentation PR and merge only on complete success.
+### RUN-154 staging-emulator lifecycle regression remediation — `CI_VALIDATION_PENDING`
+
+The failing regression still required the obsolete token `CI_VALIDATION_PENDING` in the staging-emulator QA document after the gate had correctly advanced to bounded `PASS`. The assertion now requires the evidenced bounded `PASS` wording while continuing to require the complete non-overclaim boundary and human share approval. Fresh complete exact-head CI is required.
+
+Exactly one next priority: verify every registered workflow on PR #106's changed exact head and merge only on complete success.
 
 After that merge, the next Phase 8 roadmap objective is acquisition/provisioning of one approved real staging deployment and retention of all ten deployment-parity evidence classes against the same immutable deployment identity.
 
