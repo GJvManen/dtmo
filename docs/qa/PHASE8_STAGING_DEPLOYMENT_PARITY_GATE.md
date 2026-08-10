@@ -10,9 +10,9 @@ Require independently observable, production-equivalent staging deployment evide
 
 ## Latest reconciliation
 
-The repository-controlled staging-emulator configuration contract is accepted from PR #104 evidence. PR #106 final exact head `ff0a490e46c2f9529441d8a5294030af498dbe14` completed 47/47 workflows and merged as `b57a6daa775d2f1f88a2d1b67b191da757fa743f`, finalizing its documentation reconciliation.
+The repository-controlled staging-emulator configuration contract is accepted from PR #104 evidence. The bounded application-container runtime smoke is now also accepted from PR #107 exact-head evidence: final head `52d7a37660c9bb1c9f8468f11010f36d17bd1fba` completed 48/48 workflows successfully and merged as `23d629964f55709845683e808f707998cc8d4aa2`; retained artifact `9057259246` is exact-head bound with machine-readable PASS, contract JUnit 4/4 and runtime JUnit 12/12.
 
-RUN-155 now carries forward the bounded DTMO application-container runtime smoke from stale PR #105 onto current `main`. Even if that runtime-smoke gate passes, it executes only the DTMO application container and therefore does not satisfy this deployment-parity gate.
+RUN-156 performed a fresh repository and issue review for one approved real staging deployment and a complete ten-class deployment-parity package. No reviewable evidence tied to one immutable real staging deployment identity was found. Repository CI, emulator configuration evidence and bounded application-container runtime smoke therefore remain non-substitutive for this gate.
 
 ## Required external evidence
 
@@ -29,7 +29,7 @@ RUN-155 now carries forward the bounded DTMO application-container runtime smoke
 
 ## Acceptance rule
 
-All ten evidence classes must be retained, reviewable and tied to the same staging deployment identity. Missing, stale, inaccessible, contradictory or inferred evidence blocks staging acceptance. Repository CI, emulator configuration evidence, or bounded application-container runtime smoke cannot substitute for a real deployed environment.
+All ten evidence classes must be retained, reviewable and tied to the same staging deployment identity. Missing, stale, inaccessible, contradictory or inferred evidence blocks staging acceptance. Repository CI, emulator configuration evidence or bounded application-container runtime smoke cannot substitute for a real deployed environment.
 
 No real staging smoke, integration, migration, connector, recovery, performance, accessibility or observability result is valid for Phase 8 until this gate is satisfied.
 
@@ -41,6 +41,10 @@ No real staging smoke, integration, migration, connector, recovery, performance,
 - Secret values, tokens, credentials and unnecessary personal data are excluded from repository evidence.
 - Provenance and immutable deployment identity are mandatory.
 
+## Threat/advisory provenance rule
+
+Evidence class 10 must be produced against the actual immutable staged release and must preserve source provenance, review time and confidence for relevant public threat intelligence, CVE data and vendor advisories. A generic or pre-deployment advisory review does not close this class.
+
 ## Exactly one next priority
 
-Verify the RUN-155 runtime-smoke PR on its exact final head and independently inspect retained runtime evidence. After that bounded gate is accepted, provide or provision the approved real staging environment and retain all ten deployment-parity evidence classes against one immutable staging deployment identity.
+Provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against one immutable staging deployment identity. Do not begin or credit the staging acceptance suite before this gate is complete.
