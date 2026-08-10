@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — RUN-20260810-157 (`PASS` from exact-head CI; PR #108 documentation finalization still requires fresh CI)
+Last reconciled: 2026-08-10 — RUN-20260810-158 (`BLOCKED_EXTERNAL`; real staging deployment-parity evidence remains absent)
 
 ## Executive status
 
@@ -23,15 +23,15 @@ PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47
 
 PR #107 final exact head `52d7a37660c9bb1c9f8468f11010f36d17bd1fba` completed 48/48 registered workflows successfully and merged as `23d629964f55709845683e808f707998cc8d4aa2`. Retained runtime artifact `9057259246`, digest `sha256:d577415a5b40952a305577c5a1fbeae1e3e154fcbf95a42030cdd19632d77aa5`, is exact-head bound with machine-readable `pass`, contract JUnit 4/4 and runtime JUnit 12/12 with zero failures/errors/skips. All recorded runtime checks are true; all real-staging, deployment-parity, Phase-8 and production-acceptance claim fields are false. The retained container log contains no configured synthetic sensitive-marker leakage.
 
-## RUN-156 / RUN-157 reconciliation
+## RUN-157 / PR #108 acceptance
 
-RUN-156 performed a fresh repository and issue review for one approved real staging deployment and all ten required deployment-parity evidence classes. No reviewable evidence package tied to one immutable real staging deployment identity was found.
+RUN-157 corrected only the stale runtime-smoke lifecycle regression. PR #108 exact head `25ac24bfa40f2f9ccebb5d1307615c6fbd14cf05` completed 48/48 registered workflows successfully. RC4 run `31375182061` passed lint, mypy, pytest (292 passed, 16 skipped, 84.96% coverage), compile and aggregate release gate. `Phase 8 Staging Readiness Gate`, `Phase 8 Staging Emulator Gate` and `Phase 8 Staging Emulator Runtime Gate` all succeeded. Retained runtime artifact `9057841831`, digest `sha256:0e68feb37e9937b574a6ef80affeff13aeda162eb83c8805a8f220cb082999b1`, is exact-head bound.
 
-PR #108 previous exact head `c4c28938a49b2a3dcba90ab01e6bd1cb430a3439` completed 47/48 registered workflows. `RC4 Quality Gate` failed after lint and type-check succeeded because `backend/tests/test_phase8_staging_emulator_runtime.py` still asserted obsolete `CI_VALIDATION_PENDING` wording in the runtime-smoke QA despite the bounded runtime gate having already been accepted from PR #107 evidence.
+The documentation-finalization exact head `bbba29a1269b5c09d1a94a27b38c317bae2590e7` then completed all 48 registered workflows successfully, including RC4 and all Phase 8 repository gates. PR #108 merged with expected-head protection as `de3561b42f8e4fec5947182e01563a6327d0e029`. RUN-157 is therefore authoritative on `main`.
 
-RUN-157 corrected only that stale lifecycle assertion. PR #108 exact head `25ac24bfa40f2f9ccebb5d1307615c6fbd14cf05` then completed 48/48 registered workflows successfully. RC4 run `31375182061` passed lint, mypy, pytest (292 passed, 16 skipped, 84.96% coverage), compile and aggregate release gate. `Phase 8 Staging Readiness Gate`, `Phase 8 Staging Emulator Gate` and `Phase 8 Staging Emulator Runtime Gate` all succeeded. Retained runtime artifact `9057841831`, digest `sha256:0e68feb37e9937b574a6ef80affeff13aeda162eb83c8805a8f220cb082999b1`, is exact-head bound.
+## RUN-158 Phase 8 recheck
 
-The lifecycle remediation is therefore accepted as `PASS` from exact-head evidence. The current documentation-finalization head still requires a fresh full workflow matrix before PR #108 can merge; no stale-head evidence is reused as merge evidence.
+RUN-158 performed a fresh repository and issue review after the PR #108 merge. No approved real staging endpoint/environment identity and no reviewable ten-class deployment-parity package tied to one immutable staged release were found. Issue #1's unchecked external production-acceptance gates remain unchanged.
 
 ## Phase 8 real staging blocker
 
@@ -47,7 +47,7 @@ Required evidence remains:
 9. rollback target/procedure tied to the staged release;
 10. deployment-time security/CVE/vendor-advisory review evidence.
 
-No staging smoke, integration, migration, connector, recovery, performance, accessibility or observability result may be credited toward Phase 8 before these ten classes are complete against the same deployment identity.
+No staging smoke, integration, migration, connector, recovery, performance, accessibility or observability result may be credited toward Phase 8 before these ten classes are complete against the same deployment identity. Evidence class 10 must be produced against the actual immutable staged release with source provenance, review time and confidence; a generic pre-deployment advisory review is not a substitute.
 
 ## Security and governance invariants
 
@@ -55,4 +55,4 @@ RBAC, separation of duties, privacy, provenance, auditability and human share ap
 
 ## Exactly one current priority
 
-Verify all 48 registered workflows on PR #108's documentation-finalization exact head and merge only on complete success.
+Provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity.
