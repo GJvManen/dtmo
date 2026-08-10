@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — RUN-20260810-157 (`CI_VALIDATION_PENDING`; runtime-smoke QA lifecycle regression remediation)
+Last reconciled: 2026-08-10 — RUN-20260810-157 (`PASS` from exact-head CI; PR #108 documentation finalization still requires fresh CI)
 
 ## Executive status
 
@@ -27,7 +27,11 @@ PR #107 final exact head `52d7a37660c9bb1c9f8468f11010f36d17bd1fba` completed 48
 
 RUN-156 performed a fresh repository and issue review for one approved real staging deployment and all ten required deployment-parity evidence classes. No reviewable evidence package tied to one immutable real staging deployment identity was found.
 
-PR #108 previous exact head `c4c28938a49b2a3dcba90ab01e6bd1cb430a3439` then completed 47/48 registered workflows. `RC4 Quality Gate` failed after lint and type-check succeeded because `backend/tests/test_phase8_staging_emulator_runtime.py` still asserted obsolete `CI_VALIDATION_PENDING` wording in the runtime-smoke QA despite the bounded runtime gate having already been accepted from PR #107 evidence. RUN-157 updates that lifecycle regression to require the exact bounded accepted PASS wording while preserving the non-overclaim and human share approval assertions. Fresh complete exact-head CI is required before PR #108 can merge.
+PR #108 previous exact head `c4c28938a49b2a3dcba90ab01e6bd1cb430a3439` completed 47/48 registered workflows. `RC4 Quality Gate` failed after lint and type-check succeeded because `backend/tests/test_phase8_staging_emulator_runtime.py` still asserted obsolete `CI_VALIDATION_PENDING` wording in the runtime-smoke QA despite the bounded runtime gate having already been accepted from PR #107 evidence.
+
+RUN-157 corrected only that stale lifecycle assertion. PR #108 exact head `25ac24bfa40f2f9ccebb5d1307615c6fbd14cf05` then completed 48/48 registered workflows successfully. RC4 run `31375182061` passed lint, mypy, pytest (292 passed, 16 skipped, 84.96% coverage), compile and aggregate release gate. `Phase 8 Staging Readiness Gate`, `Phase 8 Staging Emulator Gate` and `Phase 8 Staging Emulator Runtime Gate` all succeeded. Retained runtime artifact `9057841831`, digest `sha256:0e68feb37e9937b574a6ef80affeff13aeda162eb83c8805a8f220cb082999b1`, is exact-head bound.
+
+The lifecycle remediation is therefore accepted as `PASS` from exact-head evidence. The current documentation-finalization head still requires a fresh full workflow matrix before PR #108 can merge; no stale-head evidence is reused as merge evidence.
 
 ## Phase 8 real staging blocker
 
@@ -51,4 +55,4 @@ RBAC, separation of duties, privacy, provenance, auditability and human share ap
 
 ## Exactly one current priority
 
-Verify all 48 registered workflows on PR #108's changed exact head and merge only on complete success.
+Verify all 48 registered workflows on PR #108's documentation-finalization exact head and merge only on complete success.
