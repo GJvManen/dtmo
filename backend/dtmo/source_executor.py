@@ -16,7 +16,6 @@ from dtmo.source_catalog import catalog_by_id
 from dtmo.sources import SourceDefinition, validate_source_url
 
 MAX_RESPONSE_BYTES = 5 * 1024 * 1024
-ALLOWED_CONTENT_TYPES = ("application/json", "application/", "text/json")
 
 
 class SourceExecutionError(RuntimeError):
@@ -43,7 +42,8 @@ class _PinnedHTTPSConnection(http.client.HTTPSConnection):
 def _resolve_public_endpoint(url: str) -> ResolvedEndpoint:
     validated = validate_source_url(url)
     parsed = urlparse(validated)
-    assert parsed.hostname is not None
+    if parsed.hostname is None:
+        raise SourceExecutionError("source URL has no hostname")
     hostname = parsed.hostname.rstrip(".").lower()
     try:
         answers = socket.getaddrinfo(hostname, 443, type=socket.SOCK_STREAM)
@@ -131,7 +131,14 @@ def _parse_nvd(payload: Any, reliability: str) -> list[ConnectorRecord]:
         references = cve.get("references")
         url = f"https://nvd.nist.gov/vuln/detail/{cve_id}"
         if isinstance(references, list):
-            first = next((entry.get("url") for entry in references if isinstance(entry, dict) and isinstance(entry.get("url"), str)), None)
+            first = next(
+                (
+                    entry.get("url")
+                    for entry in references
+                    if isinstance(entry, dict) and isinstance(entry.get("url"), str)
+                ),
+                None,
+            )
             if isinstance(first, str):
                 url = first
         records.append(
@@ -210,7 +217,11 @@ def _parse_dtmo_json(payload: Any, reliability: str) -> list[ConnectorRecord]:
 
 def parse_registered_source(source: SourceDefinition, payload: Any) -> list[ConnectorRecord]:
     catalog = catalog_by_id(source.id)
-    profile = catalog.execution_profile if catalog and catalog.execution_status == "supported" else "dtmo-json-v1"
+    profile = (
+        catalog.execution_profile
+        if catalog and catalog.execution_status == "supported"
+        else "dtmo-json-v1"
+    )
     if profile == "nvd-cve-v2":
         return _parse_nvd(payload, source.reliability)
     if profile == "github-global-advisories-v1":
@@ -218,14 +229,18 @@ def parse_registered_source(source: SourceDefinition, payload: Any) -> list[Conn
     return _parse_dtmo_json(payload, source.reliability)
 
 
-async def execute_registered_source(source: SourceDefinition, *, timeout_seconds: float = 20.0) -> ConnectorResult:
+async def execute_registered_source(
+    source: SourceDefinition, *, timeout_seconds: float = 20.0
+) -> ConnectorResult:
     started = datetime.now(UTC).isoformat()
     if source.source_type != "json-feed":
         raise SourceExecutionError("only json-feed registry sources use the generic executor")
     if not source.enabled:
         raise SourceExecutionError("source is disabled")
     try:
-        payload = await asyncio.to_thread(_fetch_json_sync, source.endpoint_url, timeout=timeout_seconds)
+        payload = await asyncio.to_thread(
+            _fetch_json_sync, source.endpoint_url, timeout=timeout_seconds
+        )
         records = parse_registered_source(source, payload)
     except SourceExecutionError as exc:
         return ConnectorResult(
