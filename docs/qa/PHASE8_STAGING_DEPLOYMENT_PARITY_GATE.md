@@ -10,9 +10,11 @@ Require independently observable, production-equivalent staging deployment evide
 
 ## Latest reconciliation
 
-RUN-150 / PR #103 exact head `be9deb34255f6114430d76868c9bf82f0e039f15` completed 46/46 registered workflows successfully and merged as `1e957f7fa1e9910e5d258cd6d7ed5ce69e9203d1`. A fresh repository and issue #1 review still found no real staging environment or deployment-parity evidence.
+RUN-150 / PR #103 exact head `be9deb34255f6114430d76868c9bf82f0e039f15` completed 46/46 registered workflows successfully and merged as `1e957f7fa1e9910e5d258cd6d7ed5ce69e9203d1`. A fresh repository and issue #1 review found no real staging environment or deployment-parity evidence.
 
-RUN-151 adds a source-controlled production-equivalent staging emulator contract. RUN-152 repaired a governance-document wording defect after RC4 failed on the first emulator head. Even if the emulator CI gate ultimately passes, emulator configuration evidence does not satisfy this gate because it does not prove a real deployed environment or runtime behavior.
+RUN-151 added the source-controlled production-equivalent staging emulator contract. RUN-152 repaired its governance-document wording defect, and PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47/47 workflows successfully. Retained emulator artifact `9045039742` is exact-head bound and internally consistent, so the emulator gate is accepted as `PASS` for configuration-contract scope only.
+
+That acceptance does not satisfy this deployment-parity gate. The retained emulator evidence itself explicitly records that containers were not executed, a real staging environment was not proven, deployment parity was not proven, the ten external evidence classes were not satisfied, Phase 8 was not completed and production acceptance was not completed.
 
 ## Required external evidence
 
@@ -43,4 +45,4 @@ No smoke, integration, migration, connector, recovery, performance, accessibilit
 
 ## Exactly one next priority
 
-Verify RUN-151/RUN-152 on the changed PR #104 exact head. Merge only after complete CI and retained emulator evidence; then provide or provision the approved real staging environment and retain all ten deployment-parity evidence classes.
+Verify the RUN-153 documentation reconciliation PR on its exact final head and merge only on complete CI success. After that merge, provide or provision the approved real staging environment and retain all ten deployment-parity evidence classes against one immutable staging deployment identity.

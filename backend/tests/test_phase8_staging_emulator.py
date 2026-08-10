@@ -44,7 +44,8 @@ def test_tls_gateway_is_bounded() -> None:
 
 def test_qa_preserves_emulation_claim_boundary() -> None:
     text = QA.read_text(encoding="utf-8")
-    assert "CI_VALIDATION_PENDING" in text
+    assert "`PASS` for the bounded repository-controlled emulator configuration contract only." in text
     assert "does not prove a real staging environment" in text
     assert "does not satisfy the ten deployment-parity evidence classes" in text
+    assert "does not complete Phase 8 or production acceptance" in text
     assert "human share approval" in text

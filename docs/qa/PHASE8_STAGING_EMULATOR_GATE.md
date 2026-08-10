@@ -2,7 +2,7 @@
 
 ## Decision
 
-`CI_VALIDATION_PENDING`
+`PASS` for the bounded repository-controlled emulator configuration contract only.
 
 ## Objective
 
@@ -26,14 +26,29 @@ A PASS for this gate does not prove a real staging environment, does not prove c
 
 The emulator is a deterministic rehearsal and configuration-control surface. Real staging deployment evidence remains required by `PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`.
 
-## Acceptance rule
+## Acceptance evidence
 
-PASS requires every registered workflow on the exact final PR head to succeed and the retained `phase8-staging-emulator-evidence` artifact to be exact-head bound and internally consistent. Missing, queued, cancelled, failed or stale-head evidence is not PASS.
+PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47/47 registered pull-request workflows successfully, including `RC4 Quality Gate`, `Phase 8 Staging Readiness Gate` and `Phase 8 Staging Emulator Gate`.
 
-## RUN-152 CI-integrity remediation
+Retained artifact `phase8-staging-emulator-evidence`:
+- artifact id `9045039742`;
+- digest `sha256:959586b389579dfd37bda60eecdfb67e0251eaf4a78daed214986cefe771ce65`;
+- exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84`;
+- decision `pass`;
+- JUnit 4/4 with zero failures, errors or skips;
+- all required emulator control flags true;
+- all overclaim fields false, including container execution, real staging proof, deployment parity, ten external evidence classes, Phase 8 completion and production acceptance.
 
-The first RUN-151 exact head completed 46/47 registered workflows successfully; RC4 failed because this QA document did not contain the canonical phrase `human share approval` required by the governance regression test. The documentation contract was corrected without weakening or suppressing the test. Fresh complete exact-head CI is required.
+PR #104 merged as `3c7a4b7f56e8d8a757541963bbd261fe42a7269c`.
+
+## RUN-152 remediation history
+
+The first RUN-151 exact head completed 46/47 registered workflows successfully; RC4 failed because this QA document did not contain the canonical phrase `human share approval` required by the governance regression test. The documentation contract was corrected without weakening or suppressing the test. The fresh final exact-head matrix then passed completely as recorded above.
+
+## RUN-154 lifecycle regression remediation
+
+PR #106 previous exact head `469dcca367dc3fcdb2baf114afe91f903164736b` completed 46/47 workflows. RC4 failed because `test_qa_preserves_emulation_claim_boundary` still required the obsolete `CI_VALIDATION_PENDING` lifecycle token after this gate had correctly advanced to bounded `PASS`. The regression now requires this evidenced bounded `PASS` wording and continues to require the real-staging, deployment-parity, Phase-8/production non-overclaim statements plus human share approval. The control has not been weakened.
 
 ## Exactly one next priority
 
-Verify every registered workflow on the remediated PR #104 exact head and independently inspect regenerated `phase8-staging-emulator-evidence`. Merge only on complete success.
+Verify every registered workflow on PR #106's changed exact head and merge only on complete CI success. The real staging deployment-parity gate remains independently `BLOCKED_EXTERNAL`.
