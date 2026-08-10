@@ -43,7 +43,9 @@ class OpenSearchService:
                         "item_type": {"type": "keyword"},
                         "source_id": {"type": "keyword"},
                         "severity": {"type": "keyword"},
-                        "confidence": {"type": "integer"},
+                        "confidence_score": {"type": "integer"},
+                        "confidence_level": {"type": "keyword"},
+                        "confidence_rationale": {"type": "text"},
                         "education_relevance": {"type": "integer"},
                         "published_at": {"type": "date"},
                         "canonical_url": {"type": "keyword"},
@@ -71,6 +73,10 @@ class OpenSearchService:
         minimum_relevance: int = 0,
         size: int = 50,
     ) -> list[dict[str, Any]]:
+        # A fresh deployment has no index until the first successful ingestion.
+        # Search must therefore be safe on an empty system rather than surfacing
+        # OpenSearch's index-not-found 404 as a 503 to operators.
+        await self.ensure_index()
         filters: list[dict[str, Any]] = [
             {"range": {"education_relevance": {"gte": minimum_relevance}}}
         ]
@@ -95,7 +101,7 @@ class OpenSearchService:
                 },
                 "sort": [
                     {"education_relevance": {"order": "desc"}},
-                    {"confidence": {"order": "desc"}},
+                    {"confidence_score": {"order": "desc"}},
                 ],
             },
         )
