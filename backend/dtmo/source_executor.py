@@ -31,12 +31,14 @@ class ResolvedEndpoint:
 
 class _PinnedHTTPSConnection(http.client.HTTPSConnection):
     def __init__(self, hostname: str, address: str, *, timeout: float) -> None:
-        super().__init__(hostname, port=443, timeout=timeout, context=ssl.create_default_context())
+        context = ssl.create_default_context()
+        super().__init__(hostname, port=443, timeout=timeout, context=context)
         self._validated_address = address
+        self._ssl_context = context
 
     def connect(self) -> None:
         raw = socket.create_connection((self._validated_address, 443), self.timeout)
-        self.sock = self._context.wrap_socket(raw, server_hostname=self.host)
+        self.sock = self._ssl_context.wrap_socket(raw, server_hostname=self.host)
 
 
 def _resolve_public_endpoint(url: str) -> ResolvedEndpoint:
@@ -49,7 +51,7 @@ def _resolve_public_endpoint(url: str) -> ResolvedEndpoint:
         answers = socket.getaddrinfo(hostname, 443, type=socket.SOCK_STREAM)
     except OSError as exc:
         raise SourceExecutionError("source hostname could not be resolved") from exc
-    addresses = sorted({answer[4][0] for answer in answers})
+    addresses = sorted({str(answer[4][0]) for answer in answers})
     if not addresses:
         raise SourceExecutionError("source hostname resolved to no addresses")
     for value in addresses:
