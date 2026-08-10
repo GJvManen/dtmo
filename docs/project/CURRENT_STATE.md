@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — RUN-20260810-161 (`CI_VALIDATION_PENDING`; 16.0.0rc5 frontend productionization).
+Last reconciled: 2026-08-10 — PR #111 / 16.0.0rc5 accepted; RUN-20260810-162 / 16.0.0rc6 professional UX overhaul is `CI_VALIDATION_PENDING`.
 
 ## Executive status
 
@@ -17,19 +17,21 @@ Last reconciled: 2026-08-10 — RUN-20260810-161 (`CI_VALIDATION_PENDING`; 16.0.
 
 DTMO is **not production ready**. Issue #1 remains authoritative for external production-acceptance gates.
 
-## 16.0.0rc5 frontend candidate
+## Accepted rc5 frontend baseline
 
-RUN-161 introduces a governed operational web console at `/` and `/ui/console`. The console consolidates runtime health/version/environment, connector status, role-aware intelligence search, governed review/share decisions, read-only audit evidence and CISO token revocation while retaining the existing dedicated role surfaces.
+PR #111 exact head `1e59cd6f02bd5b853d0e8bf66a09c90d46d89467` completed all 48 registered workflows successfully, including RC4, browser/accessibility gates and all Phase 8 repository gates, and merged as `05e72443b132e0e0c162d2a07b1578e84daaa25c`.
 
-The browser UI is not an authorization boundary. Every protected operation remains enforced by the existing server-side RBAC dependencies. Review and external share approval remain separate governed decisions. Local/dev/staging test identity material is held only in per-tab `sessionStorage`; the console does not persist bearer tokens. Production authentication remains the configured bearer-token/identity-provider path.
+16.0.0rc5 therefore established a governed, discoverable web console and corrected the local OpenSearch bootstrap contract. This acceptance is bounded to repository-controlled evidence and does not close genuine VoiceOver/NVDA, real staging or external-assurance gates.
 
-The candidate also fixes the documented local Compose startup contract by passing externally supplied `OPENSEARCH_INITIAL_ADMIN_PASSWORD` into the OpenSearch container and documenting the corresponding `.env` input. Real passwords, API keys, AIStor license material and image digests remain outside source control.
+## 16.0.0rc6 professional frontend candidate
 
-`docs/qa/FRONTEND_RELEASE_GATE.md` defines the exact claim boundary. RUN-161 is not PASS until every registered workflow succeeds on the final exact PR head.
+RUN-162 upgrades the operator experience without moving authorization into the browser. The primary Threat Operations Console is organized into five stable task areas: Overview, Intelligence, Governance, Audit and Security. The release adds persistent navigation, professional KPI/status presentation, structured analyst results, explicit two-step review/share decision presentation, read-only audit tables, isolated privileged security actions, responsive behavior and a per-tab test-identity dialog.
 
-## Latest accepted Phase 9 baseline
+The specialized Analyst, Share Approval, Auditor and CISO workspaces now use the same visual/interaction language. `docs/ux/FRONTEND_UX.md` documents the UX architecture and `docs/qa/FRONTEND_UX_RELEASE_GATE.md` defines the rc6 acceptance contract.
 
-PR #110 exact head `5549ac1f28307c8bfa8c2ea1bf39341bb33983a0` completed all 48 registered workflows successfully and merged as `0b9a6d51dcd6e4fa984888d172e1fb5f5d6d52f2`. RUN-159 is accepted only for its bounded external-assurance intake/readiness contract; it does not prove external assurance execution.
+The browser remains an experience layer only. Server-side RBAC is authoritative. Review and external share approval remain separate permissions/actions. Audit evidence remains read-only. Test identity data remains scoped to `sessionStorage`; production authentication remains the configured bearer-token/identity-provider path.
+
+RUN-162 remains `CI_VALIDATION_PENDING` until every registered workflow succeeds on the final exact PR head.
 
 ## Phase 8 blocker
 
@@ -41,14 +43,10 @@ No staging acceptance result may be credited until those classes are complete ag
 
 The accepted Phase 9 intake contract requires independently observable evidence for independent penetration testing, representative load/stress testing, full backup/restoration, production platform hardening, secrets-management acceptance, operational/stakeholder acceptance and staging/production deployment acceptance. Evidence must be attributable, dated and tied to immutable target identities where applicable. Findings require explicit disposition.
 
-## Extended documentation baseline
-
-`main` contains the consolidated documentation index, executive status, production-readiness report, production checklist, evidence index, traceability matrix, lessons learned, ADRs, architecture overview, security overview and operations manual in addition to detailed QA and PDCA records.
-
 ## Security and governance invariants
 
 RBAC, separation of duties, privacy, provenance, auditability and human share approval remain unchanged. Technical environment access cannot grant publication or share approval. Missing, stale, inaccessible, inferred, failed, cancelled, skipped or contradictory evidence is never PASS.
 
 ## Exactly one current priority
 
-Complete exact-head CI and browser/accessibility validation for the 16.0.0rc5 frontend release candidate. Merge only if every registered workflow succeeds; otherwise remediate the first concrete failing gate.
+Complete exact-head CI and browser/accessibility validation for the 16.0.0rc6 professional frontend release candidate. Merge only if every registered workflow succeeds; otherwise remediate the first concrete failing gate.
