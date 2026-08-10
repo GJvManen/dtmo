@@ -21,7 +21,7 @@ DTMO is **not production ready**.
 | 9. External assurance | `NOT COMPLETE`; readiness/intake contract accepted |
 | 10. Production go/no-go | `NOT STARTED` |
 
-PR #111 delivered the first governed web-console baseline as 16.0.0rc5. Release candidate **16.0.0rc6** is the professional UX overhaul and remains `CI_VALIDATION_PENDING` until its final exact-head workflow matrix completes successfully.
+PR #112 exact head `e5e0d5e808d1f66c8f512fa35bd0ea3932fe8631` completed all 48 registered workflows successfully and merged as `5c2a9c9a5d0d936784597899c97bf5be253c2394`. Release candidate **16.0.0rc6** is therefore the accepted repository-controlled professional frontend baseline. This does not close genuine VoiceOver/NVDA, real staging, external-assurance or production go/no-go gates.
 
 ## 16.0.0rc6 Threat Operations Console
 
@@ -110,4 +110,4 @@ DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). See `
 
 ## Exactly one next priority
 
-Complete exact-head CI and browser/accessibility validation for the 16.0.0rc6 professional frontend release. Do not merge or claim the release accepted until every registered workflow succeeds on the final PR head.
+Acquire and validate one approved real staging deployment plus the complete ten-class deployment-parity evidence package for Phase 8. Keep the gate `BLOCKED_EXTERNAL` until independently reviewable evidence exists for one immutable staged release.
