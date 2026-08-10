@@ -11,8 +11,8 @@ This roadmap defines the controlled path from DTMO's release-candidate state to 
 - Phase 3 — Data integrity and recovery: `PASS` for internal gates.
 - Phase 4 — Live connector reliability and provenance: `PASS` for the accepted built-in and governed registered-source execution baseline through rc9.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
-- Phase 6 — Frontend accessibility and operational UX: rc6 role-workspace, rc8 source-admin and RC10.1 unified Operations Workspace shell baselines are accepted. RUN-176 / RC10.2 adds live graphical operational telemetry and is `CI_VALIDATION_PENDING`. Genuine VoiceOver/NVDA remains `BLOCKED_EXTERNAL`.
-- Phase 7 — Observability and incident operations: `PASS` for internal gates; RC10.2 surfaces already accepted operational building blocks through a bounded aggregate API without changing evidence or authority boundaries.
+- Phase 6 — Frontend accessibility and operational UX: rc6 role-workspace, rc8 source-admin, RC10.1 unified Operations Workspace and RC10.2 live operational dashboards are accepted. Genuine VoiceOver/NVDA remains `BLOCKED_EXTERNAL`.
+- Phase 7 — Observability and incident operations: `PASS` for internal gates; accepted telemetry is surfaced through the Operations Workspace without changing evidence or authority boundaries.
 - Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence.
 - Phase 9 — External assurance: `NOT COMPLETE`.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
@@ -34,15 +34,14 @@ PR #115 final exact head `c01611a48648ec73e14975337dd549bef86abe88` completed th
 ### RUN-174 / RUN-175 — 16.0.0rc10 RC10.1 Unified Operations Workspace shell — `PASS`
 PR #116 exact head `d41d9e60a4a67ddb30345eecee4042d1c19a6cf5` completed every registered workflow successfully and merged as `b000ef2275d52ff098d2d2bd8df76136cea3b051`.
 
-### RUN-176 — 16.0.0rc10 RC10.2 Unified graphical dashboards — `CI_VALIDATION_PENDING`
-
-The current bounded objective adds a GET-only `/api/v1/operations/summary` projection over the in-process Prometheus registry and binds it to `/ui/operations`. The dashboard now displays real request volume, average latency, in-flight work, queue backlog utilization, connector-run totals, trace-context totals and active API/connector/storage/search alert state. Raw Prometheus label sets and sensitive request data are not exposed to the browser.
+### RUN-176 / RUN-177 — 16.0.0rc10 RC10.2 Unified graphical dashboards — `PASS`
+PR #117 exact head `d4e35a5fa0c463438299d6cdd3638de162a69026` completed every registered workflow successfully and merged as `db9e72d871fb1c4d536912419ffbb4d68ad680c2`. The accepted implementation adds a GET-only `/api/v1/operations/summary` projection over the in-process Prometheus registry and binds real operational values to `/ui/operations` without exposing raw sensitive labels or adding privileged writes.
 
 ## RC10 staged workspace programme
 
 1. **RC10.1 Operations Workspace shell** — `PASS` via RUN-175.
-2. **RC10.2 Unified graphical dashboards** — current RUN-176, `CI_VALIDATION_PENDING`.
-3. **RC10.3 Threat Intelligence Workspace** — search/investigation flow with related CVE, KEV, vendor and provenance context.
+2. **RC10.2 Unified graphical dashboards** — `PASS` via RUN-177.
+3. **RC10.3 Threat Intelligence Workspace** — current next priority: integrate accepted search with an investigation result/detail flow using stored CVE/KEV/vendor/provenance context where present.
 4. **RC10.4 Source Center refinement** — integrate source catalog, execution health, scheduling and provenance into the unified shell.
 5. **RC10.5 Administration consolidation** — bring governed configuration surfaces into one admin center without weakening RBAC/separation of duties.
 6. **RC10.6 UX polish** — saved views, keyboard workflows, theme and density controls where evidence supports them.
@@ -80,4 +79,4 @@ Every run must document Plan, Do, Check and Act, update run/QA evidence, preserv
 
 ## Exactly one next priority
 
-Complete exact-head CI validation for RUN-176 / RC10.2. Merge only on complete success. If accepted, start RC10.3 Threat Intelligence Workspace; otherwise remediate the first concrete failing root cause only.
+RC10.3 — implement the Threat Intelligence Workspace as one bounded reviewable objective: search + investigation result/detail integration using already stored data and provenance, with no new publication authority. Require complete exact-head CI before acceptance.
