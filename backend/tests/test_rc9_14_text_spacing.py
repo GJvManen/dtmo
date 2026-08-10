@@ -31,7 +31,11 @@ async def test_text_spacing_overrides_preserve_content_and_function() -> None:
     async with async_playwright() as p:
         browser = await p.chromium.launch()
         for name, path, subject, roles, ready, controls in SURFACES:
-            context = await browser.new_context(viewport={"width": 1440, "height": 900}, extra_http_headers={"X-DTMO-Subject": subject, "X-DTMO-Roles": roles})
+            context = await browser.new_context(
+                viewport={"width": 1440, "height": 900},
+                extra_http_headers={"X-DTMO-Subject": subject, "X-DTMO-Roles": roles},
+                bypass_csp=True,
+            )
             page = await context.new_page()
             response = await page.goto(f"{BASE_URL}{path}")
             assert response is not None and response.ok
