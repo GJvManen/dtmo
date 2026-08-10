@@ -15,7 +15,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `PASS`.
-- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. The repository-controlled staging-emulator configuration contract and bounded application-container runtime smoke are accepted as `PASS` for their explicit scopes only. PR #108 is `CI_VALIDATION_PENDING` after RUN-157 lifecycle-regression remediation.
+- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. The repository-controlled staging-emulator configuration contract and bounded application-container runtime smoke are accepted as `PASS` for their explicit scopes only. RUN-157 CI remediation is evidenced `PASS` on PR #108 exact head `25ac24bfa40f2f9ccebb5d1307615c6fbd14cf05`; the documentation-finalization head still requires fresh complete CI before merge.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
@@ -66,11 +66,15 @@ The runtime smoke executes only the DTMO application container. It does not exec
 
 A fresh repository and issue review found no approved real staging environment/deployment identity and no reviewable package satisfying all ten deployment-parity evidence classes against one immutable staging release. No missing evidence is treated as PASS and no downstream staging acceptance result is credited.
 
-### RUN-157 runtime-smoke lifecycle regression remediation — `CI_VALIDATION_PENDING`
+### RUN-157 runtime-smoke lifecycle regression remediation — `PASS`
 
-PR #108 previous exact head `c4c28938a49b2a3dcba90ab01e6bd1cb430a3439` completed 47/48 workflows. RC4 failed in pytest after lint and type-check passed because the runtime-smoke governance regression still required obsolete `CI_VALIDATION_PENDING` wording after the gate had correctly advanced to bounded `PASS`. The assertion now requires the exact accepted bounded PASS wording while continuing to require human share approval and the full real-staging/deployment-parity/Phase-8 non-overclaim boundary. Fresh complete exact-head CI is required.
+PR #108 previous exact head `c4c28938a49b2a3dcba90ab01e6bd1cb430a3439` completed 47/48 workflows. RC4 failed in pytest after lint and type-check passed because the runtime-smoke governance regression still required obsolete `CI_VALIDATION_PENDING` wording after the gate had correctly advanced to bounded `PASS`.
 
-Exactly one next priority: verify all 48 workflows on PR #108's changed exact head and merge only on complete success.
+The assertion was corrected to require the exact bounded PASS wording while continuing to require human share approval and the full real-staging/deployment-parity/Phase-8 non-overclaim boundary. PR #108 exact head `25ac24bfa40f2f9ccebb5d1307615c6fbd14cf05` then completed 48/48 registered workflows successfully. RC4 run `31375182061` passed lint, mypy, pytest (292 passed, 16 skipped, 84.96% coverage), compile and aggregate release gate. All three Phase 8 repository gates also succeeded. Retained runtime artifact `9057841831`, digest `sha256:0e68feb37e9937b574a6ef80affeff13aeda162eb83c8805a8f220cb082999b1`, is exact-head bound.
+
+This acceptance remains bounded to the lifecycle regression remediation and does not change the Phase 8 external blocker.
+
+Exactly one next priority: verify all 48 workflows on PR #108's documentation-finalization exact head and merge only on complete success.
 
 After that merge, provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity. Do not begin or credit the staging acceptance suite before that gate is complete.
 
