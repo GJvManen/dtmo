@@ -1,16 +1,20 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Annotated
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from dtmo.alerts import connector_alerts
 from dtmo.api.routes import get_session, ingest_connector_record
 from dtmo.audit import AuditDecision
 from dtmo.audit.store import append_persistent_audit_event
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal, Role
+from dtmo.connectors.state import ConnectorStateStore
 from dtmo.source_catalog import SOURCE_CATALOG
 from dtmo.source_executor import execute_registered_source
 from dtmo.sources import SourceDefinition, SourceRegistry, validate_source_url
@@ -245,7 +249,7 @@ async def validate_source(
         "source_type": source.source_type,
         "enabled": source.enabled,
         "execution": "built-in" if source.source_type == "cisa-kev" else "safe-json-adapter",
-        "note": "runtime execution re-resolves DNS, rejects non-global addresses and redirects, pins TLS to the validated address, and enforces JSON/size bounds",
+        "note": "runtime re-resolves DNS, rejects non-global destinations and redirects, pins TLS to the validated address, and enforces JSON/size bounds",
     }
 
 
@@ -262,6 +266,13 @@ async def run_registered_source(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="source not found")
     if source.source_type == "cisa-kev":
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="use the built-in CISA KEV execution path")
+    isolated = await session.run_sync(
+        lambda sync_session: ConnectorStateStore(sync_session).is_isolated(source.id)
+    )
+    if isolated:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="source is temporarily isolated after repeated failures")
+
+    started = datetime.now(UTC)
     result = await execute_registered_source(source)
     inserted = 0
     indexed = 0
@@ -270,6 +281,20 @@ async def run_registered_source(
             receipt = await ingest_connector_record(source.id, record)
             inserted += int(receipt.inserted)
             indexed += int(receipt.indexed)
+    duration = max((datetime.now(UTC) - started).total_seconds(), 0.0)
+    await session.run_sync(
+        lambda sync_session: ConnectorStateStore(sync_session).record_run(
+            connector_id=source.id,
+            run_id=uuid4(),
+            succeeded=result.status == "completed",
+            duration_seconds=duration,
+            record_count=len(result.records),
+            quarantined=[],
+            error_code=None if result.status == "completed" else "source_execution_failed",
+            details={"inserted": inserted, "indexed": indexed, "error": result.error},
+        )
+    )
+    alert = connector_alerts.record(result)
     await _audit(
         session,
         principal=principal,
@@ -285,5 +310,7 @@ async def run_registered_source(
         "inserted": inserted,
         "indexed": indexed,
         "error": result.error,
+        "alert_state": alert.state,
+        "correlation_id": alert.correlation_id,
         "publication_gate": "human-review-and-separate-share-approval-required",
     }
