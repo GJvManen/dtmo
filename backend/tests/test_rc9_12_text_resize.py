@@ -57,6 +57,7 @@ async def test_wcag_1_4_4_text_resizes_to_200_percent_without_loss() -> None:
             context = await browser.new_context(
                 viewport={"width": 1440, "height": 900},
                 extra_http_headers={"X-DTMO-Subject": subject, "X-DTMO-Roles": roles},
+                bypass_csp=True,
             )
             page = await context.new_page()
             response = await page.goto(f"{BASE_URL}{path}")
