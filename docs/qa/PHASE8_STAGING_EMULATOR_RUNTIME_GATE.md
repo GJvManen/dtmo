@@ -45,6 +45,10 @@ This PASS proves only the bounded DTMO application-container runtime smoke descr
 
 The original PR #105 runtime gate proved independently observable execution, but RC4 failed at Ruff S310 because the probe helper's URL construction was not explicitly constrained at the flagged request-creation line. RUN-155 ported the runtime gate onto current `main`, added explicit loopback-HTTP validation, preserved the narrow warning suppression only after validation, and then completed a fresh full exact-head matrix successfully on PR #107.
 
+## RUN-157 lifecycle-regression remediation
+
+PR #108 previous exact head `c4c28938a49b2a3dcba90ab01e6bd1cb430a3439` completed 47/48 registered workflows. RC4 failed because `backend/tests/test_phase8_staging_emulator_runtime.py` still required the obsolete lifecycle token `CI_VALIDATION_PENDING` even though this QA gate had already advanced to bounded `PASS` from accepted PR #107 evidence. The regression now requires this exact bounded PASS decision and continues to require human share approval plus the unchanged real-staging, deployment-parity, Phase-8 and production non-overclaim statements. Fresh complete exact-head CI is required before PR #108 can merge.
+
 ## Exactly one next priority
 
-Provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity. Repository runtime evidence is not a substitute for that gate.
+Verify all 48 workflows on PR #108's changed exact head and merge only on complete success. After merge, provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity. Repository runtime evidence is not a substitute for that gate.
