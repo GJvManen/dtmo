@@ -9,9 +9,9 @@ This roadmap defines the controlled path from DTMO's release-candidate state to 
 - Phase 1 — CI and workflow integrity: `PASS`.
 - Phase 2 — Application security and identity: `PASS` for internal gates.
 - Phase 3 — Data integrity and recovery: `PASS` for internal gates.
-- Phase 4 — Live connector reliability and provenance: `PASS` for the built-in CISA KEV path; rc7 restored end-to-end persistence/indexing and replay repair.
+- Phase 4 — Live connector reliability and provenance: `PASS` for the built-in CISA KEV path; generic registered-source execution is the current bounded extension and is not yet accepted.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
-- Phase 6 — Frontend accessibility and operational UX: rc6 is the accepted repository-controlled professional UX baseline; genuine VoiceOver/NVDA execution remains `BLOCKED_EXTERNAL`. rc8 adds an admin source-management workspace under the same external AT claim boundary.
+- Phase 6 — Frontend accessibility and operational UX: rc6 is the accepted repository-controlled professional UX baseline; rc8 adds an accepted admin source-management workspace. Genuine VoiceOver/NVDA execution remains `BLOCKED_EXTERNAL`.
 - Phase 7 — Observability and incident operations: `PASS`.
 - Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence.
 - Phase 9 — External assurance: `NOT COMPLETE`; repository-controlled intake/readiness baseline accepted.
@@ -27,11 +27,13 @@ PR #112 final exact head `e5e0d5e808d1f66c8f512fa35bd0ea3932fe8631` completed 48
 
 PR #113 final exact head `c2b7216d4777488768796a69b3e928571a824e33` completed 48/48 registered workflows and merged as `892d7e48e19109b45062acd272f84a31f6f33802`. Search fresh-index behavior, strict canonical confidence mapping, CISA KEV raw/canonical/provenance/search ingestion, replay-repair and permission-gated manual connector execution are accepted within repository-controlled scope.
 
-### RUN-170 — 16.0.0rc8 governed Admin Configuration & Source Registry — `CI_VALIDATION_PENDING`
+### RUN-170 / RUN-171 — 16.0.0rc8 governed Admin Configuration & Source Registry — `PASS`
 
-Current bounded objective: persistent source lifecycle management with human-admin authorization, service-account separation, secret references, audit-chain events, safe supported source types, explicit reliability/schedule/enabled metadata and first-line SSRF-safe endpoint validation. The admin workspace is `/ui/admin-sources` and the control API is `/api/v1/admin/sources`.
+PR #114 exact head `95fed1e663bdf256def58020f11529f383c8efe5` completed all 48 registered workflows successfully and merged as `7351ae2ab984b6848969bc634c32e819ec413031`.
 
-Generic `json-feed` definitions are registry-only in this run. They are not executed. Safe generic source execution remains the next bounded objective after rc8 acceptance and must add DNS/rebinding-safe egress validation, redirect controls, bounded response/content validation, provenance normalization, health/failure isolation and replay integration before any arbitrary registered endpoint is fetched.
+Accepted scope: persistent source lifecycle management with human-admin authorization, service-account separation, secret references, audit-chain events, supported source types, explicit reliability/schedule/enabled metadata and registration-time SSRF-safe endpoint validation. The admin workspace is `/ui/admin-sources` and the control API is `/api/v1/admin/sources`.
+
+Generic `json-feed` definitions remain registry-only. They are not executed. Safe generic source execution is the current bounded objective and must add DNS/rebinding-safe egress validation, redirect controls, bounded response/content validation, provenance normalization, health/failure isolation and replay/idempotency integration before any arbitrary registered endpoint is fetched.
 
 ## Phase 8 — Staging acceptance
 
@@ -64,4 +66,4 @@ Every run must document Plan, Do, Check and Act, update run/QA evidence, preserv
 
 ## Exactly one next priority
 
-Complete exact-head CI for RUN-170 / 16.0.0rc8. Merge only on complete success. If accepted, proceed to one safe generic registered-source execution adapter; otherwise remediate only the first concrete failure.
+Implement and independently test one safe generic registered-source execution adapter for enabled `json-feed` source definitions. Do not begin graphical dashboard integration until this data-plane objective is accepted on complete exact-head CI.
