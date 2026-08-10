@@ -20,6 +20,10 @@ Repository-controlled acceptance for the RC10.3 investigation workspace only.
 - local/dev/staging identity remains per-tab sessionStorage only; server-side RBAC remains authoritative;
 - all registered GitHub workflows succeed on one final exact PR head.
 
+## Failed-head evidence and remediation
+
+Exact head `648bee0706d702683f388a6da34b9bbe34417bb4` did **not** pass this gate. RC4 `test` failed at Ruff lint with `F401` for an unused `typing.Any` import in `backend/dtmo/threat_workspace.py`; type-check, tests and compile were therefore skipped. The RC4 aggregate `release-gate` failed closed as consequential evidence. RUN-20260810-179 removes only that unused import. A new exact-head matrix must complete before this gate can become PASS.
+
 ## Claim boundary
 
 A PASS proves repository implementation and regression contracts only. It does not prove live source completeness, external enrichment quality, genuine VoiceOver/NVDA execution, real staging parity, independent penetration testing, external assurance or production readiness.
