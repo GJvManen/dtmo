@@ -22,13 +22,22 @@ The final exact release head must demonstrate:
 12. registered browser/accessibility regression workflows execute on the final exact head;
 13. all registered workflows complete successfully before release acceptance.
 
-## First exact-head result — failed
+## Validation history
 
-PR #112 exact head `0e6bc86b425b4e6511520bd6734f79baf7413d97` is **not accepted**. It produced 11 failing workflow-level RC9 gates (22 failing checks when fail-closed aggregate jobs are included): Analyst Search Browser E2E, Keyboard Navigation, Auditor Read-only Browser E2E, Responsive Layout, CISO Token Revocation Browser E2E, Text Spacing, Reflow, Contrast, Session Status, Text Resize and Supported Browsers.
+PR #112 initial exact head `0e6bc86b425b4e6511520bd6734f79baf7413d97` is **not accepted**. It produced 11 failing workflow-level RC9 gates (22 failing checks when fail-closed aggregate jobs are included).
 
-Directly observed regressions included lost `empty`/`forbidden` semantic states, missing `aria-atomic=true`, missing `data-event-id` on rendered audit events, absent visible focus on the analyst search input, 390 px document width at a 360 px viewport and decorative backgrounds that made automated contrast evidence fail closed.
+RUN-163 through RUN-165 progressively restored the accepted frontend contracts. RUN-166 validation head `b33f270b201527249f847107863ee1184954f352` completed 46/48 registered workflows successfully. RC9 Reflow and RC9 Contrast were confirmed green, demonstrating the RUN-166 product fixes were effective.
 
-RUN-163 introduces a compatibility remediation that preserves the professional rc6 information architecture while restoring these previously accepted RC9 contracts. The remediation must itself pass a complete fresh exact-head matrix; no result from the failed head can be reused as PASS evidence.
+The only failures on `b33f270b201527249f847107863ee1184954f352` were:
+
+- RC9 Text Spacing Accessibility Gate;
+- RC9 Text Resize Accessibility Gate.
+
+Each workflow includes a primary evidence job and a fail-closed aggregate job, so GitHub surfaces these as four failed checks.
+
+Decoded logs show one shared cause: the intentional `.sr-only` label for Analyst intelligence search was included in visual clipping geometry. The label is required for accessible naming and must remain available to assistive technology. RUN-167 therefore corrects the visual-evidence scope: `.sr-only` nodes are excluded only from rendered text geometry measurements. The label is not removed or made `aria-hidden`.
+
+A complete fresh exact-head matrix is required after RUN-167. No result from a prior failed head can be reused as release PASS evidence.
 
 ## External evidence not satisfied here
 
@@ -47,4 +56,4 @@ RBAC, least privilege, separation of duties, privacy, provenance, append-only au
 
 ## Current decision
 
-`CI_VALIDATION_PENDING` for the RUN-163 remediation. PR #112 must not merge until every registered workflow succeeds on the final exact head.
+`CI_VALIDATION_PENDING` for RUN-167. PR #112 must not merge until every registered workflow succeeds on one final exact head.
