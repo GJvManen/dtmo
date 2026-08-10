@@ -15,7 +15,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `PASS`.
-- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. The repository-controlled staging-emulator configuration contract and bounded application-container runtime smoke are accepted as `PASS` for their explicit scopes only.
+- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. The repository-controlled staging-emulator configuration contract and bounded application-container runtime smoke are accepted as `PASS` for their explicit scopes only. PR #108 is `CI_VALIDATION_PENDING` after RUN-157 lifecycle-regression remediation.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
@@ -66,7 +66,13 @@ The runtime smoke executes only the DTMO application container. It does not exec
 
 A fresh repository and issue review found no approved real staging environment/deployment identity and no reviewable package satisfying all ten deployment-parity evidence classes against one immutable staging release. No missing evidence is treated as PASS and no downstream staging acceptance result is credited.
 
-Exactly one next priority: provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity. Do not begin or credit the staging acceptance suite before that gate is complete.
+### RUN-157 runtime-smoke lifecycle regression remediation — `CI_VALIDATION_PENDING`
+
+PR #108 previous exact head `c4c28938a49b2a3dcba90ab01e6bd1cb430a3439` completed 47/48 workflows. RC4 failed in pytest after lint and type-check passed because the runtime-smoke governance regression still required obsolete `CI_VALIDATION_PENDING` wording after the gate had correctly advanced to bounded `PASS`. The assertion now requires the exact accepted bounded PASS wording while continuing to require human share approval and the full real-staging/deployment-parity/Phase-8 non-overclaim boundary. Fresh complete exact-head CI is required.
+
+Exactly one next priority: verify all 48 workflows on PR #108's changed exact head and merge only on complete success.
+
+After that merge, provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity. Do not begin or credit the staging acceptance suite before that gate is complete.
 
 ## Phase 9 — External assurance
 
