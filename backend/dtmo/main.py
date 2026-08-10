@@ -24,6 +24,7 @@ from dtmo.logging import bind_request_context, clear_request_context, configure_
 from dtmo.operations_metrics import router as operations_metrics_router
 from dtmo.operations_ui import router as operations_ui_router
 from dtmo.scheduler import ScheduledJob, SchedulerService
+from dtmo.source_center import router as source_center_router
 from dtmo.threat_workspace import router as threat_workspace_router
 from dtmo.trace_context import begin_trace, end_trace
 from dtmo.ui import router as ui_router
@@ -72,6 +73,7 @@ app.include_router(frontend_router)
 app.include_router(operations_ui_router)
 app.include_router(operations_metrics_router)
 app.include_router(threat_workspace_router)
+app.include_router(source_center_router)
 app.include_router(intelligence_router)
 app.include_router(admin_sources_router)
 app.include_router(admin_ui_router)

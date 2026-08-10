@@ -1,37 +1,31 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — 16.0.0rc10 RC10.2 / PR #117 is accepted and merged; RUN-20260810-178/179 executes and remediates RC10.3 Threat Intelligence Workspace.
+Last reconciled: 2026-08-10 — RC10.3 / PR #118 is accepted and merged as `1377899e7096c01362ab803c502c1d40812ef581`; RC10.4 Source Center refinement is under exact-head CI remediation.
 
 ## Executive status
 
-- Phase 1 — CI/workflow integrity: `PASS`.
-- Phase 2 — application security and identity: `PASS` for internal roadmap gates.
-- Phase 3 — data integrity and recovery: `PASS` for internal roadmap gates.
-- Phase 4 — connector reliability and provenance: `PASS` for the accepted built-in and governed registered-source execution baseline.
-- Phase 5 — performance and scalability: `PASS` for internal roadmap gates.
-- Phase 6 — frontend accessibility and operational UX: RC10.1 and RC10.2 are accepted; RC10.3 is `CI_VALIDATION_PENDING`. Genuine VoiceOver/NVDA remains `BLOCKED_EXTERNAL`.
-- Phase 7 — observability and incident operations: `PASS` for internal gates.
-- Phase 8 — staging acceptance: `BLOCKED_EXTERNAL` for one approved real staging deployment and the ten deployment-parity evidence classes.
-- Phase 9 — external assurance: `NOT COMPLETE`.
-- Phase 10 — production go/no-go: `NOT STARTED`.
+- Phases 1–7 repository-controlled internal gates: accepted within documented claim boundaries.
+- RC10.1 Operations Workspace: `PASS`.
+- RC10.2 unified operational dashboards: `PASS`.
+- RC10.3 Threat Intelligence Workspace: `PASS`.
+- RC10.4 Source Center refinement: `CI_VALIDATION_PENDING`.
+- Phase 8 staging acceptance: `BLOCKED_EXTERNAL` for approved real deployment-parity evidence.
+- Phase 9 external assurance: `NOT COMPLETE`.
+- Phase 10 production go/no-go: `NOT STARTED`.
 
-DTMO is **not production ready**. Issue #1 remains authoritative for external production-acceptance gates.
+DTMO is **not production ready**.
 
-## Accepted RC10.2 baseline
+## RUN-181 / RC10.4
 
-PR #117 exact head `d4e35a5fa0c463438299d6cdd3638de162a69026` completed every registered workflow successfully and merged as `db9e72d871fb1c4d536912419ffbb4d68ad680c2`.
+The new `/ui/source-center` combines registered source identity, enabled state, configured interval, reliability, runtime health, last success/failure, consecutive failure/isolation state and bounded endpoint provenance. Its GET-only `/api/v1/source-center/status` reuses `MANAGE_CONNECTORS` and requires a human admin.
 
-## RUN-178 / RC10.3
+Secret references and raw evidence are deliberately absent. The Source Center contains no source mutation, manual-run, review or share-approval operation; those remain in the existing accepted governed control planes. Ingested intelligence remains subject to human review and separate external share approval.
 
-RC10.3 adds `/ui/intelligence-workspace`, reuses the accepted RBAC-protected `/api/v1/intelligence/search` path and adds GET-only `/api/v1/intelligence/{item_id}/workspace` for canonical investigation detail.
+## RUN-182 CI remediation
 
-The detail projection exposes only stored canonical title/summary/source/severity/confidence/education relevance/review/share state, tags, bounded safe metadata and provenance. Explicit CVE identifiers are extracted from stored canonical text/tags. `known_exploited` is asserted only when the stored source is `cisa-kev`; vendor/product are shown only when explicitly present in stored metadata. Missing context is never invented.
+Exact head `294dcd6490a9e9dde6d21d648578214529dd9b07` failed only the RC4 Quality Gate. Lint passed, but mypy reported three unsafe `.isoformat()` calls on nullable connector runtime timestamps in `backend/dtmo/source_center.py`; tests and compile were therefore skipped and the aggregate release gate failed closed. The remediation retrieves the optional runtime state once and explicitly narrows each nullable timestamp before serialization. This is a type-safety correction only and does not change the RC10.4 authority boundary.
 
-The workspace adds no review, share-approval, source-management, connector-run, admin or security mutation authority. Existing server-side RBAC, human review, separate share approval and audit controls remain authoritative.
-
-## RUN-179 CI remediation
-
-Exact head `648bee0706d702683f388a6da34b9bbe34417bb4` produced two red RC4 jobs from one root cause: the `test` job stopped at Ruff `F401` because `typing.Any` was imported but unused in `threat_workspace.py`; the aggregate `release-gate` then failed closed. The unused import has been removed. Because type-check, tests and compile were skipped after lint failed, those stages are not retroactively claimed as pass. PR #118 requires a complete new exact-head run.
+A new exact head requires the complete registered workflow matrix before RC10.4 can be accepted.
 
 ## External blockers
 
@@ -39,4 +33,4 @@ No approved real staging endpoint/environment identity and no complete ten-class
 
 ## Exactly one current priority
 
-Complete exact-head CI validation for PR #118 after RUN-179. Merge only on complete success; otherwise remediate the first concrete failing root cause only.
+Complete full exact-head CI validation for the remediated RC10.4 Source Center PR. Merge only on complete success; otherwise remediate only the first concrete failing root cause.
