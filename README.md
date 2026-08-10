@@ -2,81 +2,74 @@
 
 **Dutch Threat Monitoring for Education**
 
-DTMO is een open, onderwijsgericht Cyber Threat Intelligence-platform voor historische incidenten, actuele intelligence, kwetsbaarheden, IOC's, leveranciersrisico en bestuurlijke rapportage.
+DTMO is an open, education-focused Cyber Threat Intelligence platform for historical incidents, current intelligence, vulnerabilities, indicators, supplier risk and management reporting.
 
-## Actuele implementatiestatus — 2026-08-09
+## Current production-readiness status — 2026-08-10
 
-DTMO bevindt zich in **Phase 7 — observability en incident operations** van de productie-roadmap.
+DTMO is **not production ready**.
 
-### Afgerond en evidenced
-
-- Phase 1–5: `PASS` voor de interne roadmap-gates;
-- RC9.1–RC9.15: geaccepteerde bounded browser/accessibility critical-journey evidence;
-- RC10.1 request observability: `PASS`;
-- RC10.2 controlled connector-failure alerting: `PASS`;
-- RC10.3 bounded queue-backlog alerting: `PASS`;
-- RUN-20260809-128 documentation reconciliation: `PASS` only in the final protected merged state after final exact-head 36/36 validation;
-- Apache-2.0/open-source-governance baseline: `PASS`.
-
-### Open en geblokkeerd
-
-- Phase 6: `BLOCKED_EXTERNAL` uitsluitend voor genuine VoiceOver/NVDA behavior op ondersteunde echte host/browser/screen-reader combinaties;
-- Phase 7: `IN PROGRESS`;
-- Phase 8: `NOT STARTED`;
-- Phase 9: `NOT COMPLETE`;
-- Phase 10: `NOT STARTED`;
-- Issue #1 blijft de source of truth voor resterende externe productieacceptatie-gates.
-
-## Laatste Phase-7 evidence
-
-### RC10.1 — request observability
-PR #80 exact head `01a175e12da7c8af8566178a2d7e6b34a57d58bc`; 34/34 workflows; artifact `9040196394` (`sha256:6792020994d94b0484cb84140d202433303eceb82565f8598ffd5937940531d6`); JUnit 5/5; merge `1675d88bb24dcd50e20545f49b26dd7cc2810d97`.
-
-### RC10.2 — connector-failure alerting
-PR #82 exact head `b38aeae44588e39e35339f4c4d9667947804b243`; 35/35 workflows; artifact `9040485255` (`sha256:96883158cfd790c3c6b21c2db819acbcbc03d431d4dd79bb32038b6ff258de25`); JUnit 4/4; merge `f6680423860389288d9feced34592294d774bf4a`.
-
-### RC10.3 — queue-backlog alerting
-PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74`; 36/36 workflows; artifact `9040996591` (`sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`); bounded queue metrics, 80% raise/50% clear hysteresis, correlated actionable evidence and RC8 queue-pressure reuse; JUnit 5/5; merge `42ccbe04cbc1081f93e4a155243627b5a3038573`.
-
-RC10.2/RC10.3 configureren of certificeren geen pager/e-mail/chat delivery. RC10.3 claimt geen aparte deployed durable queue service. Storage-integrity, API-error en search-health alerting blijven afzonderlijke Phase-7 objectives.
-
-## Roadmapstatus
-
-| Fase | Status |
+| Phase | Status |
 |---|---|
-| 1–5 | `PASS` intern |
-| 6. Frontend accessibility en operationele UX | `BLOCKED_EXTERNAL` — genuine VoiceOver/NVDA evidence open |
-| 7. Observability en incident operations | `IN PROGRESS` — RC10.1, RC10.2 en RC10.3 PASS |
-| 8. Staging acceptance | `NOT STARTED` |
-| 9. External assurance | `NOT COMPLETE` |
+| 1. CI and workflow integrity | `PASS` |
+| 2. Application security and identity | `PASS` internally |
+| 3. Data integrity and recovery | `PASS` internally |
+| 4. Connector reliability and provenance | `PASS` internally |
+| 5. Performance and scalability | `PASS` internally |
+| 6. Accessibility and operational UX | `BLOCKED_EXTERNAL` — genuine VoiceOver/NVDA evidence |
+| 7. Observability and incident operations | `PASS` |
+| 8. Staging acceptance | `BLOCKED_EXTERNAL` — real staging/deployment parity |
+| 9. External assurance | `NOT COMPLETE`; readiness/intake contract accepted |
 | 10. Production go/no-go | `NOT STARTED` |
 
-## Architectuur, workflows en grafieken
+PR #110 exact head `5549ac1f28307c8bfa8c2ea1bf39341bb33983a0` completed all 48 registered workflows successfully and merged as `0b9a6d51dcd6e4fa984888d172e1fb5f5d6d52f2`, making RUN-159's Phase 9 external-assurance intake baseline authoritative on `main`.
 
-Zie `docs/project/CURRENT_STATE.md` voor actuele runtime-, governance-, roadmap- en CI-grafieken.
+## Documentation
 
-Belangrijke observability-workflows:
-- `.github/workflows/request-observability.yml`;
-- `.github/workflows/connector-alerting.yml`;
-- `.github/workflows/queue-backlog-alerting.yml`.
+Start with [`docs/README.md`](docs/README.md).
 
-Workflow presence is not PASS: exact-head uitvoering en retained evidence blijven vereist.
+Key documents:
 
-## Governance-invarianten
+- [Current project state](docs/project/CURRENT_STATE.md)
+- [Executive status](docs/project/EXECUTIVE_STATUS.md)
+- [Production readiness report](docs/project/PRODUCTION_READINESS_REPORT.md)
+- [Production acceptance checklist](docs/project/PRODUCTION_CHECKLIST.md)
+- [Production roadmap](docs/roadmap/PRODUCTION_ROADMAP.md)
+- [Development run log](docs/development/RUN_LOG.md)
+- [Evidence index](docs/evidence/EVIDENCE_INDEX.md)
+- [Traceability matrix](docs/traceability/TRACEABILITY_MATRIX.md)
+- [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
+- [Security overview](docs/security/SECURITY_OVERVIEW.md)
+- [Operations manual](docs/operations/OPERATIONS_MANUAL.md)
+- [Lessons learned](docs/project/LESSONS_LEARNED.md)
+- [ADR-001 — Evidence and claim boundaries](docs/project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md)
 
-- ingestion maakt uitsluitend candidate intelligence;
-- review en share approval blijven afzonderlijke menselijke beslissingen;
-- dezelfde principal mag niet reviewen en share approval uitvoeren;
-- serviceaccounts en connectors mogen niet reviewen of delen goedkeuren;
-- connector-, queue-, replay-, retry-, timeout-, recovery-, performance- of observability-success mag nooit automatisch publiceren;
-- raw evidence, provenance en confidence mogen niet stilzwijgend verdwijnen;
-- ontbrekende, queued, cancelled, failed of unexecuted CI-evidence blokkeert de bijbehorende acceptatieclaim.
+Detailed gate decisions remain in `docs/qa/`; detailed PDCA evidence remains in `docs/development/runs/`.
 
-## Open-source licentie en projectgovernance
+## Governance invariants
 
-DTMO is gelicenseerd onder de **Apache License, Version 2.0** (`Apache-2.0`). Zie `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` en `docs/legal/THIRD_PARTY.md`.
+- RBAC and least privilege;
+- review and human share approval are separate decisions;
+- separation of duties is preserved;
+- service accounts/connectors/CI/staging access cannot grant publication authority;
+- provenance and confidence are preserved;
+- privacy and data minimization apply to logs and evidence;
+- secret values, credentials and tokens are excluded from repository evidence;
+- missing, queued, cancelled, skipped, failed, stale, inaccessible or inferred evidence is never `PASS`;
+- successful connector, recovery, performance, CI, emulator or staging execution never automatically publishes or approves sharing.
 
-## Snel starten
+## Phase 8 blocker
+
+Real staging acceptance requires one approved immutable deployment identity with the complete ten-class deployment-parity package: environment/owner, reachable endpoint, deployed release/image identity, infrastructure/configuration parity, approved secret-manager/least-privilege identities, TLS/network restrictions, staging data/no-production-credential confirmation, deployment/change record, rollback target/procedure and deployment-time threat/CVE/vendor-advisory review.
+
+Repository-controlled emulator configuration and bounded application-container runtime smoke are accepted only for their explicit scopes and do not satisfy this gate.
+
+## Phase 9 external assurance
+
+The accepted readiness contract requires independent evidence for penetration testing, representative load/stress, full backup/restoration, production platform hardening, secrets-management acceptance, operational/stakeholder acceptance and staging/production deployment acceptance.
+
+No external assurance activity is considered complete without attributable, dated, reviewable evidence and findings disposition.
+
+## Quick start
 
 ```bash
 git clone https://github.com/GJvManen/dtmo.git
@@ -85,10 +78,12 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Belangrijke endpoints: API `:8000`, OpenAPI `/docs`, Health `/health`, Metrics `/metrics`, MinIO Console `:9001`, Prometheus `:9090`.
+Important endpoints in the local stack include API `:8000`, OpenAPI `/docs`, health `/health`, metrics `/metrics`, MinIO Console `:9001` and Prometheus `:9090`.
 
-## Productiestatus
+## Open source
 
-DTMO is nog niet productiegereed. Phase 6 heeft een expliciete externe assistive-technology blocker, Phase 7 is nog in uitvoering, en Phases 8–10 plus issue #1 vereisen aanvullende evidence.
+DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). See `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` and `docs/legal/THIRD_PARTY.md`.
 
-**Precies één volgende prioriteit:** RC10.4 — bounded storage-integrity alerting met controlled integrity-failure/recovery evidence, actionable correlation, geen raw sensitive payload leakage en retained exact-head evidence. API-error en search-health alerting blijven latere Phase-7 objectives.
+## Exactly one next priority
+
+Acquire the first missing independent assurance evidence class from issue #1 without treating absent external execution as PASS. In roadmap order this is the independent penetration test against an approved target deployment.
