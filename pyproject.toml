@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dtmo"
-version = "16.0.0rc7"
+version = "16.0.0rc8"
 description = "Education-focused cyber threat intelligence platform"
 readme = "README.md"
 license = "Apache-2.0"
