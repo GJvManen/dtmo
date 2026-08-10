@@ -47,8 +47,12 @@ The original PR #105 runtime gate proved independently observable execution, but
 
 ## RUN-157 lifecycle-regression remediation
 
-PR #108 previous exact head `c4c28938a49b2a3dcba90ab01e6bd1cb430a3439` completed 47/48 registered workflows. RC4 failed because `backend/tests/test_phase8_staging_emulator_runtime.py` still required the obsolete lifecycle token `CI_VALIDATION_PENDING` even though this QA gate had already advanced to bounded `PASS` from accepted PR #107 evidence. The regression now requires this exact bounded PASS decision and continues to require human share approval plus the unchanged real-staging, deployment-parity, Phase-8 and production non-overclaim statements. Fresh complete exact-head CI is required before PR #108 can merge.
+PR #108 previous exact head `c4c28938a49b2a3dcba90ab01e6bd1cb430a3439` completed 47/48 registered workflows. RC4 failed because `backend/tests/test_phase8_staging_emulator_runtime.py` still required the obsolete lifecycle token `CI_VALIDATION_PENDING` even though this QA gate had already advanced to bounded `PASS` from accepted PR #107 evidence.
+
+The regression was corrected to require this exact bounded PASS decision and to continue requiring human share approval plus the unchanged real-staging, deployment-parity, Phase-8 and production non-overclaim statements. PR #108 exact head `25ac24bfa40f2f9ccebb5d1307615c6fbd14cf05` then completed 48/48 workflows successfully, including RC4 and all three Phase 8 repository gates. RC4 pytest completed 292 passed / 16 skipped with 84.96% coverage. Retained runtime artifact `9057841831`, digest `sha256:0e68feb37e9937b574a6ef80affeff13aeda162eb83c8805a8f220cb082999b1`, is exact-head bound.
+
+RUN-157 is therefore accepted as `PASS` for its bounded lifecycle-regression scope. This does not alter the real-staging blocker or broaden this QA gate's claim.
 
 ## Exactly one next priority
 
-Verify all 48 workflows on PR #108's changed exact head and merge only on complete success. After merge, provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity. Repository runtime evidence is not a substitute for that gate.
+Verify all 48 workflows on PR #108's documentation-finalization exact head and merge only on complete success. After merge, provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity. Repository runtime evidence is not a substitute for that gate.
