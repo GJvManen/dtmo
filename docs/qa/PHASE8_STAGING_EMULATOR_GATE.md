@@ -45,6 +45,10 @@ PR #104 merged as `3c7a4b7f56e8d8a757541963bbd261fe42a7269c`.
 
 The first RUN-151 exact head completed 46/47 registered workflows successfully; RC4 failed because this QA document did not contain the canonical phrase `human share approval` required by the governance regression test. The documentation contract was corrected without weakening or suppressing the test. The fresh final exact-head matrix then passed completely as recorded above.
 
+## RUN-154 lifecycle regression remediation
+
+PR #106 previous exact head `469dcca367dc3fcdb2baf114afe91f903164736b` completed 46/47 workflows. RC4 failed because `test_qa_preserves_emulation_claim_boundary` still required the obsolete `CI_VALIDATION_PENDING` lifecycle token after this gate had correctly advanced to bounded `PASS`. The regression now requires this evidenced bounded `PASS` wording and continues to require the real-staging, deployment-parity, Phase-8/production non-overclaim statements plus human share approval. The control has not been weakened.
+
 ## Exactly one next priority
 
-Verify the RUN-153 documentation reconciliation PR on its exact final head and merge only on complete CI success. The real staging deployment-parity gate remains independently `BLOCKED_EXTERNAL`.
+Verify every registered workflow on PR #106's changed exact head and merge only on complete CI success. The real staging deployment-parity gate remains independently `BLOCKED_EXTERNAL`.
