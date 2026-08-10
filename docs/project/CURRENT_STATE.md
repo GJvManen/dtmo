@@ -1,15 +1,15 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — 16.0.0rc7 / PR #113 is accepted and merged. RUN-20260810-170 introduces the next bounded product objective: a governed Admin Configuration & Source Registry baseline in 16.0.0rc8.
+Last reconciled: 2026-08-10 — 16.0.0rc8 / PR #114 is accepted and merged. The current bounded product priority is safe generic registered-source execution for governed `json-feed` source definitions.
 
 ## Executive status
 
 - Phase 1 — CI/workflow integrity: `PASS`.
 - Phase 2 — application security and identity: `PASS` for internal roadmap gates.
 - Phase 3 — data integrity and recovery: `PASS` for internal roadmap gates.
-- Phase 4 — connector reliability and provenance: `PASS` for the built-in CISA KEV pipeline after rc7 restored raw/canonical/provenance/search persistence and replay repair.
+- Phase 4 — connector reliability and provenance: `PASS` for the built-in CISA KEV path; the generic registered-source path is not yet executable and remains the current bounded product objective.
 - Phase 5 — performance and scalability: `PASS` for internal roadmap gates.
-- Phase 6 — frontend accessibility and operational UX: rc6 remains the accepted repository-controlled UX baseline; genuine VoiceOver/NVDA behavior remains `BLOCKED_EXTERNAL`. rc8 adds an admin workspace but does not supersede external AT evidence.
+- Phase 6 — frontend accessibility and operational UX: rc6 remains the accepted repository-controlled professional UX baseline; rc8 adds the accepted admin source-management workspace. Genuine VoiceOver/NVDA behavior remains `BLOCKED_EXTERNAL`.
 - Phase 7 — observability and incident operations: `PASS`.
 - Phase 8 — staging acceptance: `BLOCKED_EXTERNAL` for one approved real staging deployment and the ten deployment-parity evidence classes.
 - Phase 9 — external assurance: `NOT COMPLETE`; repository-controlled intake/readiness contract accepted.
@@ -17,35 +17,31 @@ Last reconciled: 2026-08-10 — 16.0.0rc7 / PR #113 is accepted and merged. RUN-
 
 DTMO is **not production ready**. Issue #1 remains authoritative for external production-acceptance gates.
 
-## Accepted 16.0.0rc7 intelligence baseline
+## Accepted 16.0.0rc8 Admin Configuration & Source Registry baseline
 
-PR #113 final exact head `c2b7216d4777488768796a69b3e928571a824e33` completed all 48 registered workflows successfully and merged to `main` as `892d7e48e19109b45062acd272f84a31f6f33802`. Search now safely initializes its index, the strict mapping matches canonical confidence fields, CISA KEV records traverse the raw lake/canonical database/provenance/OpenSearch path, replay can repair derived search state and manual connector execution is permission-gated.
+PR #114 final exact head `95fed1e663bdf256def58020f11529f383c8efe5` completed all 48 registered workflows successfully and merged to `main` as `7351ae2ab984b6848969bc634c32e819ec413031`.
 
-## RUN-170 / 16.0.0rc8 Admin Configuration & Source Registry
-
-The next accepted-feedback gap is admin source lifecycle control. rc8 adds:
+Accepted rc8 capabilities include:
 
 - persistent source definitions with Alembic revision `0007_source_registry`;
 - `/api/v1/admin/sources` list/create/update/validate operations;
-- a professional `/ui/admin-sources` workspace;
+- professional `/ui/admin-sources` workspace;
 - human-admin plus `manage:connectors` authorization for mutations;
 - service-account exclusion from the human admin surface;
 - supported source types and explicit reliability/schedule/enabled metadata;
-- first-line SSRF-safe URL shape validation;
+- registration-time SSRF-safe URL shape validation;
 - secret references instead of raw secret values;
 - persistent audit-chain events for source create/update.
 
-Generic `json-feed` entries are intentionally **registry-only** in this run. They are not fetched yet. Safe generic execution is a separate trust boundary requiring DNS/rebinding-safe destination validation, redirect policy, response bounds, content validation, provenance normalization, connector health/failure isolation and replay semantics.
-
-RUN-170 remains `CI_VALIDATION_PENDING` until every registered workflow succeeds on one exact PR head.
+Generic `json-feed` entries remain **registry-only**. Registration is not execution approval and does not establish source trust. Safe execution requires a separate runtime trust boundary with DNS/rebinding protection, redirect policy, response/content limits, provenance normalization, connector health/failure isolation and replay/idempotency semantics.
 
 ## Deferred accepted-feedback backlog
 
-After rc8 acceptance, the next bounded objective is the safe generic source execution adapter for enabled registered JSON feeds. Once the control/data plane is reliable, the next UI objective is graphical dashboard integration and broader framework/navigation consolidation so operational, connector and intelligence visualizations are first-class parts of the console rather than separate building blocks.
+The next bounded objective is the safe generic source execution adapter for enabled registered JSON feeds. Once that control/data plane is accepted, graphical dashboard integration and broader framework/navigation consolidation become the next UI objective so operational, connector and intelligence visualizations are first-class parts of the console rather than separate building blocks.
 
 ## Dependency/advisory observation
 
-The recorded OpenSearch 2.19.1 patch-maintenance finding remains open: later 2.19 patch releases exist and require a separate compatibility/security maintenance run. This is not folded into rc8 because the current objective is source-registry governance.
+The recorded OpenSearch 2.19.1 patch-maintenance finding remains open: later 2.19 patch releases exist and require a separate compatibility/security maintenance run. This is not folded into the generic-source execution objective unless a higher-severity advisory makes it blocking.
 
 ## Phase 8 blocker
 
@@ -57,4 +53,4 @@ RBAC, separation of duties, privacy, provenance, auditability and human share ap
 
 ## Exactly one current priority
 
-Complete exact-head CI validation for RUN-170 / 16.0.0rc8. Merge only if every registered workflow succeeds; otherwise remediate the first concrete failure.
+Implement and independently test one safe generic registered-source execution adapter for enabled `json-feed` source definitions. Do not begin dashboard integration until this data-plane objective is accepted on complete exact-head CI.
