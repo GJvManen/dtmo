@@ -12,12 +12,13 @@ _PAGE = """<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DTMO — CISO security</title>
   <link rel="stylesheet" href="/ui/design-system.css">
+  <link rel="stylesheet" href="/ui/rc9-compat.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Ga naar hoofdinhoud</a>
   <header class="app-header">
     <div><p class="eyebrow">CISO workspace</p><h1>Security operations</h1></div>
-    <div class="header-actions"><a class="button ghost" href="/">Terug naar console</a><span id="ciso-principal" data-testid="ciso-principal" class="status-pill neutral" role="status" aria-live="polite">Principal bepalen…</span></div>
+    <div class="header-actions"><a class="button ghost" href="/">Terug naar console</a><span id="ciso-principal" data-testid="ciso-principal" class="status-pill neutral" role="status" aria-live="polite" aria-atomic="true">Principal bepalen…</span></div>
   </header>
   <main id="main" class="workspace">
     <section class="page-heading"><div><p class="eyebrow">Privileged control</p><h2>Token revocation</h2><p>Maak een bearer token voortijdig ongeldig. Deze actie is alleen beschikbaar voor een menselijke principal met expliciete revoke-permissie.</p></div></section>
@@ -53,7 +54,7 @@ _SCRIPT = r"""(() => {
     if (!response.ok) throw new Error(body.detail || `session failed: ${response.status}`);
     principal.textContent = `${body.subject} · ${body.roles.join(', ') || 'geen rollen'}`; principal.className = 'status-pill success';
     const allowed = body.permissions.includes('revoke:tokens') && !body.service_account; panel.hidden = !allowed;
-    setState(allowed ? 'Geautoriseerd voor governed token revocation.' : 'Token revocation is niet toegestaan voor deze principal.', allowed ? 'success' : 'error');
+    setState(allowed ? 'Geautoriseerd voor governed token revocation.' : 'Token revocation is niet toegestaan voor deze principal.', allowed ? 'success' : 'forbidden');
   }
   async function revoke() {
     setState('Token intrekken…', 'loading');
