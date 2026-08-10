@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — 16.0.0rc10 RC10.1 / PR #116 is accepted and merged.
+Last reconciled: 2026-08-10 — 16.0.0rc10 RC10.1 / PR #116 is accepted and merged; RUN-20260810-176 executes RC10.2 live operational dashboards.
 
 ## Executive status
 
@@ -9,8 +9,8 @@ Last reconciled: 2026-08-10 — 16.0.0rc10 RC10.1 / PR #116 is accepted and merg
 - Phase 3 — data integrity and recovery: `PASS` for internal roadmap gates.
 - Phase 4 — connector reliability and provenance: `PASS` for the accepted CISA KEV plus governed registered-source execution baseline from rc9.
 - Phase 5 — performance and scalability: `PASS` for internal roadmap gates.
-- Phase 6 — frontend accessibility and operational UX: rc6 is the accepted role-workspace baseline, rc8 the accepted admin source-management baseline, and RC10.1 is now the accepted unified Operations Workspace shell baseline. Genuine VoiceOver/NVDA remains `BLOCKED_EXTERNAL`.
-- Phase 7 — observability and incident operations: `PASS` for internal gates.
+- Phase 6 — frontend accessibility and operational UX: RC10.1 is the accepted unified Operations Workspace shell; RC10.2 replaces the remaining synthetic dashboard placeholder with real telemetry and is `CI_VALIDATION_PENDING`. Genuine VoiceOver/NVDA remains `BLOCKED_EXTERNAL`.
+- Phase 7 — observability and incident operations: `PASS` for internal gates; RC10.2 surfaces accepted telemetry in the frontend without changing monitoring authority.
 - Phase 8 — staging acceptance: `BLOCKED_EXTERNAL` for one approved real staging deployment and the ten deployment-parity evidence classes.
 - Phase 9 — external assurance: `NOT COMPLETE`.
 - Phase 10 — production go/no-go: `NOT STARTED`.
@@ -21,9 +21,11 @@ DTMO is **not production ready**. Issue #1 remains authoritative for external pr
 
 PR #116 exact head `d41d9e60a4a67ddb30345eecee4042d1c19a6cf5` completed every registered workflow successfully and merged as `b000ef2275d52ff098d2d2bd8df76136cea3b051`.
 
-RC10.1 adds `/ui/operations` as the unified professional application shell with consolidated operations navigation, command palette, notifications, workspace tabs, runtime/connector KPI cards, quick access to governed role workspaces and a responsive command-center layout. The shell reads existing `/health` and `/connectors` endpoints only and adds no privileged write action.
+## RUN-176 / RC10.2
 
-Existing RBAC, human review, separate external share approval, source administration, audit and CISO authorization remain authoritative. Placeholder visualizations are explicitly not treated as telemetry.
+RC10.2 adds `/api/v1/operations/summary`, a GET-only aggregate projection over the existing in-process Prometheus registry. It exposes bounded operational values for HTTP request volume/latency/in-flight, API/connector/storage/search alert state, queue backlog utilization, trace-context totals and connector-run totals. It does not return raw request labels, bodies, authorization material, cookies, query strings, student identifiers or object-storage identifiers.
+
+`/ui/operations` now renders real KPI cards, alert-state panels and accessible operational snapshot bars from `/api/v1/operations/summary`, while continuing to use `/health` and `/connectors` for runtime and connector configuration state. The RC10.1 synthetic placeholder chart is removed. No privileged write path, review authority or publication authority is added.
 
 ## External blockers
 
@@ -31,4 +33,4 @@ No approved real staging endpoint/environment identity and no complete ten-class
 
 ## Exactly one current priority
 
-RC10.2 — bind existing operational metrics/building blocks to accessible real-data graphical dashboard widgets inside the Operations Workspace. The implementation must use real repository/runtime metrics, expose textual equivalents, remain responsive, and introduce no privileged write path.
+Complete exact-head CI validation for RUN-176 / RC10.2. Merge only if every registered workflow succeeds. After acceptance, proceed to RC10.3 Threat Intelligence Workspace; otherwise remediate only the first concrete failing root cause.
