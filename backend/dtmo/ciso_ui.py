@@ -61,7 +61,7 @@ _SCRIPT = r"""(() => {
     const response = await fetch('/api/v1/security/tokens/revoke', {method: 'POST', credentials: 'same-origin', headers: {'Content-Type':'application/json','X-Request-ID':crypto.randomUUID()}, body: JSON.stringify({jti:jti.value.trim(),expires_at:expiresAt.value.trim(),reason:reason.value.trim()})});
     let body; try { body = await response.json(); } catch (_) { body = {detail:'invalid response'}; }
     if (!response.ok) { setState(`Revocation mislukt (${response.status}): ${body.detail || 'unknown error'}`, 'error'); return; }
-    setState(`Token ingetrokken. Audit event: ${body.audit_event_id}`, 'success'); form.reset();
+    setState(`Token revoked. Audit event: ${body.audit_event_id}`, 'success'); form.reset();
   }
   form.addEventListener('submit',(event)=>{event.preventDefault();void revoke();});
   session().catch((error)=>{principal.textContent=`Sessiefout: ${error.message}`;principal.className='status-pill error';setState('Geen geautoriseerde sessie.', 'error');});
