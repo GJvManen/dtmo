@@ -48,7 +48,7 @@ def test_runtime_probe_checks_operational_and_security_behavior() -> None:
 
 def test_runtime_qa_preserves_external_claim_boundary_and_governance() -> None:
     text = QA.read_text(encoding="utf-8")
-    assert "CI_VALIDATION_PENDING" in text
+    assert "`PASS` for the bounded repository-controlled DTMO application-container runtime smoke only." in text
     assert "human share approval" in text
     assert "does not prove a real staging environment" in text
     assert "does not satisfy the ten deployment-parity evidence classes" in text
