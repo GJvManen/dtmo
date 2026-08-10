@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260810-173 — rc9 stale admin-version regression remediation](runs/RUN-20260810-173.md) — `CI_VALIDATION_PENDING`: PR #115 head `d7b51cc9aace6f87cfe34b8aeb50be59e15b800a` had 47/48 workflows successful; RC4 failed because an rc8 feature regression test incorrectly hard-coded the global application version at `16.0.0rc8`. The stale assertion was removed without changing production behavior or security controls; complete CI on the new exact head is required before PASS.
 - [RUN-20260810-172 — Safe registered-source execution and curated source catalog](runs/RUN-20260810-172.md) — `CI_VALIDATION_PENDING`: 16.0.0rc9 adds a fail-closed pinned-HTTPS generic JSON execution path, NVD and GitHub advisory parsers, canonical DTMO JSON v1 support, admin catalog/bootstrap/run controls, connector health/isolation/alert integration and a broad official/vendor/education-sector source catalog. No PASS until all registered workflows succeed on one final exact head.
 - [RUN-20260810-171 — PR #114 acceptance and merge reconciliation](runs/RUN-20260810-171.md) — `PASS`: exact head `95fed1e663bdf256def58020f11529f383c8efe5` completed all 48 registered workflows successfully and PR #114 merged as `7351ae2ab984b6848969bc634c32e819ec413031`. 16.0.0rc8 is the accepted repository-controlled Admin Configuration & Source Registry baseline.
 - [RUN-20260810-170 — Governed Admin Configuration & Source Registry](runs/RUN-20260810-170.md) — `PASS` via RUN-171 reconciliation.
@@ -24,8 +25,8 @@ Older run records remain under `docs/development/runs/` and in repository histor
 
 ## Current decision
 
-Phase 1–7 internal repository-controlled gates remain accepted within their documented claim boundaries. rc8 is accepted and merged as the current source-registry baseline. RUN-172 / rc9 is the current bounded source-execution objective and remains `CI_VALIDATION_PENDING`. Phase 8 remains `BLOCKED_EXTERNAL` for one approved real staging deployment and all ten deployment-parity evidence classes. Phase 9 remains `NOT COMPLETE`; Phase 10 remains `NOT STARTED`. DTMO is not production ready.
+Phase 1–7 internal repository-controlled gates remain accepted within their documented claim boundaries. rc8 is accepted and merged as the current source-registry baseline. RUN-172 / rc9 remains the current bounded source-execution objective and is `CI_VALIDATION_PENDING`; RUN-173 records remediation of the only failure on its previous exact head. Phase 8 remains `BLOCKED_EXTERNAL` for one approved real staging deployment and all ten deployment-parity evidence classes. Phase 9 remains `NOT COMPLETE`; Phase 10 remains `NOT STARTED`. DTMO is not production ready.
 
 ## Exactly one next priority
 
-Complete exact-head CI validation of RUN-172 / 16.0.0rc9. Merge only if every registered workflow succeeds. If accepted, integrate the existing graphical/operational dashboard building blocks into the professional console; otherwise remediate only the first concrete failing root cause.
+Complete exact-head CI validation of PR #115 after RUN-173. Merge only if every registered workflow succeeds. If accepted, integrate the existing graphical/operational dashboard building blocks into the professional console; otherwise remediate only the first concrete failing root cause.
