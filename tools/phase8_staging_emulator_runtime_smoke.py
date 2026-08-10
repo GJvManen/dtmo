@@ -24,6 +24,23 @@ def _request(url: str, *, method: str = "GET") -> tuple[int, dict[str, str], byt
         return response.status, {k.lower(): v for k, v in response.headers.items()}, response.read()
 
 
+def _request_allow_http_error(url: str, *, method: str = "GET") -> tuple[int, dict[str, str], bytes]:
+    """Return an HTTP response even when the server deliberately rejects the request.
+
+    The runtime smoke needs to validate fail-closed authorization behavior. urllib
+    raises HTTPError for 4xx responses, so convert that response into the same
+    bounded tuple shape used by successful requests without weakening URL controls.
+    """
+
+    _validate_loopback_url(url)
+    request = urllib.request.Request(url, method=method)  # noqa: S310 - URL is explicitly restricted to loopback HTTP
+    try:
+        with urllib.request.urlopen(request, timeout=5) as response:  # noqa: S310 - URL is explicitly restricted to loopback HTTP
+            return response.status, {k.lower(): v for k, v in response.headers.items()}, response.read()
+    except urllib.error.HTTPError as exc:
+        return exc.code, {k.lower(): v for k, v in exc.headers.items()}, exc.read()
+
+
 def _json(url: str, *, method: str = "GET") -> tuple[int, dict[str, str], Any]:
     status, headers, body = _request(url, method=method)
     return status, headers, json.loads(body.decode("utf-8"))
@@ -90,8 +107,19 @@ def main() -> int:
         connector_disabled = connectors_status == 200 and isinstance(connectors, list) and bool(connectors) and connectors[0].get("enabled") is False
         check("live_connectors_default_off", connector_disabled, f"unexpected connector inventory: {connectors}")
 
-        run_status, _, run_result = _json(f"{args.base_url}/connectors/cisa-kev/run", method="POST")
-        check("connector_run_fail_closed", run_status == 200 and run_result.get("status") == "disabled", f"unexpected connector run response: {run_status} {run_result}")
+        run_status, _, run_body = _request_allow_http_error(
+            f"{args.base_url}/connectors/cisa-kev/run",
+            method="POST",
+        )
+        try:
+            run_result = json.loads(run_body.decode("utf-8"))
+        except json.JSONDecodeError:
+            run_result = {}
+        check(
+            "connector_run_requires_authorization",
+            run_status in {401, 403},
+            f"expected unauthenticated connector execution to fail closed; response: {run_status} {run_result}",
+        )
 
         metrics_status, _, metrics_body = _request(f"{args.base_url}/metrics")
         metrics_text = metrics_body.decode("utf-8")
