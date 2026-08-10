@@ -6,7 +6,7 @@ This roadmap defines the controlled path from DTMO's current release-candidate s
 
 The release rule is strict: no phase is complete without objective evidence. Missing CI, security, recovery, performance, accessibility, operational or external-assurance evidence blocks production readiness.
 
-## Current status — 2026-08-09
+## Current status — 2026-08-10
 
 - Phase 1 — CI and workflow integrity: `PASS`.
 - Phase 2 — Application security and identity: `PASS` for internal gates.
@@ -15,7 +15,7 @@ The release rule is strict: no phase is complete without objective evidence. Mis
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `PASS`.
-- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence; RUN-151 staging emulator remains `CI_VALIDATION_PENDING` after RUN-152 remediation.
+- Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. The RUN-151/RUN-152 staging emulator is accepted as `PASS` for its bounded configuration-contract scope only.
 - Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
@@ -48,17 +48,25 @@ PR #102 final exact head `c0bf83a8e0a9c51bdbd492fadfb60a71e25c7e9b` completed 46
 
 PR #103 exact head `be9deb34255f6114430d76868c9bf82f0e039f15` completed 46/46 workflows successfully and merged as `1e957f7fa1e9910e5d258cd6d7ed5ce69e9203d1`. No real staging deployment-parity package was found.
 
-### RUN-151 production-equivalent staging emulator baseline — `CI_VALIDATION_PENDING`
+### RUN-151 production-equivalent staging emulator baseline — `PASS` for bounded emulator scope
 
 RUN-151 adds a deterministic source-controlled staging emulator specification under `infrastructure/staging-emulator/`. It runs DTMO in `production` configuration mode and requires immutable digest-pinned images, external secrets/license/certificate inputs, backend network isolation, loopback-only TLS ingress, secured OpenSearch configuration, authenticated Redis, AIStor object storage, Prometheus/Grafana observability, disabled-by-default live connectors/AI analyst, and preserved human publication/share approval.
 
 The `Phase 8 Staging Emulator Gate` validates rendered Compose topology without pulling or running the declared images. Its evidence therefore proves only the emulator configuration contract, not runtime behavior or a real staging environment.
 
-### RUN-152 staging emulator CI-integrity remediation — `CI_VALIDATION_PENDING`
+### RUN-152 staging emulator CI-integrity remediation — `PASS`
 
-PR #104 previous exact head `03611ee74eb2521a85942a34cec6e060ee989a0c` completed 46/47 workflows successfully. The dedicated staging-emulator gate succeeded; RC4 failed because the emulator QA document omitted the canonical phrase `human share approval` required by its governance regression test. The documentation contract was corrected without weakening the test or any governance control. Fresh complete exact-head CI and regenerated retained evidence are required.
+PR #104 previous exact head `03611ee74eb2521a85942a34cec6e060ee989a0c` completed 46/47 workflows successfully. The dedicated staging-emulator gate succeeded; RC4 failed because the emulator QA document omitted the canonical phrase `human share approval` required by its governance regression test. The documentation contract was corrected without weakening the test or any governance control.
 
-Exactly one next priority: verify every registered workflow on PR #104's changed exact head and independently inspect `phase8-staging-emulator-evidence`. Merge only on full success. Real staging deployment and all ten deployment-parity evidence classes remain required afterward.
+PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` then completed 47/47 registered workflows successfully. Retained artifact `9045039742`, digest `sha256:959586b389579dfd37bda60eecdfb67e0251eaf4a78daed214986cefe771ce65`, records decision `pass`, the exact final head, JUnit 4/4 and explicit false claim-boundary fields for container execution, real staging, deployment parity, ten external evidence classes, Phase 8 completion and production acceptance. PR #104 merged as `3c7a4b7f56e8d8a757541963bbd261fe42a7269c`.
+
+### RUN-153 emulator acceptance documentation reconciliation — `CI_VALIDATION_PENDING`
+
+Authoritative documentation is being reconciled with the accepted PR #104 evidence. This run changes no runtime or governance control and does not change Phase 8's external blocker. Fresh exact-head CI is required for the documentation PR before merge.
+
+Exactly one next priority: verify every registered workflow on the exact final head of the RUN-153 documentation PR and merge only on complete success.
+
+After that merge, the next Phase 8 roadmap objective is acquisition/provisioning of one approved real staging deployment and retention of all ten deployment-parity evidence classes against the same immutable deployment identity.
 
 ## Phase 9 — External assurance
 
