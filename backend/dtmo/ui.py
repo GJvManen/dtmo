@@ -172,8 +172,23 @@ html, body { width: 100%; max-width: 100%; overflow-x: hidden; }
 .hero-search, .form-grid, .security-heading, .table-wrap, table, pre, code { min-width: 0; max-width: 100%; }
 .surface, .surface.critical, .decision-card, .search-surface, .response-surface,
 .security-card, .table-surface, .intel-card { background-image: none !important; }
+.page-heading h2 { font-size: 2rem !important; }
+.sr-only {
+  position: absolute !important;
+  left: -10000px !important;
+  top: auto !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  clip: auto !important;
+  clip-path: none !important;
+  white-space: nowrap !important;
+}
 .button.primary { background-color: #57baff !important; background-image: none !important; color: #04101c !important; }
 .button.danger { background-color: #8f3141 !important; background-image: none !important; color: #ffffff !important; }
+.button.ghost, .button.secondary, .button.danger, input, textarea {
+  border: 2px solid #eef5ff !important;
+}
 input, textarea, button, a, pre, code { max-width: 100%; overflow-wrap: anywhere; word-break: break-word; }
 input:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible {
   outline: 3px solid #f8df6b !important;
