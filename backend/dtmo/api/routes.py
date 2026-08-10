@@ -13,6 +13,7 @@ from dtmo.auth.policy import Permission, Principal
 from dtmo.auth.revocation import revoke_token_with_audit
 from dtmo.auth.token_state import TokenStateError, TokenStateStore
 from dtmo.config import Settings, get_settings
+from dtmo.connectors.base import ConnectorRecord
 from dtmo.governance import (
     GovernedDecisionError,
     approve_intelligence_sharing,
@@ -43,18 +44,11 @@ async def get_session() -> AsyncIterator[AsyncSession]:
         yield session
 
 
-@router.post(
-    "/intelligence",
-    response_model=IntelligenceIngestResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-async def ingest_intelligence(
+async def _persist_intelligence(
     request: IntelligenceIngestRequest,
-    principal: Annotated[
-        Principal,
-        Depends(require_permission(Permission.INGEST_INTELLIGENCE)),
-    ],
-    session: Annotated[AsyncSession, Depends(get_session)],
+    *,
+    actor_subject: str,
+    session: AsyncSession,
 ) -> IntelligenceIngestResponse:
     raw = json.dumps(request.raw_payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
     external_id = request.external_id or request.title
@@ -76,7 +70,7 @@ async def ingest_intelligence(
             "sha256": receipt.sha256,
             "size": receipt.size,
         },
-        "ingested_by": principal.subject,
+        "ingested_by": actor_subject,
     }
     payload["provenance"] = [
         {
@@ -124,6 +118,70 @@ async def ingest_intelligence(
         raw_object_key=receipt.key,
         raw_sha256=receipt.sha256,
         indexed=indexed,
+    )
+
+
+async def ingest_connector_record(connector_id: str, record: ConnectorRecord) -> IntelligenceIngestResponse:
+    """Land, canonicalize and index one trusted connector record.
+
+    Connector execution is a service ingestion path, never a human publication path.
+    Review and external share approval remain separate governed human decisions.
+    """
+
+    request = IntelligenceIngestRequest.model_validate(
+        {
+            "source_id": connector_id,
+            "external_id": record.external_id,
+            "item_type": record.object_type,
+            "title": record.title,
+            "summary": record.summary,
+            "canonical_url": record.url,
+            "published_at": record.published_at,
+            "severity": "informational",
+            "confidence": record.confidence,
+            "education_relevance": 80,
+            "tags": [record.external_id, record.object_type, connector_id],
+            "metadata": {
+                "source_reliability": record.source_reliability,
+                "connector_managed": True,
+            },
+            "provenance": [
+                {
+                    "source_url": record.url,
+                    "source_title": record.title,
+                    "publisher": connector_id,
+                    "confidence": record.confidence,
+                }
+            ],
+            "raw_payload": record.raw,
+        }
+    )
+    async for session in database.session():
+        return await _persist_intelligence(
+            request,
+            actor_subject=f"connector:{connector_id}",
+            session=session,
+        )
+    raise RuntimeError("database session unavailable")
+
+
+@router.post(
+    "/intelligence",
+    response_model=IntelligenceIngestResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def ingest_intelligence(
+    request: IntelligenceIngestRequest,
+    principal: Annotated[
+        Principal,
+        Depends(require_permission(Permission.INGEST_INTELLIGENCE)),
+    ],
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> IntelligenceIngestResponse:
+    return await _persist_intelligence(
+        request,
+        actor_subject=principal.subject,
+        session=session,
     )
 
 
