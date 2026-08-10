@@ -21,31 +21,30 @@ DTMO is **not production ready**.
 | 9. External assurance | `NOT COMPLETE` |
 | 10. Production go/no-go | `NOT STARTED` |
 
-RC10.1 / PR #116 is accepted: exact head `d41d9e60a4a67ddb30345eecee4042d1c19a6cf5` completed every registered workflow and merged as `b000ef2275d52ff098d2d2bd8df76136cea3b051`. RUN-20260810-176 / RC10.2 is the current bounded objective and remains `CI_VALIDATION_PENDING` until its own final exact head is fully green.
+RC10.1 / PR #116 and RC10.2 / PR #117 are accepted. PR #117 exact head `d4e35a5fa0c463438299d6cdd3638de162a69026` completed every registered workflow and merged as `db9e72d871fb1c4d536912419ffbb4d68ad680c2`. RUN-20260810-178 / RC10.3 is the current bounded objective and remains `CI_VALIDATION_PENDING` until its own exact head is fully green.
 
-## 16.0.0rc10 Operations Workspace
+## 16.0.0rc10 Workspaces
 
 After `docker compose up --build`, open:
 
 - `http://localhost:8000/ui/operations` — unified Security Operations Workspace;
+- `http://localhost:8000/ui/intelligence-workspace` — RC10.3 Threat Intelligence investigation workspace;
 - `http://localhost:8000/` — Threat Operations Console;
 - `http://localhost:8000/ui/admin-sources` — governed Source Registry;
-- `http://localhost:8000/ui/analyst-search` — Analyst workspace;
-- `http://localhost:8000/ui/share-approval` — Share Approval workspace;
+- `http://localhost:8000/ui/analyst-search` — focused Analyst workspace;
+- `http://localhost:8000/ui/share-approval` — separate Share Approval workspace;
 - `http://localhost:8000/ui/auditor` — read-only Auditor workspace;
 - `http://localhost:8000/ui/ciso-security` — CISO Security workspace;
 - `http://localhost:8000/docs` — OpenAPI/Swagger;
 - `http://localhost:8000/health` — health status;
 - `http://localhost:8000/metrics` — raw Prometheus metrics;
-- `http://localhost:8000/api/v1/operations/summary` — bounded aggregate operational telemetry;
-- `http://localhost:9001/` — AIStor/MinIO console;
-- `http://localhost:9090/` — Prometheus.
+- `http://localhost:8000/api/v1/operations/summary` — bounded aggregate operational telemetry.
 
-RC10.1 established the professional operations shell with consolidated navigation, command palette, notification drawer and workspace tabs. RC10.2 replaces the remaining synthetic dashboard placeholder with live read-only widgets backed by the existing Prometheus client registry. The browser receives only bounded aggregate values for request volume/latency/in-flight, queue backlog, connector runs, trace contexts and active API/connector/storage/search alerts; sensitive request dimensions and credentials are excluded.
+RC10.3 reuses the accepted RBAC-protected search path and adds a read-only canonical investigation detail projection. It shows stored source, severity, confidence, education relevance, review/share state and provenance. Explicit CVE identifiers are extracted only from stored canonical text/tags; known-exploited context is asserted only for records stored from `cisa-kev`; vendor/product are shown only when explicitly stored. Missing context is not invented.
 
-Existing server-side RBAC remains authoritative. Review and external share approval remain distinct human decisions, self-approval remains prohibited, and operational telemetry never grants publication authority.
+Existing server-side RBAC remains authoritative. Search/investigation does not grant review or publication authority. Review and external share approval remain distinct human decisions and self-approval remains prohibited.
 
-For OpenSearch 2.12+ the local Compose bootstrap requires `OPENSEARCH_INITIAL_ADMIN_PASSWORD` in `.env`. Real credentials, AIStor license material and image digests must remain outside source control.
+For OpenSearch 2.12+ local Compose bootstrap requires `OPENSEARCH_INITIAL_ADMIN_PASSWORD` in `.env`. Real credentials, AIStor license material and image digests must remain outside source control.
 
 ## Documentation
 
@@ -57,15 +56,14 @@ Key documents:
 - [Production roadmap](docs/roadmap/PRODUCTION_ROADMAP.md)
 - [Development run log](docs/development/RUN_LOG.md)
 - [RC10 release notes](docs/releases/16.0.0rc10.md)
+- [RC10.3 Threat Intelligence Workspace Gate](docs/qa/RC10_3_THREAT_INTELLIGENCE_WORKSPACE_GATE.md)
+- [RUN-178 RC10.3 implementation](docs/development/runs/RUN-20260810-178.md)
 - [RC10.2 Unified Operational Dashboards Gate](docs/qa/RC10_2_UNIFIED_DASHBOARDS_GATE.md)
-- [RUN-176 RC10.2 dashboard implementation](docs/development/runs/RUN-20260810-176.md)
 - [Evidence index](docs/evidence/EVIDENCE_INDEX.md)
 - [Traceability matrix](docs/traceability/TRACEABILITY_MATRIX.md)
 - [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
 - [Security overview](docs/security/SECURITY_OVERVIEW.md)
 - [Operations manual](docs/operations/OPERATIONS_MANUAL.md)
-
-Detailed gate decisions remain in `docs/qa/`; detailed PDCA evidence remains in `docs/development/runs/`.
 
 ## Governance invariants
 
@@ -93,7 +91,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Then open `http://localhost:8000/ui/operations` for the unified Operations Workspace.
+Then open `http://localhost:8000/ui/operations` or `http://localhost:8000/ui/intelligence-workspace`.
 
 ## Open source
 
@@ -101,4 +99,4 @@ DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). See `
 
 ## Exactly one next priority
 
-Complete exact-head CI validation for RUN-20260810-176 / RC10.2. Merge only on complete success. After acceptance, start RC10.3 Threat Intelligence Workspace; otherwise remediate only the first concrete failing root cause.
+Complete exact-head CI validation for RUN-20260810-178 / RC10.3. Merge only on complete success; otherwise remediate only the first concrete failing root cause.
