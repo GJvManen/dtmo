@@ -54,7 +54,7 @@ _SCRIPT = r"""(() => {
     if (!response.ok) throw new Error(body.detail || `session failed: ${response.status}`);
     principal.textContent = `${body.subject} · ${body.roles.join(', ') || 'geen rollen'}`; principal.className = 'status-pill success';
     const allowed = body.permissions.includes('revoke:tokens') && !body.service_account; panel.hidden = !allowed;
-    setState(allowed ? 'Geautoriseerd voor governed token revocation.' : 'Token revocation is niet toegestaan voor deze principal.', allowed ? 'success' : 'forbidden');
+    setState(allowed ? 'Geautoriseerd voor governed token revocation.' : 'Token revocation is niet toegestaan voor deze principal.', allowed ? 'ready' : 'forbidden');
   }
   async function revoke() {
     setState('Token intrekken…', 'loading');
