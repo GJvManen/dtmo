@@ -8,7 +8,7 @@ from fastapi import FastAPI, Request, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
 from dtmo.alerts import connector_alerts
-from dtmo.api.routes import close_services, router as intelligence_router
+from dtmo.api.routes import close_services, ingest_connector_record, router as intelligence_router
 from dtmo.api_alerts import api_error_alerts
 from dtmo.auditor_ui import router as auditor_ui_router
 from dtmo.ciso_ui import router as ciso_ui_router
@@ -46,12 +46,21 @@ def _route_template(request: Request) -> str:
 
 async def run_cisa_kev() -> dict[str, object]:
     result = await CisaKevConnector(settings).run()
+    inserted = 0
+    indexed = 0
+    if result.status == "completed":
+        for record in result.records:
+            receipt = await ingest_connector_record(result.connector_id, record)
+            inserted += int(receipt.inserted)
+            indexed += int(receipt.indexed)
     alert = connector_alerts.record(result)
     log.info(
         "connector_run_finished",
         connector_id=result.connector_id,
         status=result.status,
         records=len(result.records),
+        inserted=inserted,
+        indexed=indexed,
         attempts=result.attempts,
         alert_state=alert.state,
         correlation_id=alert.correlation_id,
@@ -60,6 +69,8 @@ async def run_cisa_kev() -> dict[str, object]:
         "connector_id": result.connector_id,
         "status": result.status,
         "records": len(result.records),
+        "inserted": inserted,
+        "indexed": indexed,
         "attempts": result.attempts,
         "error": result.error,
         "alert_state": alert.state,
@@ -85,7 +96,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(
     title="DTMO API",
-    version="16.0.0rc6",
+    version="16.0.0rc7",
     description="Education-focused cyber threat intelligence platform",
     lifespan=lifespan,
 )
@@ -173,6 +184,7 @@ def connectors() -> list[dict[str, object]]:
             "enabled": settings.feature_live_connectors,
             "reliability": "authoritative",
             "schedule_seconds": settings.connector_poll_seconds,
+            "manual_run_available": not settings.production or settings.feature_live_connectors,
         }
     ]
 
