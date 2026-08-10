@@ -14,7 +14,7 @@ This roadmap defines the controlled path from DTMO's release-candidate state to 
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `PASS`.
 - Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. Repository-controlled staging-emulator configuration and bounded application-container runtime smoke are `PASS` only for their explicit scopes.
-- Phase 9 — External assurance: `NOT COMPLETE`; RUN-159 defines the repository-controlled intake/readiness contract and is `CI_VALIDATION_PENDING`.
+- Phase 9 — External assurance: `NOT COMPLETE`; the repository-controlled intake/readiness baseline is accepted from PR #110 exact-head evidence.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
 ## Phase 8 — Staging acceptance
@@ -47,15 +47,21 @@ Phase 9 requires independently observable evidence for:
 - operational/stakeholder acceptance by accountable service owner and required security/privacy roles;
 - staging and production deployment acceptance tied to immutable release/deployment identities and rollback targets.
 
-### RUN-159 external-assurance intake baseline — `CI_VALIDATION_PENDING`
+### RUN-159 external-assurance intake baseline — `PASS` for readiness contract only
 
-Because Phase 8 is blocked solely by external staging evidence, RUN-159 advances only the next internally executable preparation task. `docs/qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md` defines the evidence intake and claim-boundary contract. It requires attributable, dated, independently observable evidence; immutable target identity where applicable; explicit finding disposition; privacy-safe retention; separation between review and human share approval; and no secret values in source control.
+PR #110 exact head `5549ac1f28307c8bfa8c2ea1bf39341bb33983a0` completed all 48 registered workflows successfully, including RC4 and all three Phase 8 repository gates, and merged as `0b9a6d51dcd6e4fa984888d172e1fb5f5d6d52f2`.
+
+`docs/qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md` defines the evidence intake and claim-boundary contract. It requires attributable, dated, independently observable evidence; immutable target identity where applicable; explicit finding disposition; privacy-safe retention; separation between review and human share approval; and no secret values in source control.
 
 Where assurance depends on deployed software/platform state, the evidence package must include a time-bounded review of relevant public threat intelligence, CVE data and vendor advisories, preserving source provenance, review time, applicability and confidence. This readiness contract does not prove any external assurance activity has occurred. Issue #1 remains authoritative for completion state.
 
 ## Phase 10 — Production go/no-go
 
 Go requires every prior phase and external gate complete with retained evidence, green CI, release notes/SBOM/deployment manifest/rollback plan, proven recovery and required approvals. Any missing blocking evidence is `NO-GO`.
+
+## Documentation baseline
+
+The production-readiness program is supported by a consolidated documentation layer on `main`: `docs/README.md`, executive status, production-readiness report, production checklist, evidence index, traceability matrix, lessons learned, architecture overview, security overview, operations manual and ADRs. Detailed QA documents and PDCA run records remain the audit trail.
 
 ## PDCA execution order
 
@@ -74,4 +80,4 @@ Every run must document Plan, Do, Check and Act, update run/QA evidence, preserv
 
 ## Exactly one next priority
 
-Verify every registered workflow on the RUN-159 PR exact head and merge only on complete success. After merge, acquire the first missing independent assurance evidence class in issue #1 without treating absent external execution as PASS.
+Acquire the first missing independent assurance evidence class in issue #1 without treating absent external execution as PASS. In roadmap order this is an independent penetration test against the approved target deployment; execution remains dependent on a real approved target environment.
