@@ -23,6 +23,21 @@ DTMO is **not production ready**.
 
 PR #110 exact head `5549ac1f28307c8bfa8c2ea1bf39341bb33983a0` completed all 48 registered workflows successfully and merged as `0b9a6d51dcd6e4fa984888d172e1fb5f5d6d52f2`, making RUN-159's Phase 9 external-assurance intake baseline authoritative on `main`.
 
+## 16.0.0rc5 web console
+
+Release candidate 16.0.0rc5 adds a governed operational web console at the application root. After `docker compose up --build`, open:
+
+- `http://localhost:8000/` — DTMO operational console;
+- `http://localhost:8000/docs` — OpenAPI/Swagger;
+- `http://localhost:8000/health` — health status;
+- `http://localhost:8000/metrics` — Prometheus metrics;
+- `http://localhost:9001/` — AIStor/MinIO console;
+- `http://localhost:9090/` — Prometheus.
+
+The DTMO console provides API/runtime status, connector status, role-aware intelligence search, governed review/share decisions, read-only audit evidence, CISO token revocation and links to the existing dedicated role surfaces. Browser-side test identity material is stored only in `sessionStorage`; production authentication remains the configured bearer-token/identity-provider path. Review and external share approval remain separate human decisions.
+
+For OpenSearch 2.12+ the local Compose bootstrap requires `OPENSEARCH_INITIAL_ADMIN_PASSWORD` in `.env`. The Compose file now explicitly passes this value to the OpenSearch container. Real credentials, AIStor license material and image digests must remain outside source control.
+
 ## Documentation
 
 Start with [`docs/README.md`](docs/README.md).
@@ -40,6 +55,7 @@ Key documents:
 - [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
 - [Security overview](docs/security/SECURITY_OVERVIEW.md)
 - [Operations manual](docs/operations/OPERATIONS_MANUAL.md)
+- [Frontend release gate](docs/qa/FRONTEND_RELEASE_GATE.md)
 - [Lessons learned](docs/project/LESSONS_LEARNED.md)
 - [ADR-001 — Evidence and claim boundaries](docs/project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md)
 
@@ -75,10 +91,11 @@ No external assurance activity is considered complete without attributable, date
 git clone https://github.com/GJvManen/dtmo.git
 cd dtmo
 cp .env.example .env
+# Replace all placeholders in .env with local secret values/references.
 docker compose up --build
 ```
 
-Important endpoints in the local stack include API `:8000`, OpenAPI `/docs`, health `/health`, metrics `/metrics`, MinIO Console `:9001` and Prometheus `:9090`.
+Then open `http://localhost:8000/` for the DTMO console.
 
 ## Open source
 
@@ -86,4 +103,4 @@ DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). See `
 
 ## Exactly one next priority
 
-Acquire the first missing independent assurance evidence class from issue #1 without treating absent external execution as PASS. In roadmap order this is the independent penetration test against an approved target deployment.
+Complete exact-head CI and browser/accessibility validation for the 16.0.0rc5 frontend release. Do not merge or claim the release accepted until every registered workflow succeeds on the final PR head.
