@@ -36,7 +36,7 @@ Blocking gates:
 - RUN-151/RUN-152 staging emulator configuration contract: `PASS`; PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47/47 workflows. This proves source-controlled configuration/topology only.
 - RUN-153/RUN-154 documentation/lifecycle reconciliation: `PASS`; PR #106 final exact head `ff0a490e46c2f9529441d8a5294030af498dbe14` completed 47/47 workflows and merged as `b57a6daa775d2f1f88a2d1b67b191da757fa743f`.
 - RUN-155 bounded application-container runtime smoke: `PASS`; PR #107 exact head `52d7a37660c9bb1c9f8468f11010f36d17bd1fba` completed 48/48 workflows and merged as `23d629964f55709845683e808f707998cc8d4aa2`. This does not execute the complete dependency topology or prove real staging.
-- RUN-157 lifecycle-regression remediation: `PASS`; PR #108 exact head `25ac24bfa40f2f9529441d8a5294030af498dbe14` completed 48/48 workflows after the stale lifecycle assertion was repaired. Its documentation-finalization exact head `bbba29a1269b5c09d1a94a27b38c317bae2590e7` also completed 48/48 workflows and merged as `de3561b42f8e4fec5947182e01563a6327d0e029`.
+- RUN-157 lifecycle-regression remediation: `PASS`; PR #108 exact head `25ac24bfa40f2f9ccebb5d1307615c6fbd14cf05` completed 48/48 workflows after the stale lifecycle assertion was repaired. Its documentation-finalization exact head `bbba29a1269b5c09d1a94a27b38c317bae2590e7` also completed 48/48 workflows and merged as `de3561b42f8e4fec5947182e01563a6327d0e029`.
 
 ### Real staging deployment-parity blocker
 
