@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Annotated, Any
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -129,7 +129,7 @@ _JS = r"""
 const byId=(id)=>document.getElementById(id);
 const session={subject:sessionStorage.getItem('dtmo.subject')||'external-tester',roles:sessionStorage.getItem('dtmo.roles')||'analyst',apiKey:sessionStorage.getItem('dtmo.apiKey')||''};
 function headers(){return {'X-DTMO-Subject':session.subject,'X-DTMO-Roles':session.roles,'X-DTMO-API-Key':session.apiKey,'X-Request-ID':crypto.randomUUID()}}
-function esc(value){return String(value??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function esc(value){return String(value??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 async function api(path){const response=await fetch(path,{headers:headers()});let payload={};try{payload=await response.json()}catch{}if(!response.ok)throw new Error(payload.detail||`HTTP ${response.status}`);return payload}
 function setSession(){byId('session-status').textContent=session.apiKey?`${session.subject} · ${session.roles}`:'Geen API key';byId('session-status').className=`status-pill ${session.apiKey?'good':'neutral'}`;byId('subject').value=session.subject;byId('roles').value=session.roles;}
 function renderResults(results){byId('result-count').textContent=String(results.length);byId('results').innerHTML=results.length?results.map(r=>`<button class="ti-result" type="button" data-id="${esc(r.id)}"><div class="ti-result-top"><strong>${esc(r.title)}</strong><span>${esc(r.severity||'—')}</span></div><small>${esc(r.source_id||'unknown source')} · relevance ${esc(r.education_relevance??0)} · confidence ${esc(r.confidence_score??'—')}</small><p>${esc((r.summary||'').slice(0,220))}</p></button>`).join(''):'<p class="muted">Geen resultaten.</p>';document.querySelectorAll('[data-id]').forEach(button=>button.addEventListener('click',()=>loadDetail(button.dataset.id)))}
