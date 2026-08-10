@@ -59,7 +59,10 @@ def test_admin_workspace_is_wired_and_accessible() -> None:
     ui = UI.read_text(encoding="utf-8")
     assert "app.include_router(admin_sources_router)" in main
     assert "app.include_router(admin_ui_router)" in main
-    assert 'version="16.0.0rc8"' in main
+    # This rc8 regression contract protects admin wiring/accessibility, not the
+    # global release identifier. Later release candidates must not fail merely
+    # because the application version advances.
+    assert "app = FastAPI(" in main
     assert 'href="#content"' in ui
     assert 'role="status"' in ui
     assert "/api/v1/admin/sources" in ui

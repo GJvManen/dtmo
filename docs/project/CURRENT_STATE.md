@@ -1,56 +1,46 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — 16.0.0rc8 / PR #114 is accepted and merged. The current bounded product priority is safe generic registered-source execution for governed `json-feed` source definitions.
+Last reconciled: 2026-08-10 — 16.0.0rc8 / PR #114 is accepted and merged. RUN-20260810-172 / 16.0.0rc9 implements the next bounded priority: safe registered JSON-source execution plus a curated intelligence-source catalog.
 
 ## Executive status
 
 - Phase 1 — CI/workflow integrity: `PASS`.
 - Phase 2 — application security and identity: `PASS` for internal roadmap gates.
 - Phase 3 — data integrity and recovery: `PASS` for internal roadmap gates.
-- Phase 4 — connector reliability and provenance: `PASS` for the built-in CISA KEV path; the generic registered-source path is not yet executable and remains the current bounded product objective.
+- Phase 4 — connector reliability and provenance: built-in CISA KEV remains accepted; rc9 extends the source plane with safe NVD/GitHub/generic JSON execution and is `CI_VALIDATION_PENDING`.
 - Phase 5 — performance and scalability: `PASS` for internal roadmap gates.
-- Phase 6 — frontend accessibility and operational UX: rc6 remains the accepted repository-controlled professional UX baseline; rc8 adds the accepted admin source-management workspace. Genuine VoiceOver/NVDA behavior remains `BLOCKED_EXTERNAL`.
+- Phase 6 — frontend accessibility and operational UX: rc6 remains the accepted professional UX baseline and rc8 the accepted admin registry baseline; genuine VoiceOver/NVDA remains `BLOCKED_EXTERNAL`.
 - Phase 7 — observability and incident operations: `PASS`.
 - Phase 8 — staging acceptance: `BLOCKED_EXTERNAL` for one approved real staging deployment and the ten deployment-parity evidence classes.
-- Phase 9 — external assurance: `NOT COMPLETE`; repository-controlled intake/readiness contract accepted.
+- Phase 9 — external assurance: `NOT COMPLETE`.
 - Phase 10 — production go/no-go: `NOT STARTED`.
 
 DTMO is **not production ready**. Issue #1 remains authoritative for external production-acceptance gates.
 
-## Accepted 16.0.0rc8 Admin Configuration & Source Registry baseline
+## Accepted rc8 baseline
 
-PR #114 final exact head `95fed1e663bdf256def58020f11529f383c8efe5` completed all 48 registered workflows successfully and merged to `main` as `7351ae2ab984b6848969bc634c32e819ec413031`.
+PR #114 final exact head `95fed1e663bdf256def58020f11529f383c8efe5` completed all 48 registered workflows successfully and merged as `7351ae2ab984b6848969bc634c32e819ec413031`. Persistent human-admin source lifecycle, secret references, audit events and registration-time URL validation are accepted within repository-controlled scope.
 
-Accepted rc8 capabilities include:
+## RUN-172 / 16.0.0rc9
 
-- persistent source definitions with Alembic revision `0007_source_registry`;
-- `/api/v1/admin/sources` list/create/update/validate operations;
-- professional `/ui/admin-sources` workspace;
-- human-admin plus `manage:connectors` authorization for mutations;
-- service-account exclusion from the human admin surface;
-- supported source types and explicit reliability/schedule/enabled metadata;
-- registration-time SSRF-safe URL shape validation;
-- secret references instead of raw secret values;
-- persistent audit-chain events for source create/update.
+rc9 adds a second, runtime SSRF boundary instead of relying on registration syntax alone. Every generic source request is freshly DNS-resolved, rejects the complete answer set if any destination is non-global, and connects to one validated IP while retaining the configured hostname for TLS SNI and certificate validation. Redirects are rejected, environment proxies are not used, only JSON is accepted and bodies are capped at 5 MiB.
 
-Generic `json-feed` entries remain **registry-only**. Registration is not execution approval and does not establish source trust. Safe execution requires a separate runtime trust boundary with DNS/rebinding protection, redirect policy, response/content limits, provenance normalization, connector health/failure isolation and replay/idempotency semantics.
+Supported normalizers now cover NIST NVD CVE API 2.0 and GitHub Global Security Advisories. Unknown governed JSON sources must follow the explicit DTMO JSON v1 `items[]` schema. Records enter the existing raw-object, canonical database, provenance and OpenSearch path, repeated execution remains idempotent/search-repairable, and source results feed connector health/failure isolation plus alert state. Manual execution remains human-admin-only and cannot grant review or external share approval.
 
-## Deferred accepted-feedback backlog
+The code-reviewed catalog currently covers CISA KEV, NVD, GitHub, NCSC-NL, CERT-EU, Microsoft MSRC, Cisco, Red Hat, Ubuntu, Debian, Apple, Chrome, Mozilla, Fortinet, Palo Alto, Broadcom/VMware and ENISA. Project documentation additionally records School-CERT/Kennisnet and SURF/SURFcert as high-value education-sector onboarding targets subject to approved interfaces and distribution conditions. Catalog breadth is not confused with executable-parser breadth.
 
-The next bounded objective is the safe generic source execution adapter for enabled registered JSON feeds. Once that control/data plane is accepted, graphical dashboard integration and broader framework/navigation consolidation become the next UI objective so operational, connector and intelligence visualizations are first-class parts of the console rather than separate building blocks.
+## Public threat/source review
 
-## Dependency/advisory observation
+First-party review on 2026-08-10 confirms CISA KEV remains the authoritative CISA list of vulnerabilities exploited in the wild; NIST documents NVD CVE API 2.0 as a JSON REST service; GitHub documents public global security-advisory API access; NCSC-NL distributes public Security Advisories including machine-readable CSAF and RSS; CERT-EU publishes public technical security advisories; MSRC maintains the Security Update Guide. School-CERT and SURF public 2025 threat pictures remain directly relevant to education-sector prioritisation and historical incident learning.
 
-The recorded OpenSearch 2.19.1 patch-maintenance finding remains open: later 2.19 patch releases exist and require a separate compatibility/security maintenance run. This is not folded into the generic-source execution objective unless a higher-severity advisory makes it blocking.
+## Open maintenance finding
 
-## Phase 8 blocker
+The previously recorded OpenSearch 2.19.1 patch-maintenance finding remains open and separate. If a new vendor advisory makes it higher severity than the active objective, roadmap ordering must be interrupted accordingly.
 
-No approved real staging endpoint/environment identity and no complete ten-class deployment-parity package tied to one immutable staged release are available. Required classes remain: approved environment/owner; reachable endpoint; immutable deployed release/image identity; infrastructure/runtime/configuration parity; approved secrets-manager and least-privilege identities; TLS/network restrictions; staging data-class/sanitization and explicit no-production-credential confirmation; deployment/change record; rollback target/procedure; and deployment-time security/CVE/vendor-advisory review.
+## External blockers
 
-## Security and governance invariants
-
-RBAC, separation of duties, privacy, provenance, auditability and human share approval remain mandatory. Missing, stale, inaccessible, inferred, failed, cancelled, skipped or contradictory evidence is never PASS. Connector execution is not publication approval. Registry membership is not source trust or execution approval.
+No approved real staging endpoint/environment identity and no complete ten-class deployment-parity package tied to one immutable release are available. Genuine assistive-technology execution, independent penetration testing and remaining external assurance also remain absent. Missing external evidence is never inferred from repository CI.
 
 ## Exactly one current priority
 
-Implement and independently test one safe generic registered-source execution adapter for enabled `json-feed` source definitions. Do not begin dashboard integration until this data-plane objective is accepted on complete exact-head CI.
+Complete exact-head CI validation for RUN-172 / 16.0.0rc9. Merge only on complete success; otherwise remediate the first concrete failure. After acceptance, the next product priority is integration of the existing graphical/operational dashboard building blocks into the professional console.

@@ -64,7 +64,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     await close_services()
 
 
-app = FastAPI(title="DTMO API", version="16.0.0rc8", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+app = FastAPI(title="DTMO API", version="16.0.0rc9", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
 app.include_router(frontend_router)
 app.include_router(intelligence_router)
 app.include_router(admin_sources_router)

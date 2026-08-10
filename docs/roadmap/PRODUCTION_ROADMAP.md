@@ -9,12 +9,12 @@ This roadmap defines the controlled path from DTMO's release-candidate state to 
 - Phase 1 — CI and workflow integrity: `PASS`.
 - Phase 2 — Application security and identity: `PASS` for internal gates.
 - Phase 3 — Data integrity and recovery: `PASS` for internal gates.
-- Phase 4 — Live connector reliability and provenance: `PASS` for the built-in CISA KEV path; generic registered-source execution is the current bounded extension and is not yet accepted.
+- Phase 4 — Live connector reliability and provenance: `PASS` for the built-in CISA KEV path; RUN-172 / rc9 extends this with safe registered JSON-source execution and remains `CI_VALIDATION_PENDING`.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
-- Phase 6 — Frontend accessibility and operational UX: rc6 is the accepted repository-controlled professional UX baseline; rc8 adds an accepted admin source-management workspace. Genuine VoiceOver/NVDA execution remains `BLOCKED_EXTERNAL`.
+- Phase 6 — Frontend accessibility and operational UX: rc6 is the accepted professional UX baseline; rc8 adds the accepted admin source-management workspace. Genuine VoiceOver/NVDA remains `BLOCKED_EXTERNAL`.
 - Phase 7 — Observability and incident operations: `PASS`.
 - Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence.
-- Phase 9 — External assurance: `NOT COMPLETE`; repository-controlled intake/readiness baseline accepted.
+- Phase 9 — External assurance: `NOT COMPLETE`.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
 ## Accepted recent release baselines
@@ -25,15 +25,19 @@ PR #112 final exact head `e5e0d5e808d1f66c8f512fa35bd0ea3932fe8631` completed 48
 
 ### RUN-169 — 16.0.0rc7 search and live-intelligence remediation — `PASS`
 
-PR #113 final exact head `c2b7216d4777488768796a69b3e928571a824e33` completed 48/48 registered workflows and merged as `892d7e48e19109b45062acd272f84a31f6f33802`. Search fresh-index behavior, strict canonical confidence mapping, CISA KEV raw/canonical/provenance/search ingestion, replay-repair and permission-gated manual connector execution are accepted within repository-controlled scope.
+PR #113 final exact head `c2b7216d4777488768796a69b3e928571a824e33` completed 48/48 registered workflows and merged as `892d7e48e19109b45062acd272f84a31f6f33802`.
 
 ### RUN-170 / RUN-171 — 16.0.0rc8 governed Admin Configuration & Source Registry — `PASS`
 
-PR #114 exact head `95fed1e663bdf256def58020f11529f383c8efe5` completed all 48 registered workflows successfully and merged as `7351ae2ab984b6848969bc634c32e819ec413031`.
+PR #114 exact head `95fed1e663bdf256def58020f11529f383c8efe5` completed all 48 registered workflows and merged as `7351ae2ab984b6848969bc634c32e819ec413031`. Human-admin source lifecycle, secret references, audit events, reliability/schedule/enabled metadata and registration-time URL validation are accepted.
 
-Accepted scope: persistent source lifecycle management with human-admin authorization, service-account separation, secret references, audit-chain events, supported source types, explicit reliability/schedule/enabled metadata and registration-time SSRF-safe endpoint validation. The admin workspace is `/ui/admin-sources` and the control API is `/api/v1/admin/sources`.
+### RUN-172 — 16.0.0rc9 safe registered-source execution — `CI_VALIDATION_PENDING`
 
-Generic `json-feed` definitions remain registry-only. They are not executed. Safe generic source execution is the current bounded objective and must add DNS/rebinding-safe egress validation, redirect controls, bounded response/content validation, provenance normalization, health/failure isolation and replay/idempotency integration before any arbitrary registered endpoint is fetched.
+Current bounded scope adds a runtime trust boundary for enabled registered `json-feed` sources: fresh DNS resolution, complete-answer rejection of non-global destinations, transport pinning to a validated IP with original-hostname TLS verification, no redirects, no environment proxy path, JSON-only content, 5 MiB response bounds, supported NVD/GitHub normalizers, canonical DTMO JSON v1 fallback, connector health/failure isolation, alert integration and replay-safe canonical/search ingestion.
+
+The curated catalog covers major authoritative/public-sector/vendor sources and explicitly distinguishes supported execution profiles from planned parser or research/reference sources. Education-sector School-CERT/Kennisnet and SURF/SURFcert material is tracked as high-value onboarding context subject to approved interfaces and distribution conditions.
+
+Source execution remains candidate ingestion only. It does not change review or separate human share approval.
 
 ## Phase 8 — Staging acceptance
 
@@ -66,4 +70,4 @@ Every run must document Plan, Do, Check and Act, update run/QA evidence, preserv
 
 ## Exactly one next priority
 
-Implement and independently test one safe generic registered-source execution adapter for enabled `json-feed` source definitions. Do not begin graphical dashboard integration until this data-plane objective is accepted on complete exact-head CI.
+Verify every registered workflow on the final RUN-172 / rc9 exact head. Merge only on complete success; otherwise remediate the first concrete failure. If accepted, the next product objective is integration of existing graphical/operational dashboard building blocks into the professional console.

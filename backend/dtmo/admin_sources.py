@@ -1,18 +1,23 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Annotated
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from dtmo.alerts import connector_alerts
+from dtmo.api.routes import get_session, ingest_connector_record
 from dtmo.audit import AuditDecision
 from dtmo.audit.store import append_persistent_audit_event
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal, Role
+from dtmo.connectors.state import ConnectorStateStore
+from dtmo.source_catalog import SOURCE_CATALOG
+from dtmo.source_executor import execute_registered_source
 from dtmo.sources import SourceDefinition, SourceRegistry, validate_source_url
-from dtmo.api.routes import get_session
-
 
 router = APIRouter(prefix="/api/v1/admin/sources", tags=["admin-sources"])
 
@@ -73,6 +78,77 @@ def _response(source: SourceDefinition) -> SourceResponse:
     )
 
 
+async def _audit(
+    session: AsyncSession,
+    *,
+    principal: Principal,
+    action: str,
+    resource: str,
+    request_id: str,
+    provenance_reference: str,
+) -> None:
+    await session.run_sync(
+        lambda sync_session: append_persistent_audit_event(
+            sync_session,
+            principal=principal.subject,
+            principal_type="human",
+            action=action,
+            resource=resource,
+            decision=AuditDecision.ALLOW,
+            request_id=request_id,
+            provenance_reference=provenance_reference,
+        )
+    )
+
+
+@router.get("/catalog")
+async def source_catalog(
+    principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))],
+) -> list[dict[str, object]]:
+    _human_admin(principal)
+    return [entry.as_dict() for entry in SOURCE_CATALOG]
+
+
+@router.post("/catalog/bootstrap", response_model=list[SourceResponse])
+async def bootstrap_supported_sources(
+    principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
+) -> list[SourceResponse]:
+    """Idempotently register code-reviewed executable catalog sources, disabled by default."""
+    _human_admin(principal)
+    registry = SourceRegistry(session)
+    created: list[SourceResponse] = []
+    for entry in SOURCE_CATALOG:
+        if entry.execution_status != "supported":
+            continue
+        existing = await registry.get(entry.id)
+        if existing is not None:
+            created.append(_response(existing))
+            continue
+        source = await registry.create(
+            source_id=entry.id,
+            name=entry.name,
+            source_type="json-feed",
+            endpoint_url=entry.endpoint_url,
+            enabled=False,
+            interval_seconds=entry.recommended_interval_seconds,
+            reliability=entry.reliability,
+            secret_ref=None,
+            actor=principal.subject,
+        )
+        await _audit(
+            session,
+            principal=principal,
+            action="source.bootstrap",
+            resource=f"source:{source.id}",
+            request_id=request_id,
+            provenance_reference=source.endpoint_url,
+        )
+        created.append(_response(source))
+    return created
+
+
 @router.get("", response_model=list[SourceResponse])
 async def list_sources(
     principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))],
@@ -105,17 +181,13 @@ async def create_source(
         )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-    await session.run_sync(
-        lambda sync_session: append_persistent_audit_event(
-            sync_session,
-            principal=principal.subject,
-            principal_type="human",
-            action="source.create",
-            resource=f"source:{source.id}",
-            decision=AuditDecision.ALLOW,
-            request_id=request_id,
-            provenance_reference=source.endpoint_url,
-        )
+    await _audit(
+        session,
+        principal=principal,
+        action="source.create",
+        resource=f"source:{source.id}",
+        request_id=request_id,
+        provenance_reference=source.endpoint_url,
     )
     return _response(source)
 
@@ -146,17 +218,13 @@ async def update_source(
         )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-    await session.run_sync(
-        lambda sync_session: append_persistent_audit_event(
-            sync_session,
-            principal=principal.subject,
-            principal_type="human",
-            action="source.update",
-            resource=f"source:{source.id}",
-            decision=AuditDecision.ALLOW,
-            request_id=request_id,
-            provenance_reference=source.endpoint_url,
-        )
+    await _audit(
+        session,
+        principal=principal,
+        action="source.update",
+        resource=f"source:{source.id}",
+        request_id=request_id,
+        provenance_reference=source.endpoint_url,
     )
     return _response(source)
 
@@ -180,6 +248,69 @@ async def validate_source(
         "valid": True,
         "source_type": source.source_type,
         "enabled": source.enabled,
-        "execution": "built-in" if source.source_type == "cisa-kev" else "registry-only",
-        "note": "generic source execution requires the next connector-adapter run",
+        "execution": "built-in" if source.source_type == "cisa-kev" else "safe-json-adapter",
+        "note": "runtime re-resolves DNS, rejects non-global destinations and redirects, pins TLS to the validated address, and enforces JSON/size bounds",
+    }
+
+
+@router.post("/{source_id}/run")
+async def run_registered_source(
+    source_id: str,
+    principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
+) -> dict[str, object]:
+    _human_admin(principal)
+    source = await SourceRegistry(session).get(source_id)
+    if source is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="source not found")
+    if source.source_type == "cisa-kev":
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="use the built-in CISA KEV execution path")
+    isolated = await session.run_sync(
+        lambda sync_session: ConnectorStateStore(sync_session).is_isolated(source.id)
+    )
+    if isolated:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="source is temporarily isolated after repeated failures")
+
+    started = datetime.now(UTC)
+    result = await execute_registered_source(source)
+    inserted = 0
+    indexed = 0
+    if result.status == "completed":
+        for record in result.records:
+            receipt = await ingest_connector_record(source.id, record)
+            inserted += int(receipt.inserted)
+            indexed += int(receipt.indexed)
+    duration = max((datetime.now(UTC) - started).total_seconds(), 0.0)
+    await session.run_sync(
+        lambda sync_session: ConnectorStateStore(sync_session).record_run(
+            connector_id=source.id,
+            run_id=uuid4(),
+            succeeded=result.status == "completed",
+            duration_seconds=duration,
+            record_count=len(result.records),
+            quarantined=[],
+            error_code=None if result.status == "completed" else "source_execution_failed",
+            details={"inserted": inserted, "indexed": indexed, "error": result.error},
+        )
+    )
+    alert = connector_alerts.record(result)
+    await _audit(
+        session,
+        principal=principal,
+        action="source.run",
+        resource=f"source:{source.id}",
+        request_id=request_id,
+        provenance_reference=source.endpoint_url,
+    )
+    return {
+        "id": source.id,
+        "status": result.status,
+        "records": len(result.records),
+        "inserted": inserted,
+        "indexed": indexed,
+        "error": result.error,
+        "alert_state": alert.state,
+        "correlation_id": alert.correlation_id,
+        "publication_gate": "human-review-and-separate-share-approval-required",
     }
