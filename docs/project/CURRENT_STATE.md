@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — RUN-20260810-159 (`CI_VALIDATION_PENDING`; Phase 9 external-assurance intake baseline)
+Last reconciled: 2026-08-10 — RUN-20260810-159 accepted; extended documentation consolidated on `main`.
 
 ## Executive status
 
@@ -12,31 +12,69 @@ Last reconciled: 2026-08-10 — RUN-20260810-159 (`CI_VALIDATION_PENDING`; Phase
 - Phase 6 — frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA behavior.
 - Phase 7 — observability and incident operations: `PASS`.
 - Phase 8 — staging acceptance: `BLOCKED_EXTERNAL` for one approved real staging deployment and the ten deployment-parity evidence classes. Repository-controlled emulator configuration and bounded application-container runtime smoke are `PASS` only for their explicit scopes.
-- Phase 9 — external assurance: `NOT COMPLETE`; RUN-159 defines the repository-controlled intake/readiness contract and is pending exact-head CI.
+- Phase 9 — external assurance: `NOT COMPLETE`; the repository-controlled external-assurance intake/readiness contract is accepted on `main`.
 - Phase 10 — production go/no-go: `NOT STARTED`.
 
 DTMO is **not production ready**. Issue #1 remains authoritative for external production-acceptance gates.
 
-## Latest accepted merge
+## Latest accepted Phase 9 baseline
 
-PR #109 exact head `fca605acd1e97bd7531967ada080e35ac4ea6a4b` completed all 48 registered workflows successfully, including RC4 Quality Gate and all three Phase 8 repository gates. It merged with expected-head protection as `48dace96c389703130457ed61e639477ace5398b`. RUN-158 is therefore authoritative on `main`.
+PR #110 exact head `5549ac1f28307c8bfa8c2ea1bf39341bb33983a0` completed all 48 registered workflows successfully, including `RC4 Quality Gate`, `Phase 8 Staging Readiness Gate`, `Phase 8 Staging Emulator Gate` and `Phase 8 Staging Emulator Runtime Gate`. PR #110 merged as `0b9a6d51dcd6e4fa984888d172e1fb5f5d6d52f2`.
+
+RUN-159 is therefore accepted for its bounded purpose: defining the external-assurance evidence intake and claim-boundary contract. It does not claim that any external assurance activity has occurred.
 
 ## Phase 8 blocker
 
-A fresh real-staging evidence review still found no approved environment/deployment identity and no complete ten-class deployment-parity package tied to one immutable staged release. Required classes remain: approved environment/owner; reachable endpoint; immutable deployed release/image identity; infrastructure/runtime/configuration parity; approved secrets-manager and least-privilege identities; TLS/network restrictions; staging data-class/sanitization and no-production-credential confirmation; deployment/change record; rollback target/procedure; and deployment-time security/CVE/vendor-advisory review.
+No approved real staging endpoint/environment identity and no complete ten-class deployment-parity package tied to one immutable staged release are available.
+
+Required classes remain:
+1. approved staging environment identifier and accountable owner;
+2. reachable staging endpoint through the approved access path;
+3. immutable deployed application/container image digests and release identity;
+4. infrastructure/runtime versions and configuration-parity evidence;
+5. approved secrets-manager/identity references and least-privilege staging identities;
+6. TLS certificate/termination and network-restriction evidence;
+7. production-equivalent data-class/sanitization statement and explicit no-production-credential confirmation;
+8. deployment/change record tied to the immutable release identity;
+9. rollback target/procedure tied to the staged release;
+10. deployment-time security/CVE/vendor-advisory review evidence.
 
 No staging acceptance result may be credited until those classes are complete against the same immutable identity. Evidence class 10 must preserve public-source provenance, review time, applicability and confidence against the actual deployed release/platform.
 
-## RUN-159 Phase 9 readiness baseline
+## Phase 9 external assurance
 
-Because Phase 8 is blocked solely by an external dependency, RUN-159 advances to the next internally executable roadmap preparation task without changing the Phase 8 claim. `docs/qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md` now defines evidence intake criteria for independent penetration testing, representative load/stress, full backup/restoration, production platform hardening, secrets-management acceptance, operational/stakeholder acceptance and staging/production deployment acceptance.
+The accepted Phase 9 intake contract requires independently observable evidence for:
 
-This is a readiness contract only. No external assurance execution evidence was supplied or discovered in RUN-159, so Phase 9 remains `NOT COMPLETE`. Findings may not be silently waived; unresolved findings require explicit authorized human risk decisions. Review remains separate from human share approval, and secret values or unnecessary personal data remain excluded from repository evidence.
+- independent penetration testing;
+- representative load/stress testing;
+- full backup/restoration exercise;
+- production platform hardening;
+- secrets-management acceptance;
+- operational/stakeholder acceptance;
+- staging and production deployment acceptance.
+
+Evidence must be attributable, dated and tied to immutable target identities where applicable. Findings require explicit disposition. Review remains separate from human share approval, and secret values or unnecessary personal data remain excluded from repository evidence.
+
+## Extended documentation baseline
+
+`main` now contains a consolidated documentation layer in addition to the detailed PDCA audit trail:
+
+- `docs/README.md` — documentation index;
+- `docs/project/EXECUTIVE_STATUS.md` — executive summary;
+- `docs/project/PRODUCTION_READINESS_REPORT.md` — phase-by-phase readiness report;
+- `docs/project/PRODUCTION_CHECKLIST.md` — production acceptance checklist;
+- `docs/evidence/EVIDENCE_INDEX.md` — evidence map;
+- `docs/traceability/TRACEABILITY_MATRIX.md` — requirements/evidence traceability;
+- `docs/project/LESSONS_LEARNED.md` — consolidated lessons;
+- `docs/project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md` — accepted evidence/claim-boundary decision;
+- `docs/architecture/SYSTEM_ARCHITECTURE.md` — architecture overview;
+- `docs/security/SECURITY_OVERVIEW.md` — security/governance overview;
+- `docs/operations/OPERATIONS_MANUAL.md` — operational control model.
 
 ## Security and governance invariants
 
-RBAC, separation of duties, privacy, provenance, auditability and human share approval remain unchanged. Technical environment access cannot grant publication or share approval. Missing, stale, inaccessible, inferred or contradictory evidence is never PASS.
+RBAC, separation of duties, privacy, provenance, auditability and human share approval remain unchanged. Technical environment access cannot grant publication or share approval. Missing, stale, inaccessible, inferred, failed, cancelled, skipped or contradictory evidence is never PASS.
 
 ## Exactly one current priority
 
-Verify every registered workflow on the RUN-159 PR exact head and merge only on complete success. After merge, acquire the first missing independent assurance evidence class in issue #1 without treating absent external execution as PASS.
+Acquire the first missing independent assurance evidence class from issue #1 without treating absent external execution as PASS. The first class in roadmap order is the independent penetration test against the approved target deployment; it remains blocked until an approved real target exists.
