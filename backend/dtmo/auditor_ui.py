@@ -21,12 +21,13 @@ _PAGE = """<!doctype html>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DTMO — Auditor evidence</title>
   <link rel="stylesheet" href="/ui/design-system.css">
+  <link rel="stylesheet" href="/ui/rc9-compat.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Ga naar hoofdinhoud</a>
   <header class="app-header">
     <div><p class="eyebrow">Auditor workspace</p><h1>Read-only audit evidence</h1></div>
-    <div class="header-actions"><a class="button ghost" href="/">Terug naar console</a><span id="auditor-principal" data-testid="auditor-principal" class="status-pill neutral" role="status" aria-live="polite">Principal bepalen…</span></div>
+    <div class="header-actions"><a class="button ghost" href="/">Terug naar console</a><span id="auditor-principal" data-testid="auditor-principal" class="status-pill neutral" role="status" aria-live="polite" aria-atomic="true">Principal bepalen…</span></div>
   </header>
   <main id="main" class="workspace">
     <section class="page-heading"><div><p class="eyebrow">Auditability</p><h2>Evidence viewer</h2><p>Bekijk recente audit-events zonder wijzigingsmogelijkheden. Event hashes, principals, decisions en resources blijven zichtbaar voor onafhankelijke controle.</p></div></section>
@@ -53,7 +54,7 @@ _SCRIPT = r"""(() => {
     if (!response.ok) throw new Error(body.detail || `session failed: ${response.status}`);
     principal.textContent = `${body.subject} · ${body.roles.join(', ') || 'geen rollen'}`; principal.className = 'status-pill success';
     panel.hidden = !body.permissions.includes('read:audit');
-    if (panel.hidden) setState('Audit evidence is niet toegestaan voor deze principal.', 'error');
+    if (panel.hidden) setState('Audit evidence is niet toegestaan voor deze principal.', 'forbidden');
   }
   async function loadAudit() {
     events.innerHTML = '<tr><td colspan="5" class="empty-cell">Audit evidence laden…</td></tr>'; setState('Audit evidence laden…','loading');
@@ -63,12 +64,12 @@ _SCRIPT = r"""(() => {
       if (!response.ok) throw new Error(body.detail || `audit read failed: ${response.status}`);
       events.replaceChildren();
       for (const item of body.events || []) {
-        const row = document.createElement('tr');
+        const row = document.createElement('tr'); row.dataset.eventId = String(item.event_id);
         for (const value of [item.action,item.principal,item.decision,item.resource]) { const cell=document.createElement('td'); cell.textContent=String(value||'—'); row.appendChild(cell); }
         const hashCell=document.createElement('td'); const code=document.createElement('code'); code.textContent=String(item.event_hash||'—'); hashCell.appendChild(code); row.appendChild(hashCell); events.appendChild(row);
       }
       if (!body.count) events.innerHTML='<tr><td colspan="5" class="empty-cell">Geen audit evidence beschikbaar.</td></tr>';
-      setState(`${body.count || 0} audit event${body.count === 1 ? '' : 's'} geladen (read-only).`,'success');
+      setState(`${body.count || 0} audit event${body.count === 1 ? '' : 's'} geladen (read-only).`, body.count ? 'success' : 'empty');
     } catch (error) { events.innerHTML='<tr><td colspan="5" class="empty-cell">Audit evidence niet beschikbaar.</td></tr>'; setState(`Audit evidence niet beschikbaar: ${error.message}`,'error'); }
   }
   load.addEventListener('click',()=>void loadAudit());
