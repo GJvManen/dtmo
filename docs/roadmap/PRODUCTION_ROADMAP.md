@@ -14,7 +14,7 @@ This roadmap defines the controlled path from DTMO's release-candidate state to 
 - Phase 6 — Frontend accessibility and operational UX: `BLOCKED_EXTERNAL` only for genuine VoiceOver/NVDA execution on supported real hosts.
 - Phase 7 — Observability and incident operations: `PASS`.
 - Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence. Repository-controlled staging-emulator configuration and bounded application-container runtime smoke are `PASS` only for their explicit scopes.
-- Phase 9 — External assurance: `NOT COMPLETE`; tracked in issue #1.
+- Phase 9 — External assurance: `NOT COMPLETE`; RUN-159 defines the repository-controlled intake/readiness contract and is `CI_VALIDATION_PENDING`.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
 ## Phase 8 — Staging acceptance
@@ -30,27 +30,28 @@ Blocking gates:
 - rollback/recovery proven and evidence retained;
 - no unresolved blocker interpreted as PASS.
 
-### Accepted repository-controlled evidence
+Accepted repository-controlled evidence includes RUN-147 readiness, RUN-151/152 emulator configuration, RUN-153/154 lifecycle reconciliation, RUN-155 bounded application-container runtime smoke and RUN-157 lifecycle remediation. PR #109 exact head `fca605acd1e97bd7531967ada080e35ac4ea6a4b` completed 48/48 workflows and merged as `48dace96c389703130457ed61e639477ace5398b`, making RUN-158 authoritative on `main`.
 
-- RUN-147 staging-readiness baseline: `PASS`.
-- RUN-151/RUN-152 staging emulator configuration contract: `PASS`; PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` completed 47/47 workflows. This proves source-controlled configuration/topology only.
-- RUN-153/RUN-154 documentation/lifecycle reconciliation: `PASS`; PR #106 final exact head `ff0a490e46c2f9529441d8a5294030af498dbe14` completed 47/47 workflows and merged as `b57a6daa775d2f1f88a2d1b67b191da757fa743f`.
-- RUN-155 bounded application-container runtime smoke: `PASS`; PR #107 exact head `52d7a37660c9bb1c9f8468f11010f36d17bd1fba` completed 48/48 workflows and merged as `23d629964f55709845683e808f707998cc8d4aa2`. This does not execute the complete dependency topology or prove real staging.
-- RUN-157 lifecycle-regression remediation: `PASS`; PR #108 exact head `25ac24bfa40f2f9ccebb5d1307615c6fbd14cf05` completed 48/48 workflows after the stale lifecycle assertion was repaired. Its documentation-finalization exact head `bbba29a1269b5c09d1a94a27b38c317bae2590e7` also completed 48/48 workflows and merged as `de3561b42f8e4fec5947182e01563a6327d0e029`.
+RUN-148, RUN-150, RUN-156 and RUN-158 found no approved real staging environment/deployment identity and no complete package satisfying the ten required deployment-parity classes against one immutable staged release. Required classes remain: approved environment/owner; reachable endpoint; immutable deployed release/image identity; infrastructure/runtime/configuration parity; approved secrets-manager and least-privilege identities; TLS/network restrictions; staging data-class/sanitization and no-production-credential confirmation; deployment/change record; rollback target/procedure; and deployment-time security/CVE/vendor-advisory review.
 
-### Real staging deployment-parity blocker
-
-RUN-148, RUN-150, RUN-156 and RUN-158 all found no approved real staging environment/deployment identity and no complete package satisfying the ten required deployment-parity evidence classes against one immutable staged release. RUN-158 repeated that check after PR #108 became authoritative on `main`; issue #1's unchecked external acceptance gates remain unchanged.
-
-Required classes remain: approved environment/owner; reachable endpoint; immutable deployed release/image identity; infrastructure/runtime/configuration parity; approved secrets-manager and least-privilege identities; TLS/network restrictions; staging data-class/sanitization and no-production-credential confirmation; deployment/change record; rollback target/procedure; and deployment-time security/CVE/vendor-advisory review.
-
-Evidence class 10 must be performed against the actual immutable staged release and preserve source provenance, review time and confidence. A generic pre-deployment threat/advisory review does not close the class.
-
-No staging acceptance result is credited until all ten classes are complete against the same deployment identity.
+No staging acceptance result is credited until all ten classes are complete against the same deployment identity. Evidence class 10 must preserve public-source provenance, review time, applicability and confidence against the actual immutable staged release/platform.
 
 ## Phase 9 — External assurance
 
-Tracked in issue #1: independent penetration test, representative load/stress, full backup/restoration exercise, production platform hardening, required secrets-management acceptance, operational/stakeholder approvals and production deployment acceptance.
+Phase 9 requires independently observable evidence for:
+- independent penetration testing against the approved target deployment;
+- representative load/stress testing with documented workload assumptions and thresholds;
+- full backup/restoration exercise with integrity and RPO/RTO observations;
+- production platform hardening, including OpenSearch/security, TLS/network and runtime controls;
+- approved secrets-management acceptance and least-privilege identities;
+- operational/stakeholder acceptance by accountable service owner and required security/privacy roles;
+- staging and production deployment acceptance tied to immutable release/deployment identities and rollback targets.
+
+### RUN-159 external-assurance intake baseline — `CI_VALIDATION_PENDING`
+
+Because Phase 8 is blocked solely by external staging evidence, RUN-159 advances only the next internally executable preparation task. `docs/qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md` defines the evidence intake and claim-boundary contract. It requires attributable, dated, independently observable evidence; immutable target identity where applicable; explicit finding disposition; privacy-safe retention; separation between review and human share approval; and no secret values in source control.
+
+Where assurance depends on deployed software/platform state, the evidence package must include a time-bounded review of relevant public threat intelligence, CVE data and vendor advisories, preserving source provenance, review time, applicability and confidence. This readiness contract does not prove any external assurance activity has occurred. Issue #1 remains authoritative for completion state.
 
 ## Phase 10 — Production go/no-go
 
@@ -73,4 +74,4 @@ Every run must document Plan, Do, Check and Act, update run/QA evidence, preserv
 
 ## Exactly one next priority
 
-Provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against the same immutable deployment identity. Do not begin or credit the staging acceptance suite before that gate is complete.
+Verify every registered workflow on the RUN-159 PR exact head and merge only on complete success. After merge, acquire the first missing independent assurance evidence class in issue #1 without treating absent external execution as PASS.
