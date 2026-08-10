@@ -4,7 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
-- [RUN-20260810-174 — RC10.1 Unified Operations Workspace shell](runs/RUN-20260810-174.md) — `CI_VALIDATION_PENDING`: 16.0.0rc10 adds `/ui/operations`, consolidated navigation, command palette, notification drawer, workspace tabs, responsive operational KPI cards and read-only `/health` + `/connectors` integration. Existing RBAC, review, share approval, audit and source-management boundaries are unchanged.
+- [RUN-20260810-175 — PR #116 acceptance and RC10.1 merge reconciliation](runs/RUN-20260810-175.md) — `PASS`: exact head `d41d9e60a4a67ddb30345eecee4042d1c19a6cf5` completed every registered workflow successfully and PR #116 merged as `b000ef2275d52ff098d2d2bd8df76136cea3b051`. RC10.1 is the accepted unified Operations Workspace shell baseline.
+- [RUN-20260810-174 — RC10.1 Unified Operations Workspace shell](runs/RUN-20260810-174.md) — `PASS` via RUN-175 reconciliation.
 - [RUN-20260810-173 — rc9 stale admin-version regression remediation](runs/RUN-20260810-173.md) — `PASS` via final PR #115 acceptance; the stale rc8 hard-coded version assertion was removed without production-control changes.
 - [RUN-20260810-172 — Safe registered-source execution and curated source catalog](runs/RUN-20260810-172.md) — `PASS`: final exact head `c01611a48648ec73e14975337dd549bef86abe88` completed the registered workflow matrix and PR #115 merged as `66f5faecb95b80add4ed4d28a6769592b1a18ddb`.
 - [RUN-20260810-171 — PR #114 acceptance and merge reconciliation](runs/RUN-20260810-171.md) — `PASS`: exact head `95fed1e663bdf256def58020f11529f383c8efe5` completed all 48 registered workflows successfully and PR #114 merged as `7351ae2ab984b6848969bc634c32e819ec413031`.
@@ -26,8 +27,8 @@ Older run records remain under `docs/development/runs/` and in repository histor
 
 ## Current decision
 
-Phase 1–7 internal repository-controlled gates remain accepted within their documented claim boundaries. rc9 is accepted and merged as the current safe source-execution baseline. RUN-174 / rc10.1 is the current bounded frontend objective and remains `CI_VALIDATION_PENDING`. Phase 8 remains `BLOCKED_EXTERNAL`; Phase 9 remains `NOT COMPLETE`; Phase 10 remains `NOT STARTED`. DTMO is not production ready.
+Phase 1–7 internal repository-controlled gates remain accepted within their documented claim boundaries. RC10.1 is accepted and merged as the current unified Operations Workspace shell baseline. Phase 8 remains `BLOCKED_EXTERNAL`; Phase 9 remains `NOT COMPLETE`; Phase 10 remains `NOT STARTED`. DTMO is not production ready.
 
 ## Exactly one next priority
 
-Complete exact-head CI validation of RUN-174 / 16.0.0rc10. Merge only if every registered workflow succeeds. If accepted, bind existing operational metrics/building blocks to real graphical dashboard widgets in RC10.2; otherwise remediate only the first concrete failing root cause.
+RC10.2 — bind existing operational metrics/building blocks to accessible real-data graphical dashboard widgets inside `/ui/operations`, preserving current RBAC/governance and never presenting placeholder graphics as live telemetry.
