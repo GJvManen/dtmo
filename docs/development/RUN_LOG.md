@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260810-169 — Search and live intelligence ingestion remediation](runs/RUN-20260810-169.md) — `CI_VALIDATION_PENDING`: acceptance feedback exposed a user-blocking search failure and a disconnected live-connector path. rc7 aligns the strict OpenSearch mapping with canonical confidence fields, creates the index safely on fresh-search, makes indexing replay-repairable, routes CISA KEV records through raw/canonical/provenance/search storage, and protects manual connector execution with `manage:connectors`. Added runtime-contract and connector-pipeline regression tests. No PASS claim until the complete registered workflow matrix succeeds on one final exact head.
 - RUN-20260810-168 — PR #112 acceptance and merge reconciliation — `PASS`: exact head `e5e0d5e808d1f66c8f512fa35bd0ea3932fe8631` completed all 48 registered workflows successfully. PR #112 merged as `5c2a9c9a5d0d936784597899c97bf5be253c2394`, making 16.0.0rc6 the accepted repository-controlled professional frontend baseline. Genuine VoiceOver/NVDA, real staging, external assurance and production go/no-go remain outside this PASS claim.
 - [RUN-20260810-167 — PR #112 visual accessibility evidence-scope remediation](runs/RUN-20260810-167.md) — `PASS`: final exact head `e5e0d5e808d1f66c8f512fa35bd0ea3932fe8631` completed 48/48 registered workflows successfully. The `.sr-only` Analyst search label remains accessible while visual geometry evidence correctly excludes intentionally non-visual content.
 - [RUN-20260810-166 — PR #112 residual reflow and focus-contrast remediation](runs/RUN-20260810-166.md) — `FAILED_CI`: remediation fixed the RC9 Reflow and RC9 Contrast failures, but validation head `b33f270b201527249f847107863ee1184954f352` completed only 46/48 registered workflows successfully because RC9 Text Spacing and RC9 Text Resize still failed on the `.sr-only` analyst-search label. Follow-up was RUN-167.
@@ -32,8 +33,8 @@ Older run records remain under `docs/development/runs/` and in repository histor
 
 ## Current decision
 
-Phase 1–5 are `PASS`. Phase 6 rc6 is now the accepted repository-controlled frontend baseline, while genuine VoiceOver/NVDA execution remains `BLOCKED_EXTERNAL`. Phase 7 is `PASS`. Phase 8 remains `BLOCKED_EXTERNAL` for one approved real staging deployment and all ten deployment-parity evidence classes. Phase 9 remains `NOT COMPLETE`; its repository-controlled readiness/intake contract is accepted. Phase 10 remains `NOT STARTED`. DTMO is not production ready.
+Phase 1–5 remain `PASS`, but RUN-169 records a higher-severity functional regression in the accepted application surface that must be remediated before advancing external staging evidence. Phase 6 rc6 remains the accepted repository-controlled frontend baseline while genuine VoiceOver/NVDA execution remains `BLOCKED_EXTERNAL`. Phase 7 is `PASS`. Phase 8 remains `BLOCKED_EXTERNAL` for one approved real staging deployment and all ten deployment-parity evidence classes. Phase 9 remains `NOT COMPLETE`; Phase 10 remains `NOT STARTED`. DTMO is not production ready.
 
 ## Exactly one next priority
 
-Acquire and validate one approved real staging deployment plus the complete ten-class deployment-parity evidence package for Phase 8. Keep the gate `BLOCKED_EXTERNAL` until independently reviewable evidence exists for one immutable staged release.
+Complete exact-head CI validation of RUN-169 / 16.0.0rc7. If and only if all registered workflows succeed, proceed to the governed admin configuration and source-registry workspace; otherwise remediate the first concrete remaining CI failure.
