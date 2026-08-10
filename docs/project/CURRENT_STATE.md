@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-10 — RUN-20260810-153 (`CI_VALIDATION_PENDING` for documentation reconciliation; RUN-151/RUN-152 staging emulator accepted)
+Last reconciled: 2026-08-10 — RUN-20260810-154 (`CI_VALIDATION_PENDING`; PR #106 lifecycle-state regression remediation)
 
 ## Executive status
 
@@ -23,6 +23,12 @@ RUN-151 adds a source-controlled production-equivalent staging emulator specific
 
 RUN-152 repaired the RC4 governance-document wording defect without weakening the regression test. PR #104 final exact head `93d1a659b7b136546ffcf73102890f5d2d00ba84` then completed 47/47 registered workflows successfully. Retained artifact `9045039742`, digest `sha256:959586b389579dfd37bda60eecdfb67e0251eaf4a78daed214986cefe771ce65`, is exact-head bound with decision `pass`; JUnit records 4 tests with zero failures/errors/skips. PR #104 merged as `3c7a4b7f56e8d8a757541963bbd261fe42a7269c`.
 
+## RUN-153 / RUN-154 reconciliation status
+
+RUN-153 opened PR #106 to reconcile authoritative documentation with the accepted emulator evidence. On previous exact head `469dcca367dc3fcdb2baf114afe91f903164736b`, 46/47 registered workflows succeeded. `RC4 Quality Gate` failed only because `backend/tests/test_phase8_staging_emulator.py` still asserted the obsolete lifecycle token `CI_VALIDATION_PENDING` after the QA decision had correctly advanced to bounded `PASS`.
+
+RUN-154 updates that regression to require the evidenced bounded `PASS` wording while continuing to require the full non-overclaim boundary: the emulator does not prove real staging, does not satisfy the ten deployment-parity evidence classes, does not complete Phase 8 or production acceptance, and preserves human share approval. Fresh complete exact-head CI is required before PR #106 can merge.
+
 ## Phase 8 claim boundary and remaining blocker
 
 The emulator validates configuration/topology only. Its retained evidence explicitly records that containers were not executed, a real staging environment was not proven, deployment parity was not proven, the ten external evidence classes were not satisfied, Phase 8 was not completed and production acceptance was not completed.
@@ -35,4 +41,4 @@ RBAC, separation of duties, privacy, provenance, auditability and human share ap
 
 ## Exactly one current priority
 
-Verify every registered workflow on the exact final head of the RUN-153 documentation PR and merge only on complete success.
+Verify every registered workflow on PR #106's changed exact head and merge only on complete success.
