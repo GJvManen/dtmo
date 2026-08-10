@@ -10,9 +10,9 @@ Require independently observable, production-equivalent staging deployment evide
 
 ## Latest reconciliation
 
-The repository-controlled staging-emulator configuration contract is accepted from PR #104 evidence. The bounded application-container runtime smoke is now also accepted from PR #107 exact-head evidence: final head `52d7a37660c9bb1c9f8468f11010f36d17bd1fba` completed 48/48 workflows successfully and merged as `23d629964f55709845683e808f707998cc8d4aa2`; retained artifact `9057259246` is exact-head bound with machine-readable PASS, contract JUnit 4/4 and runtime JUnit 12/12.
+The repository-controlled staging-emulator configuration contract is accepted from PR #104 evidence. The bounded application-container runtime smoke is accepted from PR #107 exact-head evidence. RUN-157's lifecycle remediation and documentation finalization are now authoritative: PR #108 final exact head `bbba29a1269b5c09d1a94a27b38c317bae2590e7` completed 48/48 registered workflows successfully and merged as `de3561b42f8e4fec5947182e01563a6327d0e029`.
 
-RUN-156 performed a fresh repository and issue review for one approved real staging deployment and a complete ten-class deployment-parity package. No reviewable evidence tied to one immutable real staging deployment identity was found. Repository CI, emulator configuration evidence and bounded application-container runtime smoke therefore remain non-substitutive for this gate.
+RUN-158 performed a fresh repository and issue review after that merge. No reviewable evidence package tied to one immutable real staging deployment identity was found. Repository CI, emulator configuration evidence and bounded application-container runtime smoke remain non-substitutive for this gate.
 
 ## Required external evidence
 
@@ -43,7 +43,7 @@ No real staging smoke, integration, migration, connector, recovery, performance,
 
 ## Threat/advisory provenance rule
 
-Evidence class 10 must be produced against the actual immutable staged release and must preserve source provenance, review time and confidence for relevant public threat intelligence, CVE data and vendor advisories. A generic or pre-deployment advisory review does not close this class.
+Evidence class 10 must be produced against the actual immutable staged release and must preserve source provenance, review time and confidence for relevant public threat intelligence, CVE data and vendor advisories. A generic or pre-deployment advisory review does not close this class. Because no immutable real staging release exists at RUN-158, no class-10 PASS is claimed.
 
 ## Exactly one next priority
 
