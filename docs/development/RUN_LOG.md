@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Runs
 
+- [RUN-20260810-161 — 16.0.0rc5 frontend productionization](runs/RUN-20260810-161.md) — `CI_VALIDATION_PENDING`: adds the governed root DTMO Console, version bump, frontend regression contract, OpenSearch bootstrap-password Compose fix and documentation. No PASS until the complete registered workflow matrix succeeds on the final exact PR head.
 - [RUN-20260810-160 — Documentation consolidation on main](runs/RUN-20260810-160.md) — `DOCUMENTATION_CONSOLIDATED`: extended living documentation was added directly to `main` at the project owner's explicit request after independently verifying PR #110 exact head `5549ac1f28307c8bfa8c2ea1bf39341bb33983a0` completed all 48 registered workflows successfully and merged as `0b9a6d51dcd6e4fa984888d172e1fb5f5d6d52f2`. This run creates no new technical, staging, external-assurance or production PASS claim.
 - [RUN-20260810-159 — Phase 9 external-assurance intake baseline](runs/RUN-20260810-159.md) — `PASS` for the readiness/intake contract only: PR #110 exact head `5549ac1f28307c8bfa8c2ea1bf39341bb33983a0` completed all 48 registered workflows successfully and merged as `0b9a6d51dcd6e4fa984888d172e1fb5f5d6d52f2`. No external assurance activity is claimed complete. Phase 8 remains externally blocked and Phase 9 remains `NOT COMPLETE`.
 - [RUN-20260810-158 — Phase 8 real staging deployment-parity recheck](runs/RUN-20260810-158.md) — `BLOCKED_EXTERNAL`: PR #108 documentation-finalization exact head `bbba29a1269b5c09d1a94a27b38c317bae2590e7` completed 48/48 workflows successfully and merged as `de3561b42f8e4fec5947182e01563a6327d0e029`; fresh repository/issue review still found no approved real staging deployment or complete ten-class deployment-parity evidence package.
@@ -28,8 +29,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current decision
 
-Phase 1–5 are `PASS`. Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA behavior. Phase 7 is `PASS`. Phase 8 remains `BLOCKED_EXTERNAL` for one approved real staging deployment and all ten deployment-parity evidence classes. Phase 9 external assurance remains `NOT COMPLETE`, while its repository-controlled readiness/intake contract is accepted. Phase 10 remains `NOT STARTED`. DTMO is not production ready.
+Phase 1–5 are `PASS`. Phase 6 remains externally blocked only for genuine VoiceOver/NVDA execution while the 16.0.0rc5 root-console change is `CI_VALIDATION_PENDING`. Phase 7 is `PASS`. Phase 8 remains `BLOCKED_EXTERNAL` for one approved real staging deployment and all ten deployment-parity evidence classes. Phase 9 external assurance remains `NOT COMPLETE`, while its repository-controlled readiness/intake contract is accepted. Phase 10 remains `NOT STARTED`. DTMO is not production ready.
 
 ## Exactly one next priority
 
-Acquire the first missing independent assurance evidence class from issue #1 without treating absent external execution as PASS. In roadmap order this is the independent penetration test against an approved target deployment.
+Verify every registered workflow on the final 16.0.0rc5 frontend PR head and merge only on complete success.
