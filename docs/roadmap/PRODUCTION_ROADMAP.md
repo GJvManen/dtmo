@@ -9,35 +9,29 @@ This roadmap defines the controlled path from DTMO's release-candidate state to 
 - Phase 1 — CI and workflow integrity: `PASS`.
 - Phase 2 — Application security and identity: `PASS` for internal gates.
 - Phase 3 — Data integrity and recovery: `PASS` for internal gates.
-- Phase 4 — Live connector reliability and provenance: `PASS` for internal gates.
+- Phase 4 — Live connector reliability and provenance: `PASS` for the built-in CISA KEV path; rc7 restored end-to-end persistence/indexing and replay repair.
 - Phase 5 — Performance and scalability: `PASS` for internal gates.
-- Phase 6 — Frontend accessibility and operational UX: rc5 is the accepted repository-controlled baseline; genuine VoiceOver/NVDA execution remains `BLOCKED_EXTERNAL`. rc6 PR #112 is under RUN-163 remediation after its first exact-head CI failed.
+- Phase 6 — Frontend accessibility and operational UX: rc6 is the accepted repository-controlled professional UX baseline; genuine VoiceOver/NVDA execution remains `BLOCKED_EXTERNAL`. rc8 adds an admin source-management workspace under the same external AT claim boundary.
 - Phase 7 — Observability and incident operations: `PASS`.
 - Phase 8 — Staging acceptance: `BLOCKED_EXTERNAL` for real deployment-parity evidence.
 - Phase 9 — External assurance: `NOT COMPLETE`; repository-controlled intake/readiness baseline accepted.
 - Phase 10 — Production go/no-go: `NOT STARTED`.
 
-## Phase 6 — Frontend accessibility and operational UX
+## Accepted recent release baselines
 
-Repository-controlled critical journeys, responsive layout, keyboard navigation, contrast, reflow, focus order, text spacing/resize and share-approval controls have historical accepted evidence. Genuine assistive-technology execution on supported VoiceOver/NVDA host/browser combinations remains externally required.
+### RUN-168 — 16.0.0rc6 professional frontend baseline — `PASS`
 
-### RUN-161 — 16.0.0rc5 frontend productionization — `PASS`
+PR #112 final exact head `e5e0d5e808d1f66c8f512fa35bd0ea3932fe8631` completed 48/48 registered workflows and merged as `5c2a9c9a5d0d936784597899c97bf5be253c2394`.
 
-PR #111 exact head `1e59cd6f02bd5b853d0e8bf66a09c90d46d89467` completed all 48 registered workflows successfully and merged as `05e72443b132e0e0c162d2a07b1578e84daaa25c`. rc5 remains the accepted frontend baseline.
+### RUN-169 — 16.0.0rc7 search and live-intelligence remediation — `PASS`
 
-### RUN-162 — 16.0.0rc6 professional frontend UX overhaul — `FAILED_CI`
+PR #113 final exact head `c2b7216d4777488768796a69b3e928571a824e33` completed 48/48 registered workflows and merged as `892d7e48e19109b45062acd272f84a31f6f33802`. Search fresh-index behavior, strict canonical confidence mapping, CISA KEV raw/canonical/provenance/search ingestion, replay-repair and permission-gated manual connector execution are accepted within repository-controlled scope.
 
-rc6 introduced a coherent task-oriented Threat Operations Console and unified Analyst, Share Approval, Auditor and CISO workspaces. Server-side RBAC, separation of duties, privacy, auditability and human share approval remained unchanged.
+### RUN-170 — 16.0.0rc8 governed Admin Configuration & Source Registry — `CI_VALIDATION_PENDING`
 
-The first exact head `0e6bc86b425b4e6511520bd6734f79baf7413d97` is not accepted. Eleven RC9 workflow-level gates failed, represented by 22 failing checks when their fail-closed aggregate jobs are counted.
+Current bounded objective: persistent source lifecycle management with human-admin authorization, service-account separation, secret references, audit-chain events, safe supported source types, explicit reliability/schedule/enabled metadata and first-line SSRF-safe endpoint validation. The admin workspace is `/ui/admin-sources` and the control API is `/api/v1/admin/sources`.
 
-### RUN-163 — RC6 RC9 acceptance-contract regression remediation — `CI_VALIDATION_PENDING`
-
-Actual workflow logs identified a shared regression cluster: lost semantic `empty`/`forbidden` states, missing `aria-atomic=true` on critical principal live regions, missing `data-event-id` on rendered audit evidence, absent visible focus on the analyst search field, mobile/reflow horizontal overflow and decorative backgrounds that made contrast evidence fail closed.
-
-RUN-163 restores these already accepted RC9 contracts without reverting the professional rc6 information architecture. A shared role-workspace compatibility layer provides explicit visible focus, minimum-width/reflow safeguards, mobile grid collapse and solid contrast-measurable surfaces. Role scripts restore semantic state identifiers and audit-event row identity. Repository regression tests lock the corrected contracts.
-
-No prior failed-head result is reusable as PASS evidence. PR #112 requires a complete fresh workflow matrix on its final exact head.
+Generic `json-feed` definitions are registry-only in this run. They are not executed. Safe generic source execution remains the next bounded objective after rc8 acceptance and must add DNS/rebinding-safe egress validation, redirect controls, bounded response/content validation, provenance normalization, health/failure isolation and replay integration before any arbitrary registered endpoint is fetched.
 
 ## Phase 8 — Staging acceptance
 
@@ -47,7 +41,7 @@ Required classes remain: approved environment/owner; reachable endpoint; immutab
 
 ## Phase 9 — External assurance
 
-Phase 9 requires independently observable evidence for independent penetration testing, representative load/stress testing, full backup/restoration, production platform hardening, approved secrets management, operational/stakeholder acceptance and staging/production deployment acceptance. RUN-159's intake baseline is accepted only as a readiness contract.
+Phase 9 requires independently observable evidence for independent penetration testing, representative load/stress testing, full backup/restoration, production platform hardening, approved secrets management, operational/stakeholder acceptance and staging/production deployment acceptance. Repository-controlled readiness evidence does not substitute for those external gates.
 
 ## Phase 10 — Production go/no-go
 
@@ -70,4 +64,4 @@ Every run must document Plan, Do, Check and Act, update run/QA evidence, preserv
 
 ## Exactly one next priority
 
-Verify every registered workflow on the final RUN-163 remediation head of PR #112. Merge only on complete exact-head success; otherwise remediate the first concrete remaining failure.
+Complete exact-head CI for RUN-170 / 16.0.0rc8. Merge only on complete success. If accepted, proceed to one safe generic registered-source execution adapter; otherwise remediate only the first concrete failure.
