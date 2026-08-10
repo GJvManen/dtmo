@@ -46,6 +46,9 @@ async def test_text_spacing_overrides_preserve_content_and_function() -> None:
               const visible = el => { const s=getComputedStyle(el), r=el.getBoundingClientRect(); return s.display!=='none' && s.visibility!=='hidden' && r.width>0 && r.height>0; };
               const clipped = [];
               for (const el of document.querySelectorAll('main *')) {
+                // `.sr-only` content remains available to assistive technology but is
+                // intentionally outside this visual text-spacing clipping measurement.
+                if (el.classList.contains('sr-only')) continue;
                 if (!visible(el) || !(el.textContent||'').trim()) continue;
                 const s=getComputedStyle(el);
                 if ((s.overflowX==='hidden' && el.scrollWidth>el.clientWidth+1) || (s.overflowY==='hidden' && el.scrollHeight>el.clientHeight+1)) clipped.push(el.getAttribute('data-testid') || el.tagName.toLowerCase());
