@@ -1,42 +1,72 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-11 — RC11 source onboarding and RC12 unified-console/dashboard programme accepted through PR #148.
+Last reconciled: **2026-08-11**
 
-## Executive status
+## Executive summary
 
-- Phases 1–7 repository-controlled internal gates: accepted within documented claim boundaries.
-- Phase 6 genuine assistive-technology evidence: `BLOCKED_EXTERNAL` for real VoiceOver/NVDA execution.
-- RC11 unified source framework and operational vendor onboarding: `COMPLETE` within repository-controlled scope.
-- RC12 unified console and graphical dashboard integration: `COMPLETE` within repository-controlled scope through PR #148.
-- Issue #125 unified-console remediation objective: `COMPLETED`.
-- Phase 8 staging acceptance: `BLOCKED_EXTERNAL` for approved real deployment-parity evidence.
-- Phase 9 external assurance: `NOT COMPLETE`.
-- Phase 10 production go/no-go: `NOT STARTED`.
+DTMO `16.0.0rc12` has completed the repository-controlled engineering programme through Phase 7 and the RC11/RC12 product consolidation programme.
 
-DTMO is **not production ready**.
+The platform now has:
 
-## RC11 source-framework acceptance
+- one canonical unified DTMO console;
+- a governed source adapter framework and connected operational vendor catalog;
+- integrated source administration and execution;
+- threat intelligence investigation and management views;
+- Grafana operational and intelligence analytics embedded through the same browser origin;
+- least-privilege Grafana reporting access;
+- established CI, security, recovery, performance, accessibility and observability gates.
 
-RC11 established one governed source adapter registry and execution dispatcher, then completed the current operational vendor onboarding set. The maintained source connection matrix records CISA KEV, NVD, GitHub Security Advisories, NCSC-NL, CERT-EU, MSRC, Cisco, Red Hat, Ubuntu, Debian, Apple, Chrome, Mozilla, Fortinet, Palo Alto Networks and Broadcom/VMware as connected through accepted built-in or framework adapters. ENISA Threat Landscape remains a deliberate research reference rather than a high-frequency executable feed.
+DTMO is **not yet production ready**. The next formal gate is external staging validation.
 
-The framework preserves bounded HTTPS/DNS/TLS/redirect/response controls, raw provenance, fail-closed parsing/execution, logical secret references for credentialed adapters and the existing human review/share-approval boundary.
+## Phase status
 
-## RC12 unified-console acceptance
+| Phase | Status |
+|---|---|
+| 1. CI and workflow integrity | `PASS` |
+| 2. Application security and identity | `PASS` |
+| 3. Data integrity and recovery | `PASS` |
+| 4. Connector reliability and provenance | `PASS` |
+| 5. Performance and scalability | `PASS` |
+| 6. Accessibility and operational UX | `PASS` — project-owner manual/external acceptance on 2026-08-11 |
+| 7. Observability and incident operations | `PASS` |
+| 8. Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION` |
+| 9. Independent external assurance | `NOT COMPLETE` |
+| 10. Production go/no-go | `NOT STARTED` |
 
-RC12.1 / PR #142 unified source administration and operations inside the canonical DTMO console. Registration/bootstrap, enable/disable, interval management, validation and manual execution use the existing governed admin APIs and server-side authorization.
+## Current product baseline
 
-RC12.2 / PR #143 adopted self-hosted Grafana for production-grade operational dashboarding while retaining native DTMO summary graphics as a governed fallback. RC12.3 / PR #144 added a dedicated least-privilege PostgreSQL reporting role and explicit reporting views for intelligence dashboards; Grafana does not receive the DTMO application database identity or unrestricted application-table access.
+### Unified console
 
-RC12.4 / PR #145 embedded DTMO Operations and DTMO Intelligence dashboards inside the unified console. RC12.5a / PR #146 added the managed same-origin Nginx/Grafana subpath foundation. RC12.5b / PR #147 switched browser-facing embeds from the compatibility `:3000` origin to relative `/grafana/...` URLs. PR #147 exact head `339207dd5ad038727da34e0a0058c74076847eea` completed the returned exact-head workflow set successfully and merged as `6e74c5e45b6683e1fceba3ff14f554e36815b95f`.
+The canonical product entry point is `/`, with `/ui/console` retained as an alias. Legacy role/workspace routes may remain for compatibility, but the intended product architecture is one unified shell.
 
-RC12.6 / PR #148 reconciled the authoritative README, documentation index, current state, executive status, production roadmap, source connection matrix, release notes and completion gate. Exact head `17c914af8a579c813b82849bab773b4449e8f178` completed the complete returned exact-head workflow set successfully and merged with expected-head protection as `8e614abc0277025957cab433c0e824c25dbb7eeb`. Issue #125 then closed as `completed`.
+Source operations, administration, intelligence investigation, graphical analytics and governance views are presented without weakening server-side RBAC or human approval boundaries.
 
-The canonical product entry point is `/` (with `/ui/console` as alias). Legacy `/ui/*` routes may remain for compatibility but no longer define the intended product architecture. Source operations, administration, intelligence investigation and graphical analytics are presented in one shell while RBAC, separation of duties, privacy, provenance, auditability, human review and separate share approval remain authoritative.
+### Source framework
 
-## Remaining external blockers
+The current operational vendor catalog is connected through accepted built-in or unified-framework adapters. Credentialed integrations carry logical secret references only; runtime secret values are not stored in the catalog or source registry.
 
-No approved real staging endpoint/environment identity and no complete ten-class deployment-parity package tied to one immutable release are available. Genuine assistive-technology execution, independent penetration testing and remaining external assurance also remain absent. Repository emulators, local Compose runs and exact-head CI do not satisfy those external gates.
+The authoritative source status is maintained in [`SOURCE_CONNECTION_MATRIX.md`](../qa/SOURCE_CONNECTION_MATRIX.md).
+
+### Analytics and observability
+
+Grafana provides operational and intelligence dashboards through the managed same-origin `/grafana/` path. Intelligence reporting uses a dedicated least-privilege reporting role and explicit reporting views rather than the DTMO application database identity.
+
+Prometheus metrics, request correlation, trace context, alerting and operational runbooks support the observability layer. Native accessible chart/table equivalents remain available in the DTMO console.
+
+## Phase 6 acceptance
+
+On **2026-08-11**, the project owner explicitly confirmed that Phase 6 was personally checked and accepted. This closes the remaining external/manual accessibility blocker as accountable owner attestation. The repository does not invent unprovided test-environment or recording details.
+
+## Phase 8 handoff
+
+The repository-controlled prerequisites are ready for external staging validation. After this final cleanup PR is accepted, the project owner will validate an approved production-equivalent staging deployment against the ten-class deployment-parity gate tied to one immutable `16.0.0rc12` deployment identity.
+
+CI, Docker Compose and staging-emulator evidence are supporting engineering evidence and do not substitute for that external decision.
+
+## Governance boundary
+
+RBAC, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, dashboard access, CI success or staging access cannot authorize publication.
 
 ## Exactly one current priority
 
-**Phase 8 real staging deployment parity**: obtain one approved production-equivalent staging deployment and collect the complete ten-class deployment-parity evidence package against one immutable release/deployment identity. Until that external dependency exists, repository-controlled work may improve implementation or documentation but cannot establish staging acceptance or production readiness.
+**Complete the final cleanup/documentation PR, then perform Phase 8 external staging validation against one immutable `16.0.0rc12` deployment identity.**
