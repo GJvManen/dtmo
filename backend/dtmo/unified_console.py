@@ -80,7 +80,7 @@ _PAGE = r'''<!doctype html>
 <section class="view" data-view-panel="governance"><div class="page-heading"><div><p class="eyebrow">Governance</p><h2>Beslisgrenzen</h2><p>Governance framework mappings worden in RC13.4 als functionele knowledge surface toegevoegd.</p></div></div><article class="surface"><p>Ingestie, dashboards en administration verlenen geen review- of share approval-recht. Human review en externe share approval blijven afzonderlijke bevoegdheden met separation of duties.</p></article></section>
 </main></div></div>
 <script>
-const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ctx={subject:sessionStorage.getItem('dtmo.subject')||'admin-tester',roles:sessionStorage.getItem('dtmo.roles')||'admin',apiKey:sessionStorage.getItem('dtmo.apiKey')||''};
 function requestId(){return globalThis.crypto?.randomUUID?.()||`dtmo-${Date.now()}-${Math.random().toString(16).slice(2)}`}
 function headers(write=false,json=false){const h={'X-DTMO-Subject':ctx.subject,'X-DTMO-Roles':ctx.roles,'X-DTMO-API-Key':ctx.apiKey};if(write)h['X-Request-ID']=requestId();if(json)h['Content-Type']='application/json';return h}
