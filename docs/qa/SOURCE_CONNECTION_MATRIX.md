@@ -20,17 +20,17 @@ A catalog entry is **connected** only when its execution status is `supported` o
 | Apple Security Releases | `apple-security-releases-v1` | CONNECTED | Registry bootstrap -> enable -> bounded first-party Apple Support `100100` security-release index |
 | Chrome Releases | `chrome-security-releases-v1` | CONNECTED | Registry bootstrap -> enable -> bounded first-party Chrome Releases stable posts -> published CVE validation |
 | Mozilla Security Advisories | `mozilla-mfsa-v1` | CONNECTED | Registry bootstrap -> enable -> bounded first-party Mozilla MFSA index/detail documents -> published CVE validation |
-| Fortinet PSIRT | `fortinet-psirt-v1` | PENDING_CI | Registry bootstrap -> enable -> bounded FortiGuard PSIRT FG-IR index/detail documents -> published CVE validation |
-| Palo Alto Networks Security Advisories | `vendor-paloalto` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
+| Fortinet PSIRT | `fortinet-psirt-v1` | CONNECTED | Registry bootstrap -> enable -> bounded FortiGuard PSIRT FG-IR index/detail documents -> published CVE validation |
+| Palo Alto Networks Security Advisories | `rss-2.0` | PENDING_CI | Registry bootstrap -> enable -> official Palo Alto Networks `/rss.xml` advisory feed |
 | Broadcom/VMware Security Advisories | `vendor-broadcom-vmware` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | ENISA Threat Landscape | `research-publication` | RESEARCH_REFERENCE | Deliberately not a high-frequency ingestion feed |
 
 ## Enforced contract
 
-`backend/tests/test_rc11_1_source_framework.py` requires every `supported` catalog execution profile to exist in the unified `SourceAdapterRegistry`. Ubuntu and Debian reuse the accepted `rss-2.0` adapter. Apple, Chrome, Mozilla and Fortinet use dedicated bounded first-party publication adapters where a documented list API is not accepted as the integration contract. `supported-built-in` remains separately constrained to the CISA KEV built-in path.
+`backend/tests/test_rc11_1_source_framework.py` requires every `supported` catalog execution profile to exist in the unified `SourceAdapterRegistry`. Ubuntu, Debian and Palo Alto Networks reuse the accepted `rss-2.0` adapter rather than adding duplicate parser code. Apple, Chrome, Mozilla and Fortinet use dedicated bounded first-party publication adapters where a documented list API/feed is not accepted as the integration contract. `supported-built-in` remains separately constrained to the CISA KEV built-in path.
 
 Credential values are never stored in the catalog or source registry. Credentialed catalog entries carry only a logical secret reference such as `env:CISCO_OPENVULN_TOKEN`; execution fails closed when the referenced runtime secret is absent or the reference scheme is not accepted.
 
 ## Remaining onboarding order
 
-After Fortinet acceptance, Palo Alto Networks and Broadcom/VMware remain. Each source stays fail-closed as `planned-parser` until its official endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
+After Palo Alto Networks acceptance, Broadcom/VMware is the final currently catalogued vendor source still requiring an execution adapter. Each source stays fail-closed as `planned-parser` until its official endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
