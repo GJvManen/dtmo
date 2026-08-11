@@ -35,10 +35,36 @@ A fresh local/dev deployment must support the following from the canonical conso
 12. view the applicable governance frameworks and mappings in the Governance area;
 13. retain RBAC, separation of duties, privacy, provenance, auditability, human review and separate share approval.
 
+## RC13.1 — source-to-intelligence functional path
+
+Status: `PENDING_CI`.
+
+The current RC13.1 branch implements:
+
+- canonical `GET /api/v1/console/recent-intelligence` backed by PostgreSQL rather than OpenSearch;
+- truthful built-in source handling so CISA manual execution is visible in development even when its scheduler feature flag is disabled;
+- clear framework-source registration, disabled/enabled and runnable states;
+- source run completion feedback with fetched/inserted/indexed values;
+- automatic refresh of source status, dashboard statistics and recent intelligence after a feedrun;
+- useful native Overview charts for seven-day intelligence trend, severity and connector health;
+- recent intelligence in both Overview and Intelligence without requiring an OpenSearch query;
+- native analytics as the default core Visual analytics experience, while Grafana is loaded only when an advanced dashboard is explicitly opened;
+- removal of the legacy `/ui/*` compatibility notice from the navigation;
+- a dedicated Chromium browser workflow that clicks register → enable → run and verifies that the resulting intelligence and Overview statistics appear.
+
+RC13.1 becomes `PASS` only after the complete exact-head workflow set, including `RC13 Functional Console Browser E2E Gate`, succeeds.
+
+## Remaining RC13 slices after RC13.1
+
+- **RC13.2** — finalize single-session/default visual analytics behavior and advanced Grafana boundary.
+- **RC13.3** — governed Administration/RBAC user-role assignment management.
+- **RC13.4** — Governance knowledge surface with Normenkader IBP, MITRE ATT&CK, CVSS and related project mappings.
+- **RC13.5** — complete canonical-console functional browser acceptance and programme close-out.
+
 ## Phase 8 boundary
 
 Phase 8 external staging validation is **paused** until this RC13 functional acceptance gate reaches `PASS`. Repository CI, a successful build, or the existence of UI controls is insufficient: the complete user journey must be executable and covered by browser/API tests on one exact head.
 
 ## Release rule
 
-Do not claim `READY_FOR_EXTERNAL_VALIDATION`, production readiness, or external pentest readiness while any blocking finding above remains unresolved.
+Do not claim `READY_FOR_EXTERNAL_VALIDATION`, production readiness, external staging acceptance or pentest readiness while any blocking finding above remains unresolved.

@@ -19,11 +19,14 @@ def test_source_operations_are_available_inside_unified_console() -> None:
     assert "data-run" in text
 
 
-def test_run_action_is_only_exposed_for_registered_enabled_sources() -> None:
+def test_run_action_handles_built_in_and_registered_framework_sources() -> None:
     text = CONSOLE.read_text(encoding="utf-8")
-    assert "const registered=Boolean(r),enabled=Boolean(r?.enabled)" in text
-    assert "run=s?.manual_run_available&&enabled" in text
-    assert "Geregistreerd maar uitgeschakeld" in text
+    assert "const built=c.execution_status==='supported-built-in'" in text
+    assert "registered=built||Boolean(s?.registered)||Boolean(r)" in text
+    assert "manual=Boolean(s?.manual_run_available)" in text
+    assert "run=manual&&(built||enabled)" in text
+    assert "Built-in · handmatige run beschikbaar" in text
+    assert "Geregistreerd · uitgeschakeld" in text
     assert "Nog niet geregistreerd" in text
 
 
@@ -31,7 +34,7 @@ def test_administration_reuses_source_operations_in_same_shell() -> None:
     text = CONSOLE.read_text(encoding="utf-8")
     assert 'data-view="administration"' in text
     assert 'data-view="sources">Open bronbeheer</button>' in text
-    assert "Operationeel bronbeheer binnen dezelfde applicatieshell" in text
+    assert "Bronbeheer en huidige identity-context binnen dezelfde applicatieshell" in text
     assert "Administrators kunnen bronnen registreren, valideren, activeren en uitvoeren" in text
 
 

@@ -4,19 +4,11 @@ Last reconciled: **2026-08-11**
 
 ## Executive summary
 
-DTMO `16.0.0rc12` has completed the repository-controlled engineering programme through Phase 7 and the RC11/RC12 product consolidation programme.
+DTMO `16.0.0rc12` has completed the repository-controlled engineering programme through Phase 7 and the RC11/RC12 source-framework and unified-console consolidation work. A project-owner functional test on 2026-08-11 subsequently demonstrated that the canonical console was **not yet functionally acceptable for external staging**.
 
-The platform now has:
+The product-level blocker is now tracked as **RC13 functional unified-console acceptance** in issue #150 and `docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`.
 
-- one canonical unified DTMO console;
-- a governed source adapter framework and connected operational vendor catalog;
-- integrated source administration and execution;
-- threat intelligence investigation and management views;
-- Grafana operational and intelligence analytics embedded through the same browser origin;
-- least-privilege Grafana reporting access;
-- established CI, security, recovery, performance, accessibility and observability gates.
-
-DTMO is **not yet production ready**. The next formal gate is external staging validation.
+DTMO is **not production ready** and Phase 8 is paused until RC13 passes.
 
 ## Phase status
 
@@ -29,44 +21,61 @@ DTMO is **not yet production ready**. The next formal gate is external staging v
 | 5. Performance and scalability | `PASS` |
 | 6. Accessibility and operational UX | `PASS` — project-owner manual/external acceptance on 2026-08-11 |
 | 7. Observability and incident operations | `PASS` |
-| 8. Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION` |
+| RC13. Functional unified-console acceptance | `BLOCKED_INTERNAL` — remediation in progress |
+| 8. Real staging acceptance | `PAUSED_PENDING_RC13` |
 | 9. Independent external assurance | `NOT COMPLETE` |
 | 10. Production go/no-go | `NOT STARTED` |
 
-## Current product baseline
+## Functional acceptance findings
 
-### Unified console
+The project-owner test found the following blocking gaps in the canonical console:
 
-The canonical product entry point is `/`, with `/ui/console` retained as an alias. Legacy role/workspace routes may remain for compatibility, but the intended product architecture is one unified shell.
+- Overview lacked useful default graphical/statistical information.
+- Intelligence had no default/recent data presentation and was unusable while the source-ingestion path was not working end to end.
+- Sources & Catalog did not provide a reliable register/enable/run/ingest operator journey for the already connected framework.
+- Visual analytics depended on a separate Grafana authentication context.
+- Administration lacked governed role/user-role administration.
+- Governance did not expose the frameworks and mappings used by DTMO, including Normenkader IBP, MITRE ATT&CK and CVSS context.
+- Non-user-facing legacy compatibility copy was still exposed in the main navigation.
 
-Source operations, administration, intelligence investigation, graphical analytics and governance views are presented without weakening server-side RBAC or human approval boundaries.
+## RC13 programme
 
-### Source framework
+### RC13.1 — source-to-intelligence functional path
 
-The current operational vendor catalog is connected through accepted built-in or unified-framework adapters. Credentialed integrations carry logical secret references only; runtime secret values are not stored in the catalog or source registry.
+Current priority. The canonical console must correctly distinguish built-in and registry-backed sources, allow supported framework sources to be registered/enabled/executed, process fetched records through the canonical ingestion pipeline, and show the resulting recent intelligence and overview statistics without requiring a separate search action.
 
-The authoritative source status is maintained in [`SOURCE_CONNECTION_MATRIX.md`](../qa/SOURCE_CONNECTION_MATRIX.md).
+RC13.1 adds a dedicated Chromium functional journey that clicks the actual console controls and proves register → enable → run → ingest → recent intelligence → updated overview behavior.
 
-### Analytics and observability
+### RC13.2 — visual analytics
 
-Grafana provides operational and intelligence dashboards through the managed same-origin `/grafana/` path. Intelligence reporting uses a dedicated least-privilege reporting role and explicit reporting views rather than the DTMO application database identity.
+Core analytics must work by default without requiring a separate Grafana login. Grafana may remain as an advanced governed analytics layer, but native product analytics cannot depend on it.
 
-Prometheus metrics, request correlation, trace context, alerting and operational runbooks support the observability layer. Native accessible chart/table equivalents remain available in the DTMO console.
+### RC13.3 — Administration/RBAC
+
+Add governed user/role-assignment administration while preserving server-side RBAC and separation of duties.
+
+### RC13.4 — Governance knowledge surface
+
+Expose the control/framework context used by DTMO, including Normenkader IBP, MITRE ATT&CK, CVSS and related project mappings.
+
+### RC13.5 — full functional acceptance
+
+Execute one complete canonical-console browser journey on one exact head. Only then may Phase 8 return to external-validation readiness.
+
+## Source framework
+
+The operational source adapters remain connected according to `docs/qa/SOURCE_CONNECTION_MATRIX.md`. RC13 does not reopen adapter acceptance; it repairs the **operator-facing execution and data-visibility journey** over those accepted adapters.
+
+Credentialed integrations continue to use logical secret references only. Runtime credential values remain outside the catalog, registry and repository evidence.
 
 ## Phase 6 acceptance
 
-On **2026-08-11**, the project owner explicitly confirmed that Phase 6 was personally checked and accepted. This closes the remaining external/manual accessibility blocker as accountable owner attestation. The repository does not invent unprovided test-environment or recording details.
-
-## Phase 8 handoff
-
-The repository-controlled prerequisites are ready for external staging validation. After this final cleanup PR is accepted, the project owner will validate an approved production-equivalent staging deployment against the ten-class deployment-parity gate tied to one immutable `16.0.0rc12` deployment identity.
-
-CI, Docker Compose and staging-emulator evidence are supporting engineering evidence and do not substitute for that external decision.
+Phase 6 remains `PASS`. On 2026-08-11 the project owner explicitly confirmed that the accessibility/operational UX scope had been personally checked and accepted. The repository does not invent unprovided environment/version or recording details.
 
 ## Governance boundary
 
-RBAC, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, dashboard access, CI success or staging access cannot authorize publication.
+RBAC, least privilege, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, dashboard access, CI success or staging access cannot authorize publication.
 
 ## Exactly one current priority
 
-**Complete the final cleanup/documentation PR, then perform Phase 8 external staging validation against one immutable `16.0.0rc12` deployment identity.**
+**RC13.1 — complete and accept the source-to-intelligence functional browser journey.** Phase 8 external staging validation remains paused until all RC13 blocking findings are resolved.
