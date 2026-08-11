@@ -14,7 +14,7 @@ Last updated: **2026-08-11**
 - [ ] RC13 — functional unified-console acceptance complete.
   - [x] RC13.1 — source register/enable/run → ingest/index → recent intelligence → Overview accepted via PR #151.
   - [x] RC13.2 — single-session Visual analytics accepted via PR #152.
-  - [ ] RC13.3 — governed Administration/RBAC accepted.
+  - [x] RC13.3 — governed Administration/RBAC accepted via PR #153.
   - [ ] RC13.4 — Governance knowledge surface accepted.
   - [ ] RC13.5 — complete canonical-console browser acceptance recorded on one exact head.
 - [ ] Phase 8 — real staging acceptance complete.
@@ -23,20 +23,34 @@ Last updated: **2026-08-11**
 
 ## RC13.3 — governed Administration/RBAC
 
-- [ ] `managed_principals` persistence accepted.
-- [ ] `managed_role_assignments` persistence accepted.
-- [ ] Migration `0009_managed_rbac_assignments` accepted after `0008_grafana_reporting_views`.
-- [ ] Built-in role/permission catalog is server-side and immutable from browser input.
-- [ ] RBAC mutations require `manage:users` and a human `admin` role.
-- [ ] Service accounts are restricted to only `service_account`.
-- [ ] Administrator self-management is blocked server-side.
-- [ ] The last active managed admin cannot be removed or deactivated.
-- [ ] Create/update mutations append tamper-evident audit events with request IDs.
-- [ ] Canonical Administration tab can create a principal and assign roles.
-- [ ] Canonical Administration tab can change roles and activate/deactivate a principal.
-- [ ] UI makes identity-provider/token reconciliation requirements explicit.
-- [ ] Active production bearer tokens are never silently rewritten by managed assignment mutations.
-- [ ] `RC13 Governed Administration RBAC Gate` succeeds on the exact final PR head.
+- [x] `managed_principals` persistence accepted.
+- [x] `managed_role_assignments` persistence accepted.
+- [x] Migration `0009_managed_rbac_assignments` accepted after `0008_grafana_reporting_views`.
+- [x] Built-in role/permission catalog is server-side and immutable from browser input.
+- [x] RBAC mutations require `manage:users` and a human `admin` role.
+- [x] Service accounts are restricted to only `service_account`.
+- [x] Administrator self-management is blocked server-side.
+- [x] The last active managed admin cannot be removed or deactivated.
+- [x] Create/update mutations append tamper-evident audit events with request IDs.
+- [x] Canonical Administration tab can create a principal and assign roles.
+- [x] Canonical Administration tab can change roles and activate/deactivate a principal.
+- [x] UI makes identity-provider/token reconciliation requirements explicit.
+- [x] Active production bearer tokens are never silently rewritten by managed assignment mutations.
+- [x] `RC13 Governed Administration RBAC Gate` succeeded on exact head `b828b9b2dbb2f8794bfe7c13ec6e7dd0bdafb22f`.
+- [x] Complete registered exact-head workflow set succeeded before PR #153 merge.
+
+## RC13.4 — Governance knowledge surface
+
+- [ ] Authenticated read-only governance API accepted.
+- [ ] Canonical Governance pane renders framework coverage.
+- [ ] Normenkader IBP is visibly `UNMAPPED` unless a repository control crosswalk exists.
+- [ ] MITRE ATT&CK is visibly `UNMAPPED` unless a repository technique mapping dataset exists.
+- [ ] CVSS is visibly `CONTEXT_ONLY` while no first-class vector/base-score field exists.
+- [ ] Internal DTMO governance mappings have repository provenance.
+- [ ] Authority boundaries are visible and do not grant publication/share authority.
+- [ ] No external framework equivalence is inferred.
+- [ ] `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md` is authoritative and consistent with runtime output.
+- [ ] `RC13 Governance Knowledge Surface Gate` succeeds on the exact final PR head.
 - [ ] Complete registered exact-head workflow set succeeds before merge.
 
 ## Phase 8 — deployment-parity package
@@ -100,4 +114,4 @@ All items must refer to the same immutable `16.0.0rc12` staging deployment ident
 
 Current decision: **NO-GO pending RC13 and Phases 8–10**.
 
-The only current action is RC13.3 governed Administration/RBAC. External Phase 8 staging validation remains paused until the complete RC13 functional gate is accepted.
+The only current action is RC13.4 repository-backed Governance knowledge. External Phase 8 staging validation remains paused until the complete RC13 functional gate is accepted.

@@ -21,7 +21,7 @@ A fresh local/dev deployment must support the following from the canonical conso
 9. search intelligence when OpenSearch is available, with a canonical-database recent-items view remaining usable independently;
 10. view graphical analytics without a separate Grafana login being a prerequisite for core functionality;
 11. administer supported DTMO principal/role assignments through governed server-side APIs;
-12. view the applicable governance frameworks and mappings in the Governance area;
+12. view applicable governance frameworks, actual repository-backed mappings and explicit unmapped/context-only coverage in the Governance area;
 13. retain RBAC, separation of duties, privacy, provenance, auditability, human review and separate share approval.
 
 ## RC13.1 — source-to-intelligence functional path
@@ -36,43 +36,38 @@ Accepted behavior includes truthful source state, register/enable/configure/run 
 
 Status: `PASS` within the RC13.2 evidence boundary.
 
-PR #152 merged on 2026-08-11 as `b8c254c5d099cde5dca624aa85b17c320594847e` after the complete exact-head workflow set succeeded, including:
+PR #152 merged on 2026-08-11 as `b8c254c5d099cde5dca624aa85b17c320594847e` after the complete exact-head workflow set succeeded, including RC4 Quality Gate #805, RC13 Functional Console Browser E2E Gate #6 and RC13 Single-session Visual Analytics Gate #1.
 
-- RC4 Quality Gate #805;
-- RC13 Functional Console Browser E2E Gate #6;
-- RC13 Single-session Visual Analytics Gate #1.
-
-Accepted behavior:
-
-- native severity, source, connector-health and review-status analytics are the canonical product surface;
-- normal Visual analytics navigation makes no `/grafana/` request;
-- the separately authenticated Grafana shell is not exposed in normal canonical-console use;
-- Grafana remains separately authenticated for advanced/operations use;
-- Grafana anonymous access and self-signup remain disabled;
-- no authentication bypass or privilege broadening was introduced.
+Accepted behavior keeps native severity, source, connector-health and review-status analytics as the canonical product surface while Grafana remains separately authenticated for advanced/operations use. Normal Visual analytics navigation makes no `/grafana/` request and no authentication bypass was introduced.
 
 ## RC13.3 — governed Administration/RBAC
 
+Status: `PASS` within the RC13.3 evidence boundary.
+
+PR #153 merged on 2026-08-11 as `2e1029a43f7b44d8525fb89197d0a10458a3e992`. Exact-head `b828b9b2dbb2f8794bfe7c13ec6e7dd0bdafb22f` completed the full workflow set successfully, including RC4 Quality Gate #809 and RC13 Governed Administration RBAC Gate #3.
+
+Accepted behavior includes persistent managed principals/role assignments, immutable built-in roles, human-admin + `manage:users`, strict service-account isolation, self-management blocking, final-admin protection, tamper-evident mutation auditing, canonical create/update/deactivate UI and truthful external IdP/token-reissue semantics.
+
+## RC13.4 — Governance knowledge surface
+
 Status: `PENDING_CI` / current priority.
 
-RC13.3 acceptance requires:
+The authoritative registry is `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`.
 
-- persistent managed principals and managed role assignments;
-- immutable built-in role definitions derived from the server-side `Role` and `ROLE_PERMISSIONS` policy;
-- `manage:users` plus a human `admin` role for RBAC administration;
-- service accounts restricted to `service_account` and never combinable with human/admin roles;
-- administrator self-management blocked;
-- the final active managed admin protected from removal/deactivation;
-- create/update mutations recorded atomically in the existing tamper-evident audit chain with request IDs;
-- canonical Administration UI for creating principals, assigning/changing roles and activate/deactivate operations;
-- truthful token behavior: DTMO does not silently modify externally issued production bearer tokens; identity-provider reconciliation or token reissue is required;
-- arbitrary custom token roles are not creatable from browser input;
-- a dedicated `RC13 Governed Administration RBAC Gate` with persistence/security contracts and a real Chromium Administration journey;
+RC13.4 acceptance requires:
+
+- authenticated read-only `GET /api/v1/governance/knowledge`;
+- canonical Governance rendering of framework coverage, real DTMO repository mappings and authority boundaries;
+- Normenkader IBP visibly `UNMAPPED` until a control-level repository crosswalk exists;
+- MITRE ATT&CK visibly `UNMAPPED` until a technique-level repository mapping dataset exists;
+- CVSS visibly `CONTEXT_ONLY` while canonical ingest has severity/free metadata but no first-class vector/base-score field;
+- internal DTMO governance mappings traceable to `docs/security/SECURITY_OVERVIEW.md` and `docs/traceability/TRACEABILITY_MATRIX.md`;
+- no inferred framework/control/technique equivalence;
+- a dedicated RC13 Governance Knowledge Surface Gate with repository contract tests and a Chromium Governance journey;
 - complete exact-head workflow success before merge.
 
-## Remaining RC13 slices after RC13.3
+## Remaining RC13 slice after RC13.4
 
-- **RC13.4** — Governance knowledge surface with Normenkader IBP, MITRE ATT&CK, CVSS and repository-backed project mappings.
 - **RC13.5** — complete canonical-console functional browser acceptance and programme close-out.
 
 ## Phase 8 boundary

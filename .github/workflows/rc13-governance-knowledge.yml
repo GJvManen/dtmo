@@ -1,0 +1,116 @@
+name: RC13 Governance Knowledge Surface Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  governance-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Verify RC13.4 repository-backed governance contracts
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q backend/tests/test_rc13_4_governance_knowledge.py \
+            --junitxml=artifacts/rc13-governance-contract.xml
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: rc13-governance-contract-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  governance-browser:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_E2E_BASE_URL: http://127.0.0.1:8765
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+      - name: Start bounded canonical console target
+        run: |
+          mkdir -p artifacts
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/rc13-governance-server.log 2>&1 &
+          echo $! > artifacts/rc13-governance-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/health.json; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat artifacts/rc13-governance-server.log
+          exit 1
+      - name: Execute canonical Governance browser journey
+        run: |
+          python -m pytest -q backend/tests/test_rc13_4_governance_browser_e2e.py \
+            --junitxml=artifacts/rc13-governance-browser.xml
+      - name: Record machine-readable RC13.4 evidence
+        if: success()
+        env:
+          GITHUB_SHA_VALUE: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+              "decision": "pass",
+              "exact_head": os.environ["GITHUB_SHA_VALUE"],
+              "journey": "canonical_governance_repository_backed_knowledge",
+              "browser": "chromium",
+              "normenkader_visible": True,
+              "mitre_attack_visible": True,
+              "cvss_visible": True,
+              "unmapped_crosswalks_explicit": True,
+              "internal_repository_mappings_visible": True,
+              "authority_boundaries_visible": True,
+              "external_requests": False,
+              "synthetic_browser_support_calls_only": True,
+              "owner_local_acceptance_claimed": False,
+          }
+          Path("artifacts/rc13-governance-evidence.json").write_text(
+              json.dumps(evidence, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+      - name: Stop browser target
+        if: always()
+        run: |
+          if test -f artifacts/rc13-governance-server.pid; then
+            kill "$(cat artifacts/rc13-governance-server.pid)" || true
+          fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: rc13-governance-browser-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  governance-gate:
+    if: always()
+    needs: [governance-contract, governance-browser]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed RC13.4 evidence
+        env:
+          CONTRACT_RESULT: ${{ needs.governance-contract.result }}
+          BROWSER_RESULT: ${{ needs.governance-browser.result }}
+        run: |
+          test "$CONTRACT_RESULT" = "success"
+          test "$BROWSER_RESULT" = "success"

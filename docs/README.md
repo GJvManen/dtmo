@@ -10,11 +10,12 @@ This directory contains the authoritative architecture, security, governance, QA
 - **RC13 functional console acceptance:** `BLOCKED_INTERNAL`
 - **RC13.1:** accepted via PR #151
 - **RC13.2:** accepted via PR #152 (`b8c254c5d099cde5dca624aa85b17c320594847e`)
-- **RC13.3:** current priority — governed Administration/RBAC, `PENDING_CI`
+- **RC13.3:** accepted via PR #153 (`2e1029a43f7b44d8525fb89197d0a10458a3e992`)
+- **RC13.4:** current priority — repository-backed Governance knowledge surface, `PENDING_CI`
 - **Phase 8:** `PAUSED_PENDING_RC13`
 - **Production readiness:** not yet complete
 
-The next formal gate is **RC13.3**, not external staging. Phase 8 may resume only after the complete RC13 functional browser acceptance is complete and accepted.
+The next formal gate is **RC13.4**, not external staging. Phase 8 may resume only after RC13.5 completes the full functional browser acceptance and accountable owner acceptance.
 
 ## Project overview
 
@@ -36,7 +37,7 @@ The canonical application shell integrates source operations, intelligence inves
 
 Normal product analytics are native DTMO views. Grafana remains an authenticated operational/advanced deployment component and is not a prerequisite for canonical console analytics.
 
-RC13.3 introduces an auditable managed-principal/role registry. Built-in roles remain server-side controlled. Production bearer tokens remain externally issued; managed assignment changes require identity-provider reconciliation or token reissue and never silently rewrite active token claims.
+RC13.3 introduced an auditable managed-principal/role registry. Built-in roles remain server-side controlled. Production bearer tokens remain externally issued; managed assignment changes require identity-provider reconciliation or token reissue and never silently rewrite active token claims.
 
 ## Intelligence sources
 
@@ -48,13 +49,16 @@ Operational vendor feeds are connected through governed built-in or unified-fram
 
 ## Security and governance
 
+- [Governance mapping registry](governance/GOVERNANCE_MAPPING_REGISTRY.md)
 - [Security overview](security/SECURITY_OVERVIEW.md)
 - [Security policy](../SECURITY.md)
 - [Licensing](legal/LICENSING.md)
 - [Third-party material](legal/THIRD_PARTY.md)
 - [ADR-001 — evidence and claim boundaries](project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md)
 
-Core invariants include RBAC, least privilege, service-account isolation, administrator safety controls, separation of duties, privacy/data minimization, provenance preservation, auditability and separate human review/share approval. Technical execution or Administration access never grants publication authority.
+RC13.4 exposes a read-only repository-backed governance snapshot in the canonical Governance tab. Normenkader IBP and MITRE ATT&CK remain explicitly `UNMAPPED` until curated control/technique datasets exist. CVSS is `CONTEXT_ONLY` because canonical ingest currently has severity/free metadata but no first-class vector/base-score field. Internal DTMO governance mappings remain traceable to repository evidence.
+
+Core invariants include RBAC, least privilege, service-account isolation, administrator safety controls, separation of duties, privacy/data minimization, provenance preservation, auditability and separate human review/share approval. Technical execution, Administration access or Governance visibility never grants publication authority.
 
 ## Accessibility
 

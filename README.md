@@ -20,6 +20,7 @@ DTMO is designed for security operations, threat intelligence, administration an
 - **Threat investigation** — canonical recent intelligence plus governed OpenSearch-backed search.
 - **Operational administration** — source configuration/execution plus governed principal/role assignment management in the canonical console.
 - **Visual analytics** — native DTMO statistics and charts inside the canonical DTMO session. Grafana remains an authenticated operational/advanced deployment component and is not a prerequisite for normal product analytics.
+- **Governance knowledge** — repository-backed framework coverage, internal mappings and authority boundaries without inferred external framework equivalence.
 - **Auditability and provenance** — source identity, request correlation, retained evidence and controlled state transitions.
 - **Separation of duties** — ingestion, analysis, review and external share approval remain distinct authorities.
 
@@ -42,28 +43,14 @@ flowchart LR
 
     U[Analyst / Admin / CISO / Auditor] --> UI[Unified DTMO console]
     UI --> A
+    UI --> GK[Governance knowledge]
+    GK --> GR[Repository mapping registry]
     OPS[Authenticated operations/admin] --> G
 
     A --> AUD[Audit, review & share controls]
 ```
 
-The architecture separates **collection**, **normalization**, **application services**, **persistence/search**, **observability** and **human governance**. Technical execution never grants publication authority. Normal console analytics are native DTMO views; Grafana is retained behind its own authenticated operational boundary unless a future deployment proves a safe shared-session integration.
-
-### Technology stack
-
-| Layer | Technology |
-|---|---|
-| Application/API | Python 3.12+, FastAPI, Pydantic, SQLAlchemy |
-| Database | PostgreSQL 17 |
-| Search | OpenSearch 2.19 |
-| Queue/cache | Redis 8 |
-| Evidence/object storage | S3-compatible AIStor/MinIO interface |
-| Metrics | Prometheus 3 |
-| Dashboards | Native DTMO analytics + authenticated Grafana 13 operations layer |
-| Gateway | Nginx |
-| Migrations | Alembic |
-| Test & quality | pytest, Playwright, Ruff, mypy, pip-audit |
-| Runtime | Docker Compose reference environment |
+The architecture separates collection, normalization, application services, persistence/search, observability and human governance. Technical execution never grants publication authority. Normal console analytics are native DTMO views; Grafana is retained behind its own authenticated operational boundary.
 
 See [`docs/architecture/SYSTEM_ARCHITECTURE.md`](docs/architecture/SYSTEM_ARCHITECTURE.md).
 
@@ -81,13 +68,26 @@ The RC12 implementation passed its repository-controlled tests, but the project-
 
 Current RC13 programme:
 
-1. **RC13.1 — source-to-intelligence path — PASS within its slice boundary.** PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after the complete exact-head workflow set passed. The canonical console browser-proves register/enable/run → ingest/index → recent intelligence → updated Overview behavior.
-2. **RC13.2 — single-session visual analytics — PASS within its slice boundary.** PR #152 merged on 2026-08-11 as `b8c254c5d099cde5dca624aa85b17c320594847e`; exact-head CI included RC4 Quality Gate #805, RC13 Functional Console Browser E2E Gate #6 and RC13 Single-session Visual Analytics Gate #1. Native analytics are now the canonical user surface and normal Visual analytics use performs no Grafana request/login journey.
-3. **RC13.3 — Administration/RBAC — CURRENT / PENDING_CI.** Add persistent managed principals and role assignments, immutable built-in role/permission catalog, human-admin + `manage:users` authorization, self-management and last-admin lockout protections, tamper-evident audit records, canonical Administration UI and Chromium functional coverage. Production bearer tokens remain externally issued; assignment changes require identity-provider reconciliation/token reissue and never rewrite active tokens.
-4. **RC13.4 — Governance knowledge surface**: Normenkader IBP, MITRE ATT&CK, CVSS and related mappings/control context.
-5. **RC13.5 — full functional browser acceptance**: one complete canonical-console journey on an exact head.
+1. **RC13.1 — source-to-intelligence path — PASS.** PR #151 merged as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after complete exact-head success.
+2. **RC13.2 — single-session visual analytics — PASS.** PR #152 merged as `b8c254c5d099cde5dca624aa85b17c320594847e`; native analytics are the canonical user surface and normal Visual analytics use performs no Grafana request/login journey.
+3. **RC13.3 — Administration/RBAC — PASS.** PR #153 merged as `2e1029a43f7b44d8525fb89197d0a10458a3e992` after complete exact-head success on `b828b9b2dbb2f8794bfe7c13ec6e7dd0bdafb22f`, including RC4 Quality Gate #809 and RC13 Governed Administration RBAC Gate #3.
+4. **RC13.4 — Governance knowledge surface — CURRENT / PENDING_CI.** Add authenticated read-only governance knowledge, repository-backed mappings and explicit coverage status. Normenkader IBP and MITRE ATT&CK remain visibly `UNMAPPED` until explicit datasets exist; CVSS is `CONTEXT_ONLY` while canonical ingest has no first-class CVSS vector/base-score field.
+5. **RC13.5 — full functional browser acceptance.** One complete canonical-console journey on one exact head plus accountable project-owner acceptance.
 
 Tracking: [issue #150](https://github.com/GJvManen/dtmo/issues/150) and [`docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`](docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md).
+
+## Governance mapping model
+
+[`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md) is the repository authority for RC13.4.
+
+Current coverage:
+
+- **Normenkader IBP:** `UNMAPPED` — no control-level repository crosswalk exists yet.
+- **MITRE ATT&CK:** `UNMAPPED` — no technique-level repository mapping dataset exists yet.
+- **CVSS:** `CONTEXT_ONLY` — canonical ingest exposes severity/free metadata but no first-class CVSS vector/base-score field.
+- **DTMO security & release governance:** `MAPPED_INTERNAL` — internal governance mappings point to explicit repository evidence.
+
+Missing mappings are visible evidence. DTMO does not infer a framework/control/technique equivalence from semantic similarity, tags or free metadata.
 
 ## Security and governance model
 
@@ -99,8 +99,8 @@ DTMO is built around these invariants:
 - service accounts cannot combine machine and human/admin roles;
 - administrators cannot change their own managed assignment and the final managed admin cannot be removed/deactivated;
 - review and external share approval are separate human decisions;
-- self-approval is prohibited where separation of duties applies;
 - connectors, service accounts, CI jobs and staging access cannot authorize publication;
+- Governance visibility cannot authorize publication or create an inferred mapping;
 - provenance and confidence are preserved during normalization;
 - logs and evidence follow privacy and data-minimization requirements;
 - credentials, tokens and secret values are excluded from repository evidence;
@@ -113,19 +113,6 @@ See [`SECURITY.md`](SECURITY.md) and [`docs/security/SECURITY_OVERVIEW.md`](docs
 
 Every change is delivered as a bounded pull request and must pass the registered **exact-head** workflow set before merge.
 
-```mermaid
-flowchart LR
-    B[Feature / remediation branch] --> PR[Pull request]
-    PR --> Q[Quality & governance]
-    Q --> S[Security & connector contracts]
-    S --> D[Data integrity & recovery]
-    D --> P[Performance]
-    P --> A[Browser & accessibility]
-    A --> O[Observability & operations]
-    O --> F[Functional browser acceptance]
-    F --> M[Expected-head protected merge]
-```
-
 | Workflow family | Purpose |
 |---|---|
 | Quality & governance | Unit tests, linting, typing, licensing and repository contracts |
@@ -135,9 +122,10 @@ flowchart LR
 | Performance | Ingestion, API/search reads, concurrency and degraded dependencies |
 | Browser & accessibility | Critical user journeys, keyboard, responsive and accessibility behavior |
 | Observability | Request/trace context, alerts, dashboards and runbooks |
-| Functional console | End-to-end UI interaction: source operations → ingest → intelligence → statistics |
-| RC13 single-session analytics | Chromium proof that native analytics render without a Grafana request/login dependency |
-| RC13 governed Administration/RBAC | Persistence, authorization/audit contracts plus canonical Chromium principal/role management journey |
+| Functional console | End-to-end canonical product interaction |
+| RC13 single-session analytics | Chromium proof that native analytics render without Grafana dependency |
+| RC13 governed Administration/RBAC | Persistence, authorization/audit contracts plus canonical principal/role journey |
+| RC13 Governance knowledge | Repository mapping/provenance contracts plus canonical Governance browser journey |
 
 Configured or queued workflows are not acceptance evidence. Missing, failed, cancelled, skipped, stale or inferred evidence is never `PASS`.
 
@@ -152,12 +140,12 @@ Configured or queued workflows are not acceptance evidence. Missing, failed, can
 | 5 | Performance and scalability | ✅ `PASS` |
 | 6 | Accessibility and operational UX | ✅ `PASS` — owner accepted 2026-08-11 |
 | 7 | Observability and incident operations | ✅ `PASS` |
-| RC13 | Functional unified-console acceptance | 🔴 `BLOCKED_INTERNAL` / in remediation |
+| RC13 | Functional unified-console acceptance | 🔴 `BLOCKED_INTERNAL` — RC13.1/13.2/13.3 accepted; RC13.4 current |
 | 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13` |
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The only current priority is **RC13.3 — governed Administration/RBAC**. External staging validation and penetration testing resume only after the complete RC13 functional gate is accepted.
+The only current priority is **RC13.4 — repository-backed Governance knowledge surface**. External staging validation and penetration testing resume only after the complete RC13 functional gate is accepted.
 
 ## Repository structure
 
@@ -179,6 +167,7 @@ Start with [`docs/README.md`](docs/README.md). Key records:
 - [`docs/project/EXECUTIVE_STATUS.md`](docs/project/EXECUTIVE_STATUS.md)
 - [`docs/roadmap/PRODUCTION_ROADMAP.md`](docs/roadmap/PRODUCTION_ROADMAP.md)
 - [`docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`](docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md)
+- [`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md)
 - [`docs/qa/SOURCE_CONNECTION_MATRIX.md`](docs/qa/SOURCE_CONNECTION_MATRIX.md)
 - [`docs/architecture/SYSTEM_ARCHITECTURE.md`](docs/architecture/SYSTEM_ARCHITECTURE.md)
 - [`docs/evidence/EVIDENCE_INDEX.md`](docs/evidence/EVIDENCE_INDEX.md)
@@ -191,6 +180,6 @@ The repository includes a Docker Compose reference environment for engineering a
 
 ## Open source and responsible use
 
-DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). Governance and contribution entry points are maintained in `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` and `docs/legal/THIRD_PARTY.md`.
+DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). The repository governance entry points are `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` and `docs/legal/THIRD_PARTY.md`.
 
 Use DTMO only with lawful access to intelligence sources and infrastructure. A technically successful connector does not itself establish legal permission to collect, process or redistribute third-party material.
