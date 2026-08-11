@@ -43,7 +43,9 @@ def test_internal_mappings_have_real_repository_provenance() -> None:
         contents = source.read_text(encoding="utf-8")
         section = str(mapping["section"])
         if section == "Phase 8/9/10 rows":
-            assert "Phase 8" in contents and "Phase 9" in contents and "Phase 10" in contents
+            assert "| 8 |" in contents
+            assert "| 9 |" in contents
+            assert "| 10 |" in contents
         else:
             assert section.lower() in contents.lower()
 
