@@ -4,7 +4,7 @@
 
 DTMO uses explicit evidence gates for engineering changes and keeps repository-controlled acceptance separate from functional product acceptance, external staging and production assurance.
 
-A configured, queued, cancelled, failed or unexecuted automated test is never `PASS`. Manual/external acceptance is recorded explicitly as such and is not presented as machine-generated evidence.
+A configured, queued, cancelled, failed or unexecuted automated test is never `PASS`. Manual/external acceptance is recorded explicitly and is never presented as machine-generated evidence.
 
 ## Gate families
 
@@ -20,22 +20,24 @@ A configured, queued, cancelled, failed or unexecuted automated test is never `P
 | Accessibility / UX | Browser, keyboard, responsive, WCAG and accountable external/manual AT acceptance succeed |
 | Observability & operations | Metrics, correlation, trace context, alerting, dashboards, runbooks and exercises succeed |
 | Functional console | Canonical product journeys execute in Chromium and produce usable data/state changes |
-| Governed Administration/RBAC | Persistent assignments, human-admin authorization, auditability, safety invariants and canonical UI mutations succeed |
-| Governance knowledge | Repository provenance, explicit unmapped/context-only status, authority boundaries and canonical Governance rendering succeed |
+| Governed Administration/RBAC | Persistent assignments, human-admin authorization, auditability and safety invariants succeed |
+| Governance knowledge | Repository provenance, explicit unmapped/context-only status and authority boundaries succeed |
 | Full RC13 integration | One Chromium browser context proves all canonical product areas work together on one exact head |
-| Staging readiness | External staging is allowed only after RC13 exact-head evidence and accountable owner retest both pass |
+| Owner functional acceptance | Accountable owner retests the repaired local product and explicitly accepts or reports blockers |
+| Staging readiness | External staging is allowed only after RC13 repository evidence and owner retest both pass |
 | Release | Complete exact-head workflow set succeeds before expected-head protected merge |
 
 ## Current phase status — 2026-08-11
 
 - Phases 1–7: `PASS`.
-- RC13: `BLOCKED_INTERNAL`.
-  - RC13.1: `PASS`; PR #151 merged.
-  - RC13.2: `PASS`; PR #152 merged.
-  - RC13.3: `PASS`; PR #153 merged.
-  - RC13.4: `PASS`; PR #154 merged as `21672aaf1cf097228699810660eaac167da842d6` after full exact-head success on `0a227cb9f3972504287a6f7f064d6df18b76fbed`.
-  - RC13.5: `PENDING_CI` / current priority.
-- Phase 8: `PAUSED_PENDING_RC13`.
+- RC13 repository-controlled evidence:
+  - RC13.1: `PASS` via PR #151.
+  - RC13.2: `PASS` via PR #152.
+  - RC13.3: `PASS` via PR #153.
+  - RC13.4: `PASS` via PR #154.
+  - RC13.5: `PASS` via PR #155 / merge `d6f83557ab18d26f82ad6289b1b95f728346631d`.
+- RC13 overall: `AWAITING_OWNER_RETEST`.
+- Phase 8: `PAUSED_PENDING_RC13_OWNER_RETEST`.
 - Phase 9: `NOT COMPLETE`.
 - Phase 10: `NOT STARTED`.
 
@@ -43,55 +45,46 @@ A configured, queued, cancelled, failed or unexecuted automated test is never `P
 
 Workflow configuration on `main` is not itself acceptance evidence. A merge candidate must execute the registered release-critical workflow set on the exact final pull-request head. Merge uses expected-head protection so a moved head cannot be accepted accidentally.
 
-## Accepted RC13 evidence
+## RC13.5 exact-head acceptance
 
-RC13.1 proves source register/enable/run → ingest/index → recent intelligence → Overview.
+Exact head `56805ec4ead5a14e9a2f776f84df42eb772302a4` completed the full returned workflow matrix successfully before PR #155 merged. Load-bearing gates included:
 
-RC13.2 proves native severity/source/connector/review analytics render without normal-product `/grafana/` requests or a second-login Grafana user path.
+- RC4 Quality Gate #815;
+- RC13 Full Functional Console Acceptance Gate #1;
+- RC13 Functional Console Browser E2E Gate #13;
+- RC13 Single-session Visual Analytics Gate #8;
+- RC13 Governed Administration RBAC Gate #7;
+- RC13 Governance Knowledge Surface Gate #4;
+- Open Source Governance Gate #279.
 
-RC13.3 proves governed principal/role persistence, human-admin authorization, service-account isolation, self-management blocking, last-admin protection, tamper-evident auditing and canonical create/update/deactivate Administration.
+The integrated browser journey proved one canonical session through:
 
-RC13.4 proves truthful Governance coverage: Normenkader IBP and MITRE ATT&CK remain `UNMAPPED`, CVSS remains `CONTEXT_ONLY`, internal DTMO mappings have repository provenance, and Governance visibility does not grant publication/share authority.
-
-## RC13.5 full functional evidence
-
-`RC13 Full Functional Console Acceptance Gate` is the final repository-controlled RC13 integration gate. It must use one Chromium browser context on one exact PR head to prove:
-
-1. Overview renders native state/graphics;
-2. Intelligence renders canonical recent state;
-3. Sources & Catalog can register, enable and run an eligible framework source;
-4. source execution updates Intelligence and Overview state in the same browser session;
-5. Visual analytics renders severity/source/connector/review data without a `/grafana/` request;
-6. Administration performs governed RBAC create/update/deactivate with request correlation and self-management protection;
-7. Governance renders truthful framework coverage, repository mappings and authority boundaries;
-8. no connector, analytics, RBAC or Governance action grants publication authority.
-
-The RC13.5 gate fails closed when the browser evidence is missing or unsuccessful.
+**Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
 
 ## Owner acceptance boundary
 
 RC13.5 CI is synthetic repository-controlled evidence. It cannot manufacture the accountable project-owner functional retest required after merge.
 
-Phase 8 remains `PAUSED_PENDING_RC13` until both RC13.5 exact-head acceptance and explicit successful project-owner retest of the repaired local canonical product are recorded.
+Phase 8 remains `PAUSED_PENDING_RC13_OWNER_RETEST` until the project owner explicitly accepts the repaired local canonical product. If the owner reports a blocker, that finding reopens the relevant RC13 repair path.
 
 ## Security, privacy and publication invariants
 
 - ingestion creates candidate intelligence only;
-- publication requires explicit human share approval under the accepted separation-of-duties model;
+- publication requires explicit human share approval;
 - service accounts, connectors, CI and staging access do not grant publication authority;
 - human and machine roles may not be combined;
 - Governance visibility does not grant publication/share authority;
 - external framework mappings are never inferred;
 - provenance and confidence may not be silently discarded;
 - missing or incomplete evidence blocks the corresponding acceptance claim;
-- analytics convenience must not introduce anonymous Grafana access, an authentication bypass or privilege broadening.
+- analytics convenience must not introduce anonymous Grafana access, authentication bypass or privilege broadening.
 
 ## External assurance boundary
 
-Issue #150 tracks RC13 functional acceptance. Issue #3 is the active production-readiness tracker. Issue #1 tracks later external staging, assurance and production acceptance.
+Issue #150 tracks RC13 owner acceptance. Issue #3 is the active production-readiness tracker. Issue #1 tracks later external staging, assurance and production acceptance.
 
 Repository CI, local Docker Compose and staging emulators cannot substitute for owner-observed functional acceptance, real staging, independent assurance or final production approval.
 
 ## Exactly one next priority
 
-**RC13.5 — exact-head accept the complete one-session canonical-console Chromium journey, then obtain accountable project-owner functional retest.**
+**Accountable project-owner functional retest of the repaired canonical console.**
