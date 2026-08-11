@@ -1,6 +1,6 @@
 # DTMO source connection matrix
 
-Status: maintained release contract
+Status: maintained release contract — RC11 onboarding complete; RC12 unified-console operations complete within repository-controlled scope.
 
 A catalog entry is **connected** only when its execution status is `supported` or `supported-built-in`, its execution profile has an accepted adapter in the unified source framework, it can be reached through the unified console/bootstrap flow (or the explicit built-in path), and regression tests preserve provenance and fail-closed behaviour.
 
@@ -31,8 +31,12 @@ A catalog entry is **connected** only when its execution status is `supported` o
 
 Credential values are never stored in the catalog or source registry. Credentialed catalog entries carry only a logical secret reference such as `env:CISCO_OPENVULN_TOKEN`; execution fails closed when the referenced runtime secret is absent or the reference scheme is not accepted.
 
-## RC12 console operations
+## RC12 console operations acceptance
 
-The RC11 vendor onboarding set is complete. RC12 moves the roadmap to one canonical operator surface. The unified console must expose registration, enable/disable, interval management, validation and manual execution through the existing governed admin APIs without creating separate product URLs or weakening server-side RBAC.
+The RC11 vendor onboarding set is complete. RC12.1 exposes registration/bootstrap, enable/disable, interval management, validation and manual execution through the existing governed admin APIs inside the canonical DTMO console. RC12.2–RC12.5b integrate operational and intelligence dashboards into the same shell and move Grafana browser traffic behind the managed same-origin `/grafana/` path.
 
-The remaining major product work is visual analytics/dashboard depth and additional administration/diagnostics, not missing execution adapters for the current operational vendor catalog.
+The source catalog, source operations, administration and graphical analytics therefore no longer require separate intended product shells. Legacy URLs may remain for compatibility. Server-side RBAC, human review, separate share approval, provenance, privacy and auditability remain authoritative and are not weakened by console integration.
+
+## Remaining claim boundary
+
+CONNECTED is a repository-controlled adapter/console contract. It does not itself claim live provider SLA, possession of production credentials, approved real-staging deployment parity or publication authority. Those are separately governed external evidence requirements.

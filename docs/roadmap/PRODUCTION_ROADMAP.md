@@ -5,27 +5,51 @@ Controlled path from release candidate to production readiness. Missing evidence
 
 ## Current status — 2026-08-11
 
-Phases 1–7 repository-controlled internal gates are accepted within their documented boundaries. RC10 staged workspace programme is complete within repository-controlled claim boundaries. Phase 8 is `BLOCKED_EXTERNAL`; Phase 9 is `NOT COMPLETE`; Phase 10 is `NOT STARTED`.
+Phases 1–7 repository-controlled internal gates are accepted within their documented boundaries. The RC11 source-framework/onboarding programme and RC12 unified-console/dashboard programme are complete within repository-controlled claim boundaries. Phase 6 remains externally blocked for genuine assistive-technology execution. Phase 8 is `BLOCKED_EXTERNAL`; Phase 9 is `NOT COMPLETE`; Phase 10 is `NOT STARTED`.
 
-## RC10 staged workspace programme
+DTMO is **not production ready**.
 
-1. **RC10.1 Operations Workspace shell** — `PASS`.
-2. **RC10.2 Unified graphical dashboards** — `PASS`.
-3. **RC10.3 Threat Intelligence Workspace** — `PASS`; PR #118 merged as `1377899e7096c01362ab803c502c1d40812ef581`.
-4. **RC10.4 Source Center refinement** — `PASS`; PR #119 merged as `8fcba5b1aff1aa5d3fe53426488f11e00e95d3a0`.
-5. **RC10.5 Administration consolidation** — `PASS`; PR #120 merged as `df138ebbdde1fa0f30f4003e1a158b3419a3d3fe`.
-6. **RC10.6 UX polish** — `PASS`; PR #121 accepted on exact head `2fa71cf01cb0eb6d249cdff9b50d8a2aef9a3896` and merged as `20e042baccae655655dd410545a68a81937e832e`.
+## RC11 source framework and operational source onboarding
 
-Each RC10 step independently passed the registered workflow matrix before acceptance. RC10 is complete; no additional RC10 scope is inferred.
+1. **RC11.1 unified source framework core** — `PASS`; PR #132.
+2. **RC11.2 Red Hat Product Security** — `PASS`; PR #133.
+3. **RC11.3 Ubuntu Security Notices** — `PASS`; PR #134.
+4. **RC11.4 Debian Security Advisories** — `PASS`; PR #135.
+5. **RC11.5 Apple Security Releases** — `PASS`; PR #136.
+6. **RC11.6 Chrome security releases** — `PASS`; PR #137.
+7. **RC11.7 Mozilla Security Advisories** — `PASS`; PR #138.
+8. **RC11.8 Fortinet PSIRT** — `PASS`; PR #139.
+9. **RC11.9 Palo Alto Networks Security Advisories** — `PASS`; PR #140.
+10. **RC11.10 Broadcom/VMware Security Advisories** — `PASS`; PR #141.
 
-## Governance boundary
+Cisco PSIRT OpenVuln, MSRC, CERT-EU and NCSC-NL adapters were accepted immediately before RC11 in the RC10.11 remediation chain. The maintained `docs/qa/SOURCE_CONNECTION_MATRIX.md` is authoritative for the current connected-source contract.
 
-RC10 does not collapse authority boundaries. Source administration, security/token administration, human review, external share approval and audit remain separately governed. Presentation preferences grant no authority. RBAC, separation of duties, privacy, provenance and auditability remain authoritative.
+## RC12 unified console and graphical analytics
+
+1. **RC12.1 unified source administration and operations** — `PASS`; PR #142.
+2. **RC12.2 Grafana-first operational dashboarding** — `PASS`; PR #143.
+3. **RC12.3 least-privilege Grafana intelligence datasource** — `PASS`; PR #144.
+4. **RC12.4 Grafana embedding in the unified console** — `PASS`; PR #145.
+5. **RC12.5a same-origin Grafana gateway foundation** — `PASS`; PR #146.
+6. **RC12.5b same-origin Grafana console switch** — `PASS`; PR #147; exact head `339207dd5ad038727da34e0a0058c74076847eea`, merge `6e74c5e45b6683e1fceba3ff14f554e36815b95f`.
+7. **RC12.6 programme close-out and authoritative documentation reconciliation** — `PENDING_CI` in the current close-out PR. It may only become `PASS` on a fully green exact head.
+
+RC12 does not collapse authority boundaries. Source administration, security/token administration, human review, external share approval and audit remain separately governed. Presentation preferences, ingestion rights, dashboard access or staging access grant no publication authority. RBAC, separation of duties, privacy, provenance and auditability remain authoritative.
 
 ## Remaining external gates
 
-Phase 8 still requires an approved real staging environment and ten-class deployment-parity package tied to one immutable release. Phase 9 requires independent penetration testing and remaining external assurance. Phase 10 requires all prior evidence, release/deployment artifacts, proven recovery and required approvals. Missing blocking evidence is `NO-GO`.
+### Phase 6
+Genuine VoiceOver/NVDA execution on supported real host/browser/screen-reader combinations is still required. Browser/DOM automation is not a substitute.
+
+### Phase 8
+Requires one approved production-equivalent staging environment and the complete ten-class deployment-parity package tied to one immutable release/deployment identity. Repository emulator, local Compose and CI evidence do not substitute for this gate.
+
+### Phase 9
+Requires independent penetration testing and the remaining external-assurance package, including representative load/stress validation, full backup/restoration exercise, production platform/security hardening evidence, secrets-management acceptance and required operational/stakeholder acceptance.
+
+### Phase 10
+Requires all prior blocking evidence, release/deployment artifacts, proven recovery and required approvals. Missing blocking evidence is `NO-GO`.
 
 ## Exactly one next priority
 
-No further RC10 advancement. Obtain the approved real Phase 8 deployment-parity evidence; until that external dependency exists, repository-controlled progress cannot establish staging acceptance or production readiness.
+After RC12.6 exact-head CI is accepted, the next production-readiness priority is **Phase 8 real staging deployment parity**. Obtain one approved immutable staging deployment and collect the complete ten-class evidence package. Until that external dependency exists, repository-controlled progress cannot establish staging acceptance or production readiness.

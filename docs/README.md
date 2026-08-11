@@ -14,30 +14,33 @@ This directory is the authoritative documentation entry point for DTMO. Detailed
 
 ## Current application release
 
-- [16.0.0rc10 release notes](releases/16.0.0rc10.md)
-- [RC10.3 Threat Intelligence Workspace Gate](qa/RC10_3_THREAT_INTELLIGENCE_WORKSPACE_GATE.md)
-- [RUN-178 RC10.3 implementation](development/runs/RUN-20260810-178.md)
-- [RC10.2 Unified Operational Dashboards Gate](qa/RC10_2_UNIFIED_DASHBOARDS_GATE.md)
-- [RUN-177 RC10.2 acceptance reconciliation](development/runs/RUN-20260810-177.md)
-- [RC10.1 Operations Workspace Gate](qa/OPERATIONS_WORKSPACE_GATE.md)
+- [16.0.0rc12 release notes](releases/16.0.0rc12.md)
+- [RC12.6 unified-console programme completion gate](qa/RC12_6_UNIFIED_CONSOLE_COMPLETION_GATE.md)
+- [RC12.5b same-origin Grafana console gate](qa/RC12_5B_SAME_ORIGIN_GRAFANA_CONSOLE_GATE.md)
+- [RC12.5a same-origin Grafana gateway gate](qa/RC12_5A_SAME_ORIGIN_GRAFANA_GATE.md)
+- [RC12.4 unified Grafana embedding gate](qa/RC12_4_UNIFIED_GRAFANA_EMBEDDING_GATE.md)
+- [RC12.3 least-privilege Grafana intelligence gate](qa/RC12_3_GRAFANA_INTELLIGENCE_READER_GATE.md)
+- [RC12.2 Grafana dashboard gate](qa/RC12_2_GRAFANA_DASHBOARD_GATE.md)
+- [RC12.1 unified source operations gate](qa/RC12_1_UNIFIED_SOURCE_OPERATIONS_GATE.md)
+- [Source connection matrix](qa/SOURCE_CONNECTION_MATRIX.md)
 
-The unified Operations Workspace is available at `/ui/operations`. RC10.3 adds the Threat Intelligence investigation workspace at `/ui/intelligence-workspace`. The primary Threat Operations Console remains at `/`, and source administration at `/ui/admin-sources`. All presentation layers remain subordinate to server-side RBAC, separation of duties, privacy, provenance, auditability and human share approval.
+The canonical application shell is available at `/` with `/ui/console` as an alias. Source catalog/operations, administration, intelligence investigation and graphical analytics are integrated into that shell. Grafana Operations and Intelligence dashboards are embedded through the managed same-origin `/grafana/` path. Legacy `/ui/*` routes may remain for compatibility but are not separate intended product shells.
+
+All presentation layers remain subordinate to server-side RBAC, separation of duties, privacy, provenance, auditability and human share approval.
 
 ## Intelligence sources and investigation
 
 - [Curated intelligence source catalog](intelligence/SOURCE_CATALOG.md)
+- [Source connection matrix](qa/SOURCE_CONNECTION_MATRIX.md)
 - [Safe source execution QA gate](qa/SAFE_SOURCE_EXECUTION_GATE.md)
-- [RC10.3 Threat Intelligence Workspace Gate](qa/RC10_3_THREAT_INTELLIGENCE_WORKSPACE_GATE.md)
 
-The accepted source pipeline distinguishes catalogued, registered, enabled, executable, ingested, reviewed and share-approved states. RC10.3 does not change those states; it adds a read-only investigation flow over stored canonical intelligence. Explicit CVE identifiers may be extracted from stored canonical text/tags. CISA KEV context is asserted only from stored source identity; vendor/product context is shown only when explicitly stored. Missing enrichment is never invented.
+The accepted source pipeline distinguishes catalogued, registered, enabled, executable, ingested, reviewed and share-approved states. The current operational vendor catalog is connected through governed built-in or unified-framework adapters. Research-reference sources remain deliberately non-executable where appropriate. Credential values are not stored in the catalog or source registry.
 
 ## Frontend and accessibility
 
 - [Frontend UX architecture](ux/FRONTEND_UX.md)
 - [Frontend UX release gate](qa/FRONTEND_UX_RELEASE_GATE.md)
-- [RC10.1 Operations Workspace Gate](qa/OPERATIONS_WORKSPACE_GATE.md)
-- [RC10.2 Unified Operational Dashboards Gate](qa/RC10_2_UNIFIED_DASHBOARDS_GATE.md)
-- [RC10.3 Threat Intelligence Workspace Gate](qa/RC10_3_THREAT_INTELLIGENCE_WORKSPACE_GATE.md)
+- [RC12.6 unified-console programme completion gate](qa/RC12_6_UNIFIED_CONSOLE_COMPLETION_GATE.md)
 
 Genuine VoiceOver/NVDA execution remains an external evidence requirement and is not inferred from browser automation.
 
@@ -57,9 +60,11 @@ Genuine VoiceOver/NVDA execution remains an external evidence requirement and is
 ## Operations
 
 - [Operations manual](operations/OPERATIONS_MANUAL.md)
-- [Existing Grafana operational dashboard gate](qa/RC10_8_OPERATIONAL_DASHBOARD_GATE.md)
+- [RC12.2 Grafana dashboard gate](qa/RC12_2_GRAFANA_DASHBOARD_GATE.md)
+- [RC12.3 least-privilege Grafana intelligence gate](qa/RC12_3_GRAFANA_INTELLIGENCE_READER_GATE.md)
+- [RC12.5b same-origin Grafana console gate](qa/RC12_5B_SAME_ORIGIN_GRAFANA_CONSOLE_GATE.md)
 
-The browser Operations Workspace exposes only bounded aggregate telemetry. The RC10.3 investigation detail similarly uses an explicit safe-field projection and does not expose raw storage/request/credential metadata.
+Grafana does not reuse the DTMO application database identity for intelligence reporting. The accepted reporting datasource is constrained to explicit reporting views through a dedicated least-privilege role. Anonymous Grafana access remains disabled. Native console chart/table fallbacks remain available.
 
 ## Evidence and traceability
 
@@ -76,4 +81,8 @@ The browser Operations Workspace exposes only bounded aggregate telemetry. The R
 
 ## Current release posture
 
-Phases 1–7 remain internally accepted within their documented claim boundaries. RC10.1 and RC10.2 are accepted. RUN-178 / RC10.3 remains `CI_VALIDATION_PENDING` until the complete workflow matrix succeeds on one exact head. Phase 6 remains externally blocked for genuine VoiceOver/NVDA execution. Phase 8 remains externally blocked for one approved real staging deployment and the complete ten-class deployment-parity package. Phase 9 remains incomplete pending independent evidence. Phase 10 remains blocked until all prior gates and external acceptance requirements are complete.
+Phases 1–7 remain internally accepted within their documented claim boundaries. RC11 and RC12 repository-controlled programmes are complete through PR #147, subject to the current RC12.6 documentation close-out receiving its own exact-head CI acceptance. Phase 6 remains externally blocked for genuine VoiceOver/NVDA execution. Phase 8 remains externally blocked for one approved real staging deployment and the complete ten-class deployment-parity package. Phase 9 remains incomplete pending independent evidence. Phase 10 remains blocked until all prior gates and external acceptance requirements are complete.
+
+## Exactly one next priority
+
+After RC12.6 exact-head CI is green, obtain the approved real Phase 8 staging deployment-parity evidence package tied to one immutable release/deployment identity.
