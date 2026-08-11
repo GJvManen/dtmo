@@ -9,7 +9,13 @@ from typing import Any
 
 from dtmo.connectors.base import ConnectorRecord, ConnectorResult
 from dtmo.source_catalog import catalog_by_id
-from dtmo.source_executor import MAX_RESPONSE_BYTES, SourceExecutionError, _PinnedHTTPSConnection, _resolve_public_endpoint
+from dtmo.source_executor import (
+    MAX_RESPONSE_BYTES,
+    SourceExecutionError,
+    _PinnedHTTPSConnection,
+    _resolve_public_endpoint,
+    execute_registered_source,
+)
 from dtmo.sources import SourceDefinition
 
 CREDENTIALED_EXECUTION_PROFILES = frozenset({"cisco-openvuln-v2"})
@@ -137,3 +143,11 @@ async def execute_credentialed_source(
         attempts=1,
         status="completed",
     )
+
+
+async def execute_source(source: SourceDefinition, *, timeout_seconds: float = 20.0) -> ConnectorResult:
+    catalog = catalog_by_id(source.id)
+    profile = catalog.execution_profile if catalog and catalog.execution_status == "supported" else ""
+    if profile in CREDENTIALED_EXECUTION_PROFILES:
+        return await execute_credentialed_source(source, timeout_seconds=timeout_seconds)
+    return await execute_registered_source(source, timeout_seconds=timeout_seconds)
