@@ -1,0 +1,102 @@
+name: RC13 Full Functional Console Acceptance Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  full-console-browser:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_E2E_BASE_URL: http://127.0.0.1:8765
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+      - name: Start bounded canonical console target
+        run: |
+          mkdir -p artifacts
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/rc13-5-console-server.log 2>&1 &
+          echo $! > artifacts/rc13-5-console-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/rc13-5-health.json; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat artifacts/rc13-5-console-server.log
+          exit 1
+      - name: Execute complete one-session canonical console journey
+        run: |
+          python -m pytest -q backend/tests/test_rc13_5_full_console_browser_e2e.py \
+            --junitxml=artifacts/rc13-5-full-console-browser.xml
+      - name: Record exact-head RC13.5 evidence
+        if: success()
+        env:
+          GITHUB_SHA_VALUE: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          evidence = {
+              "decision": "pass",
+              "exact_head": os.environ["GITHUB_SHA_VALUE"],
+              "browser": "chromium",
+              "one_browser_context": True,
+              "journey": [
+                  "overview",
+                  "intelligence",
+                  "sources_and_catalog",
+                  "visual_analytics",
+                  "administration",
+                  "governance",
+                  "overview_state_confirmation",
+              ],
+              "source_register_enable_run_ingest": True,
+              "recent_intelligence_updated": True,
+              "native_analytics_updated": True,
+              "grafana_second_login_dependency": False,
+              "governed_rbac_mutation_exercised": True,
+              "governance_knowledge_exercised": True,
+              "publication_authority_not_granted": True,
+              "synthetic_browser_fixtures_only": True,
+              "project_owner_functional_retest_required": True,
+              "phase8_status": "PAUSED_PENDING_RC13_OWNER_RETEST",
+          }
+          Path("artifacts/rc13-5-full-console-evidence.json").write_text(
+              json.dumps(evidence, indent=2) + "\n", encoding="utf-8"
+          )
+          PY
+      - name: Stop browser target
+        if: always()
+        run: |
+          if test -f artifacts/rc13-5-console-server.pid; then
+            kill "$(cat artifacts/rc13-5-console-server.pid)" || true
+          fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: rc13-5-full-console-acceptance-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  full-console-gate:
+    if: always()
+    needs: [full-console-browser]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed RC13.5 browser evidence
+        env:
+          BROWSER_RESULT: ${{ needs.full-console-browser.result }}
+        run: test "$BROWSER_RESULT" = "success"
