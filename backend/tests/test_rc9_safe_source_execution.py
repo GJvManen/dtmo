@@ -4,7 +4,7 @@ import socket
 
 import pytest
 
-from dtmo.source_catalog import SOURCE_CATALOG, catalog_by_id
+from dtmo.source_catalog import SOURCE_CATALOG
 from dtmo.source_executor import (
     SUPPORTED_REGISTRY_EXECUTION_PROFILES,
     SourceExecutionError,
