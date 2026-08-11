@@ -21,7 +21,7 @@ Do not begin or credit Phase 8 external validation until all of the following ar
 5. RC13.5 complete canonical-console browser acceptance succeeds on one exact head;
 6. the project owner confirms the repaired product is functionally suitable to move to external staging validation.
 
-RC13.1 is accepted via PR #151. RC13.2 is accepted via PR #152 (`b8c254c5d099cde5dca624aa85b17c320594847e`). **RC13.3 is now the current priority**, so the Phase 8 entry condition remains unmet.
+RC13.1 is accepted via PR #151. RC13.2 is accepted via PR #152 (`b8c254c5d099cde5dca624aa85b17c320594847e`). RC13.3 is accepted via PR #153 (`2e1029a43f7b44d8525fb89197d0a10458a3e992`). **RC13.4 Governance knowledge is now the current priority**, so the Phase 8 entry condition remains unmet.
 
 ## Required external evidence
 
@@ -48,14 +48,18 @@ Missing, stale, inaccessible, contradictory or inferred evidence blocks acceptan
 
 When Phase 8 reopens, the staging deployment must demonstrate that externally issued bearer-token roles reconcile with the governed managed principal/role assignments and the accepted identity-provider process. Staging must not rely on development header-based identity or assume that a database assignment silently rewrites an active bearer token.
 
+## Governance staging requirement
+
+The canonical Governance surface must remain read-only and preserve the accepted mapping truth boundary. External framework/control/technique mappings may not be promoted from `UNMAPPED`/`CONTEXT_ONLY` without explicit versioned repository evidence and provenance.
+
 ## Governance and privacy
 
 - RBAC and separation of duties remain unchanged.
 - Human share approval remains a separate human authority.
-- Staging access does not grant publication authority.
+- Staging access or Governance visibility does not grant publication authority.
 - Secret values, tokens, credentials and unnecessary personal data are excluded from repository evidence.
 - Provenance and immutable deployment identity are mandatory.
 
 ## Exactly one next priority
 
-Phase 8 has **no executable next action while paused**. The project priority is **RC13.3 — governed Administration/RBAC** under issue #150 and the RC13 functional console acceptance gate.
+Phase 8 has **no executable next action while paused**. The project priority is **RC13.4 — repository-backed Governance knowledge** under issue #150 and the RC13 functional console acceptance gate.
