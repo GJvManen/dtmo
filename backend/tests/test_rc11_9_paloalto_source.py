@@ -1,5 +1,7 @@
+import pytest
+
 from dtmo.source_catalog import catalog_by_id
-from dtmo.source_executor import parse_registered_source
+from dtmo.source_executor import SourceExecutionError, parse_registered_source
 from dtmo.source_framework import SOURCE_ADAPTER_REGISTRY
 from dtmo.sources import SourceDefinition
 
@@ -62,9 +64,5 @@ def test_paloalto_rss_fails_closed_when_no_usable_items() -> None:
     payload = b"""<?xml version='1.0' encoding='UTF-8'?>
     <rss version='2.0'><channel><title>Palo Alto Networks Security Advisories</title></channel></rss>"""
 
-    try:
+    with pytest.raises(SourceExecutionError, match="RSS response has no channel items"):
         parse_registered_source(_source(), payload)
-    except Exception as exc:  # contract assertion without broad runtime suppression
-        assert "RSS response has no channel items" in str(exc)
-    else:
-        raise AssertionError("Palo Alto RSS without advisory items must fail closed")
