@@ -1,6 +1,6 @@
 # DTMO Production Readiness Report
 
-Last updated: 2026-08-10
+Last updated: 2026-08-11
 
 ## Purpose
 
@@ -10,7 +10,7 @@ This report consolidates the production-readiness posture of DTMO across the ten
 
 **NO-GO — DTMO is not production ready.**
 
-Repository-controlled engineering gates are substantially complete, but external accessibility, real staging, independent assurance and final production acceptance remain incomplete.
+Repository-controlled engineering gates are substantially complete, including the accepted RC10.9 feed-operations and RC10.10 graphical-dashboard increments, but external accessibility, real staging, independent assurance and final production acceptance remain incomplete.
 
 ## Phase 1 — CI and workflow integrity
 
@@ -40,7 +40,7 @@ Residual risk: a complete production-equivalent backup and restoration exercise 
 
 Status: `PASS` for internal gates.
 
-Connector contract, state, retry, timeout, replay, freshness, failure isolation, live canary behavior and payload provenance are covered by dedicated gates. Provider credentials, rate limits, licences and terms have separate external acceptance evidence recorded in issue #1.
+Connector contract, state, retry, timeout, replay, freshness, failure isolation, live canary behavior and payload provenance are covered by dedicated gates. RC10.9 additionally makes supported framework feeds discoverable and manually operable from the governed Source Center without granting review, publication or share-approval authority. Provider credentials, rate limits, licences and terms have separate external acceptance evidence recorded in issue #1.
 
 Residual risk: production deployment and live operational acceptance remain external.
 
@@ -56,13 +56,15 @@ Residual risk: representative production-scale load and stress testing remains e
 
 Status: `BLOCKED_EXTERNAL`.
 
-Automated/browser accessibility evidence is accepted for its bounded scope, but genuine VoiceOver and NVDA behavior on supported real host/browser/screen-reader combinations is still required. Browser automation is not accepted as a substitute.
+Automated/browser accessibility evidence is accepted for its bounded scope, including semantic alternatives for the RC10.10 graphical dashboards, but genuine VoiceOver and NVDA behavior on supported real host/browser/screen-reader combinations is still required. Browser automation is not accepted as a substitute.
 
 ## Phase 7 — Observability and incident operations
 
 Status: `PASS`.
 
-Accepted evidence covers request observability, distributed trace context, queue backlog alerting, connector failure alerting, storage integrity alerting, API/search health alerting, operational dashboarding, incident runbooks, controlled exercises and on-call handover.
+Accepted evidence covers request observability, distributed trace context, queue backlog alerting, connector failure alerting, storage integrity alerting, API/search health alerting, operational dashboarding, graphical intelligence/connector dashboards, incident runbooks, controlled exercises and on-call handover.
+
+RC10.10 is accepted at exact head `7da9225186ce8aa2061e3081ee3a0d80646bb4a7` and merged as `599801dce815e91553d55e883ddeb3acc6412787`. Its dashboard layer is read-only and preserves server-side governance boundaries.
 
 Residual risk: real service delivery channels, staffing and organizational acceptance remain operational/external matters where applicable.
 
@@ -73,6 +75,8 @@ Status: `BLOCKED_EXTERNAL`.
 Repository-controlled staging-emulator configuration and application-container runtime smoke are accepted only for their bounded scopes. They do not prove a real production-equivalent staging environment.
 
 All ten deployment-parity evidence classes must be complete against one immutable real staging deployment identity before the staging acceptance suite can be credited.
+
+The immediate next production-readiness objective is therefore to provision or obtain one approved production-equivalent staging deployment and bind all parity evidence to its immutable release, image and deployment identity.
 
 ## Phase 9 — External assurance
 
