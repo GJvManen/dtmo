@@ -213,7 +213,8 @@ async def test_canonical_administration_creates_and_updates_role_assignment() ->
         )
 
         assert len(mutation_request_ids) == 2
-        assert all(value.startswith(("dtmo-rbac-", "")) and value for value in mutation_request_ids)
+        assert all(mutation_request_ids)
+        assert len(set(mutation_request_ids)) == 2
 
         await context.close()
         await browser.close()
