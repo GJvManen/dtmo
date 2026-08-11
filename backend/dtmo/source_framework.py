@@ -10,6 +10,7 @@ from dtmo.credentialed_source_executor import (
     CREDENTIALED_EXECUTION_PROFILES,
     execute_credentialed_source,
 )
+from dtmo.fortinet_adapter import FORTINET_EXECUTION_PROFILE, execute_fortinet_source
 from dtmo.mozilla_adapter import MOZILLA_EXECUTION_PROFILE, execute_mozilla_source
 from dtmo.redhat_adapter import REDHAT_EXECUTION_PROFILE, execute_redhat_source
 from dtmo.source_catalog import SOURCE_CATALOG, catalog_by_id
@@ -61,6 +62,7 @@ def _build_registry() -> SourceAdapterRegistry:
             APPLE_EXECUTION_PROFILE,
             CHROME_EXECUTION_PROFILE,
             MOZILLA_EXECUTION_PROFILE,
+            FORTINET_EXECUTION_PROFILE,
         }
     )
     for profile in sorted(anonymous_profiles):
@@ -124,6 +126,8 @@ async def execute_source(
         return await execute_chrome_source(source, timeout_seconds=timeout_seconds)
     if spec.profile == MOZILLA_EXECUTION_PROFILE:
         return await execute_mozilla_source(source, timeout_seconds=timeout_seconds)
+    if spec.profile == FORTINET_EXECUTION_PROFILE:
+        return await execute_fortinet_source(source, timeout_seconds=timeout_seconds)
     return await execute_registered_source(source, timeout_seconds=timeout_seconds)
 
 
