@@ -12,7 +12,7 @@ A configured, queued, cancelled, failed or unexecuted automated test is never `P
 |---|---|
 | Build & quality | Source compiles, packages resolve, tests/lint/type checks succeed |
 | Security & identity | Authentication, authorization, secrets and privileged actions are verified |
-| Governance | Human review, separate share approval and separation of duties are preserved |
+| Governance | Human review, separate share approval, separation of duties and truthful mapping claims are preserved |
 | Data integrity & privacy | Provenance, confidence, migrations, minimization and retention controls are verified |
 | Recovery | Clean-target and multi-store recovery/integrity behavior is evidenced |
 | Connector reliability | Contracts, state, provenance, retry, timeout, replay, freshness and isolation succeed |
@@ -21,6 +21,7 @@ A configured, queued, cancelled, failed or unexecuted automated test is never `P
 | Observability & operations | Metrics, correlation, trace context, alerting, dashboards, runbooks and exercises succeed |
 | Functional console | Canonical product journeys execute in Chromium and produce usable data/state changes |
 | Governed Administration/RBAC | Persistent assignments, human-admin authorization, auditability, safety invariants and canonical UI mutations succeed |
+| Governance knowledge | Repository provenance, explicit unmapped/context-only status, authority boundaries and canonical Governance rendering succeed |
 | Staging readiness | External staging is allowed only after RC13 functional acceptance passes |
 | Release | Complete exact-head workflow set succeeds before expected-head protected merge |
 
@@ -30,9 +31,10 @@ A configured, queued, cancelled, failed or unexecuted automated test is never `P
 - Phase 6: `PASS` — project-owner manual/external acceptance recorded 2026-08-11.
 - Phase 7: `PASS`.
 - RC13: `BLOCKED_INTERNAL`.
-  - RC13.1: `PASS` within its slice boundary; PR #151 merged as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2`.
-  - RC13.2: `PASS` within its slice boundary; PR #152 merged as `b8c254c5d099cde5dca624aa85b17c320594847e` after full exact-head success.
-  - RC13.3: `PENDING_CI` / current priority.
+  - RC13.1: `PASS`; PR #151 merged as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2`.
+  - RC13.2: `PASS`; PR #152 merged as `b8c254c5d099cde5dca624aa85b17c320594847e` after full exact-head success.
+  - RC13.3: `PASS`; PR #153 merged as `2e1029a43f7b44d8525fb89197d0a10458a3e992` after full exact-head success on `b828b9b2dbb2f8794bfe7c13ec6e7dd0bdafb22f`.
+  - RC13.4: `PENDING_CI` / current priority.
 - Phase 8: `PAUSED_PENDING_RC13`.
 - Phase 9: `NOT COMPLETE`.
 - Phase 10: `NOT STARTED`.
@@ -47,18 +49,29 @@ RC13.1 browser evidence proves the source register/enable/run → ingest/index �
 
 RC13.2 exact-head evidence proves native severity/source/connector/review analytics render without normal-product `/grafana/` requests or a second-login Grafana user path, while anonymous Grafana access remains disabled.
 
-RC13.3 adds `RC13 Governed Administration RBAC Gate`. Acceptance requires both:
+RC13.3 exact-head evidence proves governed principal/role persistence, human-admin authorization, service-account isolation, self-management blocking, last-admin protection, tamper-evident auditing and the canonical create/update/deactivate Administration journey.
 
-1. persistence/security contract tests for managed principals, managed role assignments, migration ordering, known-role validation, human-admin + `manage:users` authorization, service-account isolation, self-management blocking, last-admin lockout protection and tamper-evident auditing;
-2. a Chromium canonical-console journey that creates a managed human principal, assigns a role, updates that role, deactivates the principal, proves the current administrator cannot self-manage and verifies mutation request IDs plus token-reconciliation messaging.
+RC13.4 adds `RC13 Governance Knowledge Surface Gate`. Acceptance requires both:
 
-The RC13.3 gate fails closed when either evidence class is missing or unsuccessful.
+1. repository contract tests proving the external-framework entries do not claim inferred mappings, CVSS remains context-only while the canonical schema lacks first-class CVSS fields, internal mappings have real repository provenance, and RC13.4 composes over the accepted RC13.3 shell;
+2. a Chromium canonical Governance journey proving Normenkader IBP, MITRE ATT&CK, CVSS and DTMO internal governance are visible with truthful coverage states, repository-backed mappings and authority boundaries, without external network requests.
+
+The RC13.4 gate fails closed when either evidence class is missing or unsuccessful.
+
+## Governance mapping truth boundary
+
+`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md` is authoritative for RC13.4. A framework/control/technique equivalence may only be displayed as mapped when the repository contains an explicit mapping identifier and provenance. Semantic similarity, free tags or arbitrary metadata are insufficient.
+
+Current external-framework state:
+
+- Normenkader IBP — `UNMAPPED`;
+- MITRE ATT&CK — `UNMAPPED`;
+- CVSS — `CONTEXT_ONLY`;
+- DTMO internal security/release governance — repository-backed internal mappings only.
 
 ## Identity-provider truth boundary
 
 Production bearer tokens are externally issued and validated. Managed role assignment changes are auditable provisioning state and never silently rewrite active bearer tokens. Identity-provider reconciliation or token reissue is required before external token claims change.
-
-This prevents UI administration from becoming an authentication bypass. Built-in `Role` values remain server-side controlled; arbitrary custom token roles are not created from browser input.
 
 ## Manual and external evidence
 
@@ -73,6 +86,8 @@ Phase 8 remains external but is currently paused. It may resume only after RC13.
 - service accounts, connectors, CI and staging access do not grant publication authority;
 - human and machine roles may not be combined;
 - RBAC administration requires explicit human administrator authority;
+- Governance visibility does not grant publication/share authority;
+- external framework mappings are never inferred;
 - provenance and confidence may not be silently discarded;
 - secret or sensitive payload values may not be emitted into repository evidence;
 - missing or incomplete evidence blocks the corresponding acceptance claim;
@@ -86,4 +101,4 @@ Repository CI, local Docker Compose and staging emulators are engineering eviden
 
 ## Exactly one next priority
 
-**RC13.3 — exact-head accept governed Administration/RBAC in the canonical console.**
+**RC13.4 — exact-head accept the repository-backed Governance knowledge surface in the canonical console.**
