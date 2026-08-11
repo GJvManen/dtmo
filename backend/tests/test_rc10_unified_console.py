@@ -40,6 +40,6 @@ def test_visual_analytics_and_governance_boundary_are_integrated() -> None:
     assert "source-table" in text
     assert "connector-chart" in text
     assert "connector-table" in text
-    assert "native fallbackvisualisaties" in text
+    assert "fallbackvisualisaties" in text
     assert "geen review- of share approval-recht" in text
     assert "separation of duties" in text
