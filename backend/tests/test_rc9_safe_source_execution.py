@@ -5,7 +5,12 @@ import socket
 import pytest
 
 from dtmo.source_catalog import SOURCE_CATALOG, catalog_by_id
-from dtmo.source_executor import SourceExecutionError, _resolve_public_endpoint, parse_registered_source
+from dtmo.source_executor import (
+    SUPPORTED_REGISTRY_EXECUTION_PROFILES,
+    SourceExecutionError,
+    _resolve_public_endpoint,
+    parse_registered_source,
+)
 from dtmo.sources import SourceDefinition
 
 
@@ -114,12 +119,13 @@ def test_runtime_dns_validation_preserves_path_and_query(monkeypatch: pytest.Mon
     assert endpoint.path == "/feed.json?limit=10"
 
 
-def test_supported_catalog_profiles_are_explicit() -> None:
-    assert catalog_by_id("nvd-cve") is not None
+def test_every_supported_catalog_profile_has_a_governed_executor() -> None:
     supported = [entry for entry in SOURCE_CATALOG if entry.execution_status == "supported"]
-    assert {entry.execution_profile for entry in supported} == {
-        "nvd-cve-v2",
-        "github-global-advisories-v1",
-        "rss-2.0",
-        "csaf-2.0",
+    assert {entry.execution_profile for entry in supported} == SUPPORTED_REGISTRY_EXECUTION_PROFILES
+
+
+def test_built_in_catalog_sources_are_explicit_and_separate() -> None:
+    built_in = [entry for entry in SOURCE_CATALOG if entry.execution_status == "supported-built-in"]
+    assert {(entry.id, entry.execution_profile) for entry in built_in} == {
+        ("cisa-kev", "built-in-cisa-kev")
     }
