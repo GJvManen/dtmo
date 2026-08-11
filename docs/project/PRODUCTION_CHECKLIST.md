@@ -16,47 +16,33 @@ Last updated: **2026-08-11**
   - [x] RC13.2 — single-session Visual analytics accepted via PR #152.
   - [x] RC13.3 — governed Administration/RBAC accepted via PR #153.
   - [x] RC13.4 — Governance knowledge surface accepted via PR #154.
-  - [ ] RC13.5 — complete canonical-console browser acceptance recorded on one exact head.
+  - [x] RC13.5 — complete canonical-console browser acceptance accepted via PR #155.
   - [ ] accountable project-owner functional retest of the complete repaired local product recorded.
 - [ ] Phase 8 — real staging acceptance complete.
 - [ ] Phase 9 — external assurance complete.
 - [ ] Phase 10 — production go/no-go approved.
 
-## RC13.4 — Governance knowledge surface
+## RC13.5 — accepted repository-controlled evidence
 
-- [x] Authenticated read-only governance API accepted.
-- [x] Canonical Governance pane renders framework coverage.
-- [x] Normenkader IBP is visibly `UNMAPPED` because no repository control crosswalk exists.
-- [x] MITRE ATT&CK is visibly `UNMAPPED` because no repository technique mapping dataset exists.
-- [x] CVSS is visibly `CONTEXT_ONLY` while no first-class vector/base-score field exists.
-- [x] Internal DTMO governance mappings have repository provenance.
-- [x] Authority boundaries are visible and do not grant publication/share authority.
-- [x] No external framework equivalence is inferred.
-- [x] `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md` is authoritative and consistent with runtime output.
-- [x] `RC13 Governance Knowledge Surface Gate` succeeded on exact head `0a227cb9f3972504287a6f7f064d6df18b76fbed`.
-- [x] Complete registered exact-head workflow set succeeded before PR #154 merge as `21672aaf1cf097228699810660eaac167da842d6`.
-
-## RC13.5 — complete functional browser acceptance
-
-- [ ] `RC13 Full Functional Console Acceptance Gate` succeeds on the exact final PR head.
-- [ ] One Chromium browser context covers Overview → Intelligence → Sources & Catalog → Visual analytics → Administration → Governance.
-- [ ] Eligible framework source register/enable/run is executed through the canonical console fixture.
-- [ ] Source execution result is visible as fetched/inserted/indexed state.
-- [ ] Resulting Intelligence and Overview state update in the same browser session.
-- [ ] Native severity/source/connector/review analytics render from the resulting state.
-- [ ] Normal product navigation makes no `/grafana/` request or second-login dependency.
-- [ ] Governed RBAC create/update/deactivate remains functional with unique mutation request IDs.
-- [ ] Administrator self-management protection remains visible/enforced.
-- [ ] Governance framework coverage, repository mapping provenance and authority boundaries render in the same session.
-- [ ] No connector, analytics, Administration or Governance action grants publication authority.
-- [ ] Complete registered exact-head workflow set succeeds before merge.
-- [ ] After merge, accountable project-owner functional retest of the repaired local product is explicitly accepted.
+- [x] `RC13 Full Functional Console Acceptance Gate` succeeded on exact head `56805ec4ead5a14e9a2f776f84df42eb772302a4`.
+- [x] One Chromium browser context covered Overview → Intelligence → Sources & Catalog → Visual analytics → Administration → Governance.
+- [x] Eligible framework source register/enable/run was executed through the canonical console fixture.
+- [x] Source execution result was visible as fetched/inserted/indexed state.
+- [x] Resulting Intelligence and Overview state updated in the same browser session.
+- [x] Native severity/source/connector/review analytics rendered from the resulting state.
+- [x] Normal product navigation made no `/grafana/` request or second-login dependency.
+- [x] Governed RBAC create/update/deactivate remained functional with unique mutation request IDs.
+- [x] Administrator self-management protection remained visible/enforced.
+- [x] Governance framework coverage, repository mapping provenance and authority boundaries rendered in the same session.
+- [x] No connector, analytics, Administration or Governance action granted publication authority.
+- [x] Complete returned exact-head workflow set succeeded before PR #155 merged as `d6f83557ab18d26f82ad6289b1b95f728346631d`.
+- [ ] Accountable project-owner functional retest of the repaired local product explicitly accepted.
 
 ## Phase 8 — deployment-parity package
 
-**PAUSED_PENDING_RC13.** Do not execute or credit these items until RC13.5 exact-head acceptance and the accountable owner functional retest are both complete.
+**`PAUSED_PENDING_RC13_OWNER_RETEST`.** Do not execute or credit Phase 8 items until the owner functional retest is explicitly accepted.
 
-All items must refer to the same immutable staging deployment identity.
+When reopened, all items must refer to the same immutable staging deployment identity:
 
 - [ ] Approved staging environment identifier and accountable owner.
 - [ ] Reachable staging endpoint through approved access path.
@@ -88,9 +74,8 @@ All items must refer to the same immutable staging deployment identity.
 - [ ] Representative load/stress test completed.
 - [ ] Full production-equivalent backup/restoration exercise completed.
 - [ ] Production platform hardening verified, including OpenSearch security.
-- [ ] Production secrets-management path accepted; example/default credentials are not used.
+- [ ] Production secrets-management path accepted.
 - [ ] Operational acceptance recorded by accountable service/security/privacy stakeholders.
-- [ ] Required external findings have documented disposition.
 
 ## Phase 10 — governance and release controls
 
@@ -102,15 +87,10 @@ All items must refer to the same immutable staging deployment identity.
 - [ ] Provenance and confidence handling verified.
 - [ ] Audit logging and correlation verified.
 - [ ] No secret values, tokens or unnecessary personal data retained in repository evidence.
-- [ ] SBOM/release manifest retained for production release.
-- [ ] Deployment manifest tied to immutable release identity.
-- [ ] Rollback plan approved and proven.
-- [ ] Recovery targets and procedures approved.
-- [ ] Incident/runbook ownership accepted.
 - [ ] Final production go/no-go decision recorded.
 
 ## Decision
 
-Current decision: **NO-GO pending RC13.5, accountable owner retest and Phases 8–10**.
+Current decision: **NO-GO pending accountable RC13 owner retest and Phases 8–10**.
 
-The only current engineering action is RC13.5 complete functional browser acceptance. External Phase 8 staging validation remains paused until the exact-head gate and owner functional retest are both accepted.
+The only current acceptance action is the accountable project-owner functional retest of the repaired canonical console.

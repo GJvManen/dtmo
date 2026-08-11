@@ -47,7 +47,7 @@ def test_phase8_remains_paused_until_owner_retest_after_rc13_5_ci() -> None:
         encoding="utf-8"
     )
     assert "RC13.4" in gate and "PASS" in gate
-    assert "RC13.5" in gate and "PENDING_CI" in gate
+    assert "RC13.5" in gate and "PASS" in gate
     assert "project-owner" in gate.lower()
-    assert "PAUSED_PENDING_RC13" in phase8
+    assert "PAUSED_PENDING_RC13_OWNER_RETEST" in phase8
     assert "owner" in phase8.lower()

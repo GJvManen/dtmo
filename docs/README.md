@@ -7,17 +7,15 @@ This directory contains the authoritative architecture, security, governance, QA
 - **Release candidate:** `16.0.0rc12`
 - **Repository-controlled engineering:** Phases 1–7 accepted
 - **Phase 6:** manually/externally accepted by the project owner on 2026-08-11
-- **RC13 functional console acceptance:** `BLOCKED_INTERNAL`
-- **RC13.1:** accepted via PR #151
-- **RC13.2:** accepted via PR #152
-- **RC13.3:** accepted via PR #153
-- **RC13.4:** accepted via PR #154 (`21672aaf1cf097228699810660eaac167da842d6`)
-- **RC13.5:** current priority — complete one-session canonical-console browser acceptance, `PENDING_CI`
-- **Project-owner complete repaired-product retest:** not yet recorded
-- **Phase 8:** `PAUSED_PENDING_RC13`
+- **RC13.1–RC13.5 repository-controlled evidence:** `PASS`
+- **RC13 overall:** `AWAITING_OWNER_RETEST`
+- **Project-owner repaired-product retest:** not yet recorded
+- **Phase 8:** `PAUSED_PENDING_RC13_OWNER_RETEST`
 - **Production readiness:** not yet complete
 
-The next formal gate is **RC13.5**, not external staging. Even after green RC13.5 exact-head CI, Phase 8 may resume only after explicit accountable project-owner functional retest of the repaired local product.
+PR #155 merged as `d6f83557ab18d26f82ad6289b1b95f728346631d` after exact head `56805ec4ead5a14e9a2f776f84df42eb772302a4` completed the full returned workflow matrix successfully, including RC4 Quality Gate #815 and RC13 Full Functional Console Acceptance Gate #1.
+
+The only current acceptance action is the **accountable project-owner functional retest of the repaired local canonical product**. Phase 8 may not resume before explicit owner acceptance.
 
 ## Project overview
 
@@ -26,6 +24,7 @@ The next formal gate is **RC13.5**, not external staging. Even after green RC13.
 - [Executive status](project/EXECUTIVE_STATUS.md)
 - [Production roadmap](roadmap/PRODUCTION_ROADMAP.md)
 - [RC13 functional console acceptance gate](qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md)
+- [Phase 8 staging deployment-parity gate](qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md)
 - [16.0.0rc12 release notes](releases/16.0.0rc12.md)
 
 ## Architecture and engineering
@@ -35,9 +34,17 @@ The next formal gate is **RC13.5**, not external staging. Even after green RC13.
 - [Traceability matrix](traceability/TRACEABILITY_MATRIX.md)
 - [Evidence index](evidence/EVIDENCE_INDEX.md)
 
-The canonical application shell integrates source operations, intelligence investigation, native analytics, governed principal/role administration and governance while retaining explicit authorization and approval boundaries.
+The canonical application shell integrates source operations, intelligence investigation, native analytics, governed principal/role administration and Governance while retaining explicit authorization and approval boundaries.
 
-RC13.5 adds no new product authority. It proves those accepted product slices function together in one Chromium browser context and one canonical session.
+RC13.5 added no product authority. It proved the accepted repair slices function together in one Chromium browser context and canonical session.
+
+## RC13.5 accepted repository evidence
+
+The accepted one-session journey is:
+
+**Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
+
+This CI evidence is explicitly synthetic. It does not substitute for the project-owner functional retest.
 
 ## Intelligence sources
 
@@ -45,7 +52,7 @@ RC13.5 adds no new product authority. It proves those accepted product slices fu
 - [Curated source catalog](intelligence/SOURCE_CATALOG.md)
 - [Safe source execution gate](qa/SAFE_SOURCE_EXECUTION_GATE.md)
 
-Operational vendor feeds are connected through governed built-in or unified-framework adapters. Research references can remain visible without being treated as executable feeds. Secret values are never stored in the source catalog or registry.
+Operational vendor feeds remain governed by their accepted source framework. Secret values are never stored in source catalog or repository evidence.
 
 ## Security and governance
 
@@ -56,28 +63,16 @@ Operational vendor feeds are connected through governed built-in or unified-fram
 - [Third-party material](legal/THIRD_PARTY.md)
 - [ADR-001 — evidence and claim boundaries](project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md)
 
-RC13.4 is accepted. Normenkader IBP and MITRE ATT&CK remain explicitly `UNMAPPED`, CVSS remains `CONTEXT_ONLY`, and internal DTMO governance mappings remain repository-backed. Missing framework crosswalks are never inferred.
+Normenkader IBP and MITRE ATT&CK remain explicitly `UNMAPPED`, CVSS remains `CONTEXT_ONLY`, and internal DTMO governance mappings remain repository-backed. Missing framework crosswalks are never inferred.
 
 Core invariants include RBAC, least privilege, service-account isolation, administrator safety controls, separation of duties, privacy/data minimization, provenance preservation, auditability and separate human review/share approval. Technical execution, Administration access or Governance visibility never grants publication authority.
-
-## RC13.5 acceptance evidence
-
-`RC13 Full Functional Console Acceptance Gate` must execute the complete canonical journey on one exact PR head:
-
-**Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
-
-The workflow evidence explicitly records that browser fixtures are synthetic and that project-owner functional retest remains required after merge.
-
-## Accessibility
-
-Phase 6 is accepted by accountable project-owner manual/external acceptance on 2026-08-11. The repository does not invent unprovided test-environment metadata.
 
 ## Staging and external assurance
 
 - [Phase 8 staging deployment-parity gate](qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md)
 - [Phase 9 external assurance gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md)
 
-Phase 8 is currently **paused pending RC13**. Once RC13.5 exact-head evidence and owner functional retest are both accepted, Phase 8 will still require one immutable production-equivalent staging deployment and the complete deployment-parity evidence package.
+Phase 8 is currently **`PAUSED_PENDING_RC13_OWNER_RETEST`**. After explicit owner acceptance, Phase 8 will still require one immutable production-equivalent staging deployment and the complete deployment-parity evidence package.
 
 ## Operations
 
@@ -86,6 +81,4 @@ Phase 8 is currently **paused pending RC13**. Once RC13.5 exact-head evidence an
 
 ## QA evidence model
 
-`docs/qa/` contains gate-specific acceptance criteria and evidence decisions. Missing, queued, skipped, cancelled, failed, stale, inaccessible or inferred evidence is never treated as automated `PASS`.
-
-Manual/external acceptance is recorded explicitly as such and is never presented as machine-generated evidence. Historical evidence remains point-in-time evidence and is not rewritten to make current claims appear green.
+Missing, queued, skipped, cancelled, failed, stale, inaccessible or inferred evidence is never treated as automated `PASS`. Manual/external acceptance is recorded explicitly as such and is never presented as machine-generated evidence. Historical run records remain immutable point-in-time evidence.
