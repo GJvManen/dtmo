@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-11 — RC10.5 / PR #120 is accepted and merged as `df138ebbdde1fa0f30f4003e1a158b3419a3d3fe`; PR #121 RC10.6 is under exact-head CI revalidation after RUN-187 bounded startup remediation.
+Last reconciled: 2026-08-11 — RC10.6 / PR #121 is accepted and merged as `20e042baccae655655dd410545a68a81937e832e` after full exact-head validation of `2fa71cf01cb0eb6d249cdff9b50d8a2aef9a3896`.
 
 ## Executive status
 
@@ -10,20 +10,19 @@ Last reconciled: 2026-08-11 — RC10.5 / PR #120 is accepted and merged as `df13
 - RC10.3 Threat Intelligence Workspace: `PASS`.
 - RC10.4 Source Center refinement: `PASS`.
 - RC10.5 Administration Consolidation: `PASS`.
-- RC10.6 UX polish: `CI_VALIDATION_PENDING`.
+- RC10.6 UX polish: `PASS`.
+- RC10 staged workspace programme: `COMPLETE` within repository-controlled claim boundaries.
 - Phase 8 staging acceptance: `BLOCKED_EXTERNAL` for approved real deployment-parity evidence.
 - Phase 9 external assurance: `NOT COMPLETE`.
 - Phase 10 production go/no-go: `NOT STARTED`.
 
 DTMO is **not production ready**.
 
-## RUN-187 / RC10.6
+## RUN-188 / RC10.6 acceptance
 
-Exact PR #121 head `c81f9d77a7e91e0706a1c96fd417a1c454cebf3b` failed the workflow matrix and is not accepted. The first inspected concrete failure was application startup: `/metrics` referenced nonexistent `Permission.READ_METRICS`, causing FastAPI import to abort before browser gates could execute.
+PR #121 exact head `2fa71cf01cb0eb6d249cdff9b50d8a2aef9a3896` has complete successful GitHub Actions evidence for every registered pull-request workflow returned by the exact-head inspection. PR #121 is merged as `20e042baccae655655dd410545a68a81937e832e`.
 
-The bounded remediation restores `backend/dtmo/main.py` to accepted RC10.5 health, connectors and metrics behavior while retaining only the intended RC10.6 preferences-router import and mount. The GET-only `/ui/preferences` remains browser-local presentation state and introduces no server-side preference mutation API.
-
-This remediation does not alter server-side RBAC, separation of duties, privacy, provenance, auditability, human review or separate external share approval. Acceptance still requires full success of every registered workflow on one later exact PR head.
+The accepted `/ui/preferences` increment remains browser-local presentation state only and introduces no server-side preference mutation API. Server-side RBAC, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative and unchanged.
 
 ## External blockers
 
@@ -31,4 +30,4 @@ No approved real staging endpoint/environment identity and no complete ten-class
 
 ## Exactly one current priority
 
-Complete full exact-head CI validation for the remediated PR #121 head. Merge only on complete success; otherwise remediate only the first concrete failing root cause.
+RC10 advancement is complete and stops here. Further production-readiness progress is blocked on the external Phase 8 deployment-parity evidence described above; do not infer Phase 8, Phase 9 or Phase 10 success from repository-controlled RC10 evidence.
