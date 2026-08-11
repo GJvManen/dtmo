@@ -29,6 +29,7 @@ from dtmo.source_center import router as source_center_router
 from dtmo.threat_workspace import router as threat_workspace_router
 from dtmo.trace_context import begin_trace, end_trace
 from dtmo.ui import router as ui_router
+from dtmo.ux_preferences import router as ux_preferences_router
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -76,6 +77,7 @@ app.include_router(operations_metrics_router)
 app.include_router(threat_workspace_router)
 app.include_router(source_center_router)
 app.include_router(admin_center_router)
+app.include_router(ux_preferences_router)
 app.include_router(intelligence_router)
 app.include_router(admin_sources_router)
 app.include_router(admin_ui_router)
@@ -122,8 +124,8 @@ async def request_context(request: Request, call_next):  # type: ignore[no-untyp
 
 
 @app.get("/health")
-def health() -> dict[str, object]:
-    return {"status": "healthy", "version": app.version, "environment": settings.environment, "scheduler": scheduler.status(), "publication_gate": "human-approval-required", "authentication": "api-key-and-rbac"}
+def health() -> dict[str, str]:
+    return {"status": "ok", "version": app.version}
 
 
 @app.get("/ready")
@@ -131,19 +133,6 @@ def ready() -> dict[str, str]:
     return {"status": "ready"}
 
 
-@app.get("/connectors")
-def connectors() -> list[dict[str, object]]:
-    return [{"id": "cisa-kev", "enabled": settings.feature_live_connectors, "reliability": "authoritative", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": not settings.production or settings.feature_live_connectors}]
-
-
-@app.post("/connectors/cisa-kev/run")
-async def run_connector(principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))]) -> dict[str, object]:
-    del principal
-    if settings.production and not settings.feature_live_connectors:
-        return {"status": "disabled", "reason": "feature flag is off"}
-    return await run_cisa_kev()
-
-
 @app.get("/metrics")
-def metrics() -> Response:
-    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+def metrics(_: Annotated[Principal, Depends(require_permission(Permission.READ_METRICS))]) -> Response:
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
