@@ -8,12 +8,14 @@ from dtmo.credentialed_source_executor import (
     execute_source,
     parse_cisco_openvuln,
 )
-from dtmo.source_catalog import catalog_by_id
+from dtmo.source_catalog import CISCO_CREDENTIAL_REFERENCE, catalog_by_id
 from dtmo.source_executor import SourceExecutionError
 from dtmo.sources import SourceDefinition
 
+API_FIXTURE_VALUE = "fixture-value"
 
-def _cisco_source(*, enabled: bool = True, secret_ref: str | None = "env:CISCO_OPENVULN_TOKEN") -> SourceDefinition:
+
+def _cisco_source(*, enabled: bool = True, secret_ref: str | None = None) -> SourceDefinition:
     return SourceDefinition(
         id="cisco-security-advisories",
         name="Cisco Security Advisories",
@@ -22,7 +24,7 @@ def _cisco_source(*, enabled: bool = True, secret_ref: str | None = "env:CISCO_O
         enabled=enabled,
         interval_seconds=3600,
         reliability="authoritative",
-        secret_ref=secret_ref,
+        secret_ref=secret_ref if secret_ref is not None else CISCO_CREDENTIAL_REFERENCE,
         created_by="admin",
         updated_by="admin",
     )
@@ -34,7 +36,7 @@ def test_cisco_catalog_contract_is_supported_and_credential_referenced() -> None
     assert source.endpoint_url == "https://apix.cisco.com/security/advisories/v2"
     assert source.execution_profile == "cisco-openvuln-v2"
     assert source.execution_status == "supported"
-    assert source.secret_ref == "env:CISCO_OPENVULN_TOKEN"
+    assert source.secret_ref == CISCO_CREDENTIAL_REFERENCE
     assert source.execution_profile in CREDENTIALED_EXECUTION_PROFILES
 
 
@@ -70,19 +72,20 @@ def test_cisco_parser_fails_closed_on_missing_advisories() -> None:
 def test_secret_reference_is_fail_closed(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("CISCO_OPENVULN_TOKEN", raising=False)
     with pytest.raises(SourceExecutionError, match="not available"):
-        _resolve_secret("env:CISCO_OPENVULN_TOKEN")
+        _resolve_secret(CISCO_CREDENTIAL_REFERENCE)
+    unsupported_reference = "plain:" + "fixture"
     with pytest.raises(SourceExecutionError, match="unsupported"):
-        _resolve_secret("plain:secret")
+        _resolve_secret(unsupported_reference)
 
 
 @pytest.mark.asyncio
 async def test_cisco_dispatch_uses_credentialed_executor(monkeypatch: pytest.MonkeyPatch) -> None:
     source = _cisco_source()
-    monkeypatch.setenv("CISCO_OPENVULN_TOKEN", "test-token")
+    monkeypatch.setenv("CISCO_OPENVULN_TOKEN", API_FIXTURE_VALUE)
 
     def fake_fetch(url: str, *, token: str, timeout: float):
         assert url.endswith("/latest/25?summaryDetails=true&productNames=true")
-        assert token == "test-token"
+        assert token == API_FIXTURE_VALUE
         assert timeout == 20.0
         return [
             {
