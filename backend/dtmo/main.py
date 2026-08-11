@@ -124,8 +124,8 @@ async def request_context(request: Request, call_next):  # type: ignore[no-untyp
 
 
 @app.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok", "version": app.version}
+def health() -> dict[str, object]:
+    return {"status": "healthy", "version": app.version, "environment": settings.environment, "scheduler": scheduler.status(), "publication_gate": "human-approval-required", "authentication": "api-key-and-rbac"}
 
 
 @app.get("/ready")
@@ -133,6 +133,19 @@ def ready() -> dict[str, str]:
     return {"status": "ready"}
 
 
+@app.get("/connectors")
+def connectors() -> list[dict[str, object]]:
+    return [{"id": "cisa-kev", "enabled": settings.feature_live_connectors, "reliability": "authoritative", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": not settings.production or settings.feature_live_connectors}]
+
+
+@app.post("/connectors/cisa-kev/run")
+async def run_connector(principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))]) -> dict[str, object]:
+    del principal
+    if settings.production and not settings.feature_live_connectors:
+        return {"status": "disabled", "reason": "feature flag is off"}
+    return await run_cisa_kev()
+
+
 @app.get("/metrics")
-def metrics(_: Annotated[Principal, Depends(require_permission(Permission.READ_METRICS))]) -> Response:
-    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
+def metrics() -> Response:
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
