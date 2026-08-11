@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This roadmap separates **repository-controlled engineering acceptance** from **external staging, assurance and production approval**. A phase is complete only when its own evidence boundary has been satisfied.
+This roadmap separates **repository-controlled engineering acceptance**, **functional product acceptance** and **external staging/assurance/production approval**. A phase is complete only when its own evidence boundary has been satisfied.
 
 ## Current status — 2026-08-11
 
@@ -15,60 +15,88 @@ This roadmap separates **repository-controlled engineering acceptance** from **e
 | 5 | Performance and scalability | `PASS` |
 | 6 | Accessibility and operational UX | `PASS` — project-owner manual/external acceptance recorded 2026-08-11 |
 | 7 | Observability and incident operations | `PASS` |
-| 8 | Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION` |
+| RC13 | Functional unified-console acceptance | `BLOCKED_INTERNAL` — remediation in progress |
+| 8 | Real staging acceptance | `PAUSED_PENDING_RC13` |
 | 9 | Independent external assurance | `NOT COMPLETE` |
 | 10 | Production go/no-go | `NOT STARTED` |
 
-DTMO is **not production ready** until Phases 8–10 are completed.
+DTMO is **not production ready**.
 
-## Repository-controlled baseline
+## Why RC13 was inserted
 
-The engineering baseline through `16.0.0rc12` is complete:
+The RC11/RC12 repository-controlled implementation and CI gates established the connector framework, unified console and graphical analytics architecture, but a project-owner functional test of the canonical console on 2026-08-11 identified product gaps that prior presence/contract tests did not catch.
+
+The earlier Phase 8 `READY_FOR_EXTERNAL_VALIDATION` claim is therefore withdrawn. Issue #150 and `docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md` are authoritative for the remediation.
+
+## Accepted repository-controlled baseline
+
+The accepted engineering baseline remains valid within its original evidence boundaries:
 
 - governed connector/source framework and operational vendor onboarding;
-- canonical unified DTMO console;
-- source registration, administration and execution within the governed application shell;
-- embedded Grafana operational and intelligence analytics;
-- least-privilege Grafana reporting access;
-- same-origin `/grafana/` integration;
+- canonical unified DTMO console architecture;
+- source registry and execution APIs;
+- PostgreSQL canonical intelligence persistence and OpenSearch search indexing;
+- Prometheus/Grafana observability components;
 - recovery, performance, browser/accessibility and observability gates;
 - exact-head CI and expected-head protected merge discipline.
 
-Detailed release evidence is retained in [`docs/releases/16.0.0rc12.md`](../releases/16.0.0rc12.md), the QA records and the development run log.
+RC13 does **not** invalidate those engineering controls. It establishes that a production candidate also needs a complete, owner-usable product journey rather than only component/API/presence evidence.
+
+## RC13 — functional product acceptance
+
+### RC13.1 — source-to-intelligence path
+
+Required journey:
+
+1. open the canonical console;
+2. view meaningful platform/source/intelligence statistics;
+3. see built-in, supported framework and research/reference sources with truthful state;
+4. register supported framework sources;
+5. enable/disable and configure them;
+6. execute an eligible built-in or framework source;
+7. process fetched records through canonical ingestion;
+8. show run/fetched/inserted/indexed status;
+9. show resulting recent intelligence directly from the canonical database;
+10. update Overview and analytics from the resulting data.
+
+Acceptance requires a Chromium browser journey that interacts with the actual console controls; checking only that strings/buttons exist in generated HTML is insufficient.
+
+### RC13.2 — visual analytics
+
+Native graphical/statistical analytics must work without a separate Grafana authentication step being required for normal product use. Grafana may remain as an advanced governed layer.
+
+### RC13.3 — Administration/RBAC
+
+Administration must provide governed user/role-assignment management through server-side authorization while preserving least privilege and separation of duties.
+
+### RC13.4 — Governance knowledge surface
+
+Governance must present the applicable frameworks and mappings used by the project, including Normenkader IBP, MITRE ATT&CK and CVSS context, together with DTMO authority/approval boundaries.
+
+### RC13.5 — complete console acceptance
+
+One exact head must pass the complete canonical-console functional browser journey and all registered CI gates. Only after RC13.5 may Phase 8 return to `READY_FOR_EXTERNAL_VALIDATION`.
 
 ## Phase 6 acceptance
 
-The repository-controlled accessibility/browser gates were already accepted. On **2026-08-11**, the project owner explicitly confirmed that Phase 6 was personally checked and accepted. This closes the remaining external/manual Phase 6 blocker as accountable owner attestation.
+Phase 6 remains accepted. On 2026-08-11 the project owner explicitly confirmed personal/manual acceptance of the remaining external accessibility scope. The repository does not fabricate unprovided environment/version or recording details.
 
-The repository does not fabricate unprovided environment/version or recording details.
+## Phase 8 — paused external staging gate
 
-## Phase 8 — next gate
+Phase 8 requires one immutable real staging deployment identity and the ten deployment-parity evidence classes defined in `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`. That external activity is intentionally paused until RC13 functional product acceptance is complete.
 
-Phase 8 is ready for the project owner's external staging validation once this final repository/documentation cleanup is accepted.
-
-The external validation must be tied to **one immutable staging deployment identity** and retain the ten deployment-parity evidence classes defined in [`PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`](../qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md):
-
-1. approved staging environment and accountable owner;
-2. reachable approved endpoint;
-3. immutable release/container identity;
-4. infrastructure and configuration parity;
-5. least-privilege staging identities and secret-manager references;
-6. TLS and network controls;
-7. production-equivalent data handling and no-production-credential confirmation;
-8. deployment/change record;
-9. rollback target and procedure;
-10. deployment-time threat/CVE/vendor-advisory review.
-
-Repository CI, Docker Compose and staging-emulator results remain supporting engineering evidence and are not substitutes for the real staging validation.
+Repository CI, Docker Compose, staging emulators and component smoke tests remain supporting engineering evidence and are not substitutes for either RC13 owner-observed functional acceptance or Phase 8 real staging validation.
 
 ## Phase 9 — external assurance
 
-Phase 9 covers independent and stakeholder assurance, including the remaining penetration testing, representative load/stress validation, full backup/restoration exercise, production platform hardening, secrets-management acceptance and required operational/stakeholder approval.
+Phase 9 covers independent penetration testing, representative load/stress validation, full backup/restoration in the production-equivalent environment, production platform hardening, secrets-management acceptance and required operational/stakeholder approval.
+
+External pentesting is deferred until RC13 and Phase 8 establish a functionally usable, immutable staging target.
 
 ## Phase 10 — production decision
 
-Phase 10 is the formal production go/no-go. It begins only after all blocking Phase 8 and Phase 9 evidence is complete and reviewable.
+Phase 10 is the formal production go/no-go and begins only after all blocking functional, staging and external-assurance evidence is complete and reviewable.
 
 ## Exactly one next priority
 
-**Complete this final cleanup release candidate, then perform Phase 8 external staging validation against one immutable `16.0.0rc12` deployment identity.**
+**RC13.1 — complete the source-to-intelligence functional path and exact-head Chromium acceptance.**
