@@ -117,4 +117,8 @@ def test_runtime_dns_validation_preserves_path_and_query(monkeypatch: pytest.Mon
 def test_supported_catalog_profiles_are_explicit() -> None:
     assert catalog_by_id("nvd-cve") is not None
     supported = [entry for entry in SOURCE_CATALOG if entry.execution_status == "supported"]
-    assert {entry.execution_profile for entry in supported} == {"nvd-cve-v2", "github-global-advisories-v1"}
+    assert {entry.execution_profile for entry in supported} == {
+        "nvd-cve-v2",
+        "github-global-advisories-v1",
+        "rss-2.0",
+    }
