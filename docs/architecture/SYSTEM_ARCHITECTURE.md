@@ -1,71 +1,141 @@
 # DTMO System Architecture
 
-Last updated: 2026-08-10
+Last updated: **2026-08-11**  
+Current baseline: **16.0.0rc12**
 
 ## Purpose
 
-DTMO is an education-focused cyber threat intelligence platform that ingests, normalizes, enriches, stores and presents historical incidents, current threat intelligence, vulnerabilities, indicators, supplier risk and management reporting.
+DTMO is an education-focused Cyber Threat Intelligence platform that collects official threat/vulnerability intelligence, normalizes it with provenance, supports governed investigation and administration, and presents operational and intelligence analytics without collapsing human approval boundaries.
 
 ## Logical architecture
 
-The system is organized into the following logical layers:
+```mermaid
+flowchart LR
+    EXT[Official external intelligence sources] --> CF[Source adapter / connector framework]
+    CF --> NP[Normalization & provenance]
+    NP --> API[FastAPI application services]
 
-1. **Ingress and connectors** — provider-specific collection paths with explicit provenance, freshness, retry, timeout, replay and failure-isolation behavior.
-2. **Normalization and enrichment** — conversion of provider payloads into internal models while preserving raw evidence references, provenance and confidence.
-3. **Application/API layer** — authenticated APIs, search, analysis, workflow and approval controls.
-4. **Persistence** — relational state, search/index state, cache/queue state and object evidence storage.
-5. **Frontend** — operational and analytical user journeys with role-aware behavior and explicit approval boundaries.
-6. **Observability** — metrics, health/readiness, request correlation, trace context, alerting and dashboards.
-7. **Operations** — migrations, backup/recovery, runbooks, exercises, deployment and rollback controls.
+    API --> PG[(PostgreSQL)]
+    API --> OS[(OpenSearch)]
+    API --> RD[(Redis)]
+    API --> OBJ[(Object evidence storage)]
 
-## Principal runtime components
+    API --> PM[Prometheus]
+    PM --> GF[Grafana]
+    PG -->|explicit reporting views| GF
 
-Repository-controlled environments model the application together with PostgreSQL, Redis, OpenSearch, object storage and an external TLS/reverse-proxy boundary. The Phase 8 application-container smoke intentionally executes only the DTMO application container and therefore does not establish full topology parity.
+    USER[Analyst / Admin / CISO / Auditor] --> GW[Nginx gateway]
+    GW --> CONSOLE[Unified DTMO console]
+    CONSOLE --> API
+    GW -->|/grafana/| GF
+
+    API --> GOV[RBAC / audit / review / share-approval controls]
+```
+
+## Architecture layers
+
+### 1. Source ingress
+
+Provider-specific adapters operate through the governed source framework. Execution is bounded by explicit source identity, supported execution profiles, timeout/retry behavior, fail-closed parsing and provenance retention.
+
+Credentialed sources use logical secret references; credential values are resolved at runtime and are not stored in the source catalog.
+
+### 2. Normalization and provenance
+
+Provider payloads are converted into canonical intelligence records while preserving source identity, raw evidence references, confidence and relevant publication metadata. Missing enrichment is not invented.
+
+### 3. Application and API
+
+The Python 3.12+/FastAPI application provides authenticated APIs, source operations, search/investigation, administration, metrics and governance workflows.
+
+The canonical browser product is the **unified DTMO console**. Legacy role/workspace routes may remain for compatibility but are not separate intended product shells.
+
+### 4. Persistence and search
+
+| Component | Responsibility |
+|---|---|
+| PostgreSQL 17 | relational application state, governance state and explicit Grafana reporting views |
+| OpenSearch 2.19 | intelligence search/index state |
+| Redis 8 | cache/queue and runtime coordination state |
+| S3-compatible AIStor/MinIO interface | object/evidence storage |
+
+### 5. Observability and analytics
+
+Prometheus collects bounded application/operational metrics. Grafana provides DTMO Operations and DTMO Intelligence dashboards.
+
+Grafana intelligence access uses a **dedicated least-privilege database reader** restricted to explicit reporting views. It does not reuse the DTMO application database identity. Anonymous Grafana access is disabled.
+
+The Nginx gateway exposes Grafana to the browser through the managed same-origin `/grafana/` path. Native DTMO chart/table alternatives remain available for accessible fallback and bounded summary use.
+
+### 6. Gateway and browser boundary
+
+The Nginx gateway is the managed browser-facing boundary for the canonical application and embedded Grafana path. Application/API authorization remains server-side; the gateway and presentation layer do not grant application authority.
+
+### 7. Governance and approval
+
+Security-sensitive authorities are deliberately separated:
+
+- source administration and execution;
+- intelligence analysis;
+- human review;
+- external share approval;
+- audit/read-only access;
+- CISO/security administration.
+
+Technical execution, CI success, connector access, dashboard access or staging access cannot authorize publication or external sharing.
+
+## Principal technology stack
+
+- Python 3.12+
+- FastAPI / Uvicorn
+- SQLAlchemy / Alembic
+- PostgreSQL 17
+- Redis 8
+- OpenSearch 2.19
+- S3-compatible object evidence storage
+- Prometheus 3
+- Grafana 13
+- Nginx
+- Docker Compose reference topology
 
 ## Trust boundaries
 
-Important trust boundaries include:
+Important trust boundaries are:
 
-- external intelligence/provider networks to connector ingress;
-- unauthenticated client to authenticated application boundary;
-- user roles to privileged review/share-approval actions;
-- application to persistence/search/object-storage services;
-- CI/emulator environment to real staging/production environment;
-- technical execution to human publication/share authority.
+1. external provider networks → connector/source ingress;
+2. unauthenticated client → authenticated application boundary;
+3. authenticated role → privileged administrative/review/share actions;
+4. application → database/search/cache/object services;
+5. Grafana → explicit reporting boundary;
+6. browser → Nginx/application/Grafana same-origin gateway;
+7. repository CI/emulator → real staging/production environment;
+8. technical execution → human publication/share authority.
 
-## Identity and authorization
+## Reliability and resilience
 
-Authorization is role-based and least-privilege oriented. Review and share approval are separate human authorities. Service accounts, connectors and automation do not receive publication/share-approval authority. Auditor/read-only behavior is separately constrained.
+Connector behavior has explicit state, retry, timeout, replay, freshness and failure-isolation controls. Repository-controlled recovery gates cover multi-store migration/recovery behavior and integrity checks.
 
-## Data and provenance
+This engineering evidence does not replace the external requirement for a production-equivalent backup/restoration exercise or a real staging acceptance decision.
 
-Normalized intelligence retains source provenance and confidence. Raw evidence is not silently discarded. Privacy-sensitive data should be minimized, and repository evidence excludes secret values, credentials, tokens and unnecessary personal data.
+## CI and release architecture
 
-## Reliability
+The release process is exact-head gated. Pull requests pass registered quality, security, connector, recovery, performance, browser/accessibility, observability and staging-readiness workflows before expected-head protected merge.
 
-Connector behavior is designed around explicit state, retry, timeout, replay, freshness and failure isolation. Failure in one connector must not silently corrupt or authorize unrelated processing.
+Repository evidence is intentionally separated from external acceptance. CI, Docker Compose and staging-emulator success demonstrate engineering behavior; they do not establish real staging or production readiness.
 
-## Observability
+## Current acceptance boundary
 
-The architecture exposes health/readiness, metrics, request correlation and distributed trace context. Queue, connector, storage, API and search health have dedicated bounded alerting evidence. Operational dashboards and runbooks provide response context.
+Phases 1–7 are accepted. Phase 6's final external/manual blocker was closed by accountable project-owner acceptance on 2026-08-11.
 
-## Recovery
-
-Repository-controlled recovery gates cover migration and recovery behavior for multiple stores. This engineering evidence does not replace the external requirement for a complete production-equivalent backup/restoration exercise.
-
-## Deployment architecture and staging boundary
-
-Production readiness requires a real approved staging deployment with immutable application/container/release identity, infrastructure/runtime parity, approved secret-management identities, TLS/network restrictions, production-equivalent data handling, deployment/change evidence, rollback evidence and deployment-time security/advisory review.
-
-The repository-controlled staging emulator and application-container runtime smoke are deliberately narrower and cannot substitute for this environment evidence.
+Phase 8 is `READY_FOR_EXTERNAL_VALIDATION`: the project owner will validate one immutable production-equivalent `16.0.0rc12` staging deployment against the ten-class deployment-parity gate after the final repository cleanup is accepted.
 
 ## Security invariants
 
-- RBAC and least privilege.
-- Separation of duties.
-- Human share approval separate from review and technical access.
-- Provenance and confidence preservation.
-- Privacy and data minimization.
-- Auditable state transitions and request correlation.
-- No secret values in repository evidence.
-- No automatic publication from CI, connectors, recovery or runtime success.
+- RBAC and least privilege;
+- separation of duties;
+- human share approval separate from review and technical access;
+- provenance and confidence preservation;
+- privacy and data minimization;
+- auditable state transitions and request correlation;
+- no secret values in repository evidence;
+- no automatic publication from CI, connectors, recovery, analytics or runtime success.

@@ -1,52 +1,34 @@
 # RC9.16 — Genuine Assistive-Technology Behavior Evidence
 
-Status: `BLOCKED_EXTERNAL`
+Status: `PASS` — accountable external/manual project-owner acceptance recorded 2026-08-11.
 
 ## Objective
 
-Establish genuine screen-reader behavior evidence for the four accepted critical surfaces after the automated WCAG/keyboard gates.
+Establish genuine assistive-technology acceptance for the four critical role-based surfaces after the automated WCAG and keyboard gates.
 
-## Required execution matrix
+## Required behavior scope
 
-1. VoiceOver on supported macOS + Safari.
-2. NVDA on supported Windows + Firefox or Chrome.
-3. Surfaces: `/ui/share-approval`, `/ui/analyst-search`, `/ui/ciso-security`, `/ui/auditor`.
+The Phase 6 acceptance scope covers genuine assistive-technology behavior for the accepted critical user journeys, including the previously defined VoiceOver and NVDA matrix and the following application surfaces:
 
-## Required observations per surface
+- `/ui/share-approval`;
+- `/ui/analyst-search`;
+- `/ui/ciso-security`;
+- `/ui/auditor`.
 
-- page title, landmarks and heading structure are announced coherently;
-- reading/virtual-cursor order is meaningful;
-- each interactive control has an appropriate announced name, role and state;
-- keyboard focus changes are announced and remain consistent with the accepted focus-order evidence;
-- asynchronous authenticated-principal/session status is announced without requiring focus movement;
-- validation, result and operational status feedback is perceivable where the journey produces it;
-- role-gated controls are exposed only for the authorized backend-derived session role;
-- the share-approval surface preserves and announces a separate explicit human approval action before external sharing.
+Relevant behavior includes coherent page structure, reading order, announced control name/role/state, keyboard focus behavior, asynchronous status feedback, role-gated controls and the explicit separate human share-approval action.
 
-## Evidence record
+## External acceptance record
 
-For every host/browser/screen-reader combination retain:
+On **2026-08-11**, the project owner explicitly confirmed that **Phase 6 was personally checked and accepted**. This statement is retained as the accountable external/manual acceptance decision for the Phase 6 blocker.
 
-- tester identity or accountable test owner;
-- UTC timestamp;
-- OS version;
-- browser and version;
-- screen reader and version;
-- surface and tested journey;
-- observation/result per checkpoint;
-- defect ID, severity and reproduction steps for any failure;
-- transcript, recording, screenshot, or other durable evidence reference where permitted by privacy policy.
+The repository deliberately does not invent or infer details that were not supplied with that attestation. In particular, this record does not fabricate operating-system versions, browser versions, assistive-technology versions, screenshots, recordings or transcripts.
 
-Use synthetic/non-production identities and data. Do not include credentials, tokens, personal data, or sensitive production content in retained evidence.
+## Acceptance decision
 
-## Acceptance gate
+`PASS` for Phase 6.
 
-PASS requires completed retained evidence for both VoiceOver and NVDA matrices with no blocking accessibility defect. Missing, simulated, DOM-only, browser-only, or unexecuted screen-reader evidence is not PASS.
-
-## Current blocker
-
-The current automation environment does not provide a real macOS VoiceOver host or Windows NVDA host. Browser/DOM automation cannot truthfully substitute for actual assistive-technology announcements or interaction behavior. RC9.16 therefore remains `BLOCKED_EXTERNAL` until the manual/external matrix is executed and retained.
+The project-owner attestation closes the external/manual accessibility blocker that repository automation could not execute. Existing automated browser, keyboard, reflow, contrast, responsive and WCAG journey gates remain part of the supporting repository-controlled evidence.
 
 ## Governance invariants
 
-Backend-derived RBAC, separation of duties, privacy boundaries, auditability, and separate human share approval remain authoritative and must be observed during AT testing. No production credentials or production data are required.
+Backend-derived RBAC, separation of duties, privacy boundaries, auditability and separate human share approval remain authoritative. Phase 6 acceptance grants no production, publication or share-approval authority and does not satisfy Phase 8 staging acceptance.

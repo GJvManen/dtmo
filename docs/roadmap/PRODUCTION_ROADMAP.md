@@ -1,55 +1,74 @@
 # DTMO Production Readiness Roadmap
 
 ## Purpose
-Controlled path from release candidate to production readiness. Missing evidence blocks the corresponding claim.
+
+This roadmap separates **repository-controlled engineering acceptance** from **external staging, assurance and production approval**. A phase is complete only when its own evidence boundary has been satisfied.
 
 ## Current status — 2026-08-11
 
-Phases 1–7 repository-controlled internal gates are accepted within their documented boundaries. The RC11 source-framework/onboarding programme and RC12 unified-console/dashboard programme are complete within repository-controlled claim boundaries. Phase 6 remains externally blocked for genuine assistive-technology execution. Phase 8 is `BLOCKED_EXTERNAL`; Phase 9 is `NOT COMPLETE`; Phase 10 is `NOT STARTED`.
+| Phase | Scope | Status |
+|---|---|---|
+| 1 | CI and workflow integrity | `PASS` |
+| 2 | Application security and identity | `PASS` |
+| 3 | Data integrity and recovery | `PASS` |
+| 4 | Connector reliability and provenance | `PASS` |
+| 5 | Performance and scalability | `PASS` |
+| 6 | Accessibility and operational UX | `PASS` — project-owner manual/external acceptance recorded 2026-08-11 |
+| 7 | Observability and incident operations | `PASS` |
+| 8 | Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION` |
+| 9 | Independent external assurance | `NOT COMPLETE` |
+| 10 | Production go/no-go | `NOT STARTED` |
 
-DTMO is **not production ready**.
+DTMO is **not production ready** until Phases 8–10 are completed.
 
-## RC11 source framework and operational source onboarding
+## Repository-controlled baseline
 
-1. **RC11.1 unified source framework core** — `PASS`; PR #132.
-2. **RC11.2 Red Hat Product Security** — `PASS`; PR #133.
-3. **RC11.3 Ubuntu Security Notices** — `PASS`; PR #134.
-4. **RC11.4 Debian Security Advisories** — `PASS`; PR #135.
-5. **RC11.5 Apple Security Releases** — `PASS`; PR #136.
-6. **RC11.6 Chrome security releases** — `PASS`; PR #137.
-7. **RC11.7 Mozilla Security Advisories** — `PASS`; PR #138.
-8. **RC11.8 Fortinet PSIRT** — `PASS`; PR #139.
-9. **RC11.9 Palo Alto Networks Security Advisories** — `PASS`; PR #140.
-10. **RC11.10 Broadcom/VMware Security Advisories** — `PASS`; PR #141.
+The engineering baseline through `16.0.0rc12` is complete:
 
-Cisco PSIRT OpenVuln, MSRC, CERT-EU and NCSC-NL adapters were accepted immediately before RC11 in the RC10.11 remediation chain. The maintained `docs/qa/SOURCE_CONNECTION_MATRIX.md` is authoritative for the current connected-source contract.
+- governed connector/source framework and operational vendor onboarding;
+- canonical unified DTMO console;
+- source registration, administration and execution within the governed application shell;
+- embedded Grafana operational and intelligence analytics;
+- least-privilege Grafana reporting access;
+- same-origin `/grafana/` integration;
+- recovery, performance, browser/accessibility and observability gates;
+- exact-head CI and expected-head protected merge discipline.
 
-## RC12 unified console and graphical analytics
+Detailed release evidence is retained in [`docs/releases/16.0.0rc12.md`](../releases/16.0.0rc12.md), the QA records and the development run log.
 
-1. **RC12.1 unified source administration and operations** — `PASS`; PR #142.
-2. **RC12.2 Grafana-first operational dashboarding** — `PASS`; PR #143.
-3. **RC12.3 least-privilege Grafana intelligence datasource** — `PASS`; PR #144.
-4. **RC12.4 Grafana embedding in the unified console** — `PASS`; PR #145.
-5. **RC12.5a same-origin Grafana gateway foundation** — `PASS`; PR #146.
-6. **RC12.5b same-origin Grafana console switch** — `PASS`; PR #147; exact head `339207dd5ad038727da34e0a0058c74076847eea`, merge `6e74c5e45b6683e1fceba3ff14f554e36815b95f`.
-7. **RC12.6 programme close-out and authoritative documentation reconciliation** — `PENDING_CI` in the current close-out PR. It may only become `PASS` on a fully green exact head.
+## Phase 6 acceptance
 
-RC12 does not collapse authority boundaries. Source administration, security/token administration, human review, external share approval and audit remain separately governed. Presentation preferences, ingestion rights, dashboard access or staging access grant no publication authority. RBAC, separation of duties, privacy, provenance and auditability remain authoritative.
+The repository-controlled accessibility/browser gates were already accepted. On **2026-08-11**, the project owner explicitly confirmed that Phase 6 was personally checked and accepted. This closes the remaining external/manual Phase 6 blocker as accountable owner attestation.
 
-## Remaining external gates
+The repository does not fabricate unprovided environment/version or recording details.
 
-### Phase 6
-Genuine VoiceOver/NVDA execution on supported real host/browser/screen-reader combinations is still required. Browser/DOM automation is not a substitute.
+## Phase 8 — next gate
 
-### Phase 8
-Requires one approved production-equivalent staging environment and the complete ten-class deployment-parity package tied to one immutable release/deployment identity. Repository emulator, local Compose and CI evidence do not substitute for this gate.
+Phase 8 is ready for the project owner's external staging validation once this final repository/documentation cleanup is accepted.
 
-### Phase 9
-Requires independent penetration testing and the remaining external-assurance package, including representative load/stress validation, full backup/restoration exercise, production platform/security hardening evidence, secrets-management acceptance and required operational/stakeholder acceptance.
+The external validation must be tied to **one immutable staging deployment identity** and retain the ten deployment-parity evidence classes defined in [`PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`](../qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md):
 
-### Phase 10
-Requires all prior blocking evidence, release/deployment artifacts, proven recovery and required approvals. Missing blocking evidence is `NO-GO`.
+1. approved staging environment and accountable owner;
+2. reachable approved endpoint;
+3. immutable release/container identity;
+4. infrastructure and configuration parity;
+5. least-privilege staging identities and secret-manager references;
+6. TLS and network controls;
+7. production-equivalent data handling and no-production-credential confirmation;
+8. deployment/change record;
+9. rollback target and procedure;
+10. deployment-time threat/CVE/vendor-advisory review.
+
+Repository CI, Docker Compose and staging-emulator results remain supporting engineering evidence and are not substitutes for the real staging validation.
+
+## Phase 9 — external assurance
+
+Phase 9 covers independent and stakeholder assurance, including the remaining penetration testing, representative load/stress validation, full backup/restoration exercise, production platform hardening, secrets-management acceptance and required operational/stakeholder approval.
+
+## Phase 10 — production decision
+
+Phase 10 is the formal production go/no-go. It begins only after all blocking Phase 8 and Phase 9 evidence is complete and reviewable.
 
 ## Exactly one next priority
 
-After RC12.6 exact-head CI is accepted, the next production-readiness priority is **Phase 8 real staging deployment parity**. Obtain one approved immutable staging deployment and collect the complete ten-class evidence package. Until that external dependency exists, repository-controlled progress cannot establish staging acceptance or production readiness.
+**Complete this final cleanup release candidate, then perform Phase 8 external staging validation against one immutable `16.0.0rc12` deployment identity.**

@@ -11,8 +11,8 @@ def test_rc10_workspace_is_wired_and_versioned() -> None:
     project = PYPROJECT.read_text(encoding="utf-8")
     assert "from dtmo.operations_ui import router as operations_ui_router" in main
     assert "app.include_router(operations_ui_router)" in main
-    assert 'version="16.0.0rc10"' in main
-    assert 'version = "16.0.0rc10"' in project
+    assert 'version="16.0.0rc12"' in main
+    assert 'version = "16.0.0rc12"' in project
 
 
 def test_operations_workspace_has_professional_navigation_contract() -> None:

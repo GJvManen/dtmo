@@ -2,19 +2,17 @@
 
 ## Decision
 
-`BLOCKED_EXTERNAL`
+`READY_FOR_EXTERNAL_VALIDATION`
 
 ## Objective
 
-Require independently observable, production-equivalent staging deployment evidence before any staging acceptance suite is treated as valid.
+Require independently observable, production-equivalent staging deployment evidence before staging acceptance can be declared.
 
-## Latest reconciliation
-
-The repository-controlled staging-emulator configuration contract is accepted from PR #104 evidence. The bounded application-container runtime smoke is accepted from PR #107 exact-head evidence. RUN-157's lifecycle remediation and documentation finalization are now authoritative: PR #108 final exact head `bbba29a1269b5c09d1a94a27b38c317bae2590e7` completed 48/48 registered workflows successfully and merged as `de3561b42f8e4fec5947182e01563a6327d0e029`.
-
-RUN-158 performed a fresh repository and issue review after that merge. No reviewable evidence package tied to one immutable real staging deployment identity was found. Repository CI, emulator configuration evidence and bounded application-container runtime smoke remain non-substitutive for this gate.
+The repository-controlled engineering prerequisites are complete through `16.0.0rc12`. The remaining Phase 8 decision is intentionally external: the project owner will validate the staged release after the final repository/documentation cleanup is accepted.
 
 ## Required external evidence
+
+All evidence must be tied to the **same immutable staging deployment identity**:
 
 1. approved staging environment identifier and accountable owner;
 2. reachable staging endpoint through the approved access path;
@@ -29,9 +27,13 @@ RUN-158 performed a fresh repository and issue review after that merge. No revie
 
 ## Acceptance rule
 
-All ten evidence classes must be retained, reviewable and tied to the same staging deployment identity. Missing, stale, inaccessible, contradictory or inferred evidence blocks staging acceptance. Repository CI, emulator configuration evidence or bounded application-container runtime smoke cannot substitute for a real deployed environment.
+Phase 8 becomes `PASS` only when all ten evidence classes are reviewable and consistently tied to one immutable staging deployment identity.
 
-No real staging smoke, integration, migration, connector, recovery, performance, accessibility or observability result is valid for Phase 8 until this gate is satisfied.
+Missing, stale, inaccessible, contradictory or inferred evidence blocks acceptance. Repository CI, Docker Compose, staging-emulator configuration and application-container smoke tests are supporting engineering evidence only and cannot substitute for a real deployed environment.
+
+## Staging validation scope
+
+Once the deployment-parity package is established, external staging validation may exercise the relevant application, migration, connector, recovery, performance, accessibility and observability journeys against that immutable release.
 
 ## Governance and privacy
 
@@ -43,8 +45,8 @@ No real staging smoke, integration, migration, connector, recovery, performance,
 
 ## Threat/advisory provenance rule
 
-Evidence class 10 must be produced against the actual immutable staged release and must preserve source provenance, review time and confidence for relevant public threat intelligence, CVE data and vendor advisories. A generic or pre-deployment advisory review does not close this class. Because no immutable real staging release exists at RUN-158, no class-10 PASS is claimed.
+Evidence class 10 must be produced against the actual immutable staged release and preserve source provenance, review time and confidence for relevant public threat intelligence, CVE data and vendor advisories. A generic or pre-deployment advisory review does not close this class.
 
 ## Exactly one next priority
 
-Provide or provision one approved real staging deployment and retain all ten deployment-parity evidence classes against one immutable staging deployment identity. Do not begin or credit the staging acceptance suite before this gate is complete.
+After the final repository cleanup PR is accepted, deploy or identify one approved immutable `16.0.0rc12` staging instance and have the project owner complete the ten-class external validation package.

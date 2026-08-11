@@ -72,9 +72,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     await close_services()
 
 
-app = FastAPI(title="DTMO API", version="16.0.0rc10", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
-# RC10.11: the unified shell owns the canonical root route. Legacy UI routers
-# remain mounted as compatibility surfaces while the product converges on one shell.
+app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+# The unified shell owns the canonical root route. Legacy UI routers remain
+# mounted as compatibility surfaces while the canonical product stays unified.
 app.include_router(unified_console_router)
 app.include_router(frontend_router)
 app.include_router(operations_ui_router)

@@ -1,21 +1,23 @@
 # DTMO Production Acceptance Checklist
 
-Last updated: 2026-08-10
+Last updated: **2026-08-11**
 
 ## Repository-controlled readiness
 
-- [x] Phase 1 CI/workflow integrity accepted.
-- [x] Phase 2 application security and identity internal gates accepted.
-- [x] Phase 3 data integrity and recovery internal gates accepted.
-- [x] Phase 4 connector reliability and provenance internal gates accepted.
-- [x] Phase 5 performance/scalability internal gates accepted.
-- [ ] Phase 6 genuine VoiceOver/NVDA real-environment evidence complete.
-- [x] Phase 7 observability and incident operations accepted.
-- [ ] Phase 8 real staging acceptance complete.
-- [ ] Phase 9 external assurance complete.
-- [ ] Phase 10 production go/no-go approved.
+- [x] Phase 1 — CI/workflow integrity accepted.
+- [x] Phase 2 — application security and identity accepted.
+- [x] Phase 3 — data integrity and recovery accepted.
+- [x] Phase 4 — connector reliability and provenance accepted.
+- [x] Phase 5 — performance/scalability accepted.
+- [x] Phase 6 — accessibility and operational UX accepted; project-owner manual/external acceptance recorded 2026-08-11.
+- [x] Phase 7 — observability and incident operations accepted.
+- [ ] Phase 8 — real staging acceptance complete.
+- [ ] Phase 9 — external assurance complete.
+- [ ] Phase 10 — production go/no-go approved.
 
-## Phase 8 deployment-parity prerequisites
+## Phase 8 — deployment-parity package
+
+All items must refer to the same immutable `16.0.0rc12` staging deployment identity.
 
 - [ ] Approved staging environment identifier and accountable owner.
 - [ ] Reachable staging endpoint through approved access path.
@@ -29,29 +31,29 @@ Last updated: 2026-08-10
 - [ ] Rollback target/procedure tied to staged release.
 - [ ] Deployment-time threat/CVE/vendor-advisory review with provenance, time and confidence.
 
-## Phase 8 acceptance execution
+## Phase 8 — external staging validation
 
-- [ ] Staging smoke tests executed against approved deployment.
-- [ ] Integration tests executed against approved deployment.
-- [ ] Migration validation executed against approved deployment.
-- [ ] Connector validation executed against approved deployment.
-- [ ] Recovery/rollback executed against approved deployment.
-- [ ] Performance validation executed against approved deployment.
-- [ ] Accessibility validation executed against approved deployment.
-- [ ] Observability/alerting validation executed against approved deployment.
+- [ ] Staging smoke tests executed against the approved immutable deployment.
+- [ ] Integration tests executed against the approved deployment.
+- [ ] Migration validation executed against the approved deployment.
+- [ ] Connector validation executed against the approved deployment.
+- [ ] Recovery/rollback behavior validated against the approved deployment.
+- [ ] Performance behavior validated against the approved deployment.
+- [ ] Relevant accessibility/UX journeys validated in staging.
+- [ ] Observability/alerting behavior validated in staging.
+- [ ] Project-owner Phase 8 staging acceptance recorded.
 
-## Phase 9 external assurance
+## Phase 9 — external assurance
 
 - [ ] Independent penetration test completed and findings dispositioned.
 - [ ] Representative load/stress test completed.
-- [ ] Full backup/restoration exercise completed.
+- [ ] Full production-equivalent backup/restoration exercise completed.
 - [ ] Production platform hardening verified, including OpenSearch security.
-- [ ] Example credentials replaced through approved secrets-management path.
+- [ ] Production secrets-management path accepted; example/default credentials are not used.
 - [ ] Operational acceptance recorded by accountable service/security/privacy stakeholders.
-- [ ] Staging deployment acceptance recorded.
-- [ ] Production deployment acceptance recorded.
+- [ ] Required external findings have documented disposition.
 
-## Governance and release controls
+## Phase 10 — governance and release controls
 
 - [ ] No unresolved critical/high findings without approved risk disposition.
 - [ ] RBAC and least privilege verified for production identities.
@@ -70,4 +72,6 @@ Last updated: 2026-08-10
 
 ## Decision
 
-Current decision: **NO-GO** until every blocking checkbox above has objective evidence or an explicitly approved risk disposition where policy permits.
+Current decision: **NO-GO pending Phases 8–10**.
+
+The next action is external Phase 8 staging validation after the final cleanup PR is accepted. Repository CI, local Docker Compose and staging-emulator success do not check these boxes on behalf of the external validator.
