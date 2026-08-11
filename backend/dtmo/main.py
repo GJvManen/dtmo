@@ -29,6 +29,7 @@ from dtmo.source_center import router as source_center_router
 from dtmo.threat_workspace import router as threat_workspace_router
 from dtmo.trace_context import begin_trace, end_trace
 from dtmo.ui import router as ui_router
+from dtmo.ux_preferences import router as ux_preferences_router
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -76,6 +77,7 @@ app.include_router(operations_metrics_router)
 app.include_router(threat_workspace_router)
 app.include_router(source_center_router)
 app.include_router(admin_center_router)
+app.include_router(ux_preferences_router)
 app.include_router(intelligence_router)
 app.include_router(admin_sources_router)
 app.include_router(admin_ui_router)
