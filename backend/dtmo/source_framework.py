@@ -4,6 +4,10 @@ from dataclasses import asdict, dataclass
 from typing import Literal
 
 from dtmo.apple_adapter import APPLE_EXECUTION_PROFILE, execute_apple_source
+from dtmo.broadcom_vmware_adapter import (
+    BROADCOM_VMWARE_EXECUTION_PROFILE,
+    execute_broadcom_vmware_source,
+)
 from dtmo.chrome_adapter import CHROME_EXECUTION_PROFILE, execute_chrome_source
 from dtmo.connectors.base import ConnectorResult
 from dtmo.credentialed_source_executor import (
@@ -63,6 +67,7 @@ def _build_registry() -> SourceAdapterRegistry:
             CHROME_EXECUTION_PROFILE,
             MOZILLA_EXECUTION_PROFILE,
             FORTINET_EXECUTION_PROFILE,
+            BROADCOM_VMWARE_EXECUTION_PROFILE,
         }
     )
     for profile in sorted(anonymous_profiles):
@@ -128,6 +133,8 @@ async def execute_source(
         return await execute_mozilla_source(source, timeout_seconds=timeout_seconds)
     if spec.profile == FORTINET_EXECUTION_PROFILE:
         return await execute_fortinet_source(source, timeout_seconds=timeout_seconds)
+    if spec.profile == BROADCOM_VMWARE_EXECUTION_PROFILE:
+        return await execute_broadcom_vmware_source(source, timeout_seconds=timeout_seconds)
     return await execute_registered_source(source, timeout_seconds=timeout_seconds)
 
 
