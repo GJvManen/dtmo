@@ -6,9 +6,11 @@ Last reconciled: **2026-08-11**
 
 DTMO `16.0.0rc12` has completed the repository-controlled engineering programme through Phase 7 and the RC11/RC12 source-framework and unified-console consolidation work. A project-owner functional test on 2026-08-11 subsequently demonstrated that the canonical console was **not yet functionally acceptable for external staging**.
 
-The product-level blocker is now tracked as **RC13 functional unified-console acceptance** in issue #150 and `docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`.
+The product-level blocker is tracked as **RC13 functional unified-console acceptance** in issue #150 and `docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`.
 
-DTMO is **not production ready** and Phase 8 is paused until RC13 passes.
+RC13.1 is complete: PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after the complete exact-head workflow set passed, including RC4 Quality Gate #803 and RC13 Functional Console Browser E2E Gate #5.
+
+RC13.2 is now the only current priority. DTMO remains **not production ready** and Phase 8 remains paused until the complete RC13 programme passes.
 
 ## Phase status
 
@@ -38,17 +40,34 @@ The project-owner test found the following blocking gaps in the canonical consol
 - Governance did not expose the frameworks and mappings used by DTMO, including Normenkader IBP, MITRE ATT&CK and CVSS context.
 - Non-user-facing legacy compatibility copy was still exposed in the main navigation.
 
+RC13.1 has resolved the first operator-facing source/intelligence/overview defects and removed the obsolete compatibility copy. The remaining visual-analytics, Administration, Governance and final browser-acceptance work stays blocking.
+
 ## RC13 programme
 
 ### RC13.1 — source-to-intelligence functional path
 
-Current priority. The canonical console must correctly distinguish built-in and registry-backed sources, allow supported framework sources to be registered/enabled/executed, process fetched records through the canonical ingestion pipeline, and show the resulting recent intelligence and overview statistics without requiring a separate search action.
+Status: `PASS` within the RC13.1 evidence boundary.
 
-RC13.1 adds a dedicated Chromium functional journey that clicks the actual console controls and proves register → enable → run → ingest → recent intelligence → updated overview behavior.
+PR #151 implemented and exact-head CI verified:
 
-### RC13.2 — visual analytics
+- truthful built-in and registry-backed source state;
+- framework-source register/enable/configure/run controls;
+- source → ingest → index status feedback;
+- canonical recent intelligence independent of OpenSearch search availability;
+- automatic refresh of source state, recent intelligence and dashboard summary after runs;
+- useful native Overview charts and statistics;
+- removal of obsolete legacy-shell navigation copy;
+- Chromium coverage of the actual register → enable → run → ingest → recent intelligence → overview journey.
 
-Core analytics must work by default without requiring a separate Grafana login. Grafana may remain as an advanced governed analytics layer, but native product analytics cannot depend on it.
+This does not complete RC13 as a whole.
+
+### RC13.2 — single-session visual analytics
+
+Status: `PENDING_CI` / current implementation priority.
+
+The canonical Visual analytics experience must work inside the DTMO session without requiring a second Grafana login. Native DTMO analytics are the required product surface. Grafana remains authenticated and may continue as an operational/advanced deployment component, but it must not expose a broken separately authenticated embed in normal console use unless a shared authentication boundary is later proven safely.
+
+The RC13.2 implementation therefore keeps Grafana anonymous access disabled, preserves Grafana deployment functionality, and suppresses the advanced Grafana shell from the canonical end-user console. A dedicated Chromium gate verifies that the native severity, source, connector-health and review-status analytics render and that normal Visual analytics use performs no `/grafana/` request.
 
 ### RC13.3 — Administration/RBAC
 
@@ -78,4 +97,4 @@ RBAC, least privilege, separation of duties, privacy, provenance, auditability, 
 
 ## Exactly one current priority
 
-**RC13.1 — complete and accept the source-to-intelligence functional browser journey.** Phase 8 external staging validation remains paused until all RC13 blocking findings are resolved.
+**RC13.2 — complete and accept single-session native Visual analytics without a separate Grafana login path.** Phase 8 external staging validation remains paused until all RC13 blocking findings are resolved.
