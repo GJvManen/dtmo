@@ -35,8 +35,11 @@ def test_visual_analytics_and_governance_boundary_are_integrated() -> None:
     text = CONSOLE.read_text(encoding="utf-8")
     assert "/api/v1/dashboards/summary" in text
     assert "severity-chart" in text
+    assert "severity-table" in text
     assert "source-chart" in text
+    assert "source-table" in text
     assert "connector-chart" in text
-    assert "tabelalternatieven" in text
+    assert "connector-table" in text
+    assert "native fallbackvisualisaties" in text
     assert "geen review- of share approval-recht" in text
     assert "separation of duties" in text
