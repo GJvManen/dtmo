@@ -3,24 +3,24 @@
 ## Purpose
 Controlled path from release candidate to production readiness. Missing evidence blocks the corresponding claim.
 
-## Current status — 2026-08-10
+## Current status — 2026-08-11
 
-Phases 1–7 repository-controlled internal gates are accepted within their documented boundaries. Phase 8 is `BLOCKED_EXTERNAL`; Phase 9 is `NOT COMPLETE`; Phase 10 is `NOT STARTED`.
+Phases 1–7 repository-controlled internal gates are accepted within their documented boundaries. RC10 staged workspace programme is complete within repository-controlled claim boundaries. Phase 8 is `BLOCKED_EXTERNAL`; Phase 9 is `NOT COMPLETE`; Phase 10 is `NOT STARTED`.
 
 ## RC10 staged workspace programme
 
 1. **RC10.1 Operations Workspace shell** — `PASS`.
 2. **RC10.2 Unified graphical dashboards** — `PASS`.
 3. **RC10.3 Threat Intelligence Workspace** — `PASS`; PR #118 merged as `1377899e7096c01362ab803c502c1d40812ef581`.
-4. **RC10.4 Source Center refinement** — current RUN-181, `CI_VALIDATION_PENDING`: unified registry identity, execution health, scheduling context and bounded provenance; existing human-admin mutation authority remains separate.
-5. **RC10.5 Administration consolidation** — bring governed configuration surfaces into one admin center without weakening RBAC/separation of duties.
-6. **RC10.6 UX polish** — saved views, keyboard workflows, theme and density controls where evidence supports them.
+4. **RC10.4 Source Center refinement** — `PASS`; PR #119 merged as `8fcba5b1aff1aa5d3fe53426488f11e00e95d3a0`.
+5. **RC10.5 Administration consolidation** — `PASS`; PR #120 merged as `df138ebbdde1fa0f30f4003e1a158b3419a3d3fe`.
+6. **RC10.6 UX polish** — `PASS`; PR #121 accepted on exact head `2fa71cf01cb0eb6d249cdff9b50d8a2aef9a3896` and merged as `20e042baccae655655dd410545a68a81937e832e`.
 
-Each step must independently pass the full registered workflow matrix before the next begins.
+Each RC10 step independently passed the registered workflow matrix before acceptance. RC10 is complete; no additional RC10 scope is inferred.
 
-## RC10.4 claim boundary
+## Governance boundary
 
-Source Center is an operational projection, not a new authority surface. It must require existing connector-management authorization plus human-admin identity, expose no secret references/raw evidence, and grant no review or external share approval. Source mutation/manual execution remains in the accepted admin-source control plane.
+RC10 does not collapse authority boundaries. Source administration, security/token administration, human review, external share approval and audit remain separately governed. Presentation preferences grant no authority. RBAC, separation of duties, privacy, provenance and auditability remain authoritative.
 
 ## Remaining external gates
 
@@ -28,4 +28,4 @@ Phase 8 still requires an approved real staging environment and ten-class deploy
 
 ## Exactly one next priority
 
-Complete exact-head CI validation for RUN-181 / RC10.4. Merge only on complete success; if any workflow fails, remediate only the first concrete root cause before re-running the full matrix.
+No further RC10 advancement. Obtain the approved real Phase 8 deployment-parity evidence; until that external dependency exists, repository-controlled progress cannot establish staging acceptance or production readiness.
