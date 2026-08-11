@@ -1,111 +1,74 @@
 # DTMO Production Readiness Report
 
-Last updated: 2026-08-11
-
-## Purpose
-
-This report consolidates the production-readiness posture of DTMO across the ten roadmap phases. Detailed evidence remains in the QA records, retained GitHub Actions artifacts, PDCA run records and GitHub issues.
+Last updated: **2026-08-11**
 
 ## Overall decision
 
-**NO-GO — DTMO is not production ready.**
+**NO-GO — DTMO is not yet production ready.**
 
-Repository-controlled engineering gates are substantially complete, including the accepted RC10.9 feed-operations and RC10.10 graphical-dashboard increments, but external accessibility, real staging, independent assurance and final production acceptance remain incomplete.
+The repository-controlled engineering baseline through `16.0.0rc12` is accepted through Phase 7. Phase 6's remaining manual/external accessibility blocker has been accepted by the project owner. The next formal gate is Phase 8 external staging validation.
 
-## Phase 1 — CI and workflow integrity
+## Phase summary
 
-Status: `PASS`.
+| Phase | Status | Interpretation |
+|---|---|---|
+| 1. CI/workflow integrity | `PASS` | Exact-head workflow and merge discipline established |
+| 2. Security/identity | `PASS` | Repository-controlled RBAC, authorization and governance gates accepted |
+| 3. Data integrity/recovery | `PASS` | Repository-controlled migration, integrity and recovery evidence accepted |
+| 4. Connector reliability/provenance | `PASS` | Current operational source framework and reliability controls accepted |
+| 5. Performance/scalability | `PASS` | Bounded ingestion/read/concurrency/degraded-dependency gates accepted |
+| 6. Accessibility/UX | `PASS` | Automated/browser evidence plus project-owner manual/external acceptance |
+| 7. Observability/incident operations | `PASS` | Metrics, tracing, alerting, dashboards, runbooks and exercises accepted |
+| 8. Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION` | Project-owner staging validation is next |
+| 9. External assurance | `NOT COMPLETE` | Independent assurance and stakeholder acceptance remain |
+| 10. Production go/no-go | `NOT STARTED` | Starts after Phases 8 and 9 are complete |
 
-The project requires exact-head workflow evidence, independently observable GitHub Actions execution, regression protection and retained evidence. Missing or unexecuted workflows cannot be interpreted as success.
+## Engineering baseline
 
-Residual risk: repository CI cannot substitute for production environment acceptance.
+The `16.0.0rc12` baseline includes:
 
-## Phase 2 — Application security and identity
+- unified DTMO application shell;
+- governed source adapter framework and current operational vendor catalog;
+- integrated source administration/execution;
+- intelligence investigation and governance views;
+- Grafana operational and intelligence dashboards behind the same browser origin;
+- least-privilege Grafana reporting access;
+- established recovery, performance, accessibility and observability engineering gates.
 
-Status: `PASS` for internal gates.
+## Phase 6 acceptance
 
-The implementation maintains RBAC, least privilege, separation of duties, authentication/authorization controls, auditability, human publication controls and explicit human share approval.
+On **2026-08-11**, the project owner explicitly confirmed that Phase 6 was personally checked and accepted. This is recorded as accountable manual/external acceptance. The repository does not fabricate unprovided host, browser, assistive-technology version or recording details.
 
-Residual risk: production identity-provider, secret-manager and platform-hardening acceptance remain external.
+## Phase 8 staging handoff
 
-## Phase 3 — Data integrity, backup and recovery
+The repository-controlled prerequisites are ready for external validation after the final cleanup PR is accepted.
 
-Status: `PASS` for internal gates.
+Phase 8 requires one production-equivalent staging deployment with the complete ten-class deployment-parity package tied to the same immutable `16.0.0rc12` release/deployment identity. See [`PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`](../qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md).
 
-Repository-controlled storage integrity, migration, recovery and multi-store recovery evidence is accepted within its defined scope.
+Repository CI, Docker Compose and staging-emulator results do not substitute for the project owner's real staging decision.
 
-Residual risk: a complete production-equivalent backup and restoration exercise remains an external assurance requirement.
+## Phase 9 assurance
 
-## Phase 4 — Live connector reliability and provenance
+External assurance still includes the remaining independent penetration testing, representative load/stress validation, full production-equivalent backup/restoration exercise, platform/security hardening, secrets-management acceptance and required operational/stakeholder approvals.
 
-Status: `PASS` for internal gates.
+## Phase 10 production decision
 
-Connector contract, state, retry, timeout, replay, freshness, failure isolation, live canary behavior and payload provenance are covered by dedicated gates. RC10.9 additionally makes supported framework feeds discoverable and manually operable from the governed Source Center without granting review, publication or share-approval authority. Provider credentials, rate limits, licences and terms have separate external acceptance evidence recorded in issue #1.
+Production approval requires complete and consistent Phase 8/9 evidence, immutable release/deployment identity, accepted rollback/recovery readiness and required human approvals.
 
-Residual risk: production deployment and live operational acceptance remain external.
-
-## Phase 5 — Performance and scalability
-
-Status: `PASS` for internal gates.
-
-Bounded ingestion, queue burst, API read, OpenSearch read, degraded-dependency and concurrency-saturation gates are accepted.
-
-Residual risk: representative production-scale load and stress testing remains external.
-
-## Phase 6 — Frontend accessibility and operational UX
-
-Status: `BLOCKED_EXTERNAL`.
-
-Automated/browser accessibility evidence is accepted for its bounded scope, including semantic alternatives for the RC10.10 graphical dashboards, but genuine VoiceOver and NVDA behavior on supported real host/browser/screen-reader combinations is still required. Browser automation is not accepted as a substitute.
-
-## Phase 7 — Observability and incident operations
-
-Status: `PASS`.
-
-Accepted evidence covers request observability, distributed trace context, queue backlog alerting, connector failure alerting, storage integrity alerting, API/search health alerting, operational dashboarding, graphical intelligence/connector dashboards, incident runbooks, controlled exercises and on-call handover.
-
-RC10.10 is accepted at exact head `7da9225186ce8aa2061e3081ee3a0d80646bb4a7` and merged as `599801dce815e91553d55e883ddeb3acc6412787`. Its dashboard layer is read-only and preserves server-side governance boundaries.
-
-Residual risk: real service delivery channels, staffing and organizational acceptance remain operational/external matters where applicable.
-
-## Phase 8 — Staging acceptance
-
-Status: `BLOCKED_EXTERNAL`.
-
-Repository-controlled staging-emulator configuration and application-container runtime smoke are accepted only for their bounded scopes. They do not prove a real production-equivalent staging environment.
-
-All ten deployment-parity evidence classes must be complete against one immutable real staging deployment identity before the staging acceptance suite can be credited.
-
-The immediate next production-readiness objective is therefore to provision or obtain one approved production-equivalent staging deployment and bind all parity evidence to its immutable release, image and deployment identity.
-
-## Phase 9 — External assurance
-
-Status: `NOT COMPLETE`.
-
-The external-assurance intake contract is defined. Required evidence includes independent penetration testing, representative load/stress, full backup/restoration, production platform hardening, secrets-management acceptance, operational/stakeholder acceptance and deployment acceptance.
-
-No external activity may be marked complete without attributable, dated, reviewable evidence and clear findings disposition.
-
-## Phase 10 — Production go/no-go
-
-Status: `NOT STARTED`.
-
-Production go requires all prior phases and external gates to be complete, retained evidence to be reviewable, release and deployment identities to be immutable, rollback/recovery to be proven, unresolved high-severity findings to be dispositioned, and required human approvals to be recorded.
-
-## Security and governance invariants
-
-The following controls apply across every phase:
+## Governance invariants
 
 - RBAC and least privilege;
 - separation of duties;
-- review separate from human share approval;
-- privacy and minimization;
+- review separate from external share approval;
+- privacy and data minimization;
 - provenance and confidence preservation;
-- auditability and correlation;
+- auditability and request correlation;
 - no secret values in repository evidence;
-- no automatic publication from connector, recovery, performance, CI or staging success;
-- no claim of PASS from missing, stale, inferred or inaccessible evidence.
+- no automatic publication from connector, dashboard, recovery, CI or staging success.
 
-## External blockers
+## Active trackers
 
-Issue #1 remains authoritative for production acceptance gates that cannot be closed through source changes alone. Issue #3 tracks roadmap execution and issue #2 tracks the continuous-development program.
+- GitHub issue #3 — Production Readiness Roadmap
+- GitHub issue #1 — External staging, assurance and production acceptance gates
+
+Historical run records remain immutable evidence of the project state at their original execution dates and are not rewritten to match the current status.
