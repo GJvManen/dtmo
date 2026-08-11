@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from urllib.parse import unquote
 
 import pytest
 from playwright.async_api import Route, async_playwright, expect
@@ -129,7 +130,7 @@ async def test_canonical_administration_creates_and_updates_role_assignment() ->
         async def principal_update_route(route: Route) -> None:
             assert route.request.method == "PATCH"
             mutation_request_ids.append(route.request.headers.get("x-request-id", ""))
-            subject = route.request.url.rsplit("/", 1)[-1]
+            subject = unquote(route.request.url.rsplit("/", 1)[-1])
             payload = json.loads(route.request.post_data or "{}")
             current = next(item for item in principals if item["subject"] == subject)
             current["display_name"] = payload.get("display_name") or current["display_name"]
