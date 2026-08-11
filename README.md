@@ -1,100 +1,197 @@
 # DTMO
 
-**Dutch Threat Monitoring for Education**
+## Dutch Threat Monitoring for Education
 
-DTMO is an open, education-focused Cyber Threat Intelligence platform for historical incidents, current intelligence, vulnerabilities, indicators, supplier risk and management reporting.
+**DTMO** is an open Cyber Threat Intelligence platform designed for the education sector. It brings vulnerability intelligence, vendor advisories, indicators, historical incidents, provenance, operational health and management insight together in one governed platform.
 
-## Current production-readiness status — 2026-08-11
+**Release candidate:** `16.0.0rc12`  
+**Engineering status:** Phases 1–7 accepted  
+**Next gate:** Phase 8 external staging validation  
+**License:** Apache-2.0
 
-DTMO is **not production ready**.
+---
 
-| Phase | Status |
+## What DTMO provides
+
+DTMO is built to support security operations, threat intelligence and governance teams without collapsing their responsibilities into one authority model.
+
+- **Unified threat intelligence** — normalized intelligence from official public and vendor security sources.
+- **Governed source framework** — registration, validation, scheduling and execution through bounded adapters with provenance retention.
+- **Threat investigation** — searchable intelligence with severity, confidence, source and review context.
+- **Operational administration** — source configuration and operational controls inside the canonical DTMO console.
+- **Graphical analytics** — embedded Grafana operational and intelligence dashboards plus accessible native table/chart fallbacks.
+- **Auditability and provenance** — explicit source identity, request correlation, evidence retention and controlled state transitions.
+- **Separation of duties** — ingestion, analysis, review and external share approval remain distinct authorities.
+- **Production-readiness engineering** — automated security, recovery, performance, accessibility, connector and observability gates.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    S[Official intelligence sources] --> C[Governed connector framework]
+    C --> N[Normalization & provenance]
+    N --> A[FastAPI application services]
+
+    A --> P[(PostgreSQL)]
+    A --> O[(OpenSearch)]
+    A --> R[(Redis)]
+    A --> M[(Object evidence storage)]
+
+    A --> PR[Prometheus]
+    PR --> G[Grafana]
+    P -->|least-privilege reporting views| G
+
+    U[Analysts / Admin / CISO / Auditor] --> GW[Nginx gateway]
+    GW --> UI[Unified DTMO console]
+    UI --> A
+    GW -->|/grafana/| G
+
+    A --> AUD[Audit & approval controls]
+```
+
+The architecture deliberately separates **collection**, **normalization**, **application services**, **persistence/search**, **observability** and **human governance**. Technical execution never grants publication authority.
+
+### Technology stack
+
+| Layer | Technology |
 |---|---|
-| 1. CI and workflow integrity | `PASS` |
-| 2. Application security and identity | `PASS` internally |
-| 3. Data integrity and recovery | `PASS` internally |
-| 4. Connector reliability and provenance | `PASS` internally |
-| 5. Performance and scalability | `PASS` internally |
-| 6. Accessibility and operational UX | internal browser gates accepted; genuine VoiceOver/NVDA `BLOCKED_EXTERNAL` |
-| 7. Observability and incident operations | `PASS` internally |
-| 8. Staging acceptance | `BLOCKED_EXTERNAL` — real staging/deployment parity |
-| 9. External assurance | `NOT COMPLETE` |
-| 10. Production go/no-go | `NOT STARTED` |
+| Application/API | Python 3.12+, FastAPI, Pydantic, SQLAlchemy |
+| Database | PostgreSQL 17 |
+| Search | OpenSearch 2.19 |
+| Queue/cache | Redis 8 |
+| Evidence/object storage | S3-compatible AIStor/MinIO interface |
+| Metrics | Prometheus 3 |
+| Dashboards | Grafana 13 |
+| Gateway | Nginx |
+| Migrations | Alembic |
+| Test & quality | pytest, Playwright, Ruff, mypy, pip-audit |
+| Packaging/runtime | Hatchling, Docker Compose |
 
-The repository-controlled RC11 source-framework programme and RC12 unified-console/dashboard programme are accepted through PR #147. The current operational vendor catalog is connected through governed adapters, source administration and execution are available in the canonical console, and Grafana Operations/Intelligence dashboards are embedded through the managed same-origin `/grafana/` path. These repository-controlled results do not satisfy the external Phase 8, Phase 9 or Phase 10 gates.
+For the detailed trust-boundary and deployment model, see [`docs/architecture/SYSTEM_ARCHITECTURE.md`](docs/architecture/SYSTEM_ARCHITECTURE.md).
 
-## 16.0.0rc12 unified console
+## Intelligence source framework
 
-After `docker compose up --build`, open:
+The current operational catalog is connected through governed built-in or framework adapters. It includes official security publication channels from CISA, NIST/NVD, GitHub, NCSC-NL, CERT-EU, Microsoft, Cisco, Red Hat, Ubuntu, Debian, Apple, Chrome, Mozilla, Fortinet, Palo Alto Networks and Broadcom/VMware.
 
-- `http://localhost:8000/` — canonical DTMO unified console;
-- `http://localhost:8000/ui/console` — canonical console alias;
-- `http://localhost:8000/grafana/` — managed same-origin Grafana path used by the console;
-- `http://localhost:8000/docs` — OpenAPI/Swagger;
-- `http://localhost:8000/health` — health status;
-- `http://localhost:8000/metrics` — raw Prometheus metrics.
+Research publications can remain visible as **research references** without being treated as executable high-frequency feeds. Credentialed adapters store only logical secret references; secret values are resolved at runtime and are not persisted in the source catalog.
 
-The unified console contains the governed source catalog and operations flow, administration controls, intelligence investigation, operational/intelligence analytics and read-only governance views without collapsing authority boundaries. Legacy `/ui/*` routes may remain for compatibility, but they are not separate product shells.
+See the authoritative [`Source Connection Matrix`](docs/qa/SOURCE_CONNECTION_MATRIX.md).
 
-The source connection contract distinguishes catalogued, registered, enabled, executable, ingested, reviewed and share-approved states. All currently catalogued operational vendor feeds are connected through accepted built-in or framework adapters; research-reference sources remain deliberately non-executable where appropriate. Credential values are not stored in the catalog or registry.
+## Security and governance model
 
-Grafana uses dedicated least-privilege data access. Anonymous Grafana access remains disabled, the intelligence datasource is restricted to explicit reporting views, and the browser-facing console uses same-origin `/grafana/...` embeds rather than a direct `:3000` target. Native accessible chart/table fallbacks remain available in the DTMO console.
+DTMO is designed around explicit trust and authority boundaries:
 
-Existing server-side RBAC remains authoritative. Search, ingestion, administration and dashboard access do not grant review or publication authority. Review and external share approval remain distinct human decisions and self-approval remains prohibited.
+- role-based access control and least privilege;
+- review and external share approval are separate human decisions;
+- self-approval is prohibited where separation of duties applies;
+- connectors, service accounts, CI jobs and staging access cannot authorize publication;
+- provenance and confidence are preserved during normalization;
+- logs and evidence follow privacy and data-minimization requirements;
+- credentials, tokens and secret values are excluded from repository evidence;
+- Grafana intelligence reporting uses dedicated least-privilege reporting views rather than the application database identity;
+- anonymous Grafana access is disabled;
+- successful automation is evidence of technical execution, not of human approval.
 
-For OpenSearch 2.12+ local Compose bootstrap requires `OPENSEARCH_INITIAL_ADMIN_PASSWORD` in `.env`. Real credentials, AIStor license material and image digests must remain outside source control.
+See [`SECURITY.md`](SECURITY.md) and the [`Security Overview`](docs/security/SECURITY_OVERVIEW.md).
+
+## Engineering workflow
+
+Every change is treated as a bounded release candidate and must pass the registered **exact-head** GitHub Actions gates before merge.
+
+```mermaid
+flowchart LR
+    B[Feature / remediation branch] --> PR[Pull request]
+    PR --> Q[Quality & governance]
+    Q --> S[Security & connector contracts]
+    S --> D[Data integrity & recovery]
+    D --> P[Performance & scalability]
+    P --> A[Browser & accessibility]
+    A --> O[Observability & operations]
+    O --> E[Staging-emulator readiness]
+    E --> M[Expected-head protected merge]
+```
+
+| Workflow family | Purpose |
+|---|---|
+| Quality & governance | Tests, linting, typing, licensing and repository contracts |
+| Security & identity | Authorization, token/session behavior and security invariants |
+| Connector reliability | Contract, timeout, retry, replay, freshness, provenance and isolation gates |
+| Data integrity & recovery | Storage migration, recovery and cross-store integrity validation |
+| Performance | Ingestion, API/search reads, concurrency and degraded-dependency behavior |
+| Browser & accessibility | Critical journeys, keyboard, responsive behavior, reflow, contrast and session semantics |
+| Observability | Request/trace context, queue/storage/API/search alerting, dashboards and runbooks |
+| Staging readiness | Repository-controlled deployment/emulator checks before external staging acceptance |
+
+The engineering process distinguishes **repository-controlled evidence** from **external production acceptance**. Local containers, CI and emulators cannot substitute for real staging or independent assurance.
+
+## Project status
+
+| Phase | Scope | Status |
+|---|---|---|
+| 1 | CI and workflow integrity | ✅ `PASS` |
+| 2 | Application security and identity | ✅ `PASS` |
+| 3 | Data integrity and recovery | ✅ `PASS` |
+| 4 | Connector reliability and provenance | ✅ `PASS` |
+| 5 | Performance and scalability | ✅ `PASS` |
+| 6 | Accessibility and operational UX | ✅ `PASS` — externally/manually accepted by the project owner on 2026-08-11 |
+| 7 | Observability and incident operations | ✅ `PASS` |
+| 8 | Real staging acceptance | 🟡 `READY_FOR_EXTERNAL_VALIDATION` |
+| 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
+| 10 | Production go/no-go | ⏳ `NOT STARTED` |
+
+The repository-controlled engineering programme through RC12 is complete. **DTMO is not yet production ready**: the next formal gate is external validation of a production-equivalent staging deployment against one immutable release/deployment identity.
+
+See the authoritative [`Production Roadmap`](docs/roadmap/PRODUCTION_ROADMAP.md) and [`Current Project State`](docs/project/CURRENT_STATE.md).
+
+## RC12 product baseline
+
+`16.0.0rc12` establishes the current product baseline:
+
+- one canonical DTMO application shell;
+- governed source administration and execution in the same console;
+- completed operational vendor source onboarding;
+- embedded Grafana Operations and Intelligence dashboards;
+- dedicated least-privilege intelligence reporting access;
+- same-origin `/grafana/` browser integration;
+- retained accessible native analytics fallbacks;
+- repository-controlled RC12 acceptance completed through PR #148.
+
+Release detail is maintained in [`docs/releases/16.0.0rc12.md`](docs/releases/16.0.0rc12.md).
+
+## Repository structure
+
+```text
+backend/dtmo/              Application, APIs, source framework and console
+backend/tests/             Unit, contract, browser and release-gate tests
+database/migrations/       Versioned database migrations
+infrastructure/            Gateway, Prometheus and Grafana configuration
+docs/                      Architecture, governance, QA, evidence and roadmap
+tools/                     Provisioning, verification and release utilities
+.github/workflows/          Exact-head CI and production-readiness gates
+```
 
 ## Documentation
 
-Start with [`docs/README.md`](docs/README.md).
+Start with [`docs/README.md`](docs/README.md). Key project documents are:
 
-Key documents:
+- [`Current Project State`](docs/project/CURRENT_STATE.md)
+- [`Executive Status`](docs/project/EXECUTIVE_STATUS.md)
+- [`Production Roadmap`](docs/roadmap/PRODUCTION_ROADMAP.md)
+- [`System Architecture`](docs/architecture/SYSTEM_ARCHITECTURE.md)
+- [`Security Overview`](docs/security/SECURITY_OVERVIEW.md)
+- [`Source Connection Matrix`](docs/qa/SOURCE_CONNECTION_MATRIX.md)
+- [`Evidence Index`](docs/evidence/EVIDENCE_INDEX.md)
+- [`Traceability Matrix`](docs/traceability/TRACEABILITY_MATRIX.md)
+- [`Operations Manual`](docs/operations/OPERATIONS_MANUAL.md)
 
-- [Current project state](docs/project/CURRENT_STATE.md)
-- [Executive status](docs/project/EXECUTIVE_STATUS.md)
-- [Production roadmap](docs/roadmap/PRODUCTION_ROADMAP.md)
-- [Source connection matrix](docs/qa/SOURCE_CONNECTION_MATRIX.md)
-- [RC12 programme completion gate](docs/qa/RC12_6_UNIFIED_CONSOLE_COMPLETION_GATE.md)
-- [16.0.0rc12 release notes](docs/releases/16.0.0rc12.md)
-- [Development run log](docs/development/RUN_LOG.md)
-- [Evidence index](docs/evidence/EVIDENCE_INDEX.md)
-- [Traceability matrix](docs/traceability/TRACEABILITY_MATRIX.md)
-- [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
-- [Security overview](docs/security/SECURITY_OVERVIEW.md)
-- [Operations manual](docs/operations/OPERATIONS_MANUAL.md)
+## Running and deployment
 
-## Governance invariants
+The repository includes a Docker Compose reference environment for engineering and validation. Deployment, secret material, platform hardening and production-equivalent staging acceptance are deliberately governed outside the README.
 
-- RBAC and least privilege;
-- review and human share approval are separate decisions;
-- separation of duties is preserved;
-- service accounts/connectors/CI/staging access cannot grant publication authority;
-- provenance and confidence are preserved;
-- privacy and data minimization apply to logs and evidence;
-- secret values, credentials and tokens are excluded from repository evidence;
-- missing, queued, cancelled, skipped, failed, stale, inaccessible or inferred evidence is never `PASS`;
-- successful connector, recovery, performance, CI, emulator or staging execution never automatically publishes or approves sharing.
+See the [`Operations Manual`](docs/operations/OPERATIONS_MANUAL.md) for environment setup and operational procedures.
 
-## External blockers
+## Open source and responsible use
 
-Real staging acceptance still requires one approved immutable deployment identity with the complete ten-class deployment-parity package. Genuine assistive-technology execution, independent penetration testing and remaining external assurance evidence are also still absent. Repository-controlled CI does not satisfy those external gates.
+DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). Governance and contribution entry points are maintained in `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` and `docs/legal/THIRD_PARTY.md`.
 
-## Quick start
-
-```bash
-git clone https://github.com/GJvManen/dtmo.git
-cd dtmo
-cp .env.example .env
-# Replace all placeholders in .env with local secret values/references.
-docker compose up --build
-```
-
-Then open `http://localhost:8000/`.
-
-## Open source
-
-DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). See `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` and `docs/legal/THIRD_PARTY.md`.
-
-## Exactly one next priority
-
-Phase 8 real staging deployment parity: obtain one approved production-equivalent staging deployment and collect the complete ten-class evidence package against one immutable release/deployment identity. Repository emulator or local-container evidence must not be used as a substitute for that external acceptance evidence.
+Use DTMO only with lawful access to intelligence sources and infrastructure. A technically successful connector does not itself establish legal permission to collect, process or redistribute third-party material.
