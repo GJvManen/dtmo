@@ -13,12 +13,22 @@ from urllib.parse import urlparse
 
 from defusedxml import ElementTree as ET
 
+from dtmo.cert_eu_adapter import CERTEUAdapterError, parse_cert_eu_document, parse_cert_eu_listing
 from dtmo.connectors.base import ConnectorRecord, ConnectorResult
 from dtmo.ncsc_csaf_adapter import CSAFAdapterError, parse_csaf_document, parse_csaf_index
 from dtmo.source_catalog import catalog_by_id
 from dtmo.sources import SourceDefinition, validate_source_url
 
 MAX_RESPONSE_BYTES = 5 * 1024 * 1024
+SUPPORTED_REGISTRY_EXECUTION_PROFILES = frozenset(
+    {
+        "nvd-cve-v2",
+        "github-global-advisories-v1",
+        "rss-2.0",
+        "csaf-2.0",
+        "cert-eu-advisories-v1",
+    }
+)
 
 
 class SourceExecutionError(RuntimeError):
@@ -133,6 +143,15 @@ def _fetch_text_sync(url: str, *, timeout: float) -> bytes:
         timeout=timeout,
         accept="text/plain",
         allowed_content_types=frozenset({"text/plain"}),
+    )
+
+
+def _fetch_html_sync(url: str, *, timeout: float) -> bytes:
+    return _fetch_bounded_sync(
+        url,
+        timeout=timeout,
+        accept="text/html, application/xhtml+xml",
+        allowed_content_types=frozenset({"text/html", "application/xhtml+xml"}),
     )
 
 
@@ -339,6 +358,37 @@ def _execute_ncsc_csaf_sync(source: SourceDefinition, *, timeout: float) -> list
     return records
 
 
+def _execute_cert_eu_sync(source: SourceDefinition, *, timeout: float) -> list[ConnectorRecord]:
+    parsed = urlparse(source.endpoint_url)
+    expected_year = parsed.path.rstrip("/").rsplit("/", 1)[-1]
+    if not expected_year.isdigit() or len(expected_year) != 4:
+        raise SourceExecutionError("CERT-EU source endpoint must end in a four-digit advisory year")
+    try:
+        paths = parse_cert_eu_listing(
+            _fetch_html_sync(source.endpoint_url, timeout=timeout),
+            expected_year=expected_year,
+        )
+    except CERTEUAdapterError as exc:
+        raise SourceExecutionError(str(exc)) from exc
+    origin = f"{parsed.scheme}://{parsed.netloc}"
+    records: list[ConnectorRecord] = []
+    for path in paths:
+        document_url = f"{origin}{path}/json"
+        payload = _fetch_json_sync(document_url, timeout=timeout)
+        try:
+            record = parse_cert_eu_document(
+                payload,
+                reliability=source.reliability,
+                document_url=document_url,
+            )
+        except CERTEUAdapterError as exc:
+            raise SourceExecutionError(str(exc)) from exc
+        records.append(record)
+    if not records:
+        raise SourceExecutionError("CERT-EU distribution produced no advisory records")
+    return records
+
+
 async def execute_registered_source(
     source: SourceDefinition, *, timeout_seconds: float = 20.0
 ) -> ConnectorResult:
@@ -354,9 +404,15 @@ async def execute_registered_source(
             if catalog and catalog.execution_status == "supported"
             else "dtmo-json-v1"
         )
+        if catalog and catalog.execution_status == "supported" and profile not in SUPPORTED_REGISTRY_EXECUTION_PROFILES:
+            raise SourceExecutionError(f"supported catalog profile has no governed executor: {profile}")
         if profile == "csaf-2.0":
             records = await asyncio.to_thread(
                 _execute_ncsc_csaf_sync, source, timeout=timeout_seconds
+            )
+        elif profile == "cert-eu-advisories-v1":
+            records = await asyncio.to_thread(
+                _execute_cert_eu_sync, source, timeout=timeout_seconds
             )
         elif profile == "rss-2.0":
             payload = await asyncio.to_thread(
