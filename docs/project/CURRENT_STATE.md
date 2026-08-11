@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: 2026-08-11 — RC10.5 / PR #120 is accepted and merged as `df138ebbdde1fa0f30f4003e1a158b3419a3d3fe`; RUN-186 implements the first bounded RC10.6 UX-polish increment.
+Last reconciled: 2026-08-11 — RC10.5 / PR #120 is accepted and merged as `df138ebbdde1fa0f30f4003e1a158b3419a3d3fe`; PR #121 RC10.6 is under exact-head CI revalidation after RUN-187 bounded startup remediation.
 
 ## Executive status
 
@@ -17,13 +17,13 @@ Last reconciled: 2026-08-11 — RC10.5 / PR #120 is accepted and merged as `df13
 
 DTMO is **not production ready**.
 
-## RUN-186 / RC10.6
+## RUN-187 / RC10.6
 
-The first RC10.6 increment adds GET-only `/ui/preferences` for browser-local theme and density preferences. Theme is constrained to dark/light and density to comfortable/compact; invalid stored values fall back to safe defaults. The surface introduces no server-side preference mutation API.
+Exact PR #121 head `c81f9d77a7e91e0706a1c96fd417a1c454cebf3b` failed the workflow matrix and is not accepted. The first inspected concrete failure was application startup: `/metrics` referenced nonexistent `Permission.READ_METRICS`, causing FastAPI import to abort before browser gates could execute.
 
-This is presentation state only. It cannot grant or imply intelligence, source/connector, security, review, publication, audit or external share-approval authority. Existing server-side RBAC, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative.
+The bounded remediation restores `backend/dtmo/main.py` to accepted RC10.5 health, connectors and metrics behavior while retaining only the intended RC10.6 preferences-router import and mount. The GET-only `/ui/preferences` remains browser-local presentation state and introduces no server-side preference mutation API.
 
-Acceptance requires the dedicated RC10.6 regression gate plus full success of every registered workflow on one exact PR head.
+This remediation does not alter server-side RBAC, separation of duties, privacy, provenance, auditability, human review or separate external share approval. Acceptance still requires full success of every registered workflow on one later exact PR head.
 
 ## External blockers
 
@@ -31,4 +31,4 @@ No approved real staging endpoint/environment identity and no complete ten-class
 
 ## Exactly one current priority
 
-Open the RC10.6 pull request and complete full exact-head CI validation for RUN-186. Merge only on complete success; otherwise remediate only the first concrete failing root cause.
+Complete full exact-head CI validation for the remediated PR #121 head. Merge only on complete success; otherwise remediate only the first concrete failing root cause.
