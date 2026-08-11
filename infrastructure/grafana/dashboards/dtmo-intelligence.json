@@ -1,0 +1,92 @@
+{
+  "annotations": {"list": []},
+  "editable": false,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {"type": "postgres", "uid": "dtmo-postgres-readonly"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 0},
+      "id": 1,
+      "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+      "targets": [{"format": "table", "rawQuery": true, "rawSql": "SELECT count(*) AS value FROM dtmo_reporting.intelligence_items_safe WHERE $__timeFilter(discovered_at)", "refId": "A"}],
+      "title": "Intelligence in selected period",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "dtmo-postgres-readonly"},
+      "fieldConfig": {"defaults": {"unit": "percent"}, "overrides": []},
+      "gridPos": {"h": 5, "w": 6, "x": 6, "y": 0},
+      "id": 2,
+      "options": {"colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "auto"},
+      "targets": [{"format": "table", "rawQuery": true, "rawSql": "SELECT round(avg(confidence_score)::numeric, 1) AS value FROM dtmo_reporting.intelligence_items_safe WHERE $__timeFilter(discovered_at)", "refId": "A"}],
+      "title": "Average confidence",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "dtmo-postgres-readonly"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 5},
+      "id": 3,
+      "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "single", "sort": "none"}},
+      "targets": [{"format": "time_series", "rawQuery": true, "rawSql": "SELECT $__timeGroupAlias(discovered_at, '1d'), count(*)::double precision AS value FROM dtmo_reporting.intelligence_items_safe WHERE $__timeFilter(discovered_at) GROUP BY 1 ORDER BY 1", "refId": "A"}],
+      "title": "Intelligence trend",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "dtmo-postgres-readonly"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 5},
+      "id": 4,
+      "options": {"showHeader": true},
+      "targets": [{"format": "table", "rawQuery": true, "rawSql": "SELECT severity, count(*) AS count FROM dtmo_reporting.intelligence_items_safe WHERE $__timeFilter(discovered_at) GROUP BY severity ORDER BY count DESC", "refId": "A"}],
+      "title": "Severity distribution",
+      "type": "table"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "dtmo-postgres-readonly"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 13},
+      "id": 5,
+      "options": {"showHeader": true},
+      "targets": [{"format": "table", "rawQuery": true, "rawSql": "SELECT source_id, count(*) AS count FROM dtmo_reporting.intelligence_items_safe WHERE $__timeFilter(discovered_at) GROUP BY source_id ORDER BY count DESC LIMIT 10", "refId": "A"}],
+      "title": "Top sources",
+      "type": "table"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "dtmo-postgres-readonly"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 13},
+      "id": 6,
+      "options": {"showHeader": true},
+      "targets": [{"format": "table", "rawQuery": true, "rawSql": "SELECT review_status, count(*) AS count FROM dtmo_reporting.intelligence_items_safe WHERE $__timeFilter(discovered_at) GROUP BY review_status ORDER BY count DESC", "refId": "A"}],
+      "title": "Review status",
+      "type": "table"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "dtmo-postgres-readonly"},
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 13},
+      "id": 7,
+      "options": {"showHeader": true},
+      "targets": [{"format": "table", "rawQuery": true, "rawSql": "SELECT health_status, count(*) AS count FROM dtmo_reporting.connector_health_safe GROUP BY health_status ORDER BY count DESC", "refId": "A"}],
+      "title": "Connector health",
+      "type": "table"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "tags": ["dtmo", "intelligence", "read-only"],
+  "templating": {"list": []},
+  "time": {"from": "now-7d", "to": "now"},
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "DTMO Intelligence",
+  "uid": "dtmo-intelligence",
+  "version": 1,
+  "weekStart": ""
+}
