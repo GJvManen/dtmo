@@ -9,6 +9,23 @@ services:
         condition: service_healthy
     restart: "no"
 
+  grafana-db-provision:
+    build: .
+    command: ["python", "tools/provision_grafana_reader.py"]
+    env_file:
+      - .env
+    environment:
+      GRAFANA_DB_PASSWORD: ${GRAFANA_DB_PASSWORD:?Set a strong dedicated Grafana database reader password outside source control}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+
   api:
     build: .
     ports:
@@ -109,6 +126,7 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?Set a non-default Grafana administrative user outside source control}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set a strong Grafana administrative password outside source control}
+      GRAFANA_DB_PASSWORD: ${GRAFANA_DB_PASSWORD:?Set a strong dedicated Grafana database reader password outside source control}
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_AUTH_ANONYMOUS_ENABLED: "false"
       GF_SECURITY_ALLOW_EMBEDDING: "true"
@@ -119,7 +137,10 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_started
+      grafana-db-provision:
+        condition: service_completed_successfully
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
