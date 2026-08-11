@@ -22,7 +22,7 @@ A catalog entry is **connected** only when its execution status is `supported` o
 | Mozilla Security Advisories | `mozilla-mfsa-v1` | CONNECTED | Registry bootstrap -> enable -> bounded first-party Mozilla MFSA index/detail documents -> published CVE validation |
 | Fortinet PSIRT | `fortinet-psirt-v1` | CONNECTED | Registry bootstrap -> enable -> bounded FortiGuard PSIRT FG-IR index/detail documents -> published CVE validation |
 | Palo Alto Networks Security Advisories | `rss-2.0` | CONNECTED | Registry bootstrap -> enable -> official Palo Alto Networks `/rss.xml` advisory feed |
-| Broadcom/VMware Security Advisories | `broadcom-vmware-vmsa-v1` | PENDING_CI | Registry bootstrap -> enable -> Broadcom VMware Security Advisories landing page -> bounded first-party VMSA detail documents -> published CVE validation |
+| Broadcom/VMware Security Advisories | `broadcom-vmware-vmsa-v1` | CONNECTED | Registry bootstrap -> enable -> Broadcom VMware Security Advisories landing page -> bounded first-party VMSA detail documents -> published CVE validation |
 | ENISA Threat Landscape | `research-publication` | RESEARCH_REFERENCE | Deliberately not a high-frequency ingestion feed |
 
 ## Enforced contract
@@ -31,6 +31,8 @@ A catalog entry is **connected** only when its execution status is `supported` o
 
 Credential values are never stored in the catalog or source registry. Credentialed catalog entries carry only a logical secret reference such as `env:CISCO_OPENVULN_TOKEN`; execution fails closed when the referenced runtime secret is absent or the reference scheme is not accepted.
 
-## Remaining onboarding order
+## RC12 console operations
 
-Broadcom/VMware is the final currently catalogued vendor source in the RC11 onboarding set. After its exact-head acceptance, the next roadmap priority moves from source onboarding to unified console administration and visual analytics while preserving the source-framework contract.
+The RC11 vendor onboarding set is complete. RC12 moves the roadmap to one canonical operator surface. The unified console must expose registration, enable/disable, interval management, validation and manual execution through the existing governed admin APIs without creating separate product URLs or weakening server-side RBAC.
+
+The remaining major product work is visual analytics/dashboard depth and additional administration/diagnostics, not missing execution adapters for the current operational vendor catalog.
