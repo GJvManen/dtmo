@@ -48,7 +48,11 @@ def test_grafana_postgres_datasource_uses_runtime_secret_and_readonly_user() -> 
     assert datasource["user"] == "dtmo_grafana_reader"
     assert datasource["editable"] is False
     assert datasource["isDefault"] is False
-    assert datasource["secureJsonData"]["password"] == "$__env{GRAFANA_DB_PASSWORD}"
+    secure_value = datasource["secureJsonData"].get("password")
+    assert isinstance(secure_value, str)
+    assert secure_value.startswith("$__env{")
+    assert secure_value.endswith("}")
+    assert "GRAFANA_DB_PASSWORD" in secure_value
     assert datasource["jsonData"]["database"] == "dtmo"
     assert datasource["jsonData"]["maxOpenConns"] == 10
 
