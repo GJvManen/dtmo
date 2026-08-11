@@ -2,7 +2,7 @@
 
 Status: maintained release contract
 
-A catalog entry is **connected** only when its execution status is `supported` or `supported-built-in`, its execution profile has an accepted executor, it can be reached through the unified console/bootstrap flow (or the explicit built-in path), and regression tests preserve provenance and fail-closed behaviour.
+A catalog entry is **connected** only when its execution status is `supported` or `supported-built-in`, its execution profile has an accepted adapter in the unified source framework, it can be reached through the unified console/bootstrap flow (or the explicit built-in path), and regression tests preserve provenance and fail-closed behaviour.
 
 | Source | Profile | Status | Execution path |
 |---|---|---|---|
@@ -13,8 +13,8 @@ A catalog entry is **connected** only when its execution status is `supported` o
 | NCSC-NL Security Advisories RSS | `rss-2.0` | CONNECTED | Registry bootstrap -> enable -> run |
 | CERT-EU Security Advisories | `cert-eu-advisories-v1` | CONNECTED | Registry bootstrap -> enable -> official year index + per-advisory JSON |
 | Microsoft Security Response Center | `msrc-cvrf-v3` | CONNECTED | Registry bootstrap -> enable -> official MSRC `/updates` + `/cvrf/{id}` API |
-| Cisco Security Advisories | `cisco-openvuln-v2` | PENDING_CI | Registry bootstrap -> inject `env:CISCO_OPENVULN_TOKEN` -> enable -> official Cisco PSIRT OpenVuln `/latest/25` |
-| Red Hat Product Security | `vendor-redhat` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
+| Cisco Security Advisories | `cisco-openvuln-v2` | CONNECTED | Registry bootstrap -> inject `env:CISCO_OPENVULN_TOKEN` -> enable -> official Cisco PSIRT OpenVuln `/latest/25` |
+| Red Hat Product Security | `redhat-csaf-v1` | PENDING_CI | Registry bootstrap -> enable -> official Red Hat Security Data API `/csaf.json` + `/csaf/{RHSA}.json` |
 | Ubuntu Security Notices | `vendor-ubuntu` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | Debian Security Information | `vendor-debian` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | Apple Security Releases | `vendor-apple` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
@@ -27,10 +27,10 @@ A catalog entry is **connected** only when its execution status is `supported` o
 
 ## Enforced contract
 
-`backend/tests/test_rc9_safe_source_execution.py` requires every `supported` catalog execution profile to exist in the union of the anonymous registry executor profiles and credentialed executor profiles. A source therefore cannot be promoted to `supported` without an explicit governed execution path. `supported-built-in` remains separately constrained to the CISA KEV built-in path.
+`backend/tests/test_rc11_1_source_framework.py` requires every `supported` catalog execution profile to exist in the unified `SourceAdapterRegistry`. A source therefore cannot be promoted to `supported` without an explicit governed execution path. `supported-built-in` remains separately constrained to the CISA KEV built-in path.
 
 Credential values are never stored in the catalog or source registry. Credentialed catalog entries carry only a logical secret reference such as `env:CISCO_OPENVULN_TOKEN`; execution fails closed when the referenced runtime secret is absent or the reference scheme is not accepted.
 
 ## Remaining onboarding order
 
-After Cisco acceptance, remaining operational vendor sources are onboarded one by one against official machine-readable APIs/feeds where available. A vendor source stays fail-closed as `planned-parser` until its endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
+After Red Hat acceptance, Ubuntu and Debian are next. Remaining vendor sources are onboarded one by one against official machine-readable APIs/feeds where available. A vendor source stays fail-closed as `planned-parser` until its endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
