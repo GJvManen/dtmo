@@ -15,6 +15,7 @@ from defusedxml import ElementTree as ET
 
 from dtmo.cert_eu_adapter import CERTEUAdapterError, parse_cert_eu_document, parse_cert_eu_listing
 from dtmo.connectors.base import ConnectorRecord, ConnectorResult
+from dtmo.msrc_adapter import MSRCAdapterError, parse_msrc_cvrf_document, parse_msrc_update_ids
 from dtmo.ncsc_csaf_adapter import CSAFAdapterError, parse_csaf_document, parse_csaf_index
 from dtmo.source_catalog import catalog_by_id
 from dtmo.sources import SourceDefinition, validate_source_url
@@ -27,6 +28,7 @@ SUPPORTED_REGISTRY_EXECUTION_PROFILES = frozenset(
         "rss-2.0",
         "csaf-2.0",
         "cert-eu-advisories-v1",
+        "msrc-cvrf-v3",
     }
 )
 
@@ -389,6 +391,32 @@ def _execute_cert_eu_sync(source: SourceDefinition, *, timeout: float) -> list[C
     return records
 
 
+def _execute_msrc_sync(source: SourceDefinition, *, timeout: float) -> list[ConnectorRecord]:
+    base = source.endpoint_url.rstrip("/")
+    updates_url = f"{base}/updates"
+    try:
+        update_ids = parse_msrc_update_ids(_fetch_json_sync(updates_url, timeout=timeout))
+    except MSRCAdapterError as exc:
+        raise SourceExecutionError(str(exc)) from exc
+    records: list[ConnectorRecord] = []
+    for update_id in update_ids:
+        document_url = f"{base}/cvrf/{update_id}"
+        payload = _fetch_json_sync(document_url, timeout=timeout)
+        try:
+            record = parse_msrc_cvrf_document(
+                payload,
+                update_id=update_id,
+                reliability=source.reliability,
+                document_url=document_url,
+            )
+        except MSRCAdapterError as exc:
+            raise SourceExecutionError(str(exc)) from exc
+        records.append(record)
+    if not records:
+        raise SourceExecutionError("MSRC CVRF distribution produced no security-update records")
+    return records
+
+
 async def execute_registered_source(
     source: SourceDefinition, *, timeout_seconds: float = 20.0
 ) -> ConnectorResult:
@@ -404,8 +432,14 @@ async def execute_registered_source(
             if catalog and catalog.execution_status == "supported"
             else "dtmo-json-v1"
         )
-        if catalog and catalog.execution_status == "supported" and profile not in SUPPORTED_REGISTRY_EXECUTION_PROFILES:
-            raise SourceExecutionError(f"supported catalog profile has no governed executor: {profile}")
+        if (
+            catalog
+            and catalog.execution_status == "supported"
+            and profile not in SUPPORTED_REGISTRY_EXECUTION_PROFILES
+        ):
+            raise SourceExecutionError(
+                f"supported catalog profile has no governed executor: {profile}"
+            )
         if profile == "csaf-2.0":
             records = await asyncio.to_thread(
                 _execute_ncsc_csaf_sync, source, timeout=timeout_seconds
@@ -413,6 +447,10 @@ async def execute_registered_source(
         elif profile == "cert-eu-advisories-v1":
             records = await asyncio.to_thread(
                 _execute_cert_eu_sync, source, timeout=timeout_seconds
+            )
+        elif profile == "msrc-cvrf-v3":
+            records = await asyncio.to_thread(
+                _execute_msrc_sync, source, timeout=timeout_seconds
             )
         elif profile == "rss-2.0":
             payload = await asyncio.to_thread(
