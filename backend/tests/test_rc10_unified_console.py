@@ -26,7 +26,9 @@ def test_catalog_is_not_hidden_and_run_flow_uses_existing_governed_endpoints() -
     assert "/api/v1/admin/sources/catalog/bootstrap" in text
     assert "/api/v1/admin/sources/${encodeURIComponent(id)}/run" in text
     assert "/connectors/${encodeURIComponent(id)}/run" in text
-    assert "Adapter nog niet geïmplementeerd" in text
+    assert "/api/v1/admin/sources/${encodeURIComponent(id)}/validate" in text
+    assert "interval_seconds" in text
+    assert "enabled" in text
 
 
 def test_visual_analytics_and_governance_boundary_are_integrated() -> None:
