@@ -20,13 +20,19 @@ flowchart LR
     API --> RD[(Redis)]
     API --> OBJ[(Object evidence storage)]
 
-    API --> PM[Prometheus]
-    PM --> GF[Grafana]
-    PG -->|explicit reporting views| GF
-
     USER[Analyst / Admin / CISO / Auditor] --> CONSOLE[Unified DTMO console]
     CONSOLE --> API
     CONSOLE --> NATIVE[Native DTMO analytics]
+    CONSOLE --> RBAC[Governed principal / role administration]
+    RBAC --> PG
+
+    IDP[External identity provider / token issuer] --> TOKEN[Signed bearer token]
+    TOKEN --> API
+    RBAC -. reconciliation / token reissue .-> IDP
+
+    API --> PM[Prometheus]
+    PM --> GF[Grafana]
+    PG -->|explicit reporting views| GF
     OPS[Authenticated operations/admin] --> GW[Nginx gateway]
     GW -->|/grafana/| GF
 
@@ -55,39 +61,57 @@ The canonical browser product is the **unified DTMO console**. Legacy role/works
 
 | Component | Responsibility |
 |---|---|
-| PostgreSQL 17 | relational application state, governance state and explicit Grafana reporting views |
+| PostgreSQL 17 | relational application state, managed principal/role assignments, governance state and explicit Grafana reporting views |
 | OpenSearch 2.19 | intelligence search/index state |
 | Redis 8 | cache/queue and runtime coordination state |
 | S3-compatible AIStor/MinIO interface | object/evidence storage |
 
-### 5. Observability and analytics
+RC13.3 adds `managed_principals` and `managed_role_assignments` to PostgreSQL through migration `0009_managed_rbac_assignments` after the accepted RC12 reporting-view migration.
+
+### 5. Identity and RBAC administration
+
+Production bearer tokens are externally issued and cryptographically validated for issuer, audience, signature, known role values, principal type and token state. DTMO does not operate an internal production token issuer in the current baseline.
+
+RC13.3 therefore separates two concepts:
+
+1. **managed principal/role state** — auditable provisioning/assignment records maintained in DTMO by an authorized human administrator;
+2. **active bearer-token claims** — trusted claims issued by the configured external identity provider.
+
+Changing managed assignment state does not silently rewrite an already issued token. A production role change requires identity-provider reconciliation or token reissue before the external bearer claim changes.
+
+Built-in roles and permissions remain defined by `Role` and `ROLE_PERMISSIONS`. The browser cannot invent arbitrary custom token roles. Machine/service principals remain restricted to `service_account`, while human principals cannot use that role.
+
+RBAC administration requires both `manage:users` and a human `admin` role. The current administrator cannot mutate their own managed assignment, and the last active managed administrator cannot be deactivated or stripped of the admin role. Allowed mutations are written to the persistent tamper-evident audit chain with request correlation.
+
+### 6. Observability and analytics
 
 Prometheus collects bounded application/operational metrics. Grafana provides authenticated DTMO Operations and DTMO Intelligence dashboards for operational/advanced deployment use.
 
-Grafana intelligence access uses a **dedicated least-privilege database reader** restricted to explicit reporting views. It does not reuse the DTMO application database identity. Anonymous Grafana access and Grafana self-signup are disabled.
+Grafana intelligence access uses a dedicated least-privilege database reader restricted to explicit reporting views. Anonymous Grafana access and Grafana self-signup are disabled.
 
-Normal product analytics are **native DTMO chart/table views** backed by the DTMO application APIs. RC13.2 makes those native views the canonical Visual analytics surface and removes the separately authenticated Grafana embed from normal console use. This prevents a broken second-login journey without weakening Grafana authentication.
+Normal product analytics are **native DTMO chart/table views** backed by application APIs. RC13.2 makes those native views the canonical Visual analytics surface and removes the separately authenticated Grafana embed from normal console use.
 
-The Nginx gateway may continue to expose `/grafana/` for explicitly authenticated operations/admin use. That gateway path is not publication authority and is not a prerequisite for normal console analytics.
+### 7. Browser and gateway boundary
 
-### 6. Browser and gateway boundary
+The canonical product browser boundary is the FastAPI/unified-console session and its server-side authorization model. Native Visual analytics and governed Administration use that application boundary.
 
-The canonical product browser boundary is the FastAPI/unified-console session and its server-side authorization model. Native Visual analytics remain on that same application boundary.
+The Administration UI is not an authorization authority by itself. Server-side permission/role checks, persistence constraints and audit rules are authoritative even when client-side controls are disabled for usability.
 
 Nginx remains available as a managed deployment gateway and can expose the authenticated Grafana operational surface. The gateway and presentation layer do not grant application authority, publication authority or a role upgrade.
 
-### 7. Governance and approval
+### 8. Governance and approval
 
 Security-sensitive authorities are deliberately separated:
 
 - source administration and execution;
+- managed identity/role administration;
 - intelligence analysis;
 - human review;
 - external share approval;
 - audit/read-only access;
 - CISO/security administration.
 
-Technical execution, CI success, connector access, dashboard access or staging access cannot authorize publication or external sharing.
+Technical execution, Administration access, CI success, connector access, dashboard access or staging access cannot authorize publication or external sharing.
 
 ## Principal technology stack
 
@@ -108,41 +132,45 @@ Technical execution, CI success, connector access, dashboard access or staging a
 Important trust boundaries are:
 
 1. external provider networks → connector/source ingress;
-2. unauthenticated client → authenticated application boundary;
-3. authenticated role → privileged administrative/review/share actions;
-4. application → database/search/cache/object services;
-5. Grafana → explicit least-privilege reporting boundary;
-6. canonical browser → FastAPI/unified-console native analytics boundary;
-7. authenticated operations/admin browser → Nginx/Grafana operational boundary;
-8. repository CI/emulator → real staging/production environment;
-9. technical execution → human publication/share authority.
-
-## Reliability and resilience
-
-Connector behavior has explicit state, retry, timeout, replay, freshness and failure-isolation controls. Repository-controlled recovery gates cover multi-store migration/recovery behavior and integrity checks.
-
-This engineering evidence does not replace the external requirement for a production-equivalent backup/restoration exercise or a real staging acceptance decision.
+2. external identity provider/token issuer → bearer-token trust validation;
+3. unauthenticated client → authenticated application boundary;
+4. authenticated role → privileged administration/review/share actions;
+5. managed assignment state → external identity-provider reconciliation/token reissue;
+6. application → database/search/cache/object services;
+7. Grafana → explicit least-privilege reporting boundary;
+8. canonical browser → FastAPI/unified-console native analytics and Administration boundary;
+9. repository CI/emulator → real staging/production environment;
+10. technical execution → human publication/share authority.
 
 ## CI and release architecture
 
 The release process is exact-head gated. Pull requests pass registered quality, security, connector, recovery, performance, browser/accessibility, observability and functional-console workflows before expected-head protected merge.
 
-RC13 adds browser-tested product journeys because component/presence tests alone were insufficient to establish functional usability. Synthetic browser fixtures prove console behavior only; they do not replace owner-observed local/live acceptance or later external staging validation.
+RC13.3 adds a dedicated governed Administration/RBAC gate with persistent/security contracts plus a Chromium create/update/deactivate journey. Synthetic browser fixtures prove interface behavior only; they do not replace owner-observed local/live acceptance or later external staging validation.
 
 ## Current acceptance boundary
 
-Phases 1–7 are accepted. Phase 6's final external/manual blocker was closed by accountable project-owner acceptance on 2026-08-11.
+Phases 1–7 are accepted. RC13 is `BLOCKED_INTERNAL`.
 
-RC13 is `BLOCKED_INTERNAL`. RC13.1 is accepted via PR #151. RC13.2 single-session Visual analytics is the current priority. Phase 8 is `PAUSED_PENDING_RC13` and may only resume after RC13.5 completes the full canonical-console browser acceptance.
+- RC13.1: accepted via PR #151.
+- RC13.2: accepted via PR #152, merge `b8c254c5d099cde5dca624aa85b17c320594847e`.
+- RC13.3: current `PENDING_CI` priority.
+- RC13.4/13.5: pending.
+- Phase 8: `PAUSED_PENDING_RC13`.
 
 ## Security invariants
 
 - RBAC and least privilege;
+- known code-controlled roles and permissions;
+- strict human/service-account role separation;
+- human-admin + `manage:users` required for managed assignment mutations;
+- administrator self-management and final-admin lockout protections;
+- identity-provider reconciliation for production bearer-token claim changes;
 - separation of duties;
 - human share approval separate from review and technical access;
 - provenance and confidence preservation;
 - privacy and data minimization;
 - auditable state transitions and request correlation;
 - no secret values in repository evidence;
-- no automatic publication from CI, connectors, recovery, analytics or runtime success;
+- no automatic publication from CI, connectors, recovery, analytics, Administration or runtime success;
 - no anonymous Grafana access or authentication bypass for convenience.
