@@ -19,9 +19,9 @@ Do not begin or credit Phase 8 external validation until all of the following ar
 3. RC13.3 governed Administration/RBAC is accepted;
 4. RC13.4 Governance knowledge surface is accepted;
 5. RC13.5 complete canonical-console browser acceptance succeeds on one exact head;
-6. the project owner confirms the repaired product is functionally suitable to move to external staging validation.
+6. the project owner explicitly confirms by functional retest that the repaired local product is suitable to move to external staging validation.
 
-RC13.1 is accepted via PR #151. RC13.2 is accepted via PR #152 (`b8c254c5d099cde5dca624aa85b17c320594847e`). RC13.3 is accepted via PR #153 (`2e1029a43f7b44d8525fb89197d0a10458a3e992`). **RC13.4 Governance knowledge is now the current priority**, so the Phase 8 entry condition remains unmet.
+RC13.1–RC13.4 are accepted via PRs #151–#154. RC13.4 merged as `21672aaf1cf097228699810660eaac167da842d6` after complete exact-head success on `0a227cb9f3972504287a6f7f064d6df18b76fbed`. **RC13.5 is now the current priority**, and no owner retest of the complete repaired product has yet been recorded, so the Phase 8 entry condition remains unmet.
 
 ## Required external evidence
 
@@ -42,7 +42,7 @@ When the entry condition is met, all evidence must be tied to the **same immutab
 
 Phase 8 becomes `PASS` only when the RC13 entry condition is complete and all ten evidence classes are reviewable and consistently tied to one immutable staging deployment identity.
 
-Missing, stale, inaccessible, contradictory or inferred evidence blocks acceptance. Repository CI, Docker Compose, staging-emulator configuration and application-container smoke tests are supporting engineering evidence only and cannot substitute for a real deployed environment.
+Missing, stale, inaccessible, contradictory or inferred evidence blocks acceptance. Repository CI, Docker Compose, staging-emulator configuration and application-container smoke tests are supporting engineering evidence only and cannot substitute for the accountable owner functional retest or a real deployed environment.
 
 ## Identity/RBAC staging requirement
 
@@ -62,4 +62,4 @@ The canonical Governance surface must remain read-only and preserve the accepted
 
 ## Exactly one next priority
 
-Phase 8 has **no executable next action while paused**. The project priority is **RC13.4 — repository-backed Governance knowledge** under issue #150 and the RC13 functional console acceptance gate.
+Phase 8 has **no executable next action while paused**. The project priority is **RC13.5 — complete exact-head canonical-console browser acceptance, followed by accountable project-owner functional retest** under issue #150.
