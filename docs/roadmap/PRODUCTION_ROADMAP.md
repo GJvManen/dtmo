@@ -32,9 +32,9 @@ Cisco PSIRT OpenVuln, MSRC, CERT-EU and NCSC-NL adapters were accepted immediate
 4. **RC12.4 Grafana embedding in the unified console** — `PASS`; PR #145.
 5. **RC12.5a same-origin Grafana gateway foundation** — `PASS`; PR #146.
 6. **RC12.5b same-origin Grafana console switch** — `PASS`; PR #147; exact head `339207dd5ad038727da34e0a0058c74076847eea`, merge `6e74c5e45b6683e1fceba3ff14f554e36815b95f`.
-7. **RC12.6 programme close-out and authoritative documentation reconciliation** — `PENDING_CI` in the current close-out PR. It may only become `PASS` on a fully green exact head.
+7. **RC12.6 programme close-out and authoritative documentation reconciliation** — `PASS`; PR #148 exact head `17c914af8a579c813b82849bab773b4449e8f178` completed the complete returned workflow set successfully and merged as `8e614abc0277025957cab433c0e824c25dbb7eeb`.
 
-RC12 does not collapse authority boundaries. Source administration, security/token administration, human review, external share approval and audit remain separately governed. Presentation preferences, ingestion rights, dashboard access or staging access grant no publication authority. RBAC, separation of duties, privacy, provenance and auditability remain authoritative.
+Issue #125 is closed as `completed`. RC12 does not collapse authority boundaries. Source administration, security/token administration, human review, external share approval and audit remain separately governed. Presentation preferences, ingestion rights, dashboard access or staging access grant no publication authority. RBAC, separation of duties, privacy, provenance and auditability remain authoritative.
 
 ## Remaining external gates
 
@@ -52,4 +52,4 @@ Requires all prior blocking evidence, release/deployment artifacts, proven recov
 
 ## Exactly one next priority
 
-After RC12.6 exact-head CI is accepted, the next production-readiness priority is **Phase 8 real staging deployment parity**. Obtain one approved immutable staging deployment and collect the complete ten-class evidence package. Until that external dependency exists, repository-controlled progress cannot establish staging acceptance or production readiness.
+**Phase 8 real staging deployment parity**. Obtain one approved immutable staging deployment and collect the complete ten-class evidence package. Until that external dependency exists, repository-controlled progress cannot establish staging acceptance or production readiness.
