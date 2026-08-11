@@ -4,7 +4,7 @@
 
 This roadmap separates **repository-controlled engineering acceptance**, **functional product acceptance** and **external staging/assurance/production approval**. A phase is complete only when its own evidence boundary is satisfied.
 
-## Current status — 2026-08-11
+## Current status — 2026-08-12
 
 | Phase | Scope | Status |
 |---|---|---|
@@ -13,42 +13,47 @@ This roadmap separates **repository-controlled engineering acceptance**, **funct
 | 3 | Data integrity and recovery | `PASS` |
 | 4 | Connector reliability and provenance | `PASS` |
 | 5 | Performance and scalability | `PASS` |
-| 6 | Accessibility and operational UX | `PASS` — project-owner manual/external acceptance recorded 2026-08-11 |
+| 6 | Accessibility and operational UX | `PASS` |
 | 7 | Observability and incident operations | `PASS` |
-| RC13 | Functional unified-console acceptance | `AWAITING_OWNER_RETEST` — RC13.1–RC13.5 repository evidence complete |
-| 8 | Real staging acceptance | `PAUSED_PENDING_RC13_OWNER_RETEST` |
+| RC13 | Functional unified-console acceptance | `PASS` — owner acceptance recorded 2026-08-12 |
+| 8 | Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
 | 9 | Independent external assurance | `NOT COMPLETE` |
 | 10 | Production go/no-go | `NOT STARTED` |
 
 DTMO is **not production ready**.
 
-## Why RC13 was inserted
+## RC13 closure
 
-A project-owner functional test on 2026-08-11 identified product gaps that earlier component/presence tests did not catch. The earlier Phase 8 `READY_FOR_EXTERNAL_VALIDATION` claim was withdrawn and issue #150 became authoritative for the remediation.
+A project-owner functional test on 2026-08-11 identified product gaps that earlier component/presence tests did not catch. RC13 repaired the source-to-intelligence path, native analytics, Administration/RBAC and Governance surfaces, then proved the integrated canonical browser journey in RC13.5.
 
-## Accepted RC13 slices
+On 2026-08-12 the project owner explicitly accepted the repaired product with `RC13 owner retest akkoord`. RC13 is `PASS` and issue #150 is closed.
 
-- **RC13.1 — PASS.** PR #151 merged as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2`.
-- **RC13.2 — PASS.** PR #152 merged as `b8c254c5d099cde5dca624aa85b17c320594847e`.
-- **RC13.3 — PASS.** PR #153 merged as `2e1029a43f7b44d8525fb89197d0a10458a3e992`.
-- **RC13.4 — PASS.** PR #154 merged as `21672aaf1cf097228699810660eaac167da842d6`.
-- **RC13.5 — PASS within the repository-controlled evidence boundary.** PR #155 merged as `d6f83557ab18d26f82ad6289b1b95f728346631d`. Exact head `56805ec4ead5a14e9a2f776f84df42eb772302a4` completed the full returned workflow matrix successfully, including RC4 Quality Gate #815, RC13 Full Functional Console Acceptance Gate #1 and all returned RC13 regression gates.
+## Phase 8 — active external staging gate
 
-RC13.5 proved one Chromium browser context through:
+Phase 8 is now open for execution. Readiness to execute is not acceptance.
 
-**Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
+### Phase 8.1 — external deployment identity
 
-## Remaining RC13 acceptance action
+Before any deployed-environment test can be credited, establish one approved production-equivalent staging environment and immutable deployment identity.
 
-Synthetic browser evidence cannot itself close RC13. The accountable project owner must functionally retest the repaired local canonical product and explicitly accept or report remaining blockers.
+Required identity evidence begins with:
 
-If accepted, RC13 may close and Phase 8 can return to external-validation readiness. If a blocker remains, RC13 stays open and the finding becomes the next repair priority.
+1. approved environment identifier and accountable owner;
+2. reachable approved endpoint;
+3. deployed release/commit and immutable application/container digests;
+4. infrastructure/runtime inventory and configuration-parity record.
 
-## Phase 8 — paused external staging gate
+The complete evidence classes are defined in `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`. Intake is fail-closed in `docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`.
 
-Phase 8 requires one immutable real staging deployment identity and the deployment-parity evidence classes defined in `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`. External activity is paused only because the owner functional retest remains outstanding.
+Current Phase 8.1 decision: `PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`.
 
-Repository CI, Docker Compose, staging emulators and component smoke tests remain supporting engineering evidence only.
+Repository CI, Docker Compose, staging emulators and source-controlled readiness contracts cannot by themselves establish a real staging deployment.
+
+### Later Phase 8 evidence
+
+After the immutable deployment identity is established, Phase 8 must validate secrets/identity, TLS/network restrictions, data handling, deployment/change evidence, rollback, deployment-time security review and the required smoke/integration/migration/connector/recovery/performance/accessibility/observability journeys against that same deployment.
+
+Phase 8 becomes `PASS` only after the external evidence package and project-owner staging acceptance are complete.
 
 ## Phase 9 — external assurance
 
@@ -60,4 +65,4 @@ Phase 10 is the formal production go/no-go and begins only after all blocking fu
 
 ## Exactly one next priority
 
-**Accountable project-owner functional retest of the repaired canonical console.**
+**Phase 8.1 — establish and record the approved production-equivalent staging environment and immutable deployment identity.**
