@@ -242,7 +242,7 @@ def _parse_dtmo_json(payload: Any, reliability: str) -> list[ConnectorRecord]:
     return records
 
 
-def _rss_text(item: ET.Element, tag: str) -> str:
+def _rss_text(item: Any, tag: str) -> str:
     child = item.find(tag)
     return "" if child is None or child.text is None else child.text.strip()
 
