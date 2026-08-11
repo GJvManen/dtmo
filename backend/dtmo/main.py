@@ -25,6 +25,8 @@ from dtmo.frontend import router as frontend_router
 from dtmo.logging import bind_request_context, clear_request_context, configure_logging, correlation_id, get_logger, resolve_correlation_id
 from dtmo.operations_metrics import router as operations_metrics_router
 from dtmo.operations_ui import router as operations_ui_router
+from dtmo.rbac_admin import router as rbac_admin_router
+from dtmo.rc13_administration import router as rc13_administration_router
 from dtmo.rc13_analytics import router as rc13_analytics_router
 from dtmo.scheduler import ScheduledJob, SchedulerService
 from dtmo.source_center import router as source_center_router
@@ -74,8 +76,10 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
-# The unified shell owns the canonical root route. Legacy UI routers remain
-# mounted as compatibility surfaces while the canonical product stays unified.
+# RC13.3 composes governed principal/role administration into the canonical
+# shell without modifying the RC13.1 source/intelligence implementation. These
+# root routes must be registered before the underlying unified-console routes.
+app.include_router(rc13_administration_router)
 app.include_router(unified_console_router)
 # RC13.2 intentionally shadows only the shared CSS route so the canonical
 # console exposes native analytics without a separately authenticated Grafana
@@ -91,6 +95,7 @@ app.include_router(admin_center_router)
 app.include_router(ux_preferences_router)
 app.include_router(intelligence_router)
 app.include_router(admin_sources_router)
+app.include_router(rbac_admin_router)
 app.include_router(admin_ui_router)
 app.include_router(ui_router)
 app.include_router(ciso_ui_router)

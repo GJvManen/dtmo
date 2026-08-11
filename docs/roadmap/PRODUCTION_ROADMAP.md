@@ -15,7 +15,7 @@ This roadmap separates **repository-controlled engineering acceptance**, **funct
 | 5 | Performance and scalability | `PASS` |
 | 6 | Accessibility and operational UX | `PASS` — project-owner manual/external acceptance recorded 2026-08-11 |
 | 7 | Observability and incident operations | `PASS` |
-| RC13 | Functional unified-console acceptance | `BLOCKED_INTERNAL` — remediation in progress |
+| RC13 | Functional unified-console acceptance | `BLOCKED_INTERNAL` — RC13.1/13.2 accepted; RC13.3 current |
 | 8 | Real staging acceptance | `PAUSED_PENDING_RC13` |
 | 9 | Independent external assurance | `NOT COMPLETE` |
 | 10 | Production go/no-go | `NOT STARTED` |
@@ -24,9 +24,9 @@ DTMO is **not production ready**.
 
 ## Why RC13 was inserted
 
-The RC11/RC12 repository-controlled implementation and CI gates established the connector framework, unified console and graphical analytics architecture, but a project-owner functional test of the canonical console on 2026-08-11 identified product gaps that prior presence/contract tests did not catch.
+The RC11/RC12 repository-controlled implementation and CI gates established the connector framework, unified console and analytics architecture, but a project-owner functional test of the canonical console on 2026-08-11 identified product gaps that prior presence/contract tests did not catch.
 
-The earlier Phase 8 `READY_FOR_EXTERNAL_VALIDATION` claim is therefore withdrawn. Issue #150 and `docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md` are authoritative for the remediation.
+The earlier Phase 8 `READY_FOR_EXTERNAL_VALIDATION` claim remains withdrawn. Issue #150 and `docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md` are authoritative for the remediation.
 
 ## Accepted repository-controlled baseline
 
@@ -36,7 +36,7 @@ The accepted engineering baseline remains valid within its original evidence bou
 - canonical unified DTMO console architecture;
 - source registry and execution APIs;
 - PostgreSQL canonical intelligence persistence and OpenSearch search indexing;
-- Prometheus/Grafana observability components;
+- native DTMO analytics plus authenticated Prometheus/Grafana operations components;
 - recovery, performance, browser/accessibility and observability gates;
 - exact-head CI and expected-head protected merge discipline.
 
@@ -48,40 +48,43 @@ RC13 does **not** invalidate those engineering controls. It establishes that a p
 
 Status: `PASS` within the RC13.1 evidence boundary.
 
-PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after the complete exact-head workflow set passed. The accepted browser journey proves:
-
-1. canonical console opens without obsolete compatibility copy;
-2. meaningful Overview statistics are visible;
-3. built-in, framework and research/reference source states are distinguished;
-4. supported framework sources can be registered;
-5. eligible sources can be enabled/configured;
-6. eligible sources can be executed;
-7. fetched records flow through canonical ingestion/indexing;
-8. run/fetched/inserted/indexed status is visible;
-9. resulting recent intelligence appears directly from the canonical database;
-10. Overview statistics update after ingestion.
+PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2`. The accepted browser journey proves source state → register → enable/configure → run → ingest/index → recent canonical intelligence → updated Overview statistics.
 
 ### RC13.2 — single-session visual analytics
 
-Status: `PENDING_CI` / current priority.
+Status: `PASS` within the RC13.2 evidence boundary.
 
-Normal product use must not depend on a separate Grafana authentication step. Native DTMO graphical/statistical analytics are the canonical product surface and must remain fully usable on the same DTMO session/origin used by the console.
+PR #152 merged on 2026-08-11 as `b8c254c5d099cde5dca624aa85b17c320594847e` after the complete exact-head workflow set succeeded. Accepted evidence includes RC4 Quality Gate #805, RC13 Functional Console Browser E2E Gate #6 and RC13 Single-session Visual Analytics Gate #1.
 
-RC13.2 acceptance requires:
+Acceptance proves:
 
-1. severity distribution renders in the canonical Visual analytics view;
-2. source distribution renders;
+1. native severity distribution renders;
+2. native source distribution renders;
 3. connector-health distribution renders;
 4. review-status distribution renders;
 5. normal Visual analytics navigation performs no `/grafana/` request;
-6. the separately authenticated Grafana shell is not user-visible in the canonical console;
+6. no separately authenticated Grafana shell is exposed in the canonical user journey;
 7. Grafana anonymous access remains disabled;
-8. Grafana may remain available as an operational/advanced deployment component, but no authentication bypass or privilege broadening is introduced;
-9. a dedicated exact-head Chromium workflow records machine-readable evidence.
+8. Grafana remains available as a separately authenticated operations/advanced component without an authentication bypass.
 
 ### RC13.3 — Administration/RBAC
 
-Administration must provide governed user/role-assignment management through server-side authorization while preserving least privilege and separation of duties.
+Status: `PENDING_CI` / current priority.
+
+Administration acceptance requires:
+
+1. a persistent managed-principal registry;
+2. persistent role assignments with known built-in `Role` values;
+3. a read-only role/permission catalog derived from server-side policy;
+4. all RBAC mutations protected by `manage:users` and a human `admin` role;
+5. service accounts restricted to the `service_account` role and barred from human/admin combinations;
+6. administrator self-management blocked;
+7. the final active managed admin protected from removal/deactivation;
+8. principal create/update mutations recorded in the existing tamper-evident audit chain with request IDs;
+9. the canonical Administration tab supports create, role update and activate/deactivate flows;
+10. the UI states truthfully that production bearer-token claims require external identity-provider reconciliation/token reissue and are not silently rewritten by DTMO;
+11. arbitrary custom token roles are not introduced through browser input;
+12. a dedicated exact-head Chromium workflow proves the actual Administration flow.
 
 ### RC13.4 — Governance knowledge surface
 
@@ -90,6 +93,12 @@ Governance must present the applicable frameworks and mappings used by the proje
 ### RC13.5 — complete console acceptance
 
 One exact head must pass the complete canonical-console functional browser journey and all registered CI gates. Only after RC13.5 may Phase 8 return to `READY_FOR_EXTERNAL_VALIDATION`.
+
+## Identity-provider boundary
+
+DTMO validates externally issued bearer tokens and does not currently operate an internal production token issuer. RC13.3 managed assignments are therefore governed provisioning/assignment state. They do not mint, forge or rewrite active bearer tokens. Production role changes require identity-provider reconciliation or token reissue before changed claims become active.
+
+This is a deliberate security boundary, not an incomplete authorization shortcut.
 
 ## Phase 6 acceptance
 
@@ -113,4 +122,4 @@ Phase 10 is the formal production go/no-go and begins only after all blocking fu
 
 ## Exactly one next priority
 
-**RC13.2 — complete and exact-head accept single-session native Visual analytics without a separate Grafana login path.**
+**RC13.3 — complete and exact-head accept governed Administration/RBAC in the canonical console.**

@@ -13,7 +13,7 @@ Last updated: **2026-08-11**
 - [x] Phase 7 — observability and incident operations accepted.
 - [ ] RC13 — functional unified-console acceptance complete.
   - [x] RC13.1 — source register/enable/run → ingest/index → recent intelligence → Overview accepted via PR #151.
-  - [ ] RC13.2 — single-session Visual analytics accepted.
+  - [x] RC13.2 — single-session Visual analytics accepted via PR #152.
   - [ ] RC13.3 — governed Administration/RBAC accepted.
   - [ ] RC13.4 — Governance knowledge surface accepted.
   - [ ] RC13.5 — complete canonical-console browser acceptance recorded on one exact head.
@@ -21,17 +21,22 @@ Last updated: **2026-08-11**
 - [ ] Phase 9 — external assurance complete.
 - [ ] Phase 10 — production go/no-go approved.
 
-## RC13.2 — single-session Visual analytics
+## RC13.3 — governed Administration/RBAC
 
-- [ ] Native severity distribution visible in the canonical console.
-- [ ] Native source distribution visible.
-- [ ] Native connector-health distribution visible.
-- [ ] Native review-status distribution visible.
-- [ ] Normal Visual analytics navigation performs no `/grafana/` request.
-- [ ] Separately authenticated Grafana controls are not exposed as a normal product workflow.
-- [x] Grafana anonymous access remains disabled by configuration.
-- [x] Grafana user self-signup remains disabled by configuration.
-- [ ] `RC13 Single-session Visual Analytics Gate` succeeds on the exact final PR head.
+- [ ] `managed_principals` persistence accepted.
+- [ ] `managed_role_assignments` persistence accepted.
+- [ ] Migration `0009_managed_rbac_assignments` accepted after `0008_grafana_reporting_views`.
+- [ ] Built-in role/permission catalog is server-side and immutable from browser input.
+- [ ] RBAC mutations require `manage:users` and a human `admin` role.
+- [ ] Service accounts are restricted to only `service_account`.
+- [ ] Administrator self-management is blocked server-side.
+- [ ] The last active managed admin cannot be removed or deactivated.
+- [ ] Create/update mutations append tamper-evident audit events with request IDs.
+- [ ] Canonical Administration tab can create a principal and assign roles.
+- [ ] Canonical Administration tab can change roles and activate/deactivate a principal.
+- [ ] UI makes identity-provider/token reconciliation requirements explicit.
+- [ ] Active production bearer tokens are never silently rewritten by managed assignment mutations.
+- [ ] `RC13 Governed Administration RBAC Gate` succeeds on the exact final PR head.
 - [ ] Complete registered exact-head workflow set succeeds before merge.
 
 ## Phase 8 — deployment-parity package
@@ -95,4 +100,4 @@ All items must refer to the same immutable `16.0.0rc12` staging deployment ident
 
 Current decision: **NO-GO pending RC13 and Phases 8–10**.
 
-The only current action is RC13.2 single-session Visual analytics. External Phase 8 staging validation remains paused until the complete RC13 functional gate is accepted. Repository CI, local Docker Compose and staging-emulator success do not check external acceptance boxes on behalf of the project owner.
+The only current action is RC13.3 governed Administration/RBAC. External Phase 8 staging validation remains paused until the complete RC13 functional gate is accepted.

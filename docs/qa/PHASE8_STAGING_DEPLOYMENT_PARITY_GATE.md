@@ -8,7 +8,7 @@
 
 Require independently observable, production-equivalent staging deployment evidence before staging acceptance can be declared.
 
-The repository-controlled engineering baseline remains accepted through Phase 7, but the project-owner functional console test on 2026-08-11 inserted RC13 as a blocking product-acceptance programme. The earlier `READY_FOR_EXTERNAL_VALIDATION` handoff is withdrawn until RC13 reaches `PASS`.
+The repository-controlled engineering baseline remains accepted through Phase 7, but project-owner functional testing on 2026-08-11 inserted RC13 as a blocking product-acceptance programme. The earlier `READY_FOR_EXTERNAL_VALIDATION` handoff remains withdrawn until RC13 reaches `PASS`.
 
 ## Entry condition
 
@@ -19,9 +19,9 @@ Do not begin or credit Phase 8 external validation until all of the following ar
 3. RC13.3 governed Administration/RBAC is accepted;
 4. RC13.4 Governance knowledge surface is accepted;
 5. RC13.5 complete canonical-console browser acceptance succeeds on one exact head;
-6. the project owner confirms the product is functionally suitable to move to external staging validation.
+6. the project owner confirms the repaired product is functionally suitable to move to external staging validation.
 
-RC13.1 is already complete via PR #151. RC13.2 is the current priority. The Phase 8 entry condition is therefore not yet met.
+RC13.1 is accepted via PR #151. RC13.2 is accepted via PR #152 (`b8c254c5d099cde5dca624aa85b17c320594847e`). **RC13.3 is now the current priority**, so the Phase 8 entry condition remains unmet.
 
 ## Required external evidence
 
@@ -44,9 +44,9 @@ Phase 8 becomes `PASS` only when the RC13 entry condition is complete and all te
 
 Missing, stale, inaccessible, contradictory or inferred evidence blocks acceptance. Repository CI, Docker Compose, staging-emulator configuration and application-container smoke tests are supporting engineering evidence only and cannot substitute for a real deployed environment.
 
-## Staging validation scope
+## Identity/RBAC staging requirement
 
-After RC13 reopens Phase 8 and the deployment-parity package is established, external staging validation may exercise the relevant application, migration, connector, recovery, performance, accessibility and observability journeys against that immutable release.
+When Phase 8 reopens, the staging deployment must demonstrate that externally issued bearer-token roles reconcile with the governed managed principal/role assignments and the accepted identity-provider process. Staging must not rely on development header-based identity or assume that a database assignment silently rewrites an active bearer token.
 
 ## Governance and privacy
 
@@ -56,10 +56,6 @@ After RC13 reopens Phase 8 and the deployment-parity package is established, ext
 - Secret values, tokens, credentials and unnecessary personal data are excluded from repository evidence.
 - Provenance and immutable deployment identity are mandatory.
 
-## Threat/advisory provenance rule
-
-Evidence class 10 must be produced against the actual immutable staged release and preserve source provenance, review time and confidence for relevant public threat intelligence, CVE data and vendor advisories. A generic or pre-deployment advisory review does not close this class.
-
 ## Exactly one next priority
 
-Phase 8 has **no executable next action while paused**. The project priority remains **RC13.2 — single-session Visual analytics** under issue #150 and the RC13 functional console acceptance gate.
+Phase 8 has **no executable next action while paused**. The project priority is **RC13.3 — governed Administration/RBAC** under issue #150 and the RC13 functional console acceptance gate.

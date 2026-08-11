@@ -18,7 +18,7 @@ DTMO is designed for security operations, threat intelligence, administration an
 - **Unified threat intelligence** — normalized records from official public and vendor security sources.
 - **Governed source framework** — bounded adapters, registration, execution, provenance and connector health.
 - **Threat investigation** — canonical recent intelligence plus governed OpenSearch-backed search.
-- **Operational administration** — source configuration and execution in the canonical console.
+- **Operational administration** — source configuration/execution plus governed principal/role assignment management in the canonical console.
 - **Visual analytics** — native DTMO statistics and charts inside the canonical DTMO session. Grafana remains an authenticated operational/advanced deployment component and is not a prerequisite for normal product analytics.
 - **Auditability and provenance** — source identity, request correlation, retained evidence and controlled state transitions.
 - **Separation of duties** — ingestion, analysis, review and external share approval remain distinct authorities.
@@ -81,9 +81,9 @@ The RC12 implementation passed its repository-controlled tests, but the project-
 
 Current RC13 programme:
 
-1. **RC13.1 — source-to-intelligence path — PASS within its slice boundary.** PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after the complete exact-head workflow set passed. The canonical console now browser-proves register/enable/run → ingest/index → recent intelligence → updated Overview behavior.
-2. **RC13.2 — single-session visual analytics — CURRENT / PENDING_CI.** Native severity, source, connector-health and review-status analytics must work in the DTMO console without a second Grafana login. The canonical user journey must not request `/grafana/`; Grafana anonymous access remains disabled.
-3. **RC13.3 — Administration/RBAC**: governed user/role assignment administration.
+1. **RC13.1 — source-to-intelligence path — PASS within its slice boundary.** PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after the complete exact-head workflow set passed. The canonical console browser-proves register/enable/run → ingest/index → recent intelligence → updated Overview behavior.
+2. **RC13.2 — single-session visual analytics — PASS within its slice boundary.** PR #152 merged on 2026-08-11 as `b8c254c5d099cde5dca624aa85b17c320594847e`; exact-head CI included RC4 Quality Gate #805, RC13 Functional Console Browser E2E Gate #6 and RC13 Single-session Visual Analytics Gate #1. Native analytics are now the canonical user surface and normal Visual analytics use performs no Grafana request/login journey.
+3. **RC13.3 — Administration/RBAC — CURRENT / PENDING_CI.** Add persistent managed principals and role assignments, immutable built-in role/permission catalog, human-admin + `manage:users` authorization, self-management and last-admin lockout protections, tamper-evident audit records, canonical Administration UI and Chromium functional coverage. Production bearer tokens remain externally issued; assignment changes require identity-provider reconciliation/token reissue and never rewrite active tokens.
 4. **RC13.4 — Governance knowledge surface**: Normenkader IBP, MITRE ATT&CK, CVSS and related mappings/control context.
 5. **RC13.5 — full functional browser acceptance**: one complete canonical-console journey on an exact head.
 
@@ -94,6 +94,10 @@ Tracking: [issue #150](https://github.com/GJvManen/dtmo/issues/150) and [`docs/q
 DTMO is built around these invariants:
 
 - role-based access control and least privilege;
+- built-in security roles are code-controlled and cannot be invented through browser input;
+- managed principal/role assignment changes require a human admin with `manage:users`;
+- service accounts cannot combine machine and human/admin roles;
+- administrators cannot change their own managed assignment and the final managed admin cannot be removed/deactivated;
 - review and external share approval are separate human decisions;
 - self-approval is prohibited where separation of duties applies;
 - connectors, service accounts, CI jobs and staging access cannot authorize publication;
@@ -133,6 +137,7 @@ flowchart LR
 | Observability | Request/trace context, alerts, dashboards and runbooks |
 | Functional console | End-to-end UI interaction: source operations → ingest → intelligence → statistics |
 | RC13 single-session analytics | Chromium proof that native analytics render without a Grafana request/login dependency |
+| RC13 governed Administration/RBAC | Persistence, authorization/audit contracts plus canonical Chromium principal/role management journey |
 
 Configured or queued workflows are not acceptance evidence. Missing, failed, cancelled, skipped, stale or inferred evidence is never `PASS`.
 
@@ -152,7 +157,7 @@ Configured or queued workflows are not acceptance evidence. Missing, failed, can
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The only current priority is **RC13.2 — single-session visual analytics**. External staging validation and penetration testing resume only after the complete RC13 functional gate is accepted.
+The only current priority is **RC13.3 — governed Administration/RBAC**. External staging validation and penetration testing resume only after the complete RC13 functional gate is accepted.
 
 ## Repository structure
 
