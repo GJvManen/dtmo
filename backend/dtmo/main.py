@@ -20,6 +20,7 @@ from dtmo.auth.policy import Permission, Principal
 from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
+from dtmo.dashboards import router as dashboards_router
 from dtmo.frontend import router as frontend_router
 from dtmo.logging import bind_request_context, clear_request_context, configure_logging, correlation_id, get_logger, resolve_correlation_id
 from dtmo.operations_metrics import router as operations_metrics_router
@@ -74,6 +75,7 @@ app = FastAPI(title="DTMO API", version="16.0.0rc10", description="Education-foc
 app.include_router(frontend_router)
 app.include_router(operations_ui_router)
 app.include_router(operations_metrics_router)
+app.include_router(dashboards_router)
 app.include_router(threat_workspace_router)
 app.include_router(source_center_router)
 app.include_router(admin_center_router)
