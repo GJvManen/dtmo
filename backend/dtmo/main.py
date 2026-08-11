@@ -8,6 +8,7 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, Request, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
 
+from dtmo.admin_center import router as admin_center_router
 from dtmo.admin_sources import router as admin_sources_router
 from dtmo.admin_ui import router as admin_ui_router
 from dtmo.alerts import connector_alerts
@@ -74,6 +75,7 @@ app.include_router(operations_ui_router)
 app.include_router(operations_metrics_router)
 app.include_router(threat_workspace_router)
 app.include_router(source_center_router)
+app.include_router(admin_center_router)
 app.include_router(intelligence_router)
 app.include_router(admin_sources_router)
 app.include_router(admin_ui_router)
