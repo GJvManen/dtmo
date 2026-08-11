@@ -11,8 +11,8 @@ A catalog entry is **connected** only when its execution status is `supported` o
 | GitHub Global Security Advisories | `github-global-advisories-v1` | CONNECTED | Registry bootstrap -> enable -> run |
 | NCSC-NL Security Advisories CSAF | `csaf-2.0` | CONNECTED | Registry bootstrap -> enable -> official CSAF v2 index/documents |
 | NCSC-NL Security Advisories RSS | `rss-2.0` | CONNECTED | Registry bootstrap -> enable -> run |
-| CERT-EU Security Advisories | `cert-eu-advisories-v1` | PENDING_CI | Registry bootstrap -> enable -> official year index + per-advisory JSON |
-| Microsoft Security Response Center | `vendor-msrc` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
+| CERT-EU Security Advisories | `cert-eu-advisories-v1` | CONNECTED | Registry bootstrap -> enable -> official year index + per-advisory JSON |
+| Microsoft Security Response Center | `msrc-cvrf-v3` | PENDING_CI | Registry bootstrap -> enable -> official MSRC `/updates` + `/cvrf/{id}` API |
 | Cisco Security Advisories | `vendor-cisco` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | Red Hat Product Security | `vendor-redhat` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | Ubuntu Security Notices | `vendor-ubuntu` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
@@ -31,4 +31,4 @@ A catalog entry is **connected** only when its execution status is `supported` o
 
 ## Remaining onboarding order
 
-After CERT-EU acceptance, remaining operational vendor sources are onboarded one by one against official machine-readable APIs/feeds where available. A vendor source stays fail-closed as `planned-parser` until its endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
+After MSRC acceptance, remaining operational vendor sources are onboarded one by one against official machine-readable APIs/feeds where available. A vendor source stays fail-closed as `planned-parser` until its endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
