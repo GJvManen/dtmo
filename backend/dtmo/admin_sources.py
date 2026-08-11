@@ -15,8 +15,8 @@ from dtmo.audit.store import append_persistent_audit_event
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal, Role
 from dtmo.connectors.state import ConnectorStateStore
+from dtmo.credentialed_source_executor import execute_source
 from dtmo.source_catalog import SOURCE_CATALOG
-from dtmo.source_executor import execute_registered_source
 from dtmo.sources import SourceDefinition, SourceRegistry, validate_source_url
 
 router = APIRouter(prefix="/api/v1/admin/sources", tags=["admin-sources"])
@@ -134,7 +134,7 @@ async def bootstrap_supported_sources(
             enabled=False,
             interval_seconds=entry.recommended_interval_seconds,
             reliability=entry.reliability,
-            secret_ref=None,
+            secret_ref=entry.secret_ref,
             actor=principal.subject,
         )
         await _audit(
@@ -248,8 +248,8 @@ async def validate_source(
         "valid": True,
         "source_type": source.source_type,
         "enabled": source.enabled,
-        "execution": "built-in" if source.source_type == "cisa-kev" else "safe-json-adapter",
-        "note": "runtime re-resolves DNS, rejects non-global destinations and redirects, pins TLS to the validated address, and enforces JSON/size bounds",
+        "execution": "built-in" if source.source_type == "cisa-kev" else "governed-adapter",
+        "note": "runtime re-resolves DNS, rejects non-global destinations and redirects, pins TLS to the validated address, enforces response bounds, and resolves credential references without storing secret values in the registry",
     }
 
 
@@ -273,7 +273,7 @@ async def run_registered_source(
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="source is temporarily isolated after repeated failures")
 
     started = datetime.now(UTC)
-    result = await execute_registered_source(source)
+    result = await execute_source(source)
     inserted = 0
     indexed = 0
     if result.status == "completed":

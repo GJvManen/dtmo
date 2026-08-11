@@ -12,8 +12,8 @@ A catalog entry is **connected** only when its execution status is `supported` o
 | NCSC-NL Security Advisories CSAF | `csaf-2.0` | CONNECTED | Registry bootstrap -> enable -> official CSAF v2 index/documents |
 | NCSC-NL Security Advisories RSS | `rss-2.0` | CONNECTED | Registry bootstrap -> enable -> run |
 | CERT-EU Security Advisories | `cert-eu-advisories-v1` | CONNECTED | Registry bootstrap -> enable -> official year index + per-advisory JSON |
-| Microsoft Security Response Center | `msrc-cvrf-v3` | PENDING_CI | Registry bootstrap -> enable -> official MSRC `/updates` + `/cvrf/{id}` API |
-| Cisco Security Advisories | `vendor-cisco` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
+| Microsoft Security Response Center | `msrc-cvrf-v3` | CONNECTED | Registry bootstrap -> enable -> official MSRC `/updates` + `/cvrf/{id}` API |
+| Cisco Security Advisories | `cisco-openvuln-v2` | PENDING_CI | Registry bootstrap -> inject `env:CISCO_OPENVULN_TOKEN` -> enable -> official Cisco PSIRT OpenVuln `/latest/25` |
 | Red Hat Product Security | `vendor-redhat` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | Ubuntu Security Notices | `vendor-ubuntu` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | Debian Security Information | `vendor-debian` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
@@ -27,8 +27,10 @@ A catalog entry is **connected** only when its execution status is `supported` o
 
 ## Enforced contract
 
-`backend/tests/test_rc9_safe_source_execution.py` requires the set of all `supported` catalog execution profiles to match `SUPPORTED_REGISTRY_EXECUTION_PROFILES` in `dtmo.source_executor`. A source therefore cannot be promoted to `supported` without an explicit governed executor. `supported-built-in` is separately constrained to the CISA KEV built-in path.
+`backend/tests/test_rc9_safe_source_execution.py` requires every `supported` catalog execution profile to exist in the union of the anonymous registry executor profiles and credentialed executor profiles. A source therefore cannot be promoted to `supported` without an explicit governed execution path. `supported-built-in` remains separately constrained to the CISA KEV built-in path.
+
+Credential values are never stored in the catalog or source registry. Credentialed catalog entries carry only a logical secret reference such as `env:CISCO_OPENVULN_TOKEN`; execution fails closed when the referenced runtime secret is absent or the reference scheme is not accepted.
 
 ## Remaining onboarding order
 
-After MSRC acceptance, remaining operational vendor sources are onboarded one by one against official machine-readable APIs/feeds where available. A vendor source stays fail-closed as `planned-parser` until its endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
+After Cisco acceptance, remaining operational vendor sources are onboarded one by one against official machine-readable APIs/feeds where available. A vendor source stays fail-closed as `planned-parser` until its endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
