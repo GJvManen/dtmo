@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from typing import Literal
 
+from dtmo.apple_adapter import APPLE_EXECUTION_PROFILE, execute_apple_source
 from dtmo.connectors.base import ConnectorResult
 from dtmo.credentialed_source_executor import (
     CREDENTIALED_EXECUTION_PROFILES,
@@ -52,7 +53,7 @@ class SourceAdapterRegistry:
 def _build_registry() -> SourceAdapterRegistry:
     registry = SourceAdapterRegistry()
     anonymous_profiles = set(SUPPORTED_REGISTRY_EXECUTION_PROFILES)
-    anonymous_profiles.add(REDHAT_EXECUTION_PROFILE)
+    anonymous_profiles.update({REDHAT_EXECUTION_PROFILE, APPLE_EXECUTION_PROFILE})
     for profile in sorted(anonymous_profiles):
         registry.register(
             SourceAdapterSpec(
@@ -108,6 +109,8 @@ async def execute_source(
         return await execute_credentialed_source(source, timeout_seconds=timeout_seconds)
     if spec.profile == REDHAT_EXECUTION_PROFILE:
         return await execute_redhat_source(source, timeout_seconds=timeout_seconds)
+    if spec.profile == APPLE_EXECUTION_PROFILE:
+        return await execute_apple_source(source, timeout_seconds=timeout_seconds)
     return await execute_registered_source(source, timeout_seconds=timeout_seconds)
 
 
