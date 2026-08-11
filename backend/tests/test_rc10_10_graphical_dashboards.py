@@ -6,8 +6,9 @@ from dtmo.dashboards import dashboards_page
 def test_dashboard_exposes_real_data_visualizations() -> None:
     body = dashboards_page().body.decode("utf-8")
 
-    assert "RC10.10 graphical dashboards" in body
+    assert "RC12.2 graphical dashboards" in body
     assert "/api/v1/dashboards/summary" in body
+    assert "Intelligence trend — 7 dagen" in body
     assert "Severity-verdeling" in body
     assert "Reviewstatus" in body
     assert "Top intelligencebronnen" in body
