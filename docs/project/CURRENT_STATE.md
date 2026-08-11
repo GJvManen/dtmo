@@ -4,13 +4,14 @@ Last reconciled: **2026-08-11**
 
 ## Executive summary
 
-DTMO `16.0.0rc12` has completed the repository-controlled engineering programme through Phase 7 and the RC11/RC12 source-framework and unified-console consolidation work. A project-owner functional test on 2026-08-11 subsequently demonstrated that the canonical console was **not yet functionally acceptable for external staging**.
+DTMO `16.0.0rc12` has completed the repository-controlled engineering programme through Phase 7. Project-owner functional testing on 2026-08-11 demonstrated that the canonical console still required product-level remediation before external staging, so RC13 remains the active blocking programme.
 
-The product-level blocker is tracked as **RC13 functional unified-console acceptance** in issue #150 and `docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`.
+Accepted RC13 slices:
 
-RC13.1 is complete: PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after the complete exact-head workflow set passed, including RC4 Quality Gate #803 and RC13 Functional Console Browser E2E Gate #5.
+- **RC13.1** — PR #151 merged as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2`; exact-head source → ingest → intelligence → Overview browser evidence passed.
+- **RC13.2** — PR #152 merged as `b8c254c5d099cde5dca624aa85b17c320594847e`; exact-head native single-session analytics evidence passed, including RC4 Quality Gate #805, RC13 Functional Console Browser E2E Gate #6 and RC13 Single-session Visual Analytics Gate #1.
 
-RC13.2 is now the only current priority. DTMO remains **not production ready** and Phase 8 remains paused until the complete RC13 programme passes.
+**RC13.3 — governed Administration/RBAC** is the only current priority. DTMO remains **not production ready** and Phase 8 remains `PAUSED_PENDING_RC13`.
 
 ## Phase status
 
@@ -23,24 +24,10 @@ RC13.2 is now the only current priority. DTMO remains **not production ready** a
 | 5. Performance and scalability | `PASS` |
 | 6. Accessibility and operational UX | `PASS` — project-owner manual/external acceptance on 2026-08-11 |
 | 7. Observability and incident operations | `PASS` |
-| RC13. Functional unified-console acceptance | `BLOCKED_INTERNAL` — remediation in progress |
+| RC13. Functional unified-console acceptance | `BLOCKED_INTERNAL` — RC13.1/13.2 accepted; RC13.3 current |
 | 8. Real staging acceptance | `PAUSED_PENDING_RC13` |
 | 9. Independent external assurance | `NOT COMPLETE` |
 | 10. Production go/no-go | `NOT STARTED` |
-
-## Functional acceptance findings
-
-The project-owner test found the following blocking gaps in the canonical console:
-
-- Overview lacked useful default graphical/statistical information.
-- Intelligence had no default/recent data presentation and was unusable while the source-ingestion path was not working end to end.
-- Sources & Catalog did not provide a reliable register/enable/run/ingest operator journey for the already connected framework.
-- Visual analytics depended on a separate Grafana authentication context.
-- Administration lacked governed role/user-role administration.
-- Governance did not expose the frameworks and mappings used by DTMO, including Normenkader IBP, MITRE ATT&CK and CVSS context.
-- Non-user-facing legacy compatibility copy was still exposed in the main navigation.
-
-RC13.1 has resolved the first operator-facing source/intelligence/overview defects and removed the obsolete compatibility copy. The remaining visual-analytics, Administration, Governance and final browser-acceptance work stays blocking.
 
 ## RC13 programme
 
@@ -48,44 +35,52 @@ RC13.1 has resolved the first operator-facing source/intelligence/overview defec
 
 Status: `PASS` within the RC13.1 evidence boundary.
 
-PR #151 implemented and exact-head CI verified:
-
-- truthful built-in and registry-backed source state;
-- framework-source register/enable/configure/run controls;
-- source → ingest → index status feedback;
-- canonical recent intelligence independent of OpenSearch search availability;
-- automatic refresh of source state, recent intelligence and dashboard summary after runs;
-- useful native Overview charts and statistics;
-- removal of obsolete legacy-shell navigation copy;
-- Chromium coverage of the actual register → enable → run → ingest → recent intelligence → overview journey.
-
-This does not complete RC13 as a whole.
+The canonical console now truthfully represents built-in/framework source state, supports register/enable/configure/run operations for accepted adapters, processes source results through canonical ingestion/indexing, shows fetched/inserted/indexed feedback, renders recent PostgreSQL-backed intelligence without requiring OpenSearch search and refreshes useful Overview statistics after ingestion.
 
 ### RC13.2 — single-session visual analytics
 
-Status: `PENDING_CI` / current implementation priority.
+Status: `PASS` within the RC13.2 evidence boundary.
 
-The canonical Visual analytics experience must work inside the DTMO session without requiring a second Grafana login. Native DTMO analytics are the required product surface. Grafana remains authenticated and may continue as an operational/advanced deployment component, but it must not expose a broken separately authenticated embed in normal console use unless a shared authentication boundary is later proven safely.
-
-The RC13.2 implementation therefore keeps Grafana anonymous access disabled, preserves Grafana deployment functionality, and suppresses the advanced Grafana shell from the canonical end-user console. A dedicated Chromium gate verifies that the native severity, source, connector-health and review-status analytics render and that normal Visual analytics use performs no `/grafana/` request.
+PR #152 established native DTMO severity, source, connector-health and review-status analytics as the canonical user-facing Visual analytics surface. Normal analytics navigation performs no `/grafana/` request and does not expose a separate-login Grafana embed. Grafana remains available as a separately authenticated advanced/operations component; anonymous access and sign-up remain disabled.
 
 ### RC13.3 — Administration/RBAC
 
-Add governed user/role-assignment administration while preserving server-side RBAC and separation of duties.
+Status: `PENDING_CI` / current implementation priority.
+
+The RC13.3 implementation adds:
+
+- persistent `managed_principals` and `managed_role_assignments` records;
+- an immutable server-side role catalog derived from `Role` and `ROLE_PERMISSIONS`;
+- human-admin + `manage:users` authorization for RBAC administration;
+- strict human versus `service_account` assignment validation;
+- self-management blocking so an administrator cannot change their own managed assignment;
+- last-managed-admin protection against administrative lockout;
+- atomic tamper-evident audit events for create/update mutations;
+- canonical Administration UI for principal creation, role assignment, activation/deactivation and role inspection;
+- explicit identity-provider/token reconciliation semantics: DTMO does not mint or silently rewrite active production bearer-token role claims;
+- a dedicated RC13 Governed Administration RBAC Gate covering persistence/security contracts and a Chromium create/update journey.
+
+Built-in security roles remain code-controlled. RC13.3 deliberately does **not** introduce arbitrary custom token roles because production token validation accepts the known `Role` contract and machine principals must remain isolated to `service_account`.
 
 ### RC13.4 — Governance knowledge surface
 
-Expose the control/framework context used by DTMO, including Normenkader IBP, MITRE ATT&CK, CVSS and related project mappings.
+Expose the actual project governance/control context, including Normenkader IBP, MITRE ATT&CK, CVSS and repository-backed mappings, without inventing mappings that are not present in DTMO evidence.
 
 ### RC13.5 — full functional acceptance
 
-Execute one complete canonical-console browser journey on one exact head. Only then may Phase 8 return to external-validation readiness.
+Execute one complete canonical-console browser journey on one exact head and record accountable project-owner functional acceptance. Only then may Phase 8 return to external-validation readiness.
 
 ## Source framework
 
-The operational source adapters remain connected according to `docs/qa/SOURCE_CONNECTION_MATRIX.md`. RC13 does not reopen adapter acceptance; it repairs the **operator-facing execution and data-visibility journey** over those accepted adapters.
+The operational source adapters remain connected according to `docs/qa/SOURCE_CONNECTION_MATRIX.md`. RC13 does not reopen adapter acceptance; it repairs the operator-facing execution, analytics, administration and governance journeys over the accepted platform baseline.
 
 Credentialed integrations continue to use logical secret references only. Runtime credential values remain outside the catalog, registry and repository evidence.
+
+## Identity and authorization boundary
+
+Production bearer tokens are externally issued and cryptographically validated. The managed RBAC registry records governed desired/provisioned principal-role state but does not rewrite already issued tokens. A role change therefore requires identity-provider reconciliation or token reissue before the external token claim changes.
+
+This boundary prevents the browser Administration interface from becoming a token-forging mechanism and preserves existing issuer/audience/signature validation, token revocation, least privilege and service-account constraints.
 
 ## Phase 6 acceptance
 
@@ -93,8 +88,8 @@ Phase 6 remains `PASS`. On 2026-08-11 the project owner explicitly confirmed tha
 
 ## Governance boundary
 
-RBAC, least privilege, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, dashboard access, CI success or staging access cannot authorize publication.
+RBAC, least privilege, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, dashboard access, Administration access, CI success or staging access cannot authorize publication.
 
 ## Exactly one current priority
 
-**RC13.2 — complete and accept single-session native Visual analytics without a separate Grafana login path.** Phase 8 external staging validation remains paused until all RC13 blocking findings are resolved.
+**RC13.3 — complete and exact-head accept governed Administration/RBAC.** Phase 8 external staging validation remains paused until all RC13 blocking findings are resolved.
