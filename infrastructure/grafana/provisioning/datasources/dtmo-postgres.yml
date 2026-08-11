@@ -1,0 +1,23 @@
+apiVersion: 1
+
+datasources:
+  - name: DTMO Intelligence
+    uid: dtmo-postgres-readonly
+    orgId: 1
+    type: postgres
+    access: proxy
+    url: postgres:5432
+    user: dtmo_grafana_reader
+    isDefault: false
+    editable: false
+    secureJsonData:
+      password: $__env{GRAFANA_DB_PASSWORD}
+    jsonData:
+      database: dtmo
+      sslmode: disable
+      maxOpenConns: 10
+      maxIdleConns: 5
+      maxIdleConnsAuto: false
+      connMaxLifetime: 300
+      postgresVersion: 1000
+      timescaledb: false
