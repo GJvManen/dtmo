@@ -104,6 +104,26 @@ services:
       - api
     restart: unless-stopped
 
+  grafana:
+    image: grafana/grafana:13.1.0
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?Set a non-default Grafana administrative user outside source control}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set a strong Grafana administrative password outside source control}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
 secrets:
   aistor_license:
     file: ${AISTOR_LICENSE_FILE:?Set AISTOR_LICENSE_FILE to a local/vault-materialized AIStor license file outside source control}
@@ -113,3 +133,4 @@ volumes:
   redis_data:
   opensearch_data:
   minio_data:
+  grafana_data:
