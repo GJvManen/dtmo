@@ -7,13 +7,14 @@ This directory contains the authoritative architecture, security, governance, QA
 - **Release candidate:** `16.0.0rc12`
 - **Repository-controlled engineering:** Phases 1–7 accepted
 - **Phase 6:** manually/externally accepted by the project owner on 2026-08-11
-- **RC13 functional console acceptance:** `BLOCKED_INTERNAL` / remediation in progress
-- **RC13.1:** accepted via PR #151 after complete exact-head CI
-- **RC13.2:** current priority — single-session native Visual analytics
+- **RC13 functional console acceptance:** `BLOCKED_INTERNAL`
+- **RC13.1:** accepted via PR #151
+- **RC13.2:** accepted via PR #152 (`b8c254c5d099cde5dca624aa85b17c320594847e`)
+- **RC13.3:** current priority — governed Administration/RBAC, `PENDING_CI`
 - **Phase 8:** `PAUSED_PENDING_RC13`
 - **Production readiness:** not yet complete
 
-The next formal gate is **RC13.2**, not external staging. Phase 8 may resume only after the complete RC13 functional browser acceptance is complete.
+The next formal gate is **RC13.3**, not external staging. Phase 8 may resume only after the complete RC13 functional browser acceptance is complete and accepted.
 
 ## Project overview
 
@@ -31,9 +32,11 @@ The next formal gate is **RC13.2**, not external staging. Phase 8 may resume onl
 - [Traceability matrix](traceability/TRACEABILITY_MATRIX.md)
 - [Evidence index](evidence/EVIDENCE_INDEX.md)
 
-The current architecture combines a Python/FastAPI application layer with PostgreSQL, OpenSearch, Redis, object evidence storage, Prometheus, Grafana and an Nginx gateway. The canonical application shell integrates source operations, intelligence investigation, native analytics, administration and governance while retaining explicit authorization and approval boundaries.
+The canonical application shell integrates source operations, intelligence investigation, native analytics, governed principal/role administration and governance while retaining explicit authorization and approval boundaries.
 
 Normal product analytics are native DTMO views. Grafana remains an authenticated operational/advanced deployment component and is not a prerequisite for canonical console analytics.
+
+RC13.3 introduces an auditable managed-principal/role registry. Built-in roles remain server-side controlled. Production bearer tokens remain externally issued; managed assignment changes require identity-provider reconciliation or token reissue and never silently rewrite active token claims.
 
 ## Intelligence sources
 
@@ -51,7 +54,7 @@ Operational vendor feeds are connected through governed built-in or unified-fram
 - [Third-party material](legal/THIRD_PARTY.md)
 - [ADR-001 — evidence and claim boundaries](project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md)
 
-Core invariants include RBAC, least privilege, separation of duties, privacy/data minimization, provenance preservation, auditability and separate human review/share approval. Technical execution never grants publication authority. Analytics convenience must not introduce anonymous Grafana access or an authentication bypass.
+Core invariants include RBAC, least privilege, service-account isolation, administrator safety controls, separation of duties, privacy/data minimization, provenance preservation, auditability and separate human review/share approval. Technical execution or Administration access never grants publication authority.
 
 ## Accessibility
 
@@ -71,8 +74,6 @@ Phase 8 is currently **paused pending RC13**. Once RC13 is accepted, Phase 8 wil
 
 - [Operations manual](operations/OPERATIONS_MANUAL.md)
 - [Development run log](development/RUN_LOG.md)
-
-Operational setup, deployment procedures and historical execution detail intentionally live outside the project homepage so that the root README remains a professional project overview rather than an operations log.
 
 ## QA evidence model
 
