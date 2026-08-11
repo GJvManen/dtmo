@@ -1,6 +1,6 @@
 # RC12.6 — Unified console programme completion gate
 
-Status: `PENDING_CI`
+Status: `PASS`
 
 ## Objective
 
@@ -42,18 +42,20 @@ Close the repository-controlled RC10.11/RC11/RC12 remediation programme only aft
 
 ## Documentation reconciliation scope
 
-This close-out updates the authoritative README, documentation index, current state, executive status, production roadmap, source connection matrix and release notes so they no longer describe obsolete RC10 workspaces as the current product architecture.
+The close-out updates the authoritative README, documentation index, current state, executive status, production roadmap, source connection matrix and release notes so they no longer describe obsolete RC10 workspaces as the current product architecture.
 
-## Acceptance criteria
+## Acceptance evidence
 
-RC12.6 may be marked `PASS` only when:
+PR #148 exact head `17c914af8a579c813b82849bab773b4449e8f178` completed the complete returned exact-head workflow set successfully, including RC4 Quality, connector, recovery, performance, accessibility/browser, observability and staging-emulator/readiness gates. PR #148 was merged with expected-head protection as `8e614abc0277025957cab433c0e824c25dbb7eeb`.
 
-1. all files above agree that RC11 and RC12 repository-controlled programmes are complete through PR #147;
-2. issue #125's required repository-controlled outcomes are represented as completed without claiming external staging or production readiness;
-3. the exactly-one-next-priority statement is Phase 8 real staging deployment parity;
-4. no documentation claims that CI/emulator/local Compose substitutes for genuine external acceptance;
-5. the complete registered workflow matrix succeeds on one exact close-out head.
+Issue #125 was then automatically closed as `completed`.
 
-## Release decision
+## Acceptance decision
 
-`PENDING_CI` — do not merge or close issue #125 until the complete exact-head workflow set is green.
+`PASS` within the repository-controlled claim boundary.
+
+This decision closes RC12.6 only. It does not establish Phase 8 real staging acceptance, Phase 9 external assurance, genuine VoiceOver/NVDA acceptance or Phase 10 production readiness.
+
+## Exactly one next priority
+
+**Phase 8 real staging deployment parity**: obtain one approved production-equivalent staging deployment and collect the complete ten-class evidence package against one immutable release/deployment identity.
