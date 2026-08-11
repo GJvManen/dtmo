@@ -81,8 +81,8 @@ Grafana does not reuse the DTMO application database identity for intelligence r
 
 ## Current release posture
 
-Phases 1–7 remain internally accepted within their documented claim boundaries. RC11 and RC12 repository-controlled programmes are complete through PR #147, subject to the current RC12.6 documentation close-out receiving its own exact-head CI acceptance. Phase 6 remains externally blocked for genuine VoiceOver/NVDA execution. Phase 8 remains externally blocked for one approved real staging deployment and the complete ten-class deployment-parity package. Phase 9 remains incomplete pending independent evidence. Phase 10 remains blocked until all prior gates and external acceptance requirements are complete.
+Phases 1–7 remain internally accepted within their documented claim boundaries. RC11 and RC12 repository-controlled programmes are complete and accepted through PR #148. Issue #125 is closed as completed. Phase 6 remains externally blocked for genuine VoiceOver/NVDA execution. Phase 8 remains externally blocked for one approved real staging deployment and the complete ten-class deployment-parity package. Phase 9 remains incomplete pending independent evidence. Phase 10 remains blocked until all prior gates and external acceptance requirements are complete.
 
 ## Exactly one next priority
 
-After RC12.6 exact-head CI is green, obtain the approved real Phase 8 staging deployment-parity evidence package tied to one immutable release/deployment identity.
+Obtain the approved real Phase 8 staging deployment-parity evidence package tied to one immutable release/deployment identity.
