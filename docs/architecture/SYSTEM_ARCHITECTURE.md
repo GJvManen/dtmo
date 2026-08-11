@@ -1,6 +1,6 @@
 # DTMO System Architecture
 
-Last updated: **2026-08-11**  
+Last updated: **2026-08-12**  
 Current baseline: **16.0.0rc12**
 
 ## Purpose
@@ -33,6 +33,7 @@ flowchart LR
     PG -->|explicit reporting views| GF
     OPS[Authenticated operations/admin] --> GF
     API --> GOV[RBAC / audit / review / share-approval controls]
+    STAGE[Production-equivalent staging deployment] -. external evidence boundary .-> API
 ```
 
 ## Architecture layers
@@ -72,15 +73,30 @@ The repository-backed Governance surface distinguishes framework context from ac
 
 No semantic similarity creates a mapping. Future external framework crosswalks require explicit versioned datasets with provenance and review.
 
-## Canonical browser boundary
+## Canonical browser boundary and RC13 acceptance
 
 Source operations, recent Intelligence, native Visual analytics, governed Administration and read-only Governance knowledge all use the same FastAPI/unified-console application boundary.
 
-RC13.5 introduced no new product authority or data paths. It added an integration acceptance layer proving the accepted RC13 slices operate together in **one Chromium browser context and one canonical session**:
+RC13.5 proved the accepted RC13 slices operate together in one Chromium browser context and canonical session. On 2026-08-12 the accountable project owner separately accepted the repaired product with `RC13 owner retest akkoord`.
 
-**Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
+**RC13 = PASS.**
 
-PR #155 merged as `d6f83557ab18d26f82ad6289b1b95f728346631d` after exact head `56805ec4ead5a14e9a2f776f84df42eb772302a4` completed the full returned workflow matrix successfully, including RC4 Quality Gate #815 and RC13 Full Functional Console Acceptance Gate #1.
+## Phase 8 external deployment boundary
+
+The next trust boundary is the **real production-equivalent staging deployment**. Repository intent and emulator behavior are not equivalent to an external deployment identity.
+
+Before deployed-environment acceptance begins, Phase 8.1 must bind all later evidence to one immutable identity containing, at minimum:
+
+- approved environment identifier and accountable owner;
+- approved reachable endpoint;
+- deployed release/commit and immutable image/container digests;
+- infrastructure/runtime and configuration-parity evidence;
+- least-privilege identity/secrets references;
+- TLS/network evidence;
+- data-handling/no-production-credential evidence;
+- deployment, rollback and security-review evidence.
+
+`docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md` is the fail-closed intake record. Its initial state is `PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` with `evidence_complete: false`.
 
 ## Trust boundaries
 
@@ -95,21 +111,24 @@ Important trust boundaries are:
 7. Grafana → separately authenticated reporting/operations boundary;
 8. canonical browser → FastAPI/unified-console native product boundary;
 9. repository mapping registry → visible framework/mapping claims;
-10. repository CI/emulator → owner-observed local product and later real staging/production environment;
-11. technical execution → human publication/share authority.
+10. repository CI/emulator → owner-observed local product;
+11. repository/local evidence → real production-equivalent staging deployment identity;
+12. staging deployment → later production environment;
+13. technical execution → human publication/share authority.
 
 ## CI and release architecture
 
 The release process is exact-head gated. Pull requests pass registered quality, security, connector, recovery, performance, browser/accessibility, observability and functional-console workflows before expected-head protected merge.
 
-RC13.5 machine-readable evidence explicitly records synthetic-fixture status, one browser context and the requirement for a separate accountable project-owner functional retest. The workflow cannot promote Phase 8 or claim owner acceptance by itself.
+Historical RC13.5 machine-readable evidence continues to record that its browser fixtures were synthetic and that owner retest was required at that time. The later explicit owner acceptance is a separate evidence event; historical CI is not rewritten.
+
+Phase 8 external deployment evidence cannot be manufactured by repository CI. CI can validate the evidence contract and fail-closed placeholders, but real environment facts must be independently observable.
 
 ## Current acceptance boundary
 
 - Phases 1–7: `PASS`.
-- RC13.1–RC13.5 repository-controlled evidence: `PASS`.
-- RC13 overall: `AWAITING_OWNER_RETEST`.
-- Phase 8: `PAUSED_PENDING_RC13_OWNER_RETEST`.
+- RC13: `PASS`.
+- Phase 8: `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`.
 - Phase 9: `NOT COMPLETE`.
 - Phase 10: `NOT STARTED`.
 
