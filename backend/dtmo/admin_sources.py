@@ -15,8 +15,8 @@ from dtmo.audit.store import append_persistent_audit_event
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal, Role
 from dtmo.connectors.state import ConnectorStateStore
-from dtmo.credentialed_source_executor import execute_source
 from dtmo.source_catalog import SOURCE_CATALOG
+from dtmo.source_framework import execute_source
 from dtmo.sources import SourceDefinition, SourceRegistry, validate_source_url
 
 router = APIRouter(prefix="/api/v1/admin/sources", tags=["admin-sources"])
