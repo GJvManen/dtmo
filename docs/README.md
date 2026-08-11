@@ -9,13 +9,15 @@ This directory contains the authoritative architecture, security, governance, QA
 - **Phase 6:** manually/externally accepted by the project owner on 2026-08-11
 - **RC13 functional console acceptance:** `BLOCKED_INTERNAL`
 - **RC13.1:** accepted via PR #151
-- **RC13.2:** accepted via PR #152 (`b8c254c5d099cde5dca624aa85b17c320594847e`)
-- **RC13.3:** accepted via PR #153 (`2e1029a43f7b44d8525fb89197d0a10458a3e992`)
-- **RC13.4:** current priority — repository-backed Governance knowledge surface, `PENDING_CI`
+- **RC13.2:** accepted via PR #152
+- **RC13.3:** accepted via PR #153
+- **RC13.4:** accepted via PR #154 (`21672aaf1cf097228699810660eaac167da842d6`)
+- **RC13.5:** current priority — complete one-session canonical-console browser acceptance, `PENDING_CI`
+- **Project-owner complete repaired-product retest:** not yet recorded
 - **Phase 8:** `PAUSED_PENDING_RC13`
 - **Production readiness:** not yet complete
 
-The next formal gate is **RC13.4**, not external staging. Phase 8 may resume only after RC13.5 completes the full functional browser acceptance and accountable owner acceptance.
+The next formal gate is **RC13.5**, not external staging. Even after green RC13.5 exact-head CI, Phase 8 may resume only after explicit accountable project-owner functional retest of the repaired local product.
 
 ## Project overview
 
@@ -35,9 +37,7 @@ The next formal gate is **RC13.4**, not external staging. Phase 8 may resume onl
 
 The canonical application shell integrates source operations, intelligence investigation, native analytics, governed principal/role administration and governance while retaining explicit authorization and approval boundaries.
 
-Normal product analytics are native DTMO views. Grafana remains an authenticated operational/advanced deployment component and is not a prerequisite for canonical console analytics.
-
-RC13.3 introduced an auditable managed-principal/role registry. Built-in roles remain server-side controlled. Production bearer tokens remain externally issued; managed assignment changes require identity-provider reconciliation or token reissue and never silently rewrite active token claims.
+RC13.5 adds no new product authority. It proves those accepted product slices function together in one Chromium browser context and one canonical session.
 
 ## Intelligence sources
 
@@ -56,23 +56,28 @@ Operational vendor feeds are connected through governed built-in or unified-fram
 - [Third-party material](legal/THIRD_PARTY.md)
 - [ADR-001 — evidence and claim boundaries](project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md)
 
-RC13.4 exposes a read-only repository-backed governance snapshot in the canonical Governance tab. Normenkader IBP and MITRE ATT&CK remain explicitly `UNMAPPED` until curated control/technique datasets exist. CVSS is `CONTEXT_ONLY` because canonical ingest currently has severity/free metadata but no first-class vector/base-score field. Internal DTMO governance mappings remain traceable to repository evidence.
+RC13.4 is accepted. Normenkader IBP and MITRE ATT&CK remain explicitly `UNMAPPED`, CVSS remains `CONTEXT_ONLY`, and internal DTMO governance mappings remain repository-backed. Missing framework crosswalks are never inferred.
 
 Core invariants include RBAC, least privilege, service-account isolation, administrator safety controls, separation of duties, privacy/data minimization, provenance preservation, auditability and separate human review/share approval. Technical execution, Administration access or Governance visibility never grants publication authority.
 
+## RC13.5 acceptance evidence
+
+`RC13 Full Functional Console Acceptance Gate` must execute the complete canonical journey on one exact PR head:
+
+**Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
+
+The workflow evidence explicitly records that browser fixtures are synthetic and that project-owner functional retest remains required after merge.
+
 ## Accessibility
 
-- [Frontend UX release gate](qa/FRONTEND_UX_RELEASE_GATE.md)
-- [RC9.16 assistive-technology acceptance](qa/RC9_16_ASSISTIVE_TECHNOLOGY_EVIDENCE.md)
-
-Phase 6 is accepted. The final manual/external accessibility blocker was closed by accountable project-owner acceptance on 2026-08-11; the repository does not invent unprovided test-environment metadata.
+Phase 6 is accepted by accountable project-owner manual/external acceptance on 2026-08-11. The repository does not invent unprovided test-environment metadata.
 
 ## Staging and external assurance
 
 - [Phase 8 staging deployment-parity gate](qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md)
 - [Phase 9 external assurance gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md)
 
-Phase 8 is currently **paused pending RC13**. Once RC13 is accepted, Phase 8 will still require one immutable production-equivalent staging deployment and the complete deployment-parity evidence package.
+Phase 8 is currently **paused pending RC13**. Once RC13.5 exact-head evidence and owner functional retest are both accepted, Phase 8 will still require one immutable production-equivalent staging deployment and the complete deployment-parity evidence package.
 
 ## Operations
 
