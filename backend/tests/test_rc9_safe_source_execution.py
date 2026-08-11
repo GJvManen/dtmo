@@ -4,6 +4,7 @@ import socket
 
 import pytest
 
+from dtmo.credentialed_source_executor import CREDENTIALED_EXECUTION_PROFILES
 from dtmo.source_catalog import SOURCE_CATALOG
 from dtmo.source_executor import (
     SUPPORTED_REGISTRY_EXECUTION_PROFILES,
@@ -31,7 +32,7 @@ def _source(source_id: str, *, reliability: str = "high") -> SourceDefinition:
 
 def test_catalog_contains_broad_authoritative_source_set() -> None:
     ids = {source.id for source in SOURCE_CATALOG}
-    assert {"cisa-kev", "nvd-cve", "github-global-advisories", "ncsc-nl-advisories", "cert-eu-advisories", "msrc-security-update-guide"} <= ids
+    assert {"cisa-kev", "nvd-cve", "github-global-advisories", "ncsc-nl-advisories", "cert-eu-advisories", "msrc-security-update-guide", "cisco-security-advisories"} <= ids
     assert len(SOURCE_CATALOG) >= 15
     assert all(source.endpoint_url.startswith("https://") for source in SOURCE_CATALOG)
 
@@ -121,7 +122,8 @@ def test_runtime_dns_validation_preserves_path_and_query(monkeypatch: pytest.Mon
 
 def test_every_supported_catalog_profile_has_a_governed_executor() -> None:
     supported = [entry for entry in SOURCE_CATALOG if entry.execution_status == "supported"]
-    assert {entry.execution_profile for entry in supported} == SUPPORTED_REGISTRY_EXECUTION_PROFILES
+    accepted = SUPPORTED_REGISTRY_EXECUTION_PROFILES | CREDENTIALED_EXECUTION_PROFILES
+    assert {entry.execution_profile for entry in supported} == accepted
 
 
 def test_built_in_catalog_sources_are_explicit_and_separate() -> None:
