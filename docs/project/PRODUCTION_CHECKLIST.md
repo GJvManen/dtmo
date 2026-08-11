@@ -11,11 +11,32 @@ Last updated: **2026-08-11**
 - [x] Phase 5 — performance/scalability accepted.
 - [x] Phase 6 — accessibility and operational UX accepted; project-owner manual/external acceptance recorded 2026-08-11.
 - [x] Phase 7 — observability and incident operations accepted.
+- [ ] RC13 — functional unified-console acceptance complete.
+  - [x] RC13.1 — source register/enable/run → ingest/index → recent intelligence → Overview accepted via PR #151.
+  - [ ] RC13.2 — single-session Visual analytics accepted.
+  - [ ] RC13.3 — governed Administration/RBAC accepted.
+  - [ ] RC13.4 — Governance knowledge surface accepted.
+  - [ ] RC13.5 — complete canonical-console browser acceptance recorded on one exact head.
 - [ ] Phase 8 — real staging acceptance complete.
 - [ ] Phase 9 — external assurance complete.
 - [ ] Phase 10 — production go/no-go approved.
 
+## RC13.2 — single-session Visual analytics
+
+- [ ] Native severity distribution visible in the canonical console.
+- [ ] Native source distribution visible.
+- [ ] Native connector-health distribution visible.
+- [ ] Native review-status distribution visible.
+- [ ] Normal Visual analytics navigation performs no `/grafana/` request.
+- [ ] Separately authenticated Grafana controls are not exposed as a normal product workflow.
+- [x] Grafana anonymous access remains disabled by configuration.
+- [x] Grafana user self-signup remains disabled by configuration.
+- [ ] `RC13 Single-session Visual Analytics Gate` succeeds on the exact final PR head.
+- [ ] Complete registered exact-head workflow set succeeds before merge.
+
 ## Phase 8 — deployment-parity package
+
+**PAUSED_PENDING_RC13.** Do not execute or credit these items until RC13 reaches `PASS`.
 
 All items must refer to the same immutable `16.0.0rc12` staging deployment identity.
 
@@ -72,6 +93,6 @@ All items must refer to the same immutable `16.0.0rc12` staging deployment ident
 
 ## Decision
 
-Current decision: **NO-GO pending Phases 8–10**.
+Current decision: **NO-GO pending RC13 and Phases 8–10**.
 
-The next action is external Phase 8 staging validation after the final cleanup PR is accepted. Repository CI, local Docker Compose and staging-emulator success do not check these boxes on behalf of the external validator.
+The only current action is RC13.2 single-session Visual analytics. External Phase 8 staging validation remains paused until the complete RC13 functional gate is accepted. Repository CI, local Docker Compose and staging-emulator success do not check external acceptance boxes on behalf of the project owner.

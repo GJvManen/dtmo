@@ -46,24 +46,38 @@ RC13 does **not** invalidate those engineering controls. It establishes that a p
 
 ### RC13.1 — source-to-intelligence path
 
-Required journey:
+Status: `PASS` within the RC13.1 evidence boundary.
 
-1. open the canonical console;
-2. view meaningful platform/source/intelligence statistics;
-3. see built-in, supported framework and research/reference sources with truthful state;
-4. register supported framework sources;
-5. enable/disable and configure them;
-6. execute an eligible built-in or framework source;
-7. process fetched records through canonical ingestion;
-8. show run/fetched/inserted/indexed status;
-9. show resulting recent intelligence directly from the canonical database;
-10. update Overview and analytics from the resulting data.
+PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after the complete exact-head workflow set passed. The accepted browser journey proves:
 
-Acceptance requires a Chromium browser journey that interacts with the actual console controls; checking only that strings/buttons exist in generated HTML is insufficient.
+1. canonical console opens without obsolete compatibility copy;
+2. meaningful Overview statistics are visible;
+3. built-in, framework and research/reference source states are distinguished;
+4. supported framework sources can be registered;
+5. eligible sources can be enabled/configured;
+6. eligible sources can be executed;
+7. fetched records flow through canonical ingestion/indexing;
+8. run/fetched/inserted/indexed status is visible;
+9. resulting recent intelligence appears directly from the canonical database;
+10. Overview statistics update after ingestion.
 
-### RC13.2 — visual analytics
+### RC13.2 — single-session visual analytics
 
-Native graphical/statistical analytics must work without a separate Grafana authentication step being required for normal product use. Grafana may remain as an advanced governed layer.
+Status: `PENDING_CI` / current priority.
+
+Normal product use must not depend on a separate Grafana authentication step. Native DTMO graphical/statistical analytics are the canonical product surface and must remain fully usable on the same DTMO session/origin used by the console.
+
+RC13.2 acceptance requires:
+
+1. severity distribution renders in the canonical Visual analytics view;
+2. source distribution renders;
+3. connector-health distribution renders;
+4. review-status distribution renders;
+5. normal Visual analytics navigation performs no `/grafana/` request;
+6. the separately authenticated Grafana shell is not user-visible in the canonical console;
+7. Grafana anonymous access remains disabled;
+8. Grafana may remain available as an operational/advanced deployment component, but no authentication bypass or privilege broadening is introduced;
+9. a dedicated exact-head Chromium workflow records machine-readable evidence.
 
 ### RC13.3 — Administration/RBAC
 
@@ -99,4 +113,4 @@ Phase 10 is the formal production go/no-go and begins only after all blocking fu
 
 ## Exactly one next priority
 
-**RC13.1 — complete the source-to-intelligence functional path and exact-head Chromium acceptance.**
+**RC13.2 — complete and exact-head accept single-session native Visual analytics without a separate Grafana login path.**

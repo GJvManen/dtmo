@@ -37,26 +37,50 @@ A fresh local/dev deployment must support the following from the canonical conso
 
 ## RC13.1 — source-to-intelligence functional path
 
-Status: `PENDING_CI`.
+Status: `PASS` within the RC13.1 evidence boundary.
 
-The current RC13.1 branch implements:
+PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after the complete exact-head workflow set passed, including:
+
+- `RC4 Quality Gate` run #803;
+- `RC13 Functional Console Browser E2E Gate` run #5;
+- the complete registered exact-head workflow set returned by GitHub for head `e881cf5db2a5d6868419425f1c6a7f6017dcfa83`.
+
+RC13.1 accepted:
 
 - canonical `GET /api/v1/console/recent-intelligence` backed by PostgreSQL rather than OpenSearch;
-- truthful built-in source handling so CISA manual execution is visible in development even when its scheduler feature flag is disabled;
+- truthful built-in source handling so CISA manual execution is visible in development when allowed;
 - clear framework-source registration, disabled/enabled and runnable states;
 - source run completion feedback with fetched/inserted/indexed values;
-- automatic refresh of source status, dashboard statistics and recent intelligence after a feedrun;
+- automatic refresh of source status, dashboard statistics and recent intelligence after a feed run;
 - useful native Overview charts for seven-day intelligence trend, severity and connector health;
 - recent intelligence in both Overview and Intelligence without requiring an OpenSearch query;
-- native analytics as the default core Visual analytics experience, while Grafana is loaded only when an advanced dashboard is explicitly opened;
 - removal of the legacy `/ui/*` compatibility notice from the navigation;
-- a dedicated Chromium browser workflow that clicks register → enable → run and verifies that the resulting intelligence and Overview statistics appear.
+- Chromium coverage of register → enable → run → ingest → recent intelligence → updated Overview behavior.
 
-RC13.1 becomes `PASS` only after the complete exact-head workflow set, including `RC13 Functional Console Browser E2E Gate`, succeeds.
+RC13 remains blocked because RC13.2–RC13.5 are not yet accepted.
 
-## Remaining RC13 slices after RC13.1
+## RC13.2 — single-session visual analytics
 
-- **RC13.2** — finalize single-session/default visual analytics behavior and advanced Grafana boundary.
+Status: `PENDING_CI`.
+
+RC13.2 makes native DTMO analytics the canonical user-facing Visual analytics surface and removes the separately authenticated Grafana embed from normal console use without weakening Grafana authentication.
+
+Implementation requirements:
+
+- keep severity, source distribution, connector health and review-status native analytics visible in the canonical console;
+- suppress the `.grafana-shell` in the shared design-system layer used by the unified console;
+- route the RC13.2 design-system response before the legacy frontend CSS route;
+- keep `GF_AUTH_ANONYMOUS_ENABLED=false` and `GF_USERS_ALLOW_SIGN_UP=false`;
+- do not add a static Grafana user, anonymous role, bypass token or privilege expansion;
+- retain Grafana as an authenticated operational/advanced deployment component outside the normal canonical user journey;
+- add `RC13 Single-session Visual Analytics Gate` with static contract checks and a Chromium journey;
+- require the Chromium journey to verify that native analytics render, Grafana controls are not visible, and normal Visual analytics navigation generates no `/grafana/` request;
+- record machine-readable exact-head evidence and fail closed when missing or unsuccessful.
+
+RC13.2 becomes `PASS` only after the complete exact-head workflow set, including `RC13 Single-session Visual Analytics Gate`, succeeds.
+
+## Remaining RC13 slices after RC13.2
+
 - **RC13.3** — governed Administration/RBAC user-role assignment management.
 - **RC13.4** — Governance knowledge surface with Normenkader IBP, MITRE ATT&CK, CVSS and related project mappings.
 - **RC13.5** — complete canonical-console functional browser acceptance and programme close-out.

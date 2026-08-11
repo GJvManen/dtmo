@@ -9,7 +9,7 @@
 **External staging:** paused until RC13 functional acceptance is complete  
 **License:** Apache-2.0
 
-> **Current release decision:** DTMO is not production ready and is not yet ready for external staging/pentest acceptance. A project-owner functional test on 2026-08-11 reopened product acceptance because the canonical console did not yet provide a complete source → ingest → intelligence → analytics workflow.
+> **Current release decision:** DTMO is not production ready and is not yet ready for external staging/pentest acceptance. A project-owner functional test on 2026-08-11 reopened product acceptance because the canonical console did not yet provide a complete usable source → ingest → intelligence → analytics → administration → governance journey.
 
 ## Product scope
 
@@ -19,7 +19,7 @@ DTMO is designed for security operations, threat intelligence, administration an
 - **Governed source framework** — bounded adapters, registration, execution, provenance and connector health.
 - **Threat investigation** — canonical recent intelligence plus governed OpenSearch-backed search.
 - **Operational administration** — source configuration and execution in the canonical console.
-- **Visual analytics** — native DTMO statistics and charts, with Grafana as an advanced analytics layer.
+- **Visual analytics** — native DTMO statistics and charts inside the canonical DTMO session. Grafana remains an authenticated operational/advanced deployment component and is not a prerequisite for normal product analytics.
 - **Auditability and provenance** — source identity, request correlation, retained evidence and controlled state transitions.
 - **Separation of duties** — ingestion, analysis, review and external share approval remain distinct authorities.
 
@@ -42,12 +42,12 @@ flowchart LR
 
     U[Analyst / Admin / CISO / Auditor] --> UI[Unified DTMO console]
     UI --> A
-    UI -->|advanced analytics| G
+    OPS[Authenticated operations/admin] --> G
 
     A --> AUD[Audit, review & share controls]
 ```
 
-The architecture separates **collection**, **normalization**, **application services**, **persistence/search**, **observability** and **human governance**. Technical execution never grants publication authority.
+The architecture separates **collection**, **normalization**, **application services**, **persistence/search**, **observability** and **human governance**. Technical execution never grants publication authority. Normal console analytics are native DTMO views; Grafana is retained behind its own authenticated operational boundary unless a future deployment proves a safe shared-session integration.
 
 ### Technology stack
 
@@ -59,7 +59,7 @@ The architecture separates **collection**, **normalization**, **application serv
 | Queue/cache | Redis 8 |
 | Evidence/object storage | S3-compatible AIStor/MinIO interface |
 | Metrics | Prometheus 3 |
-| Dashboards | Native DTMO analytics + Grafana 13 |
+| Dashboards | Native DTMO analytics + authenticated Grafana 13 operations layer |
 | Gateway | Nginx |
 | Migrations | Alembic |
 | Test & quality | pytest, Playwright, Ruff, mypy, pip-audit |
@@ -81,8 +81,8 @@ The RC12 implementation passed its repository-controlled tests, but the project-
 
 Current RC13 programme:
 
-1. **RC13.1 — source-to-intelligence path**: register/enable/run connected sources, process records, show recent intelligence and useful native overview statistics.
-2. **RC13.2 — visual analytics**: core analytics must work without a separate Grafana login being required for normal product use.
+1. **RC13.1 — source-to-intelligence path — PASS within its slice boundary.** PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after the complete exact-head workflow set passed. The canonical console now browser-proves register/enable/run → ingest/index → recent intelligence → updated Overview behavior.
+2. **RC13.2 — single-session visual analytics — CURRENT / PENDING_CI.** Native severity, source, connector-health and review-status analytics must work in the DTMO console without a second Grafana login. The canonical user journey must not request `/grafana/`; Grafana anonymous access remains disabled.
 3. **RC13.3 — Administration/RBAC**: governed user/role assignment administration.
 4. **RC13.4 — Governance knowledge surface**: Normenkader IBP, MITRE ATT&CK, CVSS and related mappings/control context.
 5. **RC13.5 — full functional browser acceptance**: one complete canonical-console journey on an exact head.
@@ -100,7 +100,8 @@ DTMO is built around these invariants:
 - provenance and confidence are preserved during normalization;
 - logs and evidence follow privacy and data-minimization requirements;
 - credentials, tokens and secret values are excluded from repository evidence;
-- successful automation is evidence of technical execution, not of human approval.
+- successful automation is evidence of technical execution, not of human approval;
+- analytics convenience never justifies anonymous Grafana access or an authentication bypass.
 
 See [`SECURITY.md`](SECURITY.md) and [`docs/security/SECURITY_OVERVIEW.md`](docs/security/SECURITY_OVERVIEW.md).
 
@@ -131,6 +132,7 @@ flowchart LR
 | Browser & accessibility | Critical user journeys, keyboard, responsive and accessibility behavior |
 | Observability | Request/trace context, alerts, dashboards and runbooks |
 | Functional console | End-to-end UI interaction: source operations → ingest → intelligence → statistics |
+| RC13 single-session analytics | Chromium proof that native analytics render without a Grafana request/login dependency |
 
 Configured or queued workflows are not acceptance evidence. Missing, failed, cancelled, skipped, stale or inferred evidence is never `PASS`.
 
@@ -150,7 +152,7 @@ Configured or queued workflows are not acceptance evidence. Missing, failed, can
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The next priority is **RC13.1**. External staging validation and penetration testing resume only after the complete RC13 functional gate is accepted.
+The only current priority is **RC13.2 — single-session visual analytics**. External staging validation and penetration testing resume only after the complete RC13 functional gate is accepted.
 
 ## Repository structure
 
