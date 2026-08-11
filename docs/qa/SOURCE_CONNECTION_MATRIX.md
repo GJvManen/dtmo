@@ -17,8 +17,8 @@ A catalog entry is **connected** only when its execution status is `supported` o
 | Red Hat Product Security | `redhat-csaf-v1` | CONNECTED | Registry bootstrap -> enable -> official Red Hat Security Data API `/csaf.json` + `/csaf/{RHSA}.json` |
 | Ubuntu Security Notices | `rss-2.0` | CONNECTED | Registry bootstrap -> enable -> official Canonical `/security/notices/rss.xml` feed |
 | Debian Security Advisories | `rss-2.0` | CONNECTED | Registry bootstrap -> enable -> official Debian `/security/dsa` RSS feed |
-| Apple Security Releases | `apple-security-releases-v1` | PENDING_CI | Registry bootstrap -> enable -> bounded first-party Apple Support `100100` security-release index |
-| Chrome Releases | `vendor-chrome` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
+| Apple Security Releases | `apple-security-releases-v1` | CONNECTED | Registry bootstrap -> enable -> bounded first-party Apple Support `100100` security-release index |
+| Chrome Releases | `chrome-security-releases-v1` | PENDING_CI | Registry bootstrap -> enable -> bounded first-party Chrome Releases stable posts -> published CVE validation |
 | Mozilla Security Advisories | `vendor-mozilla` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | Fortinet PSIRT | `vendor-fortinet` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | Palo Alto Networks Security Advisories | `vendor-paloalto` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
@@ -27,10 +27,10 @@ A catalog entry is **connected** only when its execution status is `supported` o
 
 ## Enforced contract
 
-`backend/tests/test_rc11_1_source_framework.py` requires every `supported` catalog execution profile to exist in the unified `SourceAdapterRegistry`. Multiple catalog sources may deliberately reuse one governed execution profile when they expose the same accepted wire format; Ubuntu and Debian reuse the accepted `rss-2.0` adapter instead of introducing duplicate parser code. Apple uses a dedicated bounded first-party HTML adapter because Apple does not publish a documented RSS, CSAF or public security-release API for the `100100` index. `supported-built-in` remains separately constrained to the CISA KEV built-in path.
+`backend/tests/test_rc11_1_source_framework.py` requires every `supported` catalog execution profile to exist in the unified `SourceAdapterRegistry`. Multiple catalog sources may deliberately reuse one governed execution profile when they expose the same accepted wire format; Ubuntu and Debian reuse the accepted `rss-2.0` adapter instead of introducing duplicate parser code. Apple and Chrome use dedicated bounded first-party publication adapters where a documented CSAF/API feed is not available. `supported-built-in` remains separately constrained to the CISA KEV built-in path.
 
 Credential values are never stored in the catalog or source registry. Credentialed catalog entries carry only a logical secret reference such as `env:CISCO_OPENVULN_TOKEN`; execution fails closed when the referenced runtime secret is absent or the reference scheme is not accepted.
 
 ## Remaining onboarding order
 
-After Apple acceptance, Chrome, Mozilla, Fortinet, Palo Alto Networks and Broadcom/VMware remain. Each source is onboarded only against an official machine-readable API/feed where available; where a vendor exposes only a first-party publication index, any adapter must be narrowly scoped to that origin and document pattern, bounded, provenance-preserving and fail-closed before the source can leave `planned-parser`.
+After Chrome acceptance, Mozilla, Fortinet, Palo Alto Networks and Broadcom/VMware remain. Each source stays fail-closed as `planned-parser` until its official endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
