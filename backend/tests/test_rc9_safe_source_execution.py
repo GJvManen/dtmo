@@ -4,14 +4,9 @@ import socket
 
 import pytest
 
-from dtmo.credentialed_source_executor import CREDENTIALED_EXECUTION_PROFILES
 from dtmo.source_catalog import SOURCE_CATALOG
-from dtmo.source_executor import (
-    SUPPORTED_REGISTRY_EXECUTION_PROFILES,
-    SourceExecutionError,
-    _resolve_public_endpoint,
-    parse_registered_source,
-)
+from dtmo.source_executor import SourceExecutionError, _resolve_public_endpoint, parse_registered_source
+from dtmo.source_framework import SOURCE_ADAPTER_REGISTRY
 from dtmo.sources import SourceDefinition
 
 
@@ -121,9 +116,8 @@ def test_runtime_dns_validation_preserves_path_and_query(monkeypatch: pytest.Mon
 
 
 def test_every_supported_catalog_profile_has_a_governed_executor() -> None:
-    supported = [entry for entry in SOURCE_CATALOG if entry.execution_status == "supported"]
-    accepted = SUPPORTED_REGISTRY_EXECUTION_PROFILES | CREDENTIALED_EXECUTION_PROFILES
-    assert {entry.execution_profile for entry in supported} == accepted
+    supported = {entry.execution_profile for entry in SOURCE_CATALOG if entry.execution_status == "supported"}
+    assert supported == SOURCE_ADAPTER_REGISTRY.profiles()
 
 
 def test_built_in_catalog_sources_are_explicit_and_separate() -> None:
