@@ -11,6 +11,8 @@ from datetime import UTC, datetime
 from typing import Any
 from urllib.parse import urlparse
 
+from defusedxml import ElementTree as ET
+
 from dtmo.connectors.base import ConnectorRecord, ConnectorResult
 from dtmo.source_catalog import catalog_by_id
 from dtmo.sources import SourceDefinition, validate_source_url
@@ -67,7 +69,13 @@ def _resolve_public_endpoint(url: str) -> ResolvedEndpoint:
     return ResolvedEndpoint(hostname=hostname, address=addresses[0], path=path)
 
 
-def _fetch_json_sync(url: str, *, timeout: float) -> Any:
+def _fetch_bounded_sync(
+    url: str,
+    *,
+    timeout: float,
+    accept: str,
+    allowed_content_types: frozenset[str],
+) -> bytes:
     endpoint = _resolve_public_endpoint(url)
     connection = _PinnedHTTPSConnection(endpoint.hostname, endpoint.address, timeout=timeout)
     try:
@@ -75,7 +83,7 @@ def _fetch_json_sync(url: str, *, timeout: float) -> Any:
             "GET",
             endpoint.path,
             headers={
-                "Accept": "application/json, application/*+json",
+                "Accept": accept,
                 "User-Agent": "DTMO/16.0 registered-source-executor",
                 "Connection": "close",
             },
@@ -86,12 +94,10 @@ def _fetch_json_sync(url: str, *, timeout: float) -> Any:
         if response.status != 200:
             raise SourceExecutionError(f"source returned HTTP {response.status}")
         content_type = response.getheader("Content-Type", "").split(";", 1)[0].strip().lower()
-        if not (
-            content_type == "application/json"
-            or content_type.endswith("+json")
-            or content_type == "text/json"
-        ):
-            raise SourceExecutionError("source response is not JSON")
+        if content_type not in allowed_content_types:
+            raise SourceExecutionError(
+                f"source response content type is not allowed: {content_type or 'missing'}"
+            )
         declared = response.getheader("Content-Length")
         if declared:
             try:
@@ -102,12 +108,31 @@ def _fetch_json_sync(url: str, *, timeout: float) -> Any:
         body = response.read(MAX_RESPONSE_BYTES + 1)
         if len(body) > MAX_RESPONSE_BYTES:
             raise SourceExecutionError("source response exceeds size limit")
-        try:
-            return json.loads(body.decode("utf-8"))
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise SourceExecutionError("source response is not valid UTF-8 JSON") from exc
+        return body
     finally:
         connection.close()
+
+
+def _fetch_json_sync(url: str, *, timeout: float) -> Any:
+    body = _fetch_bounded_sync(
+        url,
+        timeout=timeout,
+        accept="application/json, application/*+json",
+        allowed_content_types=frozenset({"application/json", "text/json"}),
+    )
+    try:
+        return json.loads(body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SourceExecutionError("source response is not valid UTF-8 JSON") from exc
+
+
+def _fetch_rss_sync(url: str, *, timeout: float) -> bytes:
+    return _fetch_bounded_sync(
+        url,
+        timeout=timeout,
+        accept="application/rss+xml, application/xml, text/xml",
+        allowed_content_types=frozenset({"application/rss+xml", "application/xml", "text/xml"}),
+    )
 
 
 def _english_description(descriptions: Any) -> str:
@@ -217,6 +242,50 @@ def _parse_dtmo_json(payload: Any, reliability: str) -> list[ConnectorRecord]:
     return records
 
 
+def _rss_text(item: Any, tag: str) -> str:
+    child = item.find(tag)
+    return "" if child is None or child.text is None else child.text.strip()
+
+
+def _parse_rss(payload: bytes, reliability: str) -> list[ConnectorRecord]:
+    try:
+        root = ET.fromstring(payload)
+    except ET.ParseError as exc:
+        raise SourceExecutionError("RSS response is not valid XML") from exc
+    items = root.findall("./channel/item")
+    if not items:
+        raise SourceExecutionError("RSS response has no channel items")
+    records: list[ConnectorRecord] = []
+    for item in items:
+        title = _rss_text(item, "title")
+        link = _rss_text(item, "link")
+        guid = _rss_text(item, "guid") or link
+        if not title or not link or not guid:
+            continue
+        records.append(
+            ConnectorRecord(
+                external_id=guid,
+                object_type="security-advisory",
+                title=title,
+                url=link,
+                summary=_rss_text(item, "description"),
+                published_at=_rss_text(item, "pubDate") or None,
+                source_reliability=reliability,
+                confidence=92,
+                raw={
+                    "guid": guid,
+                    "title": title,
+                    "link": link,
+                    "description": _rss_text(item, "description"),
+                    "pubDate": _rss_text(item, "pubDate"),
+                },
+            )
+        )
+    if not records:
+        raise SourceExecutionError("RSS response contained no usable advisory items")
+    return records
+
+
 def parse_registered_source(source: SourceDefinition, payload: Any) -> list[ConnectorRecord]:
     catalog = catalog_by_id(source.id)
     profile = (
@@ -228,6 +297,10 @@ def parse_registered_source(source: SourceDefinition, payload: Any) -> list[Conn
         return _parse_nvd(payload, source.reliability)
     if profile == "github-global-advisories-v1":
         return _parse_github(payload, source.reliability)
+    if profile == "rss-2.0":
+        if not isinstance(payload, bytes):
+            raise SourceExecutionError("RSS adapter requires bounded XML bytes")
+        return _parse_rss(payload, source.reliability)
     return _parse_dtmo_json(payload, source.reliability)
 
 
@@ -236,13 +309,24 @@ async def execute_registered_source(
 ) -> ConnectorResult:
     started = datetime.now(UTC).isoformat()
     if source.source_type != "json-feed":
-        raise SourceExecutionError("only json-feed registry sources use the generic executor")
+        raise SourceExecutionError("only governed registry feeds use the generic executor")
     if not source.enabled:
         raise SourceExecutionError("source is disabled")
     try:
-        payload = await asyncio.to_thread(
-            _fetch_json_sync, source.endpoint_url, timeout=timeout_seconds
+        catalog = catalog_by_id(source.id)
+        profile = (
+            catalog.execution_profile
+            if catalog and catalog.execution_status == "supported"
+            else "dtmo-json-v1"
         )
+        if profile == "rss-2.0":
+            payload = await asyncio.to_thread(
+                _fetch_rss_sync, source.endpoint_url, timeout=timeout_seconds
+            )
+        else:
+            payload = await asyncio.to_thread(
+                _fetch_json_sync, source.endpoint_url, timeout=timeout_seconds
+            )
         records = parse_registered_source(source, payload)
     except SourceExecutionError as exc:
         return ConnectorResult(
