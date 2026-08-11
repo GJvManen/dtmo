@@ -111,7 +111,7 @@ _PAGE = """<!doctype html>
 <div id="summary" class="metric-row" aria-label="Feed summary"></div>
 <div id="sources" class="feed-grid"></div>
 </section>
-<section class="surface"><h2>Governance boundary</h2><p>Handmatige runs vereisen een menselijke admin met <code>manage:connectors</code>. Broncredentials en raw evidence worden niet in deze workspace getoond. Een succesvolle run levert alleen intelligencekandidaten op; review en externe share approval blijven afzonderlijke bevoegdheden.</p></section>
+<section class="surface"><h2>Governance boundary</h2><p>Handmatige runs vereisen een menselijke admin met <code>manage:connectors</code>. Broncredentials en raw evidence worden niet in deze workspace getoond. Ingestie geeft geen review- of share approval-recht; review en externe share approval blijven afzonderlijke bevoegdheden.</p></section>
 </main>
 <script>
 const e=s=>String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
