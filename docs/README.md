@@ -8,14 +8,12 @@ This directory contains the authoritative architecture, security, governance, QA
 - **Repository-controlled engineering:** Phases 1–7 accepted
 - **Phase 6:** manually/externally accepted by the project owner on 2026-08-11
 - **RC13.1–RC13.5 repository-controlled evidence:** `PASS`
-- **RC13 overall:** `AWAITING_OWNER_RETEST`
-- **Project-owner repaired-product retest:** not yet recorded
-- **Phase 8:** `PAUSED_PENDING_RC13_OWNER_RETEST`
+- **RC13 accountable owner functional retest:** `PASS` on 2026-08-12
+- **RC13 overall:** `PASS`
+- **Phase 8:** `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`
 - **Production readiness:** not yet complete
 
-PR #155 merged as `d6f83557ab18d26f82ad6289b1b95f728346631d` after exact head `56805ec4ead5a14e9a2f776f84df42eb772302a4` completed the full returned workflow matrix successfully, including RC4 Quality Gate #815 and RC13 Full Functional Console Acceptance Gate #1.
-
-The only current acceptance action is the **accountable project-owner functional retest of the repaired local canonical product**. Phase 8 may not resume before explicit owner acceptance.
+The project owner explicitly accepted the repaired canonical product with `RC13 owner retest akkoord` on 2026-08-12. Issue #150 is closed. The current priority is **Phase 8.1 — establish one approved production-equivalent staging environment and immutable deployment identity**.
 
 ## Project overview
 
@@ -25,6 +23,8 @@ The only current acceptance action is the **accountable project-owner functional
 - [Production roadmap](roadmap/PRODUCTION_ROADMAP.md)
 - [RC13 functional console acceptance gate](qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md)
 - [Phase 8 staging deployment-parity gate](qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md)
+- [Phase 8 external deployment identity record](staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md)
+- [Staging acceptance plan](staging/STAGING_ACCEPTANCE_PLAN.md)
 - [16.0.0rc12 release notes](releases/16.0.0rc12.md)
 
 ## Architecture and engineering
@@ -36,15 +36,13 @@ The only current acceptance action is the **accountable project-owner functional
 
 The canonical application shell integrates source operations, intelligence investigation, native analytics, governed principal/role administration and Governance while retaining explicit authorization and approval boundaries.
 
-RC13.5 added no product authority. It proved the accepted repair slices function together in one Chromium browser context and canonical session.
-
-## RC13.5 accepted repository evidence
+## RC13 accepted product evidence
 
 The accepted one-session journey is:
 
 **Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
 
-This CI evidence is explicitly synthetic. It does not substitute for the project-owner functional retest.
+Repository-controlled browser evidence remains synthetic. The separate owner acceptance on 2026-08-12 closes RC13 without rewriting historical CI evidence.
 
 ## Intelligence sources
 
@@ -65,14 +63,15 @@ Operational vendor feeds remain governed by their accepted source framework. Sec
 
 Normenkader IBP and MITRE ATT&CK remain explicitly `UNMAPPED`, CVSS remains `CONTEXT_ONLY`, and internal DTMO governance mappings remain repository-backed. Missing framework crosswalks are never inferred.
 
-Core invariants include RBAC, least privilege, service-account isolation, administrator safety controls, separation of duties, privacy/data minimization, provenance preservation, auditability and separate human review/share approval. Technical execution, Administration access or Governance visibility never grants publication authority.
+Core invariants include RBAC, least privilege, service-account isolation, administrator safety controls, separation of duties, privacy/data minimization, provenance preservation, auditability and separate human review/share approval. Technical execution, Administration access, Governance visibility or staging access never grants publication authority.
 
 ## Staging and external assurance
 
 - [Phase 8 staging deployment-parity gate](qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md)
+- [Phase 8 external deployment identity record](staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md)
 - [Phase 9 external assurance gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md)
 
-Phase 8 is currently **`PAUSED_PENDING_RC13_OWNER_RETEST`**. After explicit owner acceptance, Phase 8 will still require one immutable production-equivalent staging deployment and the complete deployment-parity evidence package.
+Phase 8 is open for external validation but is **not accepted**. Phase 8.1 remains `PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`: the current repository does not prove a real production-equivalent staging deployment. All later evidence must bind to one immutable external deployment identity.
 
 ## Operations
 
