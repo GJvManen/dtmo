@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Annotated, Literal
@@ -129,7 +130,7 @@ class ManagedPrincipalStore:
         subject: str,
         display_name: str | None,
         principal_type: str,
-        roles: list[Role],
+        roles: Sequence[Role],
         active: bool,
         actor: str,
     ) -> ManagedPrincipalState:
@@ -165,7 +166,7 @@ class ManagedPrincipalStore:
         *,
         display_name: str | None,
         active: bool | None,
-        roles: list[Role] | None,
+        roles: Sequence[Role] | None,
         actor: str,
     ) -> ManagedPrincipalState:
         normalized_subject = validate_subject(subject)
@@ -238,7 +239,7 @@ def validate_principal_type(value: str) -> str:
     return normalized
 
 
-def validate_roles(principal_type: str, roles: list[Role] | tuple[Role, ...]) -> tuple[Role, ...]:
+def validate_roles(principal_type: str, roles: Sequence[Role]) -> tuple[Role, ...]:
     normalized = tuple(sorted(frozenset(roles), key=lambda role: role.value))
     if not normalized:
         raise RbacValidationError("at least one role assignment is required")
