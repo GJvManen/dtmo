@@ -19,7 +19,7 @@ This directory is the authoritative documentation entry point for DTMO. Detailed
 - [RC12.5b same-origin Grafana console gate](qa/RC12_5B_SAME_ORIGIN_GRAFANA_CONSOLE_GATE.md)
 - [RC12.5a same-origin Grafana gateway gate](qa/RC12_5A_SAME_ORIGIN_GRAFANA_GATE.md)
 - [RC12.4 unified Grafana embedding gate](qa/RC12_4_UNIFIED_GRAFANA_EMBEDDING_GATE.md)
-- [RC12.3 least-privilege Grafana intelligence gate](qa/RC12_3_GRAFANA_INTELLIGENCE_GATE.md)
+- [RC12.3 least-privilege Grafana intelligence gate](qa/RC12_3_GRAFANA_INTELLIGENCE_READER_GATE.md)
 - [RC12.2 Grafana dashboard gate](qa/RC12_2_GRAFANA_DASHBOARD_GATE.md)
 - [RC12.1 unified source operations gate](qa/RC12_1_UNIFIED_SOURCE_OPERATIONS_GATE.md)
 - [Source connection matrix](qa/SOURCE_CONNECTION_MATRIX.md)
@@ -61,7 +61,7 @@ Genuine VoiceOver/NVDA execution remains an external evidence requirement and is
 
 - [Operations manual](operations/OPERATIONS_MANUAL.md)
 - [RC12.2 Grafana dashboard gate](qa/RC12_2_GRAFANA_DASHBOARD_GATE.md)
-- [RC12.3 least-privilege Grafana intelligence gate](qa/RC12_3_GRAFANA_INTELLIGENCE_GATE.md)
+- [RC12.3 least-privilege Grafana intelligence gate](qa/RC12_3_GRAFANA_INTELLIGENCE_READER_GATE.md)
 - [RC12.5b same-origin Grafana console gate](qa/RC12_5B_SAME_ORIGIN_GRAFANA_CONSOLE_GATE.md)
 
 Grafana does not reuse the DTMO application database identity for intelligence reporting. The accepted reporting datasource is constrained to explicit reporting views through a dedicated least-privilege role. Anonymous Grafana access remains disabled. Native console chart/table fallbacks remain available.
