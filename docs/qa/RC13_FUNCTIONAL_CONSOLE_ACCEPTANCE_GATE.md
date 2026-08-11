@@ -1,79 +1,63 @@
 # RC13 — Functional Console Acceptance Gate
 
-Status: `BLOCKED_INTERNAL`
+Status: `BLOCKED_INTERNAL` — RC13.5 `PENDING_CI` and accountable project-owner functional retest.
 
 ## Trigger
 
-A project-owner functional test of `http://localhost:8000/` on 2026-08-11 found that the repository-controlled product was not yet functionally usable despite the earlier RC12 documentation close-out. This gate supersedes the previous Phase 8 handoff claim until the defects below are corrected and retested.
+A project-owner functional test of `http://localhost:8000/` on 2026-08-11 found that the repository-controlled product was not yet functionally usable despite the earlier RC12 documentation close-out. This gate supersedes the previous Phase 8 handoff claim until the repaired product journey is proven and retested.
 
 ## Required acceptance journey
 
 A fresh local/dev deployment must support the following from the canonical console without using legacy UI routes as the primary workflow:
 
-1. open the canonical console;
-2. view useful platform/source/intelligence statistics even when no intelligence has been ingested yet;
-3. inspect the connected source catalog and distinguish built-in, registered, enabled, credential-blocked and research-only sources;
-4. register supported framework sources from the console;
-5. enable/disable eligible sources and update their polling interval;
-6. manually execute an eligible source from the console;
-7. see fetched/inserted/indexed results and connector health/status;
-8. see newly ingested intelligence without requiring a separate external search action;
-9. search intelligence when OpenSearch is available, with a canonical-database recent-items view remaining usable independently;
-10. view graphical analytics without a separate Grafana login being a prerequisite for core functionality;
-11. administer supported DTMO principal/role assignments through governed server-side APIs;
-12. view applicable governance frameworks, actual repository-backed mappings and explicit unmapped/context-only coverage in the Governance area;
-13. retain RBAC, separation of duties, privacy, provenance, auditability, human review and separate share approval.
+1. open the canonical console and view useful Overview statistics/graphics;
+2. inspect canonical recent Intelligence independently of OpenSearch search availability;
+3. inspect the connected source catalog and distinguish source execution states;
+4. register, enable/configure and manually execute an eligible framework source;
+5. see fetched/inserted/indexed results, connector health and newly ingested intelligence;
+6. view native severity/source/connector/review analytics without a separate Grafana login prerequisite;
+7. administer governed DTMO principal/role assignments without weakening token or service-account boundaries;
+8. view repository-backed Governance framework coverage, mappings, provenance and authority boundaries;
+9. retain RBAC, separation of duties, privacy, provenance, auditability, human review and separate external share approval.
 
-## RC13.1 — source-to-intelligence functional path
+## Accepted RC13 slices
 
-Status: `PASS` within the RC13.1 evidence boundary.
+- **RC13.1 — PASS.** PR #151 merged as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after complete exact-head success. Source register/enable/run → ingest/index → recent intelligence → Overview is browser-proven.
+- **RC13.2 — PASS.** PR #152 merged as `b8c254c5d099cde5dca624aa85b17c320594847e`. Native analytics are canonical and normal product use makes no `/grafana/` request.
+- **RC13.3 — PASS.** PR #153 merged as `2e1029a43f7b44d8525fb89197d0a10458a3e992`. Governed managed-principal/role administration, auditability and external IdP/token-reissue boundaries are accepted.
+- **RC13.4 — PASS.** PR #154 merged as `21672aaf1cf097228699810660eaac167da842d6` after full exact-head success on `0a227cb9f3972504287a6f7f064d6df18b76fbed`, including RC4 Quality Gate #813, RC13 Governance Knowledge Surface Gate #3 and Open Source Governance Gate #278. Normenkader IBP and MITRE ATT&CK remain explicitly `UNMAPPED`, CVSS remains `CONTEXT_ONLY`, and internal DTMO mappings remain repository-backed.
 
-PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after complete exact-head success, including RC4 Quality Gate #803 and RC13 Functional Console Browser E2E Gate #5.
+## RC13.5 — complete functional browser acceptance
 
-Accepted behavior includes truthful source state, register/enable/configure/run operations, ingest/index feedback, PostgreSQL-backed recent intelligence, useful Overview statistics and Chromium coverage of the complete source → intelligence journey.
+Status: `PENDING_CI` / current and only engineering priority.
 
-## RC13.2 — single-session visual analytics
+RC13.5 adds `RC13 Full Functional Console Acceptance Gate`. One Chromium browser context must exercise the canonical console end to end on one exact PR head:
 
-Status: `PASS` within the RC13.2 evidence boundary.
+**Overview → Intelligence → Sources & Catalog → source register/enable/run → Intelligence state update → Visual analytics → Administration → Governance → Overview state confirmation.**
 
-PR #152 merged on 2026-08-11 as `b8c254c5d099cde5dca624aa85b17c320594847e` after the complete exact-head workflow set succeeded, including RC4 Quality Gate #805, RC13 Functional Console Browser E2E Gate #6 and RC13 Single-session Visual Analytics Gate #1.
+The journey must prove:
 
-Accepted behavior keeps native severity, source, connector-health and review-status analytics as the canonical product surface while Grafana remains separately authenticated for advanced/operations use. Normal Visual analytics navigation makes no `/grafana/` request and no authentication bypass was introduced.
+- the same canonical session remains usable across all six product areas;
+- a source operation produces visible ingest/index feedback and updated Intelligence/Overview state;
+- native analytics reflect the same resulting state without a Grafana request/login dependency;
+- governed RBAC create/update/deactivate remains functional and request-correlated;
+- Governance renders truthful framework coverage, repository provenance and publication/share authority boundaries;
+- no synthetic fixture, source execution, analytics view, Administration mutation or Governance visibility grants publication authority.
 
-## RC13.3 — governed Administration/RBAC
+The workflow records exact-head evidence and fails closed if the Chromium journey does not succeed.
 
-Status: `PASS` within the RC13.3 evidence boundary.
+## Owner acceptance boundary
 
-PR #153 merged on 2026-08-11 as `2e1029a43f7b44d8525fb89197d0a10458a3e992`. Exact-head `b828b9b2dbb2f8794bfe7c13ec6e7dd0bdafb22f` completed the full workflow set successfully, including RC4 Quality Gate #809 and RC13 Governed Administration RBAC Gate #3.
+RC13.5 CI is **synthetic repository-controlled evidence only**. It does not replace the project owner's earlier finding or manufacture a successful manual retest.
 
-Accepted behavior includes persistent managed principals/role assignments, immutable built-in roles, human-admin + `manage:users`, strict service-account isolation, self-management blocking, final-admin protection, tamper-evident mutation auditing, canonical create/update/deactivate UI and truthful external IdP/token-reissue semantics.
-
-## RC13.4 — Governance knowledge surface
-
-Status: `PENDING_CI` / current priority.
-
-The authoritative registry is `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`.
-
-RC13.4 acceptance requires:
-
-- authenticated read-only `GET /api/v1/governance/knowledge`;
-- canonical Governance rendering of framework coverage, real DTMO repository mappings and authority boundaries;
-- Normenkader IBP visibly `UNMAPPED` until a control-level repository crosswalk exists;
-- MITRE ATT&CK visibly `UNMAPPED` until a technique-level repository mapping dataset exists;
-- CVSS visibly `CONTEXT_ONLY` while canonical ingest has severity/free metadata but no first-class vector/base-score field;
-- internal DTMO governance mappings traceable to `docs/security/SECURITY_OVERVIEW.md` and `docs/traceability/TRACEABILITY_MATRIX.md`;
-- no inferred framework/control/technique equivalence;
-- a dedicated RC13 Governance Knowledge Surface Gate with repository contract tests and a Chromium Governance journey;
-- complete exact-head workflow success before merge.
-
-## Remaining RC13 slice after RC13.4
-
-- **RC13.5** — complete canonical-console functional browser acceptance and programme close-out.
+After RC13.5 exact-head CI is green and merged, the accountable project owner must functionally retest the repaired local canonical product. Only an explicit successful owner retest may close RC13 and restore Phase 8 from `PAUSED_PENDING_RC13` to an external-validation-ready state.
 
 ## Phase 8 boundary
 
-Phase 8 external staging validation remains **paused** until the complete RC13 functional acceptance gate reaches `PASS`. Repository CI, a successful build, or the existence of UI controls is insufficient: the complete user journey must be executable and ultimately accepted by the accountable project owner.
+Phase 8 external staging validation remains **`PAUSED_PENDING_RC13`** while either RC13.5 exact-head acceptance or the accountable owner functional retest is incomplete.
+
+Repository CI, Docker Compose, staging emulators, successful builds or the existence of UI controls do not substitute for the owner-observed repaired product journey.
 
 ## Release rule
 
-Do not claim `READY_FOR_EXTERNAL_VALIDATION`, production readiness, external staging acceptance or pentest readiness while any RC13 blocking finding remains unresolved.
+Do not claim `READY_FOR_EXTERNAL_VALIDATION`, production readiness, external staging acceptance or pentest readiness until RC13.5 exact-head acceptance and the accountable project-owner functional retest are both complete.

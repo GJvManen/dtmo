@@ -5,11 +5,11 @@
 **DTMO** is an open Cyber Threat Intelligence platform for the education sector. It combines vulnerability intelligence, vendor advisories, provenance, operational health, investigation and governance in one controlled platform.
 
 **Release candidate:** `16.0.0rc12`  
-**Engineering status:** Phases 1–7 accepted; RC13 functional acceptance in progress  
-**External staging:** paused until RC13 functional acceptance is complete  
+**Engineering status:** Phases 1–7 accepted; RC13.1–RC13.4 accepted; RC13.5 functional acceptance in progress  
+**External staging:** `PAUSED_PENDING_RC13`  
 **License:** Apache-2.0
 
-> **Current release decision:** DTMO is not production ready and is not yet ready for external staging/pentest acceptance. A project-owner functional test on 2026-08-11 reopened product acceptance because the canonical console did not yet provide a complete usable source → ingest → intelligence → analytics → administration → governance journey.
+> **Current release decision:** DTMO is not production ready and is not yet ready for external staging/pentest acceptance. RC13.5 must prove the complete repaired canonical-console journey on one exact head, followed by an accountable project-owner functional retest.
 
 ## Product scope
 
@@ -19,7 +19,7 @@ DTMO is designed for security operations, threat intelligence, administration an
 - **Governed source framework** — bounded adapters, registration, execution, provenance and connector health.
 - **Threat investigation** — canonical recent intelligence plus governed OpenSearch-backed search.
 - **Operational administration** — source configuration/execution plus governed principal/role assignment management in the canonical console.
-- **Visual analytics** — native DTMO statistics and charts inside the canonical DTMO session. Grafana remains an authenticated operational/advanced deployment component and is not a prerequisite for normal product analytics.
+- **Visual analytics** — native DTMO statistics and charts inside the canonical DTMO session. Grafana remains an authenticated operational/advanced component and is not a prerequisite for normal product analytics.
 - **Governance knowledge** — repository-backed framework coverage, internal mappings and authority boundaries without inferred external framework equivalence.
 - **Auditability and provenance** — source identity, request correlation, retained evidence and controlled state transitions.
 - **Separation of duties** — ingestion, analysis, review and external share approval remain distinct authorities.
@@ -31,26 +31,22 @@ flowchart LR
     S[Official intelligence sources] --> C[Governed connector framework]
     C --> N[Normalization & provenance]
     N --> A[FastAPI application services]
-
     A --> P[(PostgreSQL)]
     A --> O[(OpenSearch)]
     A --> R[(Redis)]
     A --> M[(Object evidence storage)]
-
     A --> PR[Prometheus]
     PR --> G[Grafana]
     P -->|least-privilege reporting views| G
-
     U[Analyst / Admin / CISO / Auditor] --> UI[Unified DTMO console]
     UI --> A
     UI --> GK[Governance knowledge]
     GK --> GR[Repository mapping registry]
     OPS[Authenticated operations/admin] --> G
-
     A --> AUD[Audit, review & share controls]
 ```
 
-The architecture separates collection, normalization, application services, persistence/search, observability and human governance. Technical execution never grants publication authority. Normal console analytics are native DTMO views; Grafana is retained behind its own authenticated operational boundary.
+The architecture separates collection, normalization, application services, persistence/search, observability and human governance. Technical execution never grants publication authority. Normal console analytics are native DTMO views; Grafana remains behind its own authenticated operational boundary.
 
 See [`docs/architecture/SYSTEM_ARCHITECTURE.md`](docs/architecture/SYSTEM_ARCHITECTURE.md).
 
@@ -64,115 +60,67 @@ Authoritative source status: [`docs/qa/SOURCE_CONNECTION_MATRIX.md`](docs/qa/SOU
 
 ## RC13 functional acceptance
 
-The RC12 implementation passed its repository-controlled tests, but the project-owner functional test identified gaps that the previous presence/contract tests did not catch. RC13 therefore adds browser-tested functional acceptance before Phase 8.
+Project-owner testing on 2026-08-11 showed that repository-controlled component success did not yet prove a usable product journey. RC13 therefore adds browser-tested functional acceptance before Phase 8.
 
-Current RC13 programme:
+1. **RC13.1 — source-to-intelligence path — PASS.** PR #151 merged as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2`.
+2. **RC13.2 — single-session visual analytics — PASS.** PR #152 merged as `b8c254c5d099cde5dca624aa85b17c320594847e`; native analytics are canonical and normal product use performs no Grafana request/login journey.
+3. **RC13.3 — Administration/RBAC — PASS.** PR #153 merged as `2e1029a43f7b44d8525fb89197d0a10458a3e992`; governed managed-principal/role administration and token-reconciliation boundaries are accepted.
+4. **RC13.4 — Governance knowledge surface — PASS.** PR #154 merged as `21672aaf1cf097228699810660eaac167da842d6` after complete exact-head success on `0a227cb9f3972504287a6f7f064d6df18b76fbed`, including RC4 Quality Gate #813, RC13 Governance Knowledge Surface Gate #3 and Open Source Governance Gate #278.
+5. **RC13.5 — full functional browser acceptance — CURRENT / PENDING_CI.** `RC13 Full Functional Console Acceptance Gate` must execute one Chromium browser context across Overview → Intelligence → Sources & Catalog → source register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.
 
-1. **RC13.1 — source-to-intelligence path — PASS.** PR #151 merged as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after complete exact-head success.
-2. **RC13.2 — single-session visual analytics — PASS.** PR #152 merged as `b8c254c5d099cde5dca624aa85b17c320594847e`; native analytics are the canonical user surface and normal Visual analytics use performs no Grafana request/login journey.
-3. **RC13.3 — Administration/RBAC — PASS.** PR #153 merged as `2e1029a43f7b44d8525fb89197d0a10458a3e992` after complete exact-head success on `b828b9b2dbb2f8794bfe7c13ec6e7dd0bdafb22f`, including RC4 Quality Gate #809 and RC13 Governed Administration RBAC Gate #3.
-4. **RC13.4 — Governance knowledge surface — CURRENT / PENDING_CI.** Add authenticated read-only governance knowledge, repository-backed mappings and explicit coverage status. Normenkader IBP and MITRE ATT&CK remain visibly `UNMAPPED` until explicit datasets exist; CVSS is `CONTEXT_ONLY` while canonical ingest has no first-class CVSS vector/base-score field.
-5. **RC13.5 — full functional browser acceptance.** One complete canonical-console journey on one exact head plus accountable project-owner acceptance.
+RC13.5 CI remains synthetic repository-controlled evidence. After exact-head success and merge, the accountable project owner must functionally retest the repaired local product. Phase 8 cannot reopen before that explicit owner acceptance.
 
-Tracking: [issue #150](https://github.com/GJvManen/dtmo/issues/150) and [`docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`](docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md).
+Tracking: issue #150 and [`docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`](docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md).
 
 ## Governance mapping model
 
-[`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md) is the repository authority for RC13.4.
-
-Current coverage:
+[`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md) is the repository authority for Governance coverage and mapping claims.
 
 - **Normenkader IBP:** `UNMAPPED` — no control-level repository crosswalk exists yet.
 - **MITRE ATT&CK:** `UNMAPPED` — no technique-level repository mapping dataset exists yet.
 - **CVSS:** `CONTEXT_ONLY` — canonical ingest exposes severity/free metadata but no first-class CVSS vector/base-score field.
 - **DTMO security & release governance:** `MAPPED_INTERNAL` — internal governance mappings point to explicit repository evidence.
 
-Missing mappings are visible evidence. DTMO does not infer a framework/control/technique equivalence from semantic similarity, tags or free metadata.
+Missing mappings are visible evidence. DTMO does not infer framework/control/technique equivalence from semantic similarity, tags or free metadata.
 
 ## Security and governance model
 
-DTMO is built around these invariants:
+DTMO preserves:
 
 - role-based access control and least privilege;
-- built-in security roles are code-controlled and cannot be invented through browser input;
-- managed principal/role assignment changes require a human admin with `manage:users`;
-- service accounts cannot combine machine and human/admin roles;
-- administrators cannot change their own managed assignment and the final managed admin cannot be removed/deactivated;
-- review and external share approval are separate human decisions;
-- connectors, service accounts, CI jobs and staging access cannot authorize publication;
-- Governance visibility cannot authorize publication or create an inferred mapping;
-- provenance and confidence are preserved during normalization;
-- logs and evidence follow privacy and data-minimization requirements;
-- credentials, tokens and secret values are excluded from repository evidence;
-- successful automation is evidence of technical execution, not of human approval;
-- analytics convenience never justifies anonymous Grafana access or an authentication bypass.
+- code-controlled built-in roles;
+- human-admin authorization for managed role assignments;
+- strict service-account/human-role separation;
+- administrator self-management and final-admin protections;
+- separate human review and external share approval;
+- provenance, confidence, privacy and data minimization;
+- tamper-evident auditability and request correlation;
+- no publication authority from connectors, CI, dashboards, Administration, Governance or staging access;
+- no anonymous Grafana access or authentication bypass for convenience.
 
 See [`SECURITY.md`](SECURITY.md) and [`docs/security/SECURITY_OVERVIEW.md`](docs/security/SECURITY_OVERVIEW.md).
 
 ## Engineering workflow
 
-Every change is delivered as a bounded pull request and must pass the registered **exact-head** workflow set before merge.
+Every change is delivered as a bounded pull request and must pass the registered **exact-head** workflow set before expected-head protected merge. Configured, queued, cancelled, failed, skipped, stale or inferred evidence is never `PASS`.
 
-| Workflow family | Purpose |
-|---|---|
-| Quality & governance | Unit tests, linting, typing, licensing and repository contracts |
-| Security & identity | Authorization, token/session behavior and security invariants |
-| Connector reliability | Contract, timeout, retry, replay, freshness, provenance and isolation |
-| Data integrity & recovery | Storage migration, recovery and cross-store integrity |
-| Performance | Ingestion, API/search reads, concurrency and degraded dependencies |
-| Browser & accessibility | Critical user journeys, keyboard, responsive and accessibility behavior |
-| Observability | Request/trace context, alerts, dashboards and runbooks |
-| Functional console | End-to-end canonical product interaction |
-| RC13 single-session analytics | Chromium proof that native analytics render without Grafana dependency |
-| RC13 governed Administration/RBAC | Persistence, authorization/audit contracts plus canonical principal/role journey |
-| RC13 Governance knowledge | Repository mapping/provenance contracts plus canonical Governance browser journey |
-
-Configured or queued workflows are not acceptance evidence. Missing, failed, cancelled, skipped, stale or inferred evidence is never `PASS`.
+RC13.5 adds **RC13 Full Functional Console Acceptance Gate**, whose evidence records the exact PR head, one Chromium browser context, the complete canonical journey and the explicit requirement for a separate project-owner functional retest.
 
 ## Project status
 
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | CI and workflow integrity | ✅ `PASS` |
-| 2 | Application security and identity | ✅ `PASS` |
-| 3 | Data integrity and recovery | ✅ `PASS` |
-| 4 | Connector reliability and provenance | ✅ `PASS` |
-| 5 | Performance and scalability | ✅ `PASS` |
-| 6 | Accessibility and operational UX | ✅ `PASS` — owner accepted 2026-08-11 |
-| 7 | Observability and incident operations | ✅ `PASS` |
-| RC13 | Functional unified-console acceptance | 🔴 `BLOCKED_INTERNAL` — RC13.1/13.2/13.3 accepted; RC13.4 current |
+| 1–7 | Repository-controlled engineering | ✅ `PASS` |
+| RC13 | Functional unified-console acceptance | 🔴 `BLOCKED_INTERNAL` — RC13.1–RC13.4 accepted; RC13.5 current |
 | 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13` |
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The only current priority is **RC13.4 — repository-backed Governance knowledge surface**. External staging validation and penetration testing resume only after the complete RC13 functional gate is accepted.
-
-## Repository structure
-
-```text
-backend/dtmo/              Application, APIs, source framework and console
-backend/tests/             Unit, contract, browser and release-gate tests
-database/migrations/       Versioned database migrations
-infrastructure/            Gateway, Prometheus and Grafana configuration
-docs/                      Architecture, governance, QA, evidence and roadmap
-tools/                     Provisioning, verification and release utilities
-.github/workflows/          Exact-head CI and product-readiness gates
-```
+The only current priority is **RC13.5 — exact-head full canonical-console browser acceptance, followed by accountable project-owner functional retest**.
 
 ## Documentation
 
-Start with [`docs/README.md`](docs/README.md). Key records:
-
-- [`docs/project/CURRENT_STATE.md`](docs/project/CURRENT_STATE.md)
-- [`docs/project/EXECUTIVE_STATUS.md`](docs/project/EXECUTIVE_STATUS.md)
-- [`docs/roadmap/PRODUCTION_ROADMAP.md`](docs/roadmap/PRODUCTION_ROADMAP.md)
-- [`docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`](docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md)
-- [`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md)
-- [`docs/qa/SOURCE_CONNECTION_MATRIX.md`](docs/qa/SOURCE_CONNECTION_MATRIX.md)
-- [`docs/architecture/SYSTEM_ARCHITECTURE.md`](docs/architecture/SYSTEM_ARCHITECTURE.md)
-- [`docs/evidence/EVIDENCE_INDEX.md`](docs/evidence/EVIDENCE_INDEX.md)
-- [`docs/traceability/TRACEABILITY_MATRIX.md`](docs/traceability/TRACEABILITY_MATRIX.md)
-- [`docs/operations/OPERATIONS_MANUAL.md`](docs/operations/OPERATIONS_MANUAL.md)
+Start with [`docs/README.md`](docs/README.md). Key records include [`docs/project/CURRENT_STATE.md`](docs/project/CURRENT_STATE.md), [`docs/roadmap/PRODUCTION_ROADMAP.md`](docs/roadmap/PRODUCTION_ROADMAP.md), [`docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`](docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md), [`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md), [`docs/architecture/SYSTEM_ARCHITECTURE.md`](docs/architecture/SYSTEM_ARCHITECTURE.md) and [`docs/traceability/TRACEABILITY_MATRIX.md`](docs/traceability/TRACEABILITY_MATRIX.md).
 
 ## Running and deployment
 
