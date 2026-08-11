@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 from defusedxml import ElementTree as ET
 
 from dtmo.connectors.base import ConnectorRecord, ConnectorResult
+from dtmo.ncsc_csaf_adapter import CSAFAdapterError, parse_csaf_document, parse_csaf_index
 from dtmo.source_catalog import catalog_by_id
 from dtmo.sources import SourceDefinition, validate_source_url
 
@@ -124,6 +125,15 @@ def _fetch_json_sync(url: str, *, timeout: float) -> Any:
         return json.loads(body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise SourceExecutionError("source response is not valid UTF-8 JSON") from exc
+
+
+def _fetch_text_sync(url: str, *, timeout: float) -> bytes:
+    return _fetch_bounded_sync(
+        url,
+        timeout=timeout,
+        accept="text/plain",
+        allowed_content_types=frozenset({"text/plain"}),
+    )
 
 
 def _fetch_rss_sync(url: str, *, timeout: float) -> bytes:
@@ -304,6 +314,31 @@ def parse_registered_source(source: SourceDefinition, payload: Any) -> list[Conn
     return _parse_dtmo_json(payload, source.reliability)
 
 
+def _execute_ncsc_csaf_sync(source: SourceDefinition, *, timeout: float) -> list[ConnectorRecord]:
+    base = source.endpoint_url.rstrip("/")
+    index_url = f"{base}/v2/index.txt"
+    try:
+        paths = parse_csaf_index(_fetch_text_sync(index_url, timeout=timeout))
+    except CSAFAdapterError as exc:
+        raise SourceExecutionError(str(exc)) from exc
+    records: list[ConnectorRecord] = []
+    for path in paths:
+        document_url = f"{base}/v2/{path}"
+        payload = _fetch_json_sync(document_url, timeout=timeout)
+        try:
+            record = parse_csaf_document(
+                payload,
+                reliability=source.reliability,
+                document_url=document_url,
+            )
+        except CSAFAdapterError as exc:
+            raise SourceExecutionError(str(exc)) from exc
+        records.append(record)
+    if not records:
+        raise SourceExecutionError("CSAF distribution produced no advisory records")
+    return records
+
+
 async def execute_registered_source(
     source: SourceDefinition, *, timeout_seconds: float = 20.0
 ) -> ConnectorResult:
@@ -319,15 +354,20 @@ async def execute_registered_source(
             if catalog and catalog.execution_status == "supported"
             else "dtmo-json-v1"
         )
-        if profile == "rss-2.0":
+        if profile == "csaf-2.0":
+            records = await asyncio.to_thread(
+                _execute_ncsc_csaf_sync, source, timeout=timeout_seconds
+            )
+        elif profile == "rss-2.0":
             payload = await asyncio.to_thread(
                 _fetch_rss_sync, source.endpoint_url, timeout=timeout_seconds
             )
+            records = parse_registered_source(source, payload)
         else:
             payload = await asyncio.to_thread(
                 _fetch_json_sync, source.endpoint_url, timeout=timeout_seconds
             )
-        records = parse_registered_source(source, payload)
+            records = parse_registered_source(source, payload)
     except SourceExecutionError as exc:
         return ConnectorResult(
             connector_id=source.id,
