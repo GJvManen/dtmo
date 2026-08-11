@@ -10,6 +10,7 @@ from dtmo.credentialed_source_executor import (
     CREDENTIALED_EXECUTION_PROFILES,
     execute_credentialed_source,
 )
+from dtmo.mozilla_adapter import MOZILLA_EXECUTION_PROFILE, execute_mozilla_source
 from dtmo.redhat_adapter import REDHAT_EXECUTION_PROFILE, execute_redhat_source
 from dtmo.source_catalog import SOURCE_CATALOG, catalog_by_id
 from dtmo.source_executor import (
@@ -55,7 +56,12 @@ def _build_registry() -> SourceAdapterRegistry:
     registry = SourceAdapterRegistry()
     anonymous_profiles = set(SUPPORTED_REGISTRY_EXECUTION_PROFILES)
     anonymous_profiles.update(
-        {REDHAT_EXECUTION_PROFILE, APPLE_EXECUTION_PROFILE, CHROME_EXECUTION_PROFILE}
+        {
+            REDHAT_EXECUTION_PROFILE,
+            APPLE_EXECUTION_PROFILE,
+            CHROME_EXECUTION_PROFILE,
+            MOZILLA_EXECUTION_PROFILE,
+        }
     )
     for profile in sorted(anonymous_profiles):
         registry.register(
@@ -116,6 +122,8 @@ async def execute_source(
         return await execute_apple_source(source, timeout_seconds=timeout_seconds)
     if spec.profile == CHROME_EXECUTION_PROFILE:
         return await execute_chrome_source(source, timeout_seconds=timeout_seconds)
+    if spec.profile == MOZILLA_EXECUTION_PROFILE:
+        return await execute_mozilla_source(source, timeout_seconds=timeout_seconds)
     return await execute_registered_source(source, timeout_seconds=timeout_seconds)
 
 
