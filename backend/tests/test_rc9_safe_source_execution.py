@@ -121,4 +121,5 @@ def test_supported_catalog_profiles_are_explicit() -> None:
         "nvd-cve-v2",
         "github-global-advisories-v1",
         "rss-2.0",
+        "csaf-2.0",
     }
