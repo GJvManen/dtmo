@@ -1,7 +1,5 @@
 apiVersion: 1
 
-prune: true
-
 datasources:
   - name: DTMO Intelligence
     uid: dtmo-postgres-readonly
