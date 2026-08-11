@@ -4,7 +4,7 @@
 
 DTMO is an open, education-focused Cyber Threat Intelligence platform for historical incidents, current intelligence, vulnerabilities, indicators, supplier risk and management reporting.
 
-## Current production-readiness status — 2026-08-10
+## Current production-readiness status — 2026-08-11
 
 DTMO is **not production ready**.
 
@@ -21,28 +21,26 @@ DTMO is **not production ready**.
 | 9. External assurance | `NOT COMPLETE` |
 | 10. Production go/no-go | `NOT STARTED` |
 
-RC10.1 / PR #116 and RC10.2 / PR #117 are accepted. PR #117 exact head `d4e35a5fa0c463438299d6cdd3638de162a69026` completed every registered workflow and merged as `db9e72d871fb1c4d536912419ffbb4d68ad680c2`. RUN-20260810-178 / RC10.3 is the current bounded objective and remains `CI_VALIDATION_PENDING` until its own exact head is fully green.
+The repository-controlled RC11 source-framework programme and RC12 unified-console/dashboard programme are accepted through PR #147. The current operational vendor catalog is connected through governed adapters, source administration and execution are available in the canonical console, and Grafana Operations/Intelligence dashboards are embedded through the managed same-origin `/grafana/` path. These repository-controlled results do not satisfy the external Phase 8, Phase 9 or Phase 10 gates.
 
-## 16.0.0rc10 Workspaces
+## 16.0.0rc12 unified console
 
 After `docker compose up --build`, open:
 
-- `http://localhost:8000/ui/operations` — unified Security Operations Workspace;
-- `http://localhost:8000/ui/intelligence-workspace` — RC10.3 Threat Intelligence investigation workspace;
-- `http://localhost:8000/` — Threat Operations Console;
-- `http://localhost:8000/ui/admin-sources` — governed Source Registry;
-- `http://localhost:8000/ui/analyst-search` — focused Analyst workspace;
-- `http://localhost:8000/ui/share-approval` — separate Share Approval workspace;
-- `http://localhost:8000/ui/auditor` — read-only Auditor workspace;
-- `http://localhost:8000/ui/ciso-security` — CISO Security workspace;
+- `http://localhost:8000/` — canonical DTMO unified console;
+- `http://localhost:8000/ui/console` — canonical console alias;
+- `http://localhost:8000/grafana/` — managed same-origin Grafana path used by the console;
 - `http://localhost:8000/docs` — OpenAPI/Swagger;
 - `http://localhost:8000/health` — health status;
-- `http://localhost:8000/metrics` — raw Prometheus metrics;
-- `http://localhost:8000/api/v1/operations/summary` — bounded aggregate operational telemetry.
+- `http://localhost:8000/metrics` — raw Prometheus metrics.
 
-RC10.3 reuses the accepted RBAC-protected search path and adds a read-only canonical investigation detail projection. It shows stored source, severity, confidence, education relevance, review/share state and provenance. Explicit CVE identifiers are extracted only from stored canonical text/tags; known-exploited context is asserted only for records stored from `cisa-kev`; vendor/product are shown only when explicitly stored. Missing context is not invented.
+The unified console contains the governed source catalog and operations flow, administration controls, intelligence investigation, operational/intelligence analytics and read-only governance views without collapsing authority boundaries. Legacy `/ui/*` routes may remain for compatibility, but they are not separate product shells.
 
-Existing server-side RBAC remains authoritative. Search/investigation does not grant review or publication authority. Review and external share approval remain distinct human decisions and self-approval remains prohibited.
+The source connection contract distinguishes catalogued, registered, enabled, executable, ingested, reviewed and share-approved states. All currently catalogued operational vendor feeds are connected through accepted built-in or framework adapters; research-reference sources remain deliberately non-executable where appropriate. Credential values are not stored in the catalog or registry.
+
+Grafana uses dedicated least-privilege data access. Anonymous Grafana access remains disabled, the intelligence datasource is restricted to explicit reporting views, and the browser-facing console uses same-origin `/grafana/...` embeds rather than a direct `:3000` target. Native accessible chart/table fallbacks remain available in the DTMO console.
+
+Existing server-side RBAC remains authoritative. Search, ingestion, administration and dashboard access do not grant review or publication authority. Review and external share approval remain distinct human decisions and self-approval remains prohibited.
 
 For OpenSearch 2.12+ local Compose bootstrap requires `OPENSEARCH_INITIAL_ADMIN_PASSWORD` in `.env`. Real credentials, AIStor license material and image digests must remain outside source control.
 
@@ -53,12 +51,12 @@ Start with [`docs/README.md`](docs/README.md).
 Key documents:
 
 - [Current project state](docs/project/CURRENT_STATE.md)
+- [Executive status](docs/project/EXECUTIVE_STATUS.md)
 - [Production roadmap](docs/roadmap/PRODUCTION_ROADMAP.md)
+- [Source connection matrix](docs/qa/SOURCE_CONNECTION_MATRIX.md)
+- [RC12 programme completion gate](docs/qa/RC12_6_UNIFIED_CONSOLE_COMPLETION_GATE.md)
+- [16.0.0rc12 release notes](docs/releases/16.0.0rc12.md)
 - [Development run log](docs/development/RUN_LOG.md)
-- [RC10 release notes](docs/releases/16.0.0rc10.md)
-- [RC10.3 Threat Intelligence Workspace Gate](docs/qa/RC10_3_THREAT_INTELLIGENCE_WORKSPACE_GATE.md)
-- [RUN-178 RC10.3 implementation](docs/development/runs/RUN-20260810-178.md)
-- [RC10.2 Unified Operational Dashboards Gate](docs/qa/RC10_2_UNIFIED_DASHBOARDS_GATE.md)
 - [Evidence index](docs/evidence/EVIDENCE_INDEX.md)
 - [Traceability matrix](docs/traceability/TRACEABILITY_MATRIX.md)
 - [System architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
@@ -91,7 +89,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Then open `http://localhost:8000/ui/operations` or `http://localhost:8000/ui/intelligence-workspace`.
+Then open `http://localhost:8000/`.
 
 ## Open source
 
@@ -99,4 +97,4 @@ DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). See `
 
 ## Exactly one next priority
 
-Complete exact-head CI validation for RUN-20260810-178 / RC10.3. Merge only on complete success; otherwise remediate only the first concrete failing root cause.
+Phase 8 real staging deployment parity: obtain one approved production-equivalent staging deployment and collect the complete ten-class evidence package against one immutable release/deployment identity. Repository emulator or local-container evidence must not be used as a substitute for that external acceptance evidence.
