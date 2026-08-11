@@ -15,8 +15,8 @@ A catalog entry is **connected** only when its execution status is `supported` o
 | Microsoft Security Response Center | `msrc-cvrf-v3` | CONNECTED | Registry bootstrap -> enable -> official MSRC `/updates` + `/cvrf/{id}` API |
 | Cisco Security Advisories | `cisco-openvuln-v2` | CONNECTED | Registry bootstrap -> inject `env:CISCO_OPENVULN_TOKEN` -> enable -> official Cisco PSIRT OpenVuln `/latest/25` |
 | Red Hat Product Security | `redhat-csaf-v1` | CONNECTED | Registry bootstrap -> enable -> official Red Hat Security Data API `/csaf.json` + `/csaf/{RHSA}.json` |
-| Ubuntu Security Notices | `rss-2.0` | PENDING_CI | Registry bootstrap -> enable -> official Canonical `/security/notices/rss.xml` feed |
-| Debian Security Information | `vendor-debian` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
+| Ubuntu Security Notices | `rss-2.0` | CONNECTED | Registry bootstrap -> enable -> official Canonical `/security/notices/rss.xml` feed |
+| Debian Security Advisories | `rss-2.0` | PENDING_CI | Registry bootstrap -> enable -> official Debian `/security/dsa` RSS feed |
 | Apple Security Releases | `vendor-apple` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | Chrome Releases | `vendor-chrome` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
 | Mozilla Security Advisories | `vendor-mozilla` | ADAPTER_REQUIRED | Visible in catalog; execution disabled |
@@ -27,10 +27,10 @@ A catalog entry is **connected** only when its execution status is `supported` o
 
 ## Enforced contract
 
-`backend/tests/test_rc11_1_source_framework.py` requires every `supported` catalog execution profile to exist in the unified `SourceAdapterRegistry`. Multiple catalog sources may deliberately reuse one governed execution profile when they expose the same accepted wire format; Ubuntu therefore reuses the already accepted `rss-2.0` adapter instead of introducing duplicate parser code. `supported-built-in` remains separately constrained to the CISA KEV built-in path.
+`backend/tests/test_rc11_1_source_framework.py` requires every `supported` catalog execution profile to exist in the unified `SourceAdapterRegistry`. Multiple catalog sources may deliberately reuse one governed execution profile when they expose the same accepted wire format; Ubuntu and Debian therefore reuse the already accepted `rss-2.0` adapter instead of introducing duplicate parser code. `supported-built-in` remains separately constrained to the CISA KEV built-in path.
 
 Credential values are never stored in the catalog or source registry. Credentialed catalog entries carry only a logical secret reference such as `env:CISCO_OPENVULN_TOKEN`; execution fails closed when the referenced runtime secret is absent or the reference scheme is not accepted.
 
 ## Remaining onboarding order
 
-After Ubuntu acceptance, Debian is next. Remaining vendor sources are onboarded one by one against official machine-readable APIs/feeds where available. A vendor source stays fail-closed as `planned-parser` until its endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
+After Debian acceptance, Apple, Chrome, Mozilla, Fortinet, Palo Alto Networks and Broadcom/VMware remain. Each source is onboarded only against an official machine-readable API/feed where available and stays fail-closed as `planned-parser` until its endpoint contract, bounded fetch behaviour, normalization, provenance, tests and exact-head release gates are accepted.
