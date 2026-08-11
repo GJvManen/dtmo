@@ -15,49 +15,48 @@ Last updated: **2026-08-11**
   - [x] RC13.1 — source register/enable/run → ingest/index → recent intelligence → Overview accepted via PR #151.
   - [x] RC13.2 — single-session Visual analytics accepted via PR #152.
   - [x] RC13.3 — governed Administration/RBAC accepted via PR #153.
-  - [ ] RC13.4 — Governance knowledge surface accepted.
+  - [x] RC13.4 — Governance knowledge surface accepted via PR #154.
   - [ ] RC13.5 — complete canonical-console browser acceptance recorded on one exact head.
+  - [ ] accountable project-owner functional retest of the complete repaired local product recorded.
 - [ ] Phase 8 — real staging acceptance complete.
 - [ ] Phase 9 — external assurance complete.
 - [ ] Phase 10 — production go/no-go approved.
 
-## RC13.3 — governed Administration/RBAC
-
-- [x] `managed_principals` persistence accepted.
-- [x] `managed_role_assignments` persistence accepted.
-- [x] Migration `0009_managed_rbac_assignments` accepted after `0008_grafana_reporting_views`.
-- [x] Built-in role/permission catalog is server-side and immutable from browser input.
-- [x] RBAC mutations require `manage:users` and a human `admin` role.
-- [x] Service accounts are restricted to only `service_account`.
-- [x] Administrator self-management is blocked server-side.
-- [x] The last active managed admin cannot be removed or deactivated.
-- [x] Create/update mutations append tamper-evident audit events with request IDs.
-- [x] Canonical Administration tab can create a principal and assign roles.
-- [x] Canonical Administration tab can change roles and activate/deactivate a principal.
-- [x] UI makes identity-provider/token reconciliation requirements explicit.
-- [x] Active production bearer tokens are never silently rewritten by managed assignment mutations.
-- [x] `RC13 Governed Administration RBAC Gate` succeeded on exact head `b828b9b2dbb2f8794bfe7c13ec6e7dd0bdafb22f`.
-- [x] Complete registered exact-head workflow set succeeded before PR #153 merge.
-
 ## RC13.4 — Governance knowledge surface
 
-- [ ] Authenticated read-only governance API accepted.
-- [ ] Canonical Governance pane renders framework coverage.
-- [ ] Normenkader IBP is visibly `UNMAPPED` unless a repository control crosswalk exists.
-- [ ] MITRE ATT&CK is visibly `UNMAPPED` unless a repository technique mapping dataset exists.
-- [ ] CVSS is visibly `CONTEXT_ONLY` while no first-class vector/base-score field exists.
-- [ ] Internal DTMO governance mappings have repository provenance.
-- [ ] Authority boundaries are visible and do not grant publication/share authority.
-- [ ] No external framework equivalence is inferred.
-- [ ] `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md` is authoritative and consistent with runtime output.
-- [ ] `RC13 Governance Knowledge Surface Gate` succeeds on the exact final PR head.
+- [x] Authenticated read-only governance API accepted.
+- [x] Canonical Governance pane renders framework coverage.
+- [x] Normenkader IBP is visibly `UNMAPPED` because no repository control crosswalk exists.
+- [x] MITRE ATT&CK is visibly `UNMAPPED` because no repository technique mapping dataset exists.
+- [x] CVSS is visibly `CONTEXT_ONLY` while no first-class vector/base-score field exists.
+- [x] Internal DTMO governance mappings have repository provenance.
+- [x] Authority boundaries are visible and do not grant publication/share authority.
+- [x] No external framework equivalence is inferred.
+- [x] `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md` is authoritative and consistent with runtime output.
+- [x] `RC13 Governance Knowledge Surface Gate` succeeded on exact head `0a227cb9f3972504287a6f7f064d6df18b76fbed`.
+- [x] Complete registered exact-head workflow set succeeded before PR #154 merge as `21672aaf1cf097228699810660eaac167da842d6`.
+
+## RC13.5 — complete functional browser acceptance
+
+- [ ] `RC13 Full Functional Console Acceptance Gate` succeeds on the exact final PR head.
+- [ ] One Chromium browser context covers Overview → Intelligence → Sources & Catalog → Visual analytics → Administration → Governance.
+- [ ] Eligible framework source register/enable/run is executed through the canonical console fixture.
+- [ ] Source execution result is visible as fetched/inserted/indexed state.
+- [ ] Resulting Intelligence and Overview state update in the same browser session.
+- [ ] Native severity/source/connector/review analytics render from the resulting state.
+- [ ] Normal product navigation makes no `/grafana/` request or second-login dependency.
+- [ ] Governed RBAC create/update/deactivate remains functional with unique mutation request IDs.
+- [ ] Administrator self-management protection remains visible/enforced.
+- [ ] Governance framework coverage, repository mapping provenance and authority boundaries render in the same session.
+- [ ] No connector, analytics, Administration or Governance action grants publication authority.
 - [ ] Complete registered exact-head workflow set succeeds before merge.
+- [ ] After merge, accountable project-owner functional retest of the repaired local product is explicitly accepted.
 
 ## Phase 8 — deployment-parity package
 
-**PAUSED_PENDING_RC13.** Do not execute or credit these items until RC13 reaches `PASS`.
+**PAUSED_PENDING_RC13.** Do not execute or credit these items until RC13.5 exact-head acceptance and the accountable owner functional retest are both complete.
 
-All items must refer to the same immutable `16.0.0rc12` staging deployment identity.
+All items must refer to the same immutable staging deployment identity.
 
 - [ ] Approved staging environment identifier and accountable owner.
 - [ ] Reachable staging endpoint through approved access path.
@@ -112,6 +111,6 @@ All items must refer to the same immutable `16.0.0rc12` staging deployment ident
 
 ## Decision
 
-Current decision: **NO-GO pending RC13 and Phases 8–10**.
+Current decision: **NO-GO pending RC13.5, accountable owner retest and Phases 8–10**.
 
-The only current action is RC13.4 repository-backed Governance knowledge. External Phase 8 staging validation remains paused until the complete RC13 functional gate is accepted.
+The only current engineering action is RC13.5 complete functional browser acceptance. External Phase 8 staging validation remains paused until the exact-head gate and owner functional retest are both accepted.
