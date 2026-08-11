@@ -4,7 +4,7 @@ Last updated: 2026-08-11
 
 ## Executive summary
 
-DTMO has completed the repository-controlled production-readiness work for CI/workflow integrity, application security and identity, data integrity and recovery, connector reliability and provenance, performance/scalability, and observability/incident operations. The RC11 source-framework/onboarding programme and RC12 unified-console/dashboard programme are also complete within their documented repository-controlled boundaries.
+DTMO has completed the repository-controlled production-readiness work for CI/workflow integrity, application security and identity, data integrity and recovery, connector reliability and provenance, performance/scalability, and observability/incident operations. The RC11 source-framework/onboarding programme and RC12 unified-console/dashboard programme are complete within their documented repository-controlled boundaries through PR #148.
 
 DTMO is **not production ready**.
 
@@ -38,6 +38,8 @@ The remaining path to production is dominated by genuine external evidence and r
 
 RC12.5b / PR #147 was accepted on exact head `339207dd5ad038727da34e0a0058c74076847eea` and merged as `6e74c5e45b6683e1fceba3ff14f554e36815b95f` after the returned exact-head workflow set completed successfully.
 
+RC12.6 / PR #148 exact head `17c914af8a579c813b82849bab773b4449e8f178` completed the complete returned exact-head workflow set successfully and merged with expected-head protection as `8e614abc0277025957cab433c0e824c25dbb7eeb`. Issue #125 is closed as `completed`.
+
 ## Current blocking evidence
 
 Phase 8 requires one immutable real staging deployment identity with: approved owner/environment, reachable endpoint, deployed release/image identity, infrastructure/configuration parity, least-privilege staging identities and secret-manager references, TLS/network evidence, staging data/no-production-credential confirmation, deployment/change record, rollback target/procedure, and deployment-time threat/CVE/vendor-advisory review.
@@ -58,7 +60,7 @@ Reason: Phase 6 external accessibility evidence, Phase 8 real staging/deployment
 
 ## Exactly one next priority
 
-After the RC12 close-out documentation PR passes exact-head CI, obtain the approved real Phase 8 staging deployment-parity evidence package tied to one immutable release/deployment identity.
+Obtain the approved real Phase 8 staging deployment-parity evidence package tied to one immutable release/deployment identity.
 
 ## Authoritative records
 
