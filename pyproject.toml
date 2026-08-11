@@ -23,6 +23,7 @@ dependencies = [
   "prometheus-client>=0.22,<1",
   "structlog>=25,<26",
   "PyJWT[crypto]>=2.10,<3",
+  "defusedxml>=0.7.1,<0.8",
 ]
 
 [project.optional-dependencies]
@@ -35,6 +36,7 @@ test = [
   "PyYAML>=6.0,<7",
   "pip-audit>=2.9,<3",
   "playwright>=1.54,<2",
+  "types-defusedxml>=0.7.0.20250822",
 ]
 
 [tool.hatch.build.targets.wheel]
