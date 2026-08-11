@@ -30,6 +30,7 @@ from dtmo.source_center import router as source_center_router
 from dtmo.threat_workspace import router as threat_workspace_router
 from dtmo.trace_context import begin_trace, end_trace
 from dtmo.ui import router as ui_router
+from dtmo.unified_console import router as unified_console_router
 from dtmo.ux_preferences import router as ux_preferences_router
 
 settings = get_settings()
@@ -72,6 +73,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc10", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+# RC10.11: the unified shell owns the canonical root route. Legacy UI routers
+# remain mounted as compatibility surfaces while the product converges on one shell.
+app.include_router(unified_console_router)
 app.include_router(frontend_router)
 app.include_router(operations_ui_router)
 app.include_router(operations_metrics_router)
