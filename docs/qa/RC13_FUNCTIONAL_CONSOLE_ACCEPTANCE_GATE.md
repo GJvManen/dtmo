@@ -6,17 +6,6 @@ Status: `BLOCKED_INTERNAL`
 
 A project-owner functional test of `http://localhost:8000/` on 2026-08-11 found that the repository-controlled product was not yet functionally usable despite the earlier RC12 documentation close-out. This gate supersedes the previous Phase 8 handoff claim until the defects below are corrected and retested.
 
-## Blocking findings
-
-1. **Overview** — no useful graphical/statistical overview is visible by default.
-2. **Intelligence** — no usable output is shown because the console has no default/recent intelligence presentation and the source-ingestion flow is not yet operational end to end from the console.
-3. **Sources & Catalog** — refresh/register/run controls do not provide a complete working operator journey for the already connected source framework.
-4. **Visual analytics** — embedded Grafana requires a separate Grafana authentication context and therefore is not a seamless default console experience.
-5. **Administration** — role/user administration is not available from the unified console.
-6. **Governance** — the console does not present the governance/control frameworks used by the project, including Normenkader IBP, MITRE ATT&CK and CVSS context.
-7. **Navigation copy** — remove the non-user-facing legacy-shell compatibility notice from the menu.
-8. **End-to-end data path** — operators must be able to register/activate/run accepted sources, ingest and normalize their records, and immediately see the resulting intelligence and statistics in the same product.
-
 ## Required acceptance journey
 
 A fresh local/dev deployment must support the following from the canonical console without using legacy UI routes as the primary workflow:
@@ -31,7 +20,7 @@ A fresh local/dev deployment must support the following from the canonical conso
 8. see newly ingested intelligence without requiring a separate external search action;
 9. search intelligence when OpenSearch is available, with a canonical-database recent-items view remaining usable independently;
 10. view graphical analytics without a separate Grafana login being a prerequisite for core functionality;
-11. administer supported DTMO roles/user-role assignments through governed server-side APIs;
+11. administer supported DTMO principal/role assignments through governed server-side APIs;
 12. view the applicable governance frameworks and mappings in the Governance area;
 13. retain RBAC, separation of duties, privacy, provenance, auditability, human review and separate share approval.
 
@@ -39,56 +28,57 @@ A fresh local/dev deployment must support the following from the canonical conso
 
 Status: `PASS` within the RC13.1 evidence boundary.
 
-PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after the complete exact-head workflow set passed, including:
+PR #151 merged on 2026-08-11 as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2` after complete exact-head success, including RC4 Quality Gate #803 and RC13 Functional Console Browser E2E Gate #5.
 
-- `RC4 Quality Gate` run #803;
-- `RC13 Functional Console Browser E2E Gate` run #5;
-- the complete registered exact-head workflow set returned by GitHub for head `e881cf5db2a5d6868419425f1c6a7f6017dcfa83`.
-
-RC13.1 accepted:
-
-- canonical `GET /api/v1/console/recent-intelligence` backed by PostgreSQL rather than OpenSearch;
-- truthful built-in source handling so CISA manual execution is visible in development when allowed;
-- clear framework-source registration, disabled/enabled and runnable states;
-- source run completion feedback with fetched/inserted/indexed values;
-- automatic refresh of source status, dashboard statistics and recent intelligence after a feed run;
-- useful native Overview charts for seven-day intelligence trend, severity and connector health;
-- recent intelligence in both Overview and Intelligence without requiring an OpenSearch query;
-- removal of the legacy `/ui/*` compatibility notice from the navigation;
-- Chromium coverage of register → enable → run → ingest → recent intelligence → updated Overview behavior.
-
-RC13 remains blocked because RC13.2–RC13.5 are not yet accepted.
+Accepted behavior includes truthful source state, register/enable/configure/run operations, ingest/index feedback, PostgreSQL-backed recent intelligence, useful Overview statistics and Chromium coverage of the complete source → intelligence journey.
 
 ## RC13.2 — single-session visual analytics
 
-Status: `PENDING_CI`.
+Status: `PASS` within the RC13.2 evidence boundary.
 
-RC13.2 makes native DTMO analytics the canonical user-facing Visual analytics surface and removes the separately authenticated Grafana embed from normal console use without weakening Grafana authentication.
+PR #152 merged on 2026-08-11 as `b8c254c5d099cde5dca624aa85b17c320594847e` after the complete exact-head workflow set succeeded, including:
 
-Implementation requirements:
+- RC4 Quality Gate #805;
+- RC13 Functional Console Browser E2E Gate #6;
+- RC13 Single-session Visual Analytics Gate #1.
 
-- keep severity, source distribution, connector health and review-status native analytics visible in the canonical console;
-- suppress the `.grafana-shell` in the shared design-system layer used by the unified console;
-- route the RC13.2 design-system response before the legacy frontend CSS route;
-- keep `GF_AUTH_ANONYMOUS_ENABLED=false` and `GF_USERS_ALLOW_SIGN_UP=false`;
-- do not add a static Grafana user, anonymous role, bypass token or privilege expansion;
-- retain Grafana as an authenticated operational/advanced deployment component outside the normal canonical user journey;
-- add `RC13 Single-session Visual Analytics Gate` with static contract checks and a Chromium journey;
-- require the Chromium journey to verify that native analytics render, Grafana controls are not visible, and normal Visual analytics navigation generates no `/grafana/` request;
-- record machine-readable exact-head evidence and fail closed when missing or unsuccessful.
+Accepted behavior:
 
-RC13.2 becomes `PASS` only after the complete exact-head workflow set, including `RC13 Single-session Visual Analytics Gate`, succeeds.
+- native severity, source, connector-health and review-status analytics are the canonical product surface;
+- normal Visual analytics navigation makes no `/grafana/` request;
+- the separately authenticated Grafana shell is not exposed in normal canonical-console use;
+- Grafana remains separately authenticated for advanced/operations use;
+- Grafana anonymous access and self-signup remain disabled;
+- no authentication bypass or privilege broadening was introduced.
 
-## Remaining RC13 slices after RC13.2
+## RC13.3 — governed Administration/RBAC
 
-- **RC13.3** — governed Administration/RBAC user-role assignment management.
-- **RC13.4** — Governance knowledge surface with Normenkader IBP, MITRE ATT&CK, CVSS and related project mappings.
+Status: `PENDING_CI` / current priority.
+
+RC13.3 acceptance requires:
+
+- persistent managed principals and managed role assignments;
+- immutable built-in role definitions derived from the server-side `Role` and `ROLE_PERMISSIONS` policy;
+- `manage:users` plus a human `admin` role for RBAC administration;
+- service accounts restricted to `service_account` and never combinable with human/admin roles;
+- administrator self-management blocked;
+- the final active managed admin protected from removal/deactivation;
+- create/update mutations recorded atomically in the existing tamper-evident audit chain with request IDs;
+- canonical Administration UI for creating principals, assigning/changing roles and activate/deactivate operations;
+- truthful token behavior: DTMO does not silently modify externally issued production bearer tokens; identity-provider reconciliation or token reissue is required;
+- arbitrary custom token roles are not creatable from browser input;
+- a dedicated `RC13 Governed Administration RBAC Gate` with persistence/security contracts and a real Chromium Administration journey;
+- complete exact-head workflow success before merge.
+
+## Remaining RC13 slices after RC13.3
+
+- **RC13.4** — Governance knowledge surface with Normenkader IBP, MITRE ATT&CK, CVSS and repository-backed project mappings.
 - **RC13.5** — complete canonical-console functional browser acceptance and programme close-out.
 
 ## Phase 8 boundary
 
-Phase 8 external staging validation is **paused** until this RC13 functional acceptance gate reaches `PASS`. Repository CI, a successful build, or the existence of UI controls is insufficient: the complete user journey must be executable and covered by browser/API tests on one exact head.
+Phase 8 external staging validation remains **paused** until the complete RC13 functional acceptance gate reaches `PASS`. Repository CI, a successful build, or the existence of UI controls is insufficient: the complete user journey must be executable and ultimately accepted by the accountable project owner.
 
 ## Release rule
 
-Do not claim `READY_FOR_EXTERNAL_VALIDATION`, production readiness, external staging acceptance or pentest readiness while any blocking finding above remains unresolved.
+Do not claim `READY_FOR_EXTERNAL_VALIDATION`, production readiness, external staging acceptance or pentest readiness while any RC13 blocking finding remains unresolved.
