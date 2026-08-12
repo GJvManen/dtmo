@@ -4,7 +4,7 @@
 
 DTMO uses explicit evidence gates for engineering changes and keeps repository-controlled acceptance separate from functional product acceptance, external staging and production assurance.
 
-A configured, queued, cancelled, failed or unexecuted automated test is never `PASS`. Manual/external acceptance is recorded explicitly and is never presented as machine-generated evidence.
+A configured, queued, cancelled, failed or unexecuted automated test is never `PASS`. Manual/external acceptance is recorded explicitly and is never presented as machine-generated evidence. Newer accountable functional evidence may reopen a previously accepted product gate without rewriting historical evidence.
 
 ## Gate families
 
@@ -17,44 +17,53 @@ A configured, queued, cancelled, failed or unexecuted automated test is never `P
 | Recovery | Clean-target and multi-store recovery/integrity behavior is evidenced |
 | Connector reliability | Contracts, state, provenance, retry, timeout, replay, freshness and isolation succeed |
 | Performance | Ingestion/read/concurrency/degraded-dependency behavior meets accepted bounds |
-| Accessibility / UX | Browser, keyboard, responsive, WCAG and accountable external/manual AT acceptance succeed |
+| Accessibility / UX | Browser, keyboard, responsive, WCAG and accountable external/manual acceptance succeed |
 | Observability & operations | Metrics, correlation, trace context, alerting, dashboards, runbooks and exercises succeed |
-| Functional console | Canonical product journeys execute in Chromium and produce usable data/state changes |
-| Owner functional acceptance | Accountable owner retests the repaired product and explicitly accepts or reports blockers |
+| Functional console | Canonical product journeys produce truthful usable state changes |
+| Chrome interaction | Google Chrome-channel navigation/controls succeed with zero page/console errors |
+| Owner functional acceptance | Accountable owner retests the merged product and explicitly accepts or reports blockers |
 | External deployment identity | One approved production-equivalent staging environment and immutable deployment identity are independently evidenced |
-| Staging deployment parity | All required identity, runtime, configuration, TLS/network, data, change, rollback and security evidence binds to the same deployment |
-| External staging validation | Required deployed-environment suites succeed against the accepted immutable staging identity |
+| Staging deployment parity | All required external evidence binds to the same deployment |
+| External staging validation | Required deployed-environment suites succeed against the accepted staging identity |
 | Release | Complete exact-head workflow set succeeds before expected-head protected merge |
 
 ## Current phase status — 2026-08-12
 
 - Phases 1–7: `PASS`.
-- RC13.1–RC13.5 repository evidence: `PASS`.
-- RC13 accountable owner functional retest: `PASS` on 2026-08-12 with `RC13 owner retest akkoord`.
-- RC13 overall: `PASS`; issue #150 closed.
-- Phase 8: `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`.
+- RC13.1–RC13.5 repository evidence: historical `PASS`.
+- earlier accountable owner retest: historical acceptance.
+- subsequent owner retest: blocking canonical-console findings.
+- RC13 overall: `REOPENED / BLOCKED_INTERNAL`; issue #150 open.
+- Phase 8: `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`; issue #158 paused.
 - Phase 9: `NOT COMPLETE`.
 - Phase 10: `NOT STARTED`.
 
 ## Exact-head release discipline
 
-Workflow configuration on `main` is not itself acceptance evidence. A merge candidate must execute the registered release-critical workflow set on the exact final pull-request head. Merge uses expected-head protection so a moved head cannot be accepted accidentally.
+Workflow configuration is not acceptance evidence. A merge candidate must execute the registered release-critical workflow set on the exact final pull-request head. Merge uses expected-head protection so a moved head cannot be accepted accidentally.
 
-## RC13 evidence boundary
+## Reopened RC13 usability gate
 
-RC13.5 exact-head CI proved one canonical session through:
+The dedicated `RC13 Owner Retest Usability Gate` adds coverage for defects not explicitly exercised by the earlier RC13.5 journey:
 
-**Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
+- Overview `Alles vernieuwen` must make real refresh requests and restore enabled UI state;
+- empty intelligence must produce explicit empty-data status, not false update success;
+- zero-only intelligence graph datasets must render clear empty states;
+- canonical navigation and non-mutating refresh controls must work using the Google Chrome browser channel;
+- the navigation version badge must be absent;
+- governed Administration and Governance refresh controls must remain usable;
+- browser page errors must equal zero;
+- browser console errors must equal zero.
 
-That browser evidence was synthetic repository-controlled evidence. The distinct accountable owner acceptance on 2026-08-12 closes RC13 without retroactively changing the machine evidence claim.
+The browser APIs are bounded synthetic fixtures. Successful CI proves regression coverage only. Project-owner local functional retest remains a separate required gate after merge.
 
-## Phase 8.1 fail-closed boundary
+## Historical RC13 evidence boundary
 
-Phase 8 may now execute, but it is not `PASS`.
+PRs #151–#157 and the earlier `RC13 owner retest akkoord` remain historical evidence. They are not erased. The later owner-observed defects supersede them only for the **current release decision**.
 
-`docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md` is the authoritative intake record for one real production-equivalent staging deployment. It currently records `evidence_complete: false` and real-environment identity fields as `NOT_PROVIDED`.
+## Phase 8 boundary
 
-Repository readiness contracts, Docker Compose and staging emulators are supporting evidence only. They may not be promoted into an external deployment identity by inference.
+The Phase 8 deployment identity record remains fail-closed preparatory evidence. No staging/deployment evidence may advance while RC13 is reopened. Repository readiness contracts, Docker Compose and staging emulators cannot substitute for current owner acceptance or real staging.
 
 ## Security, privacy and publication invariants
 
@@ -68,12 +77,6 @@ Repository readiness contracts, Docker Compose and staging emulators are support
 - missing or incomplete evidence blocks the corresponding acceptance claim;
 - analytics convenience must not introduce anonymous Grafana access, authentication bypass or privilege broadening.
 
-## External assurance boundary
-
-Issue #3 is the active production-readiness tracker. Issue #1 tracks Phase 8, later Phase 9 external assurance and Phase 10 production acceptance. Issue #150 is closed as the completed RC13 record.
-
-Repository CI, local Docker Compose and staging emulators cannot substitute for real staging, independent assurance or final production approval.
-
 ## Exactly one next priority
 
-**Phase 8.1 — establish and record the approved production-equivalent staging environment and immutable deployment identity.**
+**Issue #150 — complete the reopened canonical-console usability repair, full exact-head CI, expected-head merge and accountable project-owner retest.**
