@@ -18,16 +18,16 @@ The documentation is intentionally separated into **stable product/architecture 
 
 | Audience | Recommended document |
 |---|---|
-| Executive / sponsor | [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md) and [Executive Status](project/EXECUTIVE_STATUS.md) |
+| Executive / sponsor | [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md), [Executive Status](project/EXECUTIVE_STATUS.md) and [Production Go/No-Go Template](project/PRODUCTION_GO_NO_GO_TEMPLATE.md) |
 | Product / delivery | [Current State](project/CURRENT_STATE.md) and [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) |
-| Project governance | [Project Governance](project/PROJECT_GOVERNANCE.md) and [Documentation Standard](project/DOCUMENTATION_STANDARD.md) |
-| Architecture / engineering | [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md) and [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
-| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Security Responsibility Matrix](security/SECURITY_RESPONSIBILITY_MATRIX.md) and [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
-| Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md) |
-| QA / release management | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md) and [Production Checklist](project/PRODUCTION_CHECKLIST.md) |
+| Project governance | [Project Governance](project/PROJECT_GOVERNANCE.md), [Risk Management](security/RISK_MANAGEMENT.md) and [Documentation Standard](project/DOCUMENTATION_STANDARD.md) |
+| Architecture / engineering | [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) and [Threat Model](security/THREAT_MODEL.md) |
+| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md) and [Security Responsibility Matrix](security/SECURITY_RESPONSIBILITY_MATRIX.md) |
+| Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md) and [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
+| QA / release management | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md) and [Production Go/No-Go Template](project/PRODUCTION_GO_NO_GO_TEMPLATE.md) |
 | Operations | [Operating Model](operations/OPERATING_MODEL.md) and [Operations Manual](operations/OPERATIONS_MANUAL.md) |
 | Intelligence engineering | [Source Catalog](intelligence/SOURCE_CATALOG.md) and [Source Connection Matrix](qa/SOURCE_CONNECTION_MATRIX.md) |
-| External assessor | [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [Security Responsibility Matrix](security/SECURITY_RESPONSIBILITY_MATRIX.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) and [Phase 9 External Assurance Gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md) |
+| External assessor | [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) and [Phase 9 External Assurance Gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md) |
 | New contributors / reviewers | [Glossary](project/GLOSSARY.md) and [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
 
 ## Documentation building blocks
@@ -39,6 +39,7 @@ The documentation is intentionally separated into **stable product/architecture 
 - [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md) — concise go/no-go-oriented view of accepted and outstanding evidence.
 - [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) — consolidated readiness position across engineering, functional, staging, assurance and production gates.
 - [Production Checklist](project/PRODUCTION_CHECKLIST.md) — evidence checklist for formal progression.
+- [Production Go/No-Go Template](project/PRODUCTION_GO_NO_GO_TEMPLATE.md) — fail-closed Phase 10 production decision record.
 - [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) — phased route from accepted engineering baseline to production go/no-go.
 - [Project Governance](project/PROJECT_GOVERNANCE.md) — ownership, authority, change, evidence and release-governance model.
 - [Documentation Standard](project/DOCUMENTATION_STANDARD.md) — rules for maintaining professional documentation without mixing in operational chronology.
@@ -48,12 +49,17 @@ The documentation is intentionally separated into **stable product/architecture 
 
 - [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md) — concise system context and trust-boundary orientation for reviewers and assessors.
 - [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) — logical components, data flow, persistence, trust boundaries, identity, analytics and deployment boundaries.
+- [Threat Model](security/THREAT_MODEL.md) — protected assets, threat actors, trust boundaries and security control objectives.
 - [Frontend UX Architecture](ux/FRONTEND_UX.md) — canonical console information architecture and interaction principles.
 - [API documentation](api/) — API contracts and supporting interface notes.
 
 ### 3. Security, privacy and identity
 
 - [Security Overview](security/SECURITY_OVERVIEW.md) — security model, identities, authorization, privileged operations, secret handling and approval boundaries.
+- [Threat Model](security/THREAT_MODEL.md) — structured threat catalogue and STRIDE-oriented design review.
+- [Risk Management](security/RISK_MANAGEMENT.md) — risk method, lifecycle, scoring and release interaction.
+- [Risk Register](security/RISK_REGISTER.md) — controlled project-level material risk state.
+- [Security Exception and Waiver Procedure](security/SECURITY_EXCEPTION_WAIVER.md) — temporary deviation governance and expiry rules.
 - [Security Responsibility Matrix](security/SECURITY_RESPONSIBILITY_MATRIX.md) — role and accountability boundaries for security controls and assurance.
 - [Security Policy](../SECURITY.md) — vulnerability reporting and security-contact policy.
 - [ADR-001 — Evidence and Claim Boundaries](project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md) — architectural rule separating engineering evidence from manual/external acceptance claims.
@@ -67,9 +73,10 @@ The documentation is intentionally separated into **stable product/architecture 
 
 Credential values are never repository/catalog evidence. Credentialed integrations use logical secret references and runtime resolution.
 
-### 5. Governance and framework mapping
+### 5. Governance, data and framework mapping
 
 - [Project Governance](project/PROJECT_GOVERNANCE.md) — project-level authority and decision model.
+- [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) — information classification, minimization, retention and disposal principles.
 - [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md) — authoritative framework mapping truth model.
 - [Traceability Matrix](traceability/TRACEABILITY_MATRIX.md) — requirements/control/evidence traceability.
 - [Evidence Index](evidence/EVIDENCE_INDEX.md) — structured evidence references.
@@ -91,6 +98,7 @@ Missing mappings are not inferred from free text, tags or semantic similarity.
 - [Frontend UX Release Gate](qa/FRONTEND_UX_RELEASE_GATE.md)
 - [Phase 8 Staging Deployment-Parity Gate](qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md)
 - [Phase 9 External Assurance Gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md)
+- [Production Go/No-Go Template](project/PRODUCTION_GO_NO_GO_TEMPLATE.md)
 - [Open Source Governance](qa/OPEN_SOURCE_GOVERNANCE.md)
 
 DTMO applies exact-head release discipline. A configured, queued, cancelled, skipped, failed, stale or inaccessible test is never treated as `PASS`. A new commit invalidates previous exact-head CI for the pull request.
@@ -125,13 +133,14 @@ Across all documentation, the following remain authoritative:
 - explicit human review and separate external-share approval;
 - no publication authority from connectors, CI, dashboards, analytics, Administration, Governance or staging access;
 - no inferred framework/control/technique mappings;
-- no raw secrets in repository evidence.
+- no raw secrets in repository evidence;
+- open risks and exceptions remain explicit and do not become silent acceptance.
 
 ## Current workstreams
 
 Two distinct workstreams are active and must not be conflated:
 
-1. **Production readiness:** Phase 8.1 real staging environment and immutable deployment identity.
+1. **Production readiness:** Phase 8.1 real staging environment and immutable deployment identity, followed by Phase 9 independent assurance and Phase 10 formal production decision.
 2. **Product enhancement:** issue #171, beginning with shared accessible severity semantics/filtering across Overview and Intelligence, followed by manual source onboarding, trend analytics, first-class framework mapping, richer RBAC administration and deeper Governance.
 
 Product enhancements do not automatically count as Phase 8/9/10 evidence; they require their own appropriate environment evidence when relevant.
