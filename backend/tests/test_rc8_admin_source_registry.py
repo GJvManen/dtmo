@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from dtmo.auth.policy import Principal, Role
-from dtmo.sources import validate_source_url
+from dtmo.sources import validate_secret_ref, validate_source_url
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -39,10 +39,22 @@ def test_admin_registry_requires_human_admin_and_manage_connector_permission() -
     assert 'action="source.update"' in text
 
 
-def test_secret_values_are_references_only() -> None:
-    text = (ROOT / "backend/dtmo/sources.py").read_text(encoding="utf-8")
-    assert 'startswith(("vault://", "secret://", "env://"))' in text
-    assert "never a raw secret" in text
+def test_secret_values_are_logical_references_only_and_env_refs_are_executable() -> None:
+    assert validate_secret_ref("env:CISCO_OPENVULN_TOKEN") == "env:CISCO_OPENVULN_TOKEN"
+    assert validate_secret_ref("env://CISCO_OPENVULN_TOKEN") == "env:CISCO_OPENVULN_TOKEN"
+    assert validate_secret_ref("vault://dtmo/connectors/cisco") == "vault://dtmo/connectors/cisco"
+    assert validate_secret_ref("secret://dtmo/connectors/cisco") == "secret://dtmo/connectors/cisco"
+    assert validate_secret_ref("") is None
+    for unsafe in (
+        "raw-token-value",
+        "env:cisco_openvuln_token",
+        "env://cisco_openvuln_token",
+        "env:",
+        "vault://",
+        "secret://",
+    ):
+        with pytest.raises(ValueError, match="never a raw secret"):
+            validate_secret_ref(unsafe)
 
 
 def test_registry_migration_is_after_connector_replay() -> None:
