@@ -40,16 +40,21 @@ def test_rc13_5_browser_journey_covers_all_canonical_areas() -> None:
 
 
 def test_rc13_5_historical_evidence_is_preserved_and_current_owner_acceptance_is_recorded() -> None:
+    workflow = (ROOT / ".github/workflows/rc13-full-functional-console-acceptance.yml").read_text(
+        encoding="utf-8"
+    )
     gate = (ROOT / "docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md").read_text(
         encoding="utf-8"
     )
     phase8 = (ROOT / "docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md").read_text(
         encoding="utf-8"
     )
-    assert "RC13.4" in gate
-    assert "RC13.5" in gate
+    assert "RC13 Full Functional Console Acceptance Gate" in workflow
+    assert '"phase8_status": "PAUSED_PENDING_RC13_OWNER_RETEST"' in workflow
     assert "PASS / OWNER_ACCEPTED" in gate
     assert "2026-08-12" in gate
+    assert "Accepted canonical journey" in gate
+    assert "historical evidence must remain immutable" in gate
     assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in phase8
     assert "Issue #158" in phase8
     assert "Phase 8 may be marked `PASS` only when" in phase8
