@@ -31,15 +31,18 @@ def test_zero_value_datasets_render_explicit_empty_state() -> None:
 def test_navigation_is_chrome_safe_and_version_badge_removed() -> None:
     source = CONSOLE.read_text(encoding="utf-8")
     assert '<span class="status-pill neutral">16.0.0rc12</span>' not in source
-    for label in (
-        "Overzicht",
-        "Intelligence",
-        "Bronnen & catalogus",
-        "Visual analytics",
-        "Administration",
-        "Governance",
+    for label, view in (
+        ("Overzicht", "overview"),
+        ("Intelligence", "intelligence"),
+        ("Bronnen & catalogus", "sources"),
+        ("Visual analytics", "analytics"),
+        ("Administration", "administration"),
+        ("Governance", "governance"),
     ):
-        assert f'type="button" class="button secondary" data-view=' in source or label in source
+        expected = (
+            f'type="button" class="button secondary" data-view="{view}">{label}</button>'
+        )
+        assert expected in source
     assert "function closestTarget" in source
     assert "window.addEventListener('error'" in source
     assert "window.addEventListener('unhandledrejection'" in source
