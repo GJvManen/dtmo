@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections.abc import AsyncIterator
 from typing import Annotated
 from uuid import UUID
@@ -19,6 +20,7 @@ from dtmo.governance import (
     approve_intelligence_sharing,
     review_intelligence,
 )
+from dtmo.intelligence import IntelligenceType
 from dtmo.lake.minio_store import MinioObjectStore
 from dtmo.lake.service import IntelligenceLake
 from dtmo.persistence.repository import IntelligenceRepository
@@ -37,6 +39,35 @@ router = APIRouter(prefix="/api/v1", tags=["intelligence"])
 database = Database()
 lake = IntelligenceLake(MinioObjectStore())
 search_service = OpenSearchService()
+
+_CONNECTOR_ITEM_TYPE_ALIASES = {
+    "security-advisory": IntelligenceType.ADVISORY.value,
+}
+_CVE_ID = re.compile(r"^CVE-\d{4}-\d{4,7}$", re.IGNORECASE)
+
+
+def _normalize_connector_item_type(value: str) -> str:
+    """Normalize a bounded connector alias to the canonical intelligence enum."""
+
+    candidate = value.strip().lower()
+    candidate = _CONNECTOR_ITEM_TYPE_ALIASES.get(candidate, candidate)
+    try:
+        return IntelligenceType(candidate).value
+    except ValueError as exc:
+        raise ValueError(f"unsupported connector item type: {value}") from exc
+
+
+def _canonical_connector_url(connector_id: str, record: ConnectorRecord) -> str:
+    """Return a canonical HTTP(S) URL without weakening the ingest URL policy.
+
+    NVD CVE records can contain non-HTTP(S) vendor references (including FTP) in
+    their raw upstream payload. Those references remain preserved in raw evidence,
+    while the canonical/provenance URL is the stable NVD HTTPS detail page.
+    """
+
+    if connector_id == "nvd-cve" and _CVE_ID.fullmatch(record.external_id):
+        return f"https://nvd.nist.gov/vuln/detail/{record.external_id.upper()}"
+    return record.url
 
 
 async def get_session() -> AsyncIterator[AsyncSession]:
@@ -138,26 +169,29 @@ async def ingest_connector_record(connector_id: str, record: ConnectorRecord) ->
     resumed past its yield and committed successfully.
     """
 
+    canonical_item_type = _normalize_connector_item_type(record.object_type)
+    canonical_url = _canonical_connector_url(connector_id, record)
     request = IntelligenceIngestRequest.model_validate(
         {
             "source_id": connector_id,
             "external_id": record.external_id,
-            "item_type": record.object_type,
+            "item_type": canonical_item_type,
             "title": record.title,
             "summary": record.summary,
-            "canonical_url": record.url,
+            "canonical_url": canonical_url,
             "published_at": record.published_at,
             "severity": "informational",
             "confidence": record.confidence,
             "education_relevance": 80,
-            "tags": [record.external_id, record.object_type, connector_id],
+            "tags": [record.external_id, canonical_item_type, connector_id],
             "metadata": {
                 "source_reliability": record.source_reliability,
                 "connector_managed": True,
+                "connector_object_type": record.object_type,
             },
             "provenance": [
                 {
-                    "source_url": record.url,
+                    "source_url": canonical_url,
                     "source_title": record.title,
                     "publisher": connector_id,
                     "confidence": record.confidence,
