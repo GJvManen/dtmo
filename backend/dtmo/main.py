@@ -27,6 +27,7 @@ from dtmo.logging import bind_request_context, clear_request_context, configure_
 from dtmo.operations_metrics import router as operations_metrics_router
 from dtmo.operations_ui import router as operations_ui_router
 from dtmo.post_rc13_severity import router as post_rc13_severity_router
+from dtmo.post_rc13_severity_assets import router as post_rc13_severity_assets_router
 from dtmo.rbac_admin import router as rbac_admin_router
 from dtmo.rc13_administration import router as rc13_administration_router
 from dtmo.rc13_analytics import router as rc13_analytics_router
@@ -79,6 +80,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+# The hardened browser asset wins only for the post-RC13 severity script and
+# preserves the accepted RC13 initial all-severity refresh lifecycle.
+app.include_router(post_rc13_severity_assets_router)
 # Post-RC13 E1/E2 adds only shared read-side severity filtering and semantic
 # presentation to the accepted canonical shell. These routes intentionally win
 # for root/recent/dashboard reads; lower RC13 routers remain the implementation
