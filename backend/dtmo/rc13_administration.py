@@ -11,7 +11,7 @@ _ADMIN_START = '<section class="view" data-view-panel="administration">'
 _GOVERNANCE_START = '<section class="view" data-view-panel="governance">'
 
 _RBAC_PANEL = r'''
-<article class="surface" id="rbac-administration" style="grid-column:1/-1">
+<article class="surface" id="rbac-administration" style="grid-column:1/-1;order:-1">
   <div class="page-heading">
     <div>
       <p class="eyebrow">Governed identity administration</p>
