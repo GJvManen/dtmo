@@ -1,38 +1,80 @@
 # Phase 8 Staging Readiness Gate
 
-## Decision
-
-`PASS`
+**Decision:** `PASS` — source-controlled staging-readiness contract  
+**Current Phase 8 state:** `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`
 
 ## Objective
 
-Validate that DTMO has a fail-closed, production-equivalent staging acceptance contract before any staging deployment or acceptance claim is made.
+This gate establishes that DTMO has a fail-closed contract for production-equivalent staging acceptance before real external staging evidence is credited.
 
-## Accepted exact-head evidence
+It validates the **readiness model**, not the existence or acceptance of a staging environment.
 
-RUN-147 / PR #101 exact head `fd87beb441c4e4ed71141ea9ae03717e859681e3` completed **46/46 registered workflows successfully**.
+## What this gate establishes
 
-Retained artifact:
-- id: `9043667776`;
-- digest: `sha256:62287683401694c130144873e7b0ac1c55f565c4e518dcb379e4b6e9bc56b564`;
-- exact-head binding: `fd87beb441c4e4ed71141ea9ae03717e859681e3`;
-- machine-readable decision: `pass`;
-- JUnit: 3 tests, 0 failures, 0 errors, 0 skips.
+The repository-controlled staging-readiness contract defines requirements for:
 
-PR #101 merged as `5f74bcac92738febfe327ea78f45c009d28e4d55`.
+- immutable deployment identity;
+- exact release/commit/image binding;
+- infrastructure/runtime inventory;
+- configuration parity and explicit deviations;
+- approved IAM/secrets references and least privilege;
+- TLS/network controls;
+- controlled staging data and privacy boundaries;
+- deployment/change and rollback records;
+- deployment-time security/CVE/vendor-advisory review;
+- deployed functional, operational and recovery acceptance suites;
+- fail-closed evidence handling.
 
-The baseline defines deployment parity and immutable artifact evidence; secrets/identity, TLS/network restrictions and non-production data handling; required smoke/integration, migration, connector, recovery, performance, accessibility and observability evidence classes; and fail-closed acceptance behavior while preserving RBAC, separation of duties, provenance, privacy, auditability and human share approval.
+It also preserves DTMO's authoritative security/governance controls:
 
-## RUN-149 regression note
+- RBAC and least privilege;
+- strict human/service-account separation;
+- separation of duties;
+- provenance and evidence integrity;
+- privacy/data minimization;
+- explicit human review and separate external-share approval;
+- no publication authority from staging access or technical execution.
 
-PR #102 initially failed RC4 because `backend/tests/test_phase8_staging_readiness.py` still asserted the prior transient state `CI_VALIDATION_PENDING` after this gate had legitimately transitioned to `PASS`. The test has been reconciled to assert the accepted RUN-147 evidence state while preserving the invariant claim boundary below. No readiness requirement, workflow or claim-boundary control was removed or weakened. The changed PR #102 head requires fresh complete exact-head CI before its own merge.
+## Current entry state
+
+The functional entry condition for real staging is now satisfied:
+
+- Phases 1–7: `PASS`;
+- RC13 unified-console acceptance: `PASS / OWNER_ACCEPTED`;
+- Phase 8: ready to begin real external validation.
+
+The next required evidence is **not another repository emulator run**. It is the real Phase 8.1 deployment identity and external staging evidence defined by:
+
+- `docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`;
+- `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`;
+- GitHub issue #158.
 
 ## Claim boundary
 
-This PASS applies only to the source-controlled staging-readiness contract. It does **not** claim that a staging environment exists, deployment parity is proven, staging secrets/TLS/network controls are deployed, staging tests have executed, Phase 8 is complete, or production acceptance is complete.
+This gate's `PASS` means the **source-controlled acceptance contract is complete and internally verified**.
 
-Those claims are gated by `PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md` and subsequent deployed-environment acceptance runs.
+It does **not** claim that:
 
-## Exactly one next priority
+- a production-equivalent staging environment has been provisioned;
+- deployment parity is proven;
+- staging IAM/secrets/TLS/network controls are deployed;
+- external staging suites have executed;
+- Phase 8 is complete;
+- Phase 9 independent assurance is complete;
+- production deployment is approved.
 
-Verify the fresh complete PR #102 workflow matrix. After merge, provide or provision the production-equivalent staging environment and satisfy `PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md` before running staging acceptance suites.
+Repository CI, local Docker Compose, staging emulators and application-container smoke tests remain supporting engineering evidence only.
+
+## Evidence discipline
+
+Real Phase 8 evidence must:
+
+1. refer to one immutable approved staging deployment identity;
+2. be externally observable/reviewable from the actual target environment or deployment platform;
+3. avoid raw credentials, tokens, secrets and unnecessary personal data;
+4. remain consistent across environment, release, image, configuration and validation evidence;
+5. fail closed when required information is missing, contradictory, stale or inaccessible.
+
+## Current priority
+
+**Provision and evidence the real Phase 8.1 production-equivalent staging environment and immutable deployment identity under issue #158.**
