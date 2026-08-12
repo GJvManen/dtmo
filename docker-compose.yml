@@ -32,6 +32,13 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      # Local Compose is a development-only topology. Reuse the local AIStor
+      # bootstrap identity so a fresh clone is internally consistent and can
+      # exercise source -> raw lake -> canonical intelligence end to end.
+      # Production/staging keep separate least-privilege application identities.
+      DTMO_MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:?Set the local AIStor administrative user outside source control}
+      DTMO_MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?Set the local AIStor administrative password outside source control}
     depends_on:
       migrate:
         condition: service_completed_successfully
