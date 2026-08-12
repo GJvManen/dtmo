@@ -18,15 +18,16 @@ The documentation is intentionally separated into **stable product/architecture 
 
 | Audience | Recommended document |
 |---|---|
-| Executive / sponsor | [Executive Status](project/EXECUTIVE_STATUS.md) |
+| Executive / sponsor | [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md) and [Executive Status](project/EXECUTIVE_STATUS.md) |
 | Product / delivery | [Current State](project/CURRENT_STATE.md) and [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) |
 | Project governance | [Project Governance](project/PROJECT_GOVERNANCE.md) and [Documentation Standard](project/DOCUMENTATION_STANDARD.md) |
-| Architecture / engineering | [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
-| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md) and [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
+| Architecture / engineering | [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md) and [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
+| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Security Responsibility Matrix](security/SECURITY_RESPONSIBILITY_MATRIX.md) and [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md) |
 | QA / release management | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md) and [Production Checklist](project/PRODUCTION_CHECKLIST.md) |
-| Operations | [Operations Manual](operations/OPERATIONS_MANUAL.md) |
+| Operations | [Operating Model](operations/OPERATING_MODEL.md) and [Operations Manual](operations/OPERATIONS_MANUAL.md) |
 | Intelligence engineering | [Source Catalog](intelligence/SOURCE_CATALOG.md) and [Source Connection Matrix](qa/SOURCE_CONNECTION_MATRIX.md) |
+| External assessor | [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [Security Responsibility Matrix](security/SECURITY_RESPONSIBILITY_MATRIX.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) and [Phase 9 External Assurance Gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md) |
 | New contributors / reviewers | [Glossary](project/GLOSSARY.md) and [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
 
 ## Documentation building blocks
@@ -35,6 +36,7 @@ The documentation is intentionally separated into **stable product/architecture 
 
 - [Current Project State](project/CURRENT_STATE.md) — current capabilities, accepted boundaries, known limitations and active workstreams.
 - [Executive Status](project/EXECUTIVE_STATUS.md) — decision-oriented summary for leadership and stakeholders.
+- [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md) — concise go/no-go-oriented view of accepted and outstanding evidence.
 - [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) — consolidated readiness position across engineering, functional, staging, assurance and production gates.
 - [Production Checklist](project/PRODUCTION_CHECKLIST.md) — evidence checklist for formal progression.
 - [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) — phased route from accepted engineering baseline to production go/no-go.
@@ -44,6 +46,7 @@ The documentation is intentionally separated into **stable product/architecture 
 
 ### 2. Architecture and UX
 
+- [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md) — concise system context and trust-boundary orientation for reviewers and assessors.
 - [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) — logical components, data flow, persistence, trust boundaries, identity, analytics and deployment boundaries.
 - [Frontend UX Architecture](ux/FRONTEND_UX.md) — canonical console information architecture and interaction principles.
 - [API documentation](api/) — API contracts and supporting interface notes.
@@ -51,6 +54,7 @@ The documentation is intentionally separated into **stable product/architecture 
 ### 3. Security, privacy and identity
 
 - [Security Overview](security/SECURITY_OVERVIEW.md) — security model, identities, authorization, privileged operations, secret handling and approval boundaries.
+- [Security Responsibility Matrix](security/SECURITY_RESPONSIBILITY_MATRIX.md) — role and accountability boundaries for security controls and assurance.
 - [Security Policy](../SECURITY.md) — vulnerability reporting and security-contact policy.
 - [ADR-001 — Evidence and Claim Boundaries](project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md) — architectural rule separating engineering evidence from manual/external acceptance claims.
 
@@ -94,6 +98,7 @@ DTMO applies exact-head release discipline. A configured, queued, cancelled, ski
 ### 7. Staging, operations and recovery
 
 - [Phase 8 Deployment Identity Record](staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md) — fail-closed record for the real staging deployment identity.
+- [Operating Model](operations/OPERATING_MODEL.md) — operational ownership, evidence and escalation model.
 - [Operations Manual](operations/OPERATIONS_MANUAL.md) — operational procedures and platform operations.
 - [Performance documentation](performance/) — accepted performance evidence and boundaries.
 
