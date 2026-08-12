@@ -91,6 +91,13 @@ def test_trend_script_composes_with_shared_severity_filter() -> None:
     assert "Hoog" in _SCRIPT
 
 
+def test_trend_enrichment_failure_is_local_and_does_not_poison_global_status() -> None:
+    assert "renderTrendUnavailable" in _SCRIPT
+    assert "Trenddata tijdelijk niet beschikbaar" in _SCRIPT
+    assert "Trend laden mislukt" not in _SCRIPT
+    assert "global-status" not in _SCRIPT
+
+
 def test_analytics_router_owns_canonical_console_roots() -> None:
     routes = [route for route in router.routes if route.path in {"/", "/ui/console"}]
     assert {route.path for route in routes} == {"/", "/ui/console"}
