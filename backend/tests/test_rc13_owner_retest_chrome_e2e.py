@@ -207,7 +207,8 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         )
 
         await page.get_by_role("button", name="Bronnen & catalogus").click()
-        await page.get_by_role("button", name="Vernieuwen", exact=True).click()
+        sources_panel = page.locator('[data-view-panel="sources"]')
+        await sources_panel.get_by_role("button", name="Vernieuwen", exact=True).click()
         await expect(page.get_by_test_id("source-status")).to_contain_text("1 catalogusbronnen")
 
         await page.get_by_role("button", name="Administration", exact=True).click()
@@ -217,7 +218,7 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         await expect(page.locator("#rbac-administration")).to_be_visible()
         await page.locator("#rbac-refresh").click()
         await expect(page.locator("#rbac-status")).to_contain_text("0 managed principals")
-        await expect(page.locator("#dev-identity-context")).not_to_have_attribute("open", "")
+        assert await page.locator("#dev-identity-context").get_attribute("open") is None
 
         await page.get_by_role("button", name="Governance", exact=True).click()
         await page.locator("#governance-refresh").click()
