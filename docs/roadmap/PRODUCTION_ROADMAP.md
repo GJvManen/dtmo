@@ -15,45 +15,40 @@ This roadmap separates **repository-controlled engineering acceptance**, **funct
 | 5 | Performance and scalability | `PASS` |
 | 6 | Accessibility and operational UX | `PASS` |
 | 7 | Observability and incident operations | `PASS` |
-| RC13 | Functional unified-console acceptance | `PASS` — owner acceptance recorded 2026-08-12 |
-| 8 | Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
+| RC13 | Functional unified-console acceptance | `REOPENED / BLOCKED_INTERNAL` |
+| 8 | Real staging acceptance | `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
 | 9 | Independent external assurance | `NOT COMPLETE` |
 | 10 | Production go/no-go | `NOT STARTED` |
 
 DTMO is **not production ready**.
 
-## RC13 closure
+## RC13 — current reopened gate
 
-A project-owner functional test on 2026-08-11 identified product gaps that earlier component/presence tests did not catch. RC13 repaired the source-to-intelligence path, native analytics, Administration/RBAC and Governance surfaces, then proved the integrated canonical browser journey in RC13.5.
+RC13.1–RC13.5 and the earlier owner acceptance remain historical evidence. A subsequent owner retest on 2026-08-12 found blocking usability defects involving Overview refresh, truthful empty-data status, Chrome button interaction, menu clutter, Administration clarity and graph empty-state behavior.
 
-On 2026-08-12 the project owner explicitly accepted the repaired product with `RC13 owner retest akkoord`. RC13 is `PASS` and issue #150 is closed.
+Issue #150 is reopened and controls the current readiness decision.
 
-## Phase 8 — active external staging gate
+### Current repair acceptance
 
-Phase 8 is now open for execution. Readiness to execute is not acceptance.
+The repair must prove:
 
-### Phase 8.1 — external deployment identity
+1. `Alles vernieuwen` executes a real refresh and exposes loading/success/failure state;
+2. empty canonical intelligence never produces a false `Data bijgewerkt` claim;
+3. zero-only intelligence datasets render explicit empty states;
+4. Chrome navigation and operator controls work without page/console errors;
+5. the menu version badge is removed;
+6. governed Administration is the primary admin workspace;
+7. authorization/publication boundaries remain unchanged;
+8. complete exact-head CI succeeds;
+9. the accountable project owner retests and explicitly accepts the merged repair.
 
-Before any deployed-environment test can be credited, establish one approved production-equivalent staging environment and immutable deployment identity.
+## Phase 8 — paused external staging gate
 
-Required identity evidence begins with:
+PR #157 remains valid historical/preparatory evidence. The external deployment identity record remains fail-closed and issue #158 remains open but paused.
 
-1. approved environment identifier and accountable owner;
-2. reachable approved endpoint;
-3. deployed release/commit and immutable application/container digests;
-4. infrastructure/runtime inventory and configuration-parity record.
+No Phase 8 evidence may advance while RC13 is reopened. After a successful owner retest, Phase 8 may return to `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` and issue #158 can resume.
 
-The complete evidence classes are defined in `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`. Intake is fail-closed in `docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`.
-
-Current Phase 8.1 decision: `PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`.
-
-Repository CI, Docker Compose, staging emulators and source-controlled readiness contracts cannot by themselves establish a real staging deployment.
-
-### Later Phase 8 evidence
-
-After the immutable deployment identity is established, Phase 8 must validate secrets/identity, TLS/network restrictions, data handling, deployment/change evidence, rollback, deployment-time security review and the required smoke/integration/migration/connector/recovery/performance/accessibility/observability journeys against that same deployment.
-
-Phase 8 becomes `PASS` only after the external evidence package and project-owner staging acceptance are complete.
+Repository CI, Docker Compose and staging emulators cannot substitute for a real staging deployment or owner functional acceptance.
 
 ## Phase 9 — external assurance
 
@@ -61,8 +56,8 @@ Phase 9 covers independent penetration testing, representative load/stress valid
 
 ## Phase 10 — production decision
 
-Phase 10 is the formal production go/no-go and begins only after all blocking functional, staging and external-assurance evidence is complete and reviewable.
+Phase 10 is the formal production go/no-go and begins only after all prior gates are complete and reviewable.
 
 ## Exactly one next priority
 
-**Phase 8.1 — establish and record the approved production-equivalent staging environment and immutable deployment identity.**
+**Issue #150 — complete the canonical-console usability repair, exact-head Chrome/browser evidence, merge and accountable project-owner retest.**
