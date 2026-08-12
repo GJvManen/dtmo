@@ -15,73 +15,66 @@ This roadmap separates repository-controlled engineering acceptance, functional 
 | 5 | Performance and scalability | `PASS` |
 | 6 | Accessibility and operational UX | `PASS` |
 | 7 | Observability and incident operations | `PASS` |
-| RC13 | Functional unified-console acceptance | `REOPENED / BLOCKED_INTERNAL` |
-| 8 | Real staging acceptance | `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
+| RC13 | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
+| 8 | Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
 | 9 | Independent external assurance | `NOT COMPLETE` |
 | 10 | Production go/no-go | `NOT STARTED` |
 
 DTMO is **not production ready**.
 
-## RC13 — current reopened gate
+## RC13 — complete
 
-RC13.1–RC13.5 and earlier owner acceptance remain historical evidence. Subsequent accountable owner testing controls the current decision.
-
-### Completed repair sequence
+The final RC13 repair sequence is accepted:
 
 1. PR #159 repaired refresh behavior, empty-data truthfulness, Chrome interactions, Administration clarity and graph empty states.
 2. PR #160 repaired Compose runtime packaging for the Grafana reader provisioner.
 3. PR #161 repaired Grafana datasource provisioning and added a real Grafana runtime health gate.
-4. PR #163 repaired the source catalog secret-reference/bootstrap contract and was later owner-observed with bootstrap 200.
-5. PR #165 repaired the local object-store credential contract and merged as `65440afea6cfa3c3300b25d577d746432cc95700`.
-6. PR #167 repaired canonical connector commit visibility; exact head `bf18ef2c499edcf8399d1f91b80190937538fdce` completed every returned workflow successfully and merged as `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
+4. PR #163 repaired the source catalog secret-reference/bootstrap contract.
+5. PR #165 repaired the local object-store credential contract.
+6. PR #167 repaired canonical connector commit visibility.
+7. PR #169 repaired supported-source normalization while preserving the HTTP(S)-only canonical URL boundary, raw upstream references, fail-closed unknown item types and commit-before-success behavior.
+8. The accountable project owner explicitly accepted the repaired product on 2026-08-12: **“Het project werkt! Gefelciteerd!”**
 
-### Latest owner evidence
+PR #169 final exact head `53aaa670c75a2f404337620bcf1a8df172efe583` completed every returned workflow successfully and merged as `4d182879d851cd22d22ff4f0bab795ed49ee0c1b`.
 
-The post-#167 owner retest confirms local runtime startup and demonstrates multiple successful OpenSearch `201 Created` writes into `dtmo-intelligence-v1`. The source-to-interface flow nevertheless remains unaccepted because supported records can still fail canonical normalization:
+Issue #150 is closed `completed`.
 
-- NVD can expose `ftp://` references that are not valid canonical/provenance `HttpUrl` values;
-- supported advisory adapters can emit `security-advisory`, which is not a member of the persisted canonical `IntelligenceType` enum.
+## Phase 8 — real external staging gate
 
-This is narrower than the #167 blocker: the commit path now progresses, but not every supported source record can cross the canonical ingest contract.
+Phase 8 is now ready to start. Issue #158 tracks Phase 8.1.
 
-### Current bounded repair
+### Phase 8.1 — environment and immutable deployment identity
 
-Branch `rc13/source-record-normalization-contract`:
+Required evidence includes:
 
-- normalizes the explicit supported alias `security-advisory` to canonical `advisory`;
-- leaves canonical values unchanged and unknown values fail-closed;
-- canonicalizes NVD CVEs to their stable NVD HTTPS detail URL while retaining upstream non-HTTP references only in raw evidence;
-- preserves the canonical HTTP(S)-only URL policy;
-- preserves #167 commit-before-success behavior;
-- adds a dedicated exact-head source-record-normalization gate covering source adapters, connector persistence, source-to-intelligence and graphical dashboard contracts.
+- approved staging environment identifier;
+- accountable staging owner;
+- approved reachable staging access path;
+- deployed release and exact commit;
+- immutable application/supporting image digests;
+- infrastructure/runtime inventory;
+- configuration-parity evidence;
+- approved least-privilege identities and secrets handling;
+- TLS/network/data-sanitization/no-production-credential evidence;
+- change/rollback records;
+- deployment-time security/CVE review.
 
-No repository PASS is claimed until every returned workflow on the final exact PR head is `completed/success`.
+The staging application identity must remain distinct from root/admin infrastructure identities. Local-development compatibility exceptions do not alter staging or production requirements.
 
-### Remaining RC13 acceptance after repair
+Repository CI, Docker Compose and staging emulators cannot substitute for real staging acceptance.
 
-The accountable project owner must retest current merged `main` and verify:
+## Post-RC13 product enhancements
 
-1. NVD runs complete without FTP URL validation failure;
-2. supported advisory sources complete without enum mismatch;
-3. raw evidence persists;
-4. canonical intelligence is durably committed to PostgreSQL;
-5. recent Intelligence appears in the canonical console;
-6. Overview KPIs and dashboard metrics update truthfully;
-7. native severity/source/trend/review graphics render from the ingested dataset;
-8. refresh, Chrome navigation/operator controls, governed Administration and true empty states remain correct;
-9. authorization/publication boundaries remain unchanged.
+Issue #171 contains the owner's accepted post-RC13 product backlog. Suggested delivery order:
 
-Only explicit accountable owner acceptance closes RC13.
+1. shared severity colour/filter contract across Overview and Intelligence;
+2. governed manual source onboarding;
+3. Visual Analytics trend analysis and richer visual semantics;
+4. first-class evidence-backed framework mapping model;
+5. richer Administration RBAC role/right management;
+6. Governance framework coverage and evidence drill-down built on the verified mapping model.
 
-## Documentation lineage
-
-PR #168 was closed unmerged because the newest owner retest superseded its post-#167 reconciliation. Branch-only RUN-205 never became authoritative. RUN-204 remains immutable; RUN-206 records the current owner evidence.
-
-## Phase 8 — paused external staging gate
-
-Issue #158 remains open but paused. No Phase 8 evidence may advance while RC13 is blocked. After successful owner acceptance, Phase 8 may return to `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`.
-
-Repository CI, Docker Compose and staging emulators cannot substitute for real staging or owner functional acceptance.
+These enhancements do not reopen RC13 and do not count as Phase 8 evidence unless separately demonstrated in real staging.
 
 ## Phase 9 — external assurance
 
@@ -91,6 +84,10 @@ Phase 9 covers independent penetration testing, representative load/stress valid
 
 Phase 10 is the formal production go/no-go and begins only after all prior gates are complete and reviewable.
 
-## Exactly one next priority
+## Evidence lineage
 
-**Complete the supported-source normalization repair, require complete exact-head CI, merge, then resume accountable owner functional retesting under issue #150.**
+Historical run records remain immutable. RUN-206 remains historical evidence. PR #170 was closed unmerged after owner acceptance superseded its pending-retest status; branch-only RUN-207 is non-authoritative. RUN-208 records the owner-accepted transition to Phase 8 readiness.
+
+## Exactly one next production-readiness priority
+
+**Execute Phase 8.1 real staging environment and immutable deployment identity under issue #158.**
