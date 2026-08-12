@@ -10,6 +10,7 @@ WORKDIR /app
 COPY pyproject.toml README.md alembic.ini ./
 COPY backend ./backend
 COPY database ./database
+COPY tools/provision_grafana_reader.py ./tools/provision_grafana_reader.py
 RUN pip install --upgrade pip && pip install .
 
 USER dtmo
