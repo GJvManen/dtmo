@@ -18,7 +18,14 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.mark.asyncio
 async def test_owner_reported_console_usability_in_chrome() -> None:
-    calls = {"dashboard": 0, "sources": 0, "recent": 0, "rbac": 0, "governance": 0}
+    calls = {
+        "dashboard": 0,
+        "sources": 0,
+        "recent": 0,
+        "severity": 0,
+        "rbac": 0,
+        "governance": 0,
+    }
     page_errors: list[str] = []
     console_errors: list[str] = []
 
@@ -77,6 +84,19 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         },
         "publication_boundary": "human-review-and-separate-share-approval-required",
     }
+    severity_summary = {
+        "selected_severities": ["informational", "low", "medium", "high", "critical"],
+        "total_intelligence": 0,
+        "new_last_24h": 0,
+        "average_confidence": 0.0,
+        "severity": {
+            "informational": 0,
+            "low": 0,
+            "medium": 0,
+            "high": 0,
+            "critical": 0,
+        },
+    }
     governance = {
         "frameworks": [],
         "mappings": [],
@@ -127,6 +147,14 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
                 body=json.dumps(zero_dashboard),
             )
 
+        async def severity_route(route: Route) -> None:
+            calls["severity"] += 1
+            await route.fulfill(
+                status=200,
+                content_type="application/json",
+                body=json.dumps(severity_summary),
+            )
+
         async def roles_route(route: Route) -> None:
             calls["rbac"] += 1
             await route.fulfill(status=200, content_type="application/json", body="[]")
@@ -146,6 +174,7 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         await page.route("**/api/v1/source-center/status", status_route)
         await page.route("**/api/v1/admin/sources", registered_route)
         await page.route("**/api/v1/console/recent-intelligence?*", recent_route)
+        await page.route("**/api/v1/console/severity-summary*", severity_route)
         await page.route("**/api/v1/dashboards/summary", dashboard_route)
         await page.route("**/api/v1/admin/rbac/roles", roles_route)
         await page.route("**/api/v1/admin/rbac/principals", principals_route)
@@ -176,6 +205,7 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         initial_dashboard_calls = calls["dashboard"]
         initial_source_calls = calls["sources"]
         initial_recent_calls = calls["recent"]
+        initial_severity_calls = calls["severity"]
         refresh = page.get_by_role("button", name="Alles vernieuwen")
         await refresh.click()
         await expect(refresh).to_be_enabled()
@@ -186,6 +216,7 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         assert calls["dashboard"] > initial_dashboard_calls
         assert calls["sources"] > initial_source_calls
         assert calls["recent"] > initial_recent_calls
+        assert calls["severity"] > initial_severity_calls
 
         # Exercise the canonical navigation and the non-mutating controls in the Chrome channel.
         journeys = (
@@ -224,6 +255,7 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         await page.locator("#governance-refresh").click()
         await expect(page.locator("#governance-status")).to_contain_text("0 frameworks")
 
+        assert calls["severity"] >= 2
         assert calls["rbac"] >= 2
         assert calls["governance"] >= 2
         assert page_errors == []
