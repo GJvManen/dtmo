@@ -1,59 +1,116 @@
-# Frontend UX Release Gate — DTMO 16.0.0rc6
+# DTMO Frontend UX Release Gate
 
-## Scope
+**Status:** `PASS` for the accepted functional baseline
 
-This gate evaluates the repository-controlled professional frontend baseline introduced in 16.0.0rc6. It does not substitute for genuine assistive-technology execution or external user acceptance.
+## Objective
 
-## Required repository evidence
+This gate defines the professional user-experience acceptance contract for the canonical DTMO console. It ensures product changes remain usable, understandable, accessible and aligned with server-side security/governance controls.
 
-The final exact release head must demonstrate:
+Historical browser failures, repair chronology and individual workflow identifiers are retained in `docs/development/` and CI evidence rather than this durable UX contract.
 
-1. root console is discoverable at `/` and `/ui/console`;
-2. Overview, Intelligence, Governance, Audit and Security work areas are present and navigable;
-3. specialized Analyst, Share Approval, Auditor and CISO views remain available;
-4. search, review, share approval, audit read and token revocation remain wired to existing governed API endpoints;
-5. client-side permission presentation never replaces server-side RBAC enforcement;
-6. review and external share approval remain separate actions and permissions;
-7. audit evidence remains read-only and individual rendered events remain independently addressable by event ID;
-8. local/dev/staging identity helper uses `sessionStorage`, not `localStorage`, and does not embed credentials;
-9. UI responses retain CSP/no-store/anti-framing protections;
-10. keyboard focus, skip navigation, responsive reflow, reduced motion, measurable contrast and live status semantics are retained;
-11. semantic loading/success/empty/error/forbidden states remain machine-observable where historically accepted;
-12. registered browser/accessibility regression workflows execute on the final exact head;
-13. all registered workflows complete successfully before release acceptance.
+## Information architecture contract
 
-## Validation history
+The canonical product must present clear task-oriented navigation across:
 
-PR #112 initial exact head `0e6bc86b425b4e6511520bd6734f79baf7413d97` is **not accepted**. It produced 11 failing workflow-level RC9 gates (22 failing checks when fail-closed aggregate jobs are included).
+- Overview;
+- Intelligence;
+- Sources & Catalog;
+- Visual Analytics;
+- Administration;
+- Governance.
 
-RUN-163 through RUN-165 progressively restored the accepted frontend contracts. RUN-166 validation head `b33f270b201527249f847107863ee1184954f352` completed 46/48 registered workflows successfully. RC9 Reflow and RC9 Contrast were confirmed green, demonstrating the RUN-166 product fixes were effective.
+Users should not need knowledge of internal service URLs or separately authenticated operational tooling to complete normal product tasks.
 
-The only failures on `b33f270b201527249f847107863ee1184954f352` were:
+## Interaction-state contract
 
-- RC9 Text Spacing Accessibility Gate;
-- RC9 Text Resize Accessibility Gate.
+Interactive views must provide machine- and human-observable states for:
 
-Each workflow includes a primary evidence job and a fail-closed aggregate job, so GitHub surfaces these as four failed checks.
+- loading/busy;
+- success;
+- partial failure;
+- empty/no data;
+- filtered empty results;
+- forbidden/unauthorized;
+- validation errors.
 
-Decoded logs show one shared cause: the intentional `.sr-only` label for Analyst intelligence search was included in visual clipping geometry. The label is required for accessible naming and must remain available to assistive technology. RUN-167 therefore corrects the visual-evidence scope: `.sr-only` nodes are excluded only from rendered text geometry measurements. The label is not removed or made `aria-hidden`.
+False-success messaging is not acceptable. Zero-data analytical views should communicate absence of data rather than drawing misleading pseudo-graphs.
 
-A complete fresh exact-head matrix is required after RUN-167. No result from a prior failed head can be reused as release PASS evidence.
+## Navigation and control contract
 
-## External evidence not satisfied here
+- Controls use appropriate semantic button/link/form behavior.
+- Keyboard operation is supported.
+- Visible focus is preserved.
+- Refresh/navigation actions return to a usable enabled state after completion.
+- Supported browser journeys must complete without unexpected page/console errors where the acceptance journey defines a zero-error boundary.
+- Responsive navigation remains understandable on desktop, tablet and mobile layouts.
 
-This gate does **not** claim completion of:
+## Accessibility contract
 
-- genuine VoiceOver behavior;
-- genuine NVDA behavior;
-- real staging deployment parity;
-- independent penetration testing;
-- external operational/stakeholder acceptance;
-- production go/no-go.
+Frontend UX changes must preserve accepted regression coverage for:
 
-## Governance invariants
+- keyboard navigation;
+- focus order/visibility;
+- contrast;
+- reflow;
+- text resize;
+- text spacing;
+- responsive layout;
+- supported browsers;
+- critical end-to-end journeys.
 
-RBAC, least privilege, separation of duties, privacy, provenance, append-only auditability and human share approval remain mandatory. A visual affordance or disabled control is not an authorization control; the server is authoritative.
+Accessible names intended only for assistive technology must remain semantically available even when excluded from visible geometry/layout calculations.
 
-## Current decision
+Colour is never the sole state indicator. Text labels, symbols or equivalent non-colour cues accompany semantic colour use.
 
-`CI_VALIDATION_PENDING` for RUN-167. PR #112 must not merge until every registered workflow succeeds on one final exact head.
+## Security and governance contract
+
+- Server-side RBAC is authoritative.
+- Client-side visibility/disabled state is not an authorization control.
+- Human and service-account authorities remain separated.
+- Review and external-share approval remain distinct actions/permissions.
+- Administration does not bypass privileged-action safeguards.
+- Governance visibility does not create publication/share authority.
+- Tokens/credentials are not embedded in frontend assets or persistent production browser storage.
+- Security response headers remain enforced.
+
+## Product clarity contract
+
+### Overview
+
+Must prioritize situational awareness, clear KPI meaning, source/runtime state, recent intelligence and truthful refresh/empty states.
+
+### Intelligence
+
+Must prioritize readable intelligence records, provenance/source context and investigation/filtering without obscuring canonical record state.
+
+### Sources & Catalog
+
+Must keep source lifecycle/execution distinct from general user/role administration.
+
+### Visual Analytics
+
+Must use interpretable native analytical views, explicit labels and truthful no-data states.
+
+### Administration
+
+Must clearly present governed principals/roles/permissions and privileged consequences.
+
+### Governance
+
+Must distinguish framework context, mapping coverage, evidence and authority boundaries; missing mappings remain visibly missing.
+
+## Next UX evolution
+
+The next planned UX slice adds a shared severity system across Overview and Intelligence:
+
+- informational;
+- low;
+- medium;
+- high;
+- critical if present in the canonical dataset.
+
+Semantic colour may support comprehension (for example green/amber/red), but labels/non-colour cues and WCAG-compliant contrast remain mandatory. Filters and their resulting KPI/list/chart states must remain internally consistent.
+
+## Evidence rule
+
+Every frontend/UX PR requires fresh exact-head CI. A new commit invalidates earlier evidence. This gate's current PASS does not create Phase 8, Phase 9 or production acceptance.
