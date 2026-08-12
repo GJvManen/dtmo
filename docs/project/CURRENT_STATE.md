@@ -4,15 +4,13 @@ Last reconciled: **2026-08-12**
 
 ## Executive summary
 
-DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7. Repository-controlled RC13 repairs #159–#161 remain valid.
+DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7. Repository-controlled RC13 repairs are green and merged through PR #163.
 
-The latest accountable owner local retest progressed beyond both recent startup blockers: `grafana-db-provision` exited with code 0, the API and Prometheus started, and Grafana 13.1.0 started without the former duplicate-default datasource restart loop.
+The latest accountable owner local retest had already progressed beyond the prior PR #160/#161 startup blockers. PR #163 subsequently repaired the source-catalog bootstrap HTTP 500 caused by the internal secret-reference contract mismatch.
 
-The same retest then exposed a new repository defect: supported source-catalog bootstrap returns HTTP 500 because the Cisco catalog/runtime use the executable logical secret reference `env:CISCO_OPENVULN_TOKEN`, while the source registry rejected that syntax at write time.
+**RC13 = `AWAITING_OWNER_RETEST_AFTER_REPAIR`.**
 
-**RC13 = `REOPENED / BLOCKED_INTERNAL`.**
-
-**Phase 8 = `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`.**
+**Phase 8 = `PAUSED_PENDING_RC13_OWNER_RETEST`.**
 
 DTMO remains **not production ready**.
 
@@ -27,67 +25,46 @@ DTMO remains **not production ready**.
 | 5. Performance and scalability | `PASS` |
 | 6. Accessibility and operational UX | `PASS` |
 | 7. Observability and incident operations | `PASS` |
-| RC13. Functional unified-console acceptance | `REOPENED / BLOCKED_INTERNAL` |
-| 8. Real staging acceptance | `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
+| RC13. Functional unified-console acceptance | `AWAITING_OWNER_RETEST_AFTER_REPAIR` |
+| 8. Real staging acceptance | `PAUSED_PENDING_RC13_OWNER_RETEST` |
 | 9. Independent external assurance | `NOT COMPLETE` |
 | 10. Production go/no-go | `NOT STARTED` |
 
-## Latest owner-retest evidence
+## RC13 repair evidence
 
-### Confirmed resolved in the observed startup path
+- **PR #159 — console usability:** repository-controlled `PASS`; merged as `b4fffecc47f87b1edab8258514eaa130d949c195`.
+- **PR #160 — Compose runtime packaging:** repository-controlled `PASS`; merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`; later owner run progressed beyond the former missing-file failure.
+- **PR #161 — Grafana datasource provisioning:** repository-controlled `PASS`; merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`; later owner run progressed beyond the former duplicate-default restart loop.
+- **PR #163 — source catalog secret-reference/bootstrap:** final exact head `4198f06e360929d3937065b8528237741cbe189a`; every returned workflow `completed/success`; merged with expected-head protection as `adc027143f1274c604a16446fe1ad2bdc7bc835f`.
 
-- PR #160 runtime packaging: the former `/app/tools/provision_grafana_reader.py` file-not-found failure did not recur; `grafana-db-provision` exited 0.
-- PR #161 Grafana provisioning: Grafana started without `Only one datasource per organization can be marked as default` and without the former restart loop.
-- migrations completed successfully;
-- the API reached application startup complete;
-- Prometheus reached ready state;
-- gateway configuration completed.
+PR #163 introduces one logical secret-reference canonicalization boundary, accepts executable `env:VARIABLE`, normalizes legacy `env://VARIABLE`, preserves opaque external secret-manager references, rejects raw secrets and regression-tests the complete supported catalog bootstrap twice for idempotency and disabled-by-default registration.
 
-This is owner-observed functional evidence for those bounded startup repairs. It is not full RC13 acceptance.
+## Acceptance boundary
 
-## Current RC13 blocker — source catalog bootstrap
+Repository-controlled CI and runtime gates establish repair evidence only. They do not manufacture accountable project-owner acceptance. RC13 remains open until the owner retests current merged `main` and explicitly accepts the product behavior.
 
-The owner retest invoked the supported source-catalog bootstrap endpoint and received HTTP 500.
+## Required owner retest
 
-Repository inspection confirms the mismatch:
+Verify on current merged `main`:
 
-1. `backend/dtmo/source_catalog.py` defines Cisco's credential reference as `env:CISCO_OPENVULN_TOKEN`;
-2. `backend/dtmo/credentialed_source_executor.py` resolves `env:VARIABLE` at runtime;
-3. `backend/dtmo/sources.py` previously accepted only `vault://`, `secret://` and `env://` when writing registry entries.
+1. local Compose startup remains successful;
+2. Grafana remains healthy;
+3. supported source catalog bootstrap succeeds without HTTP 500 and is idempotent;
+4. bootstrapped sources remain disabled until explicitly enabled;
+5. source validation/run controls behave truthfully;
+6. Overview `Alles vernieuwen` visibly refreshes and returns to an enabled state;
+7. with no intelligence data, status reports `Geen intelligence data · bronstatus geladen`, not `Data bijgewerkt`;
+8. Chrome navigation and operator buttons work;
+9. the version number remains absent from product navigation;
+10. Administration clearly presents `Gebruikers & rollen` without duplicate source operations;
+11. empty intelligence graphs explicitly report no data;
+12. after a successful source run with valid local configuration, Intelligence, Overview and analytics update truthfully.
 
-That means one code-reviewed supported catalog entry was valid for its runtime executor but invalid for the registry used by `/api/v1/admin/sources/catalog/bootstrap`.
-
-## Current repair state
-
-The bounded branch `rc13/source-catalog-secret-ref-contract`:
-
-- introduces one logical secret-reference validator/canonicalizer;
-- accepts canonical executable `env:VARIABLE` references;
-- normalizes legacy `env://VARIABLE` input to `env:VARIABLE`;
-- retains opaque `vault://` and `secret://` references;
-- rejects raw secrets and malformed references;
-- makes the credentialed executor use the same canonicalization boundary;
-- tests every supported catalog secret reference against registry validation;
-- tests idempotent supported catalog bootstrap with all bootstrapped sources disabled by default;
-- adds `RC13 Source Catalog Bootstrap Gate` with exact-head evidence.
-
-The repair is `PENDING_CI`. No pass is claimed until every returned workflow on the final exact PR head is `completed/success`.
-
-## Environment/configuration boundary
-
-The same local log contains a MinIO `InvalidAccessKeyId` during a source run. The owner had explicitly identified the local `.env` as incorrect and instructed that configuration point to be skipped. It is therefore not classified here as a repository defect. The run also does not prove successful source ingestion.
-
-## Historical RC13 repair evidence
-
-- PR #159 console usability: repository-controlled `PASS`; merged as `b4fffecc47f87b1edab8258514eaa130d949c195`.
-- PR #160 Compose runtime packaging: repository-controlled `PASS`; merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`.
-- PR #161 Grafana datasource provisioning: repository-controlled `PASS`; final exact head `e471d6368639a45cee6dccadd353a9068e5205e9`; merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`.
-
-Historical evidence is not rewritten; newer owner-observed evidence controls the current readiness decision.
+The earlier MinIO `InvalidAccessKeyId` is not classified as a repository defect because the owner explicitly identified the local `.env` as incorrect and asked to skip that point.
 
 ## Phase 8 boundary
 
-The Phase 8 intake/deployment identity record from PR #157 remains fail-closed preparatory evidence. Issue #158 remains paused. No real staging, pentest or production-readiness progression is allowed while RC13 is blocked.
+The Phase 8 intake/deployment identity record from PR #157 remains fail-closed preparatory evidence. Issue #158 remains paused. No real staging, pentest or production-readiness progression is allowed until RC13 is explicitly accepted.
 
 ## Security and governance boundaries
 
@@ -95,4 +72,4 @@ Credentialed integrations store logical secret references only; raw secret value
 
 ## Exactly one current priority
 
-**Complete the source catalog secret-reference contract repair, require complete exact-head CI, merge, then resume accountable project-owner RC13 local functional retesting.**
+**Accountable project-owner local Compose and functional console retest of current merged `main`.**
