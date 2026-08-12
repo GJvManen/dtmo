@@ -20,12 +20,14 @@ The documentation is intentionally separated into **stable product/architecture 
 |---|---|
 | Executive / sponsor | [Executive Status](project/EXECUTIVE_STATUS.md) |
 | Product / delivery | [Current State](project/CURRENT_STATE.md) and [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) |
+| Project governance | [Project Governance](project/PROJECT_GOVERNANCE.md) and [Documentation Standard](project/DOCUMENTATION_STANDARD.md) |
 | Architecture / engineering | [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md) and [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md) |
 | QA / release management | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md) and [Production Checklist](project/PRODUCTION_CHECKLIST.md) |
 | Operations | [Operations Manual](operations/OPERATIONS_MANUAL.md) |
 | Intelligence engineering | [Source Catalog](intelligence/SOURCE_CATALOG.md) and [Source Connection Matrix](qa/SOURCE_CONNECTION_MATRIX.md) |
+| New contributors / reviewers | [Glossary](project/GLOSSARY.md) and [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
 
 ## Documentation building blocks
 
@@ -36,7 +38,9 @@ The documentation is intentionally separated into **stable product/architecture 
 - [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) — consolidated readiness position across engineering, functional, staging, assurance and production gates.
 - [Production Checklist](project/PRODUCTION_CHECKLIST.md) — evidence checklist for formal progression.
 - [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) — phased route from accepted engineering baseline to production go/no-go.
+- [Project Governance](project/PROJECT_GOVERNANCE.md) — ownership, authority, change, evidence and release-governance model.
 - [Documentation Standard](project/DOCUMENTATION_STANDARD.md) — rules for maintaining professional documentation without mixing in operational chronology.
+- [Glossary](project/GLOSSARY.md) — canonical terminology for architecture, evidence, governance and release-readiness concepts.
 
 ### 2. Architecture and UX
 
@@ -61,6 +65,7 @@ Credential values are never repository/catalog evidence. Credentialed integratio
 
 ### 5. Governance and framework mapping
 
+- [Project Governance](project/PROJECT_GOVERNANCE.md) — project-level authority and decision model.
 - [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md) — authoritative framework mapping truth model.
 - [Traceability Matrix](traceability/TRACEABILITY_MATRIX.md) — requirements/control/evidence traceability.
 - [Evidence Index](evidence/EVIDENCE_INDEX.md) — structured evidence references.
