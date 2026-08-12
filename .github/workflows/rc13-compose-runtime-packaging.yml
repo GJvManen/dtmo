@@ -31,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           docker run --rm --entrypoint test dtmo:rc13-compose -f /app/tools/provision_grafana_reader.py
-          docker run --rm --entrypoint python dtmo:rc13-compose -m py_compile /app/tools/provision_grafana_reader.py
+          docker run --rm --entrypoint python dtmo:rc13-compose -c "from pathlib import Path; p=Path('/app/tools/provision_grafana_reader.py'); compile(p.read_text(), str(p), 'exec')"
       - name: Record exact-head evidence
         if: always()
         env:
@@ -52,7 +52,7 @@ jobs:
               "checks": [
                   "grafana provisioner source contract",
                   "runtime image contains /app/tools/provision_grafana_reader.py",
-                  "runtime image can compile provisioner script",
+                  "runtime user can read and syntax-compile provisioner in memory",
               ],
           }
           Path("artifacts/rc13-compose-runtime-packaging.json").write_text(
