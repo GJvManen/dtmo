@@ -1,101 +1,178 @@
 # DTMO Frontend UX Architecture
 
+Last updated: **2026-08-12**  
+Baseline: **16.0.0rc12 / RC13 accepted**
+
 ## Purpose
 
-DTMO 16.0.0rc6 establishes a coherent operator-facing experience for analysts, reviewers, share approvers, auditors and CISO/security users while preserving the platform's server-side authorization and governance controls.
+The DTMO frontend is a single governed security-operations experience for analysts, administrators, security leadership, reviewers/share approvers and auditors. The browser improves orientation and workflow efficiency, but server-side authorization remains authoritative.
 
 ## Experience principles
 
-1. **Task first** — users navigate by operational intent: overview, intelligence, governance, audit and security.
-2. **Role-aware, never role-trusting** — the browser may hide unavailable controls for clarity, but the server remains authoritative for RBAC decisions.
-3. **Decision clarity** — review and external share approval are visibly separate steps and remain technically separate permissions.
-4. **Evidence visibility** — audit and provenance information is presented as first-class operational information rather than diagnostic output.
-5. **Progressive disclosure** — high-impact controls are separated from routine analysis and use explicit labels and consequences.
-6. **Accessible by default** — semantic headings, native controls, skip navigation, visible focus, live status regions, reflow and reduced-motion behavior are built into the design system.
-7. **No secret persistence** — local/dev/staging identity inputs use per-tab `sessionStorage`; production identity remains the configured server-side bearer-token/identity-provider path.
+1. **One canonical product** — normal work occurs in the unified DTMO console rather than disconnected URLs or second-login dashboards.
+2. **Task first** — navigation reflects operator intent rather than internal service boundaries.
+3. **Role-aware, never role-trusting** — UI visibility may adapt for clarity; authorization is enforced server-side.
+4. **Truthful state** — loading, success, partial failure and empty-data states must accurately represent canonical application state.
+5. **Evidence visible** — source provenance, governance state and audit context are first-class information.
+6. **Progressive disclosure** — privileged/high-impact actions are separated from routine analysis.
+7. **Accessible by default** — semantic controls, labels, focus, keyboard behavior, reflow and non-colour state cues are part of the product contract.
+8. **No publication by convenience** — technical execution, Administration or analytics cannot silently create external-share authority.
 
-## Information architecture
+## Canonical information architecture
 
-The primary console is available at `/` and `/ui/console` and contains five work areas:
+The accepted console contains six primary work areas.
 
-- **Overzicht** — runtime health, release/environment identity, connector state and governance summary.
-- **Intelligence** — governed intelligence search and result triage.
-- **Governance** — review followed by separately authorized external share approval.
-- **Audit** — read-only recent audit evidence with event hashes.
-- **Security** — privileged CISO controls such as token revocation.
+### Overview
 
-Specialized role views remain available for focused workflows:
+Purpose: immediate situational awareness.
 
-- `/ui/analyst-search`
-- `/ui/share-approval`
-- `/ui/auditor`
-- `/ui/ciso-security`
+Contains:
 
-All views use the shared `/ui/design-system.css` visual language.
+- intelligence KPIs;
+- source/runtime state;
+- recent intelligence;
+- native summaries/trends;
+- unified `Alles vernieuwen` refresh action;
+- explicit truthful empty-data states.
+
+Planned enhancement: shared informational/low/medium/high severity filtering and accessible semantic colour treatment.
+
+### Intelligence
+
+Purpose: inspect recent canonical intelligence and investigation context.
+
+Contains:
+
+- durable PostgreSQL-backed intelligence records;
+- source/provenance context;
+- investigation/search support;
+- structured record presentation.
+
+Planned enhancement: the same shared severity filter contract as Overview, plus future framework mapping context.
+
+### Sources & Catalog
+
+Purpose: govern intelligence-source lifecycle and execution.
+
+Contains:
+
+- catalog/bootstrap state;
+- source enable/disable controls;
+- supported execution actions;
+- execution feedback;
+- source/runtime status.
+
+Planned enhancement: governed manual source onboarding with explicit source type, endpoint, freshness/schedule, authentication mode/secret reference, owner, default-disabled state, validation/test-run and audit/RBAC controls.
+
+### Visual Analytics
+
+Purpose: turn canonical intelligence into visual analytical context.
+
+Contains native views for:
+
+- severity;
+- source;
+- connector/runtime state;
+- review state;
+- existing trend data where available.
+
+Planned enhancements:
+
+- shared accessible severity semantics;
+- informational/low/medium/high filtering;
+- configurable trend windows;
+- clear distinction between volume trend and severity/risk trend;
+- framework aggregation only when first-class mappings exist.
+
+### Administration
+
+Purpose: govern principals and role assignments.
+
+Current controls include managed principal/role assignment lifecycle, service-account/human separation, administrator self-management protection, final-admin protection and auditable state changes.
+
+Planned enhancement: richer role-to-permission management while preserving least privilege, separation of duties and review/share-approval boundaries.
+
+### Governance
+
+Purpose: present framework/governance coverage and evidence without overstating mappings.
+
+Current surface presents explicit coverage states and repository-backed internal mappings. Planned enhancement: framework/version inventory, mapped/unmapped coverage, provenance/review status and drill-down built on the future first-class mapping model.
 
 ## Visual system
 
-The console uses a dense but calm security-operations layout with:
+The UI should communicate security state clearly without becoming alarmist or decorative.
 
-- persistent desktop navigation and compact mobile navigation;
-- clear workspace headings and explanatory copy;
-- status pills and KPI cards for current state;
-- restrained surface elevation and borders rather than decorative effects;
-- explicit primary, secondary, danger and ghost actions;
-- consistent tables, cards, forms and inline status regions;
-- responsive breakpoints for desktop, tablet and mobile use.
+Design requirements:
 
-The design intentionally avoids relying on color alone: text labels, hierarchy and symbols accompany state colors.
+- calm, high-information layout;
+- clear hierarchy and workspace headings;
+- consistent KPI cards, tables and panels;
+- responsive desktop/tablet/mobile behavior;
+- explicit primary/secondary/danger actions;
+- visible focus and keyboard-operable controls;
+- status labels/icons in addition to colour;
+- meaningful empty states instead of pseudo-data visualizations.
+
+### Severity semantics
+
+The planned shared severity system must use a single taxonomy and remain accessible:
+
+- informational — neutral/informational treatment;
+- low — green semantic treatment;
+- medium — yellow/amber semantic treatment;
+- high — red semantic treatment;
+- critical, if introduced/present — distinct highest-severity treatment.
+
+Colour must never be the only indicator. Text labels, accessible names and/or symbols remain mandatory.
 
 ## Interaction model
 
-### Identity
+### Refresh and loading
 
-The header exposes the active local/dev/staging test identity. Configuration opens in a modal dialog and is scoped to the current browser tab. Production authentication is not replaced by this UX helper.
+Refresh actions must:
 
-### Intelligence search
+- visibly enter a busy/loading state;
+- execute the intended canonical reads;
+- return controls to enabled state;
+- expose partial failure rather than reporting false success;
+- distinguish `no intelligence data` from successful populated refresh.
 
-Search is presented as a primary analyst action. Results appear as structured cards with title, summary and available metadata. The control is disabled client-side when the session lacks `read:intelligence`; server authorization remains authoritative.
+### Filtering
 
-### Governed decisions
+Filters should compose rather than replace context. Shared severity filters must use the same semantic values across Overview, Intelligence and later Visual Analytics.
 
-Review and external sharing are separate cards and separate endpoints. The interface communicates separation of duties before the high-impact action. The server continues to reject unauthorized or self-approved decisions.
+Filtered totals, lists and charts must remain internally consistent, and zero results must display a truthful filtered-empty state.
 
-### Audit evidence
+### Privileged actions
 
-Audit evidence is displayed as a read-only table with action, principal, decision, resource and event hash. The view does not expose mutation controls.
+Administration and other high-impact actions require explicit server-authorized actions, clear consequences and auditable results. The UI must not imply that hidden controls provide security; server authorization remains the enforcement point.
 
-### Security operations
+## Authentication and identity UX
 
-Token revocation is isolated in a security-specific work area and requires `revoke:tokens` for a human principal.
+Production authentication uses the configured external bearer-token/identity-provider trust model. Local/reference identity helpers are development conveniences only and must not replace production identity architecture.
+
+Tokens/credentials must not be embedded in HTML, committed documentation or persistent browser storage as a production pattern.
+
+## Analytics boundary
+
+Native DTMO analytics are the normal product surface. Grafana remains separately secured for operations/advanced analysis and must not require anonymous access or become a normal-product authentication bypass.
 
 ## Accessibility contract
 
-Repository-controlled frontend validation covers structure and browser behavior, including keyboard interaction, focus visibility, responsive reflow, critical journeys, text resize/spacing and supported browsers. Genuine VoiceOver/NVDA execution remains an external Phase 6 evidence requirement and is not claimed complete by this release.
+Phases 1–7, including the accepted accessibility/UX phase, are complete for the current engineering baseline. Continued product changes must preserve the existing keyboard, focus, contrast, reflow, text-size/spacing, responsive and supported-browser regression coverage.
+
+Any enhancement affecting severity colours must explicitly test contrast and non-colour cues.
 
 ## Security contract
 
-The frontend does not alter these invariants:
+The frontend must preserve:
 
-- server-side RBAC is authoritative;
-- service accounts do not receive human publication authority;
-- human share approval remains separate from review;
-- audit evidence remains read-only in the auditor surface;
-- credentials/tokens are not embedded in HTML or source-controlled documentation;
-- CSP, no-store behavior and anti-framing controls remain applied to UI responses.
-
-## External test focus for rc6
-
-External UX validation should assess:
-
-- orientation and navigation without prior DTMO knowledge;
-- clarity of current platform and connector state;
-- analyst search efficiency and result comprehension;
-- ability to distinguish review from share approval;
-- error/loading/empty-state comprehension;
-- mobile/tablet reflow;
-- keyboard-only use;
-- genuine VoiceOver and NVDA behavior;
-- comprehension of privileged security operations.
-
-Findings should be recorded with browser/assistive-technology versions, target release identity and reproducible steps.
+- server-side RBAC;
+- least privilege;
+- service-account/human authority separation;
+- review and external-share separation;
+- read-only auditor behavior where applicable;
+- CSP/no-store/anti-framing controls;
+- provenance/evidence visibility without leaking raw secrets;
+- no framework mapping inference;
+- no publication authority from UI convenience or technical execution.
