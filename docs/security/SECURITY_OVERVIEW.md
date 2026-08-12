@@ -22,7 +22,7 @@ Production identity requirements include:
 
 Local/reference identity helpers are development conveniences and are not the production identity architecture.
 
-## Authorization and least privilege
+## Identity and access control
 
 - Server-side RBAC is authoritative.
 - Built-in role/permission boundaries are code-controlled.
