@@ -4,6 +4,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 COMPOSE = ROOT / "docker-compose.yml"
 ENV_EXAMPLE = ROOT / ".env.example"
+STAGING_COMPOSE = ROOT / "infrastructure" / "staging-emulator" / "docker-compose.yml"
 
 
 def test_legacy_minio_runtime_is_removed_from_compose() -> None:
@@ -32,6 +33,29 @@ def test_aistor_license_and_admin_credentials_are_external_inputs() -> None:
     assert "MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?" in compose
     assert "MINIO_ROOT_USER=dtmo" not in env_example
     assert "MINIO_ROOT_PASSWORD=change-me-now" not in env_example
+
+
+def test_local_compose_api_uses_the_same_aistor_identity_as_local_server() -> None:
+    compose = COMPOSE.read_text(encoding="utf-8")
+    env_example = ENV_EXAMPLE.read_text(encoding="utf-8")
+
+    assert "DTMO_MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:?" in compose
+    assert "DTMO_MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:?" in compose
+    assert "DTMO_MINIO_ACCESS_KEY=dtmo" not in env_example
+    assert "DTMO_MINIO_SECRET_KEY=change-me-now" not in env_example
+    assert "DTMO_MINIO_ACCESS_KEY=\n" in env_example
+    assert "DTMO_MINIO_SECRET_KEY=\n" in env_example
+
+
+def test_staging_keeps_a_distinct_least_privilege_object_store_identity() -> None:
+    staging = STAGING_COMPOSE.read_text(encoding="utf-8")
+
+    assert "DTMO_MINIO_ACCESS_KEY: ${AISTOR_APP_ACCESS_KEY:?" in staging
+    assert "DTMO_MINIO_SECRET_KEY: ${AISTOR_APP_SECRET_KEY:?" in staging
+    assert "MINIO_ROOT_USER: ${AISTOR_ROOT_USER:?" in staging
+    assert "MINIO_ROOT_PASSWORD: ${AISTOR_ROOT_PASSWORD:?" in staging
+    assert "DTMO_MINIO_ACCESS_KEY: ${AISTOR_ROOT_USER" not in staging
+    assert "DTMO_MINIO_SECRET_KEY: ${AISTOR_ROOT_PASSWORD" not in staging
 
 
 def test_s3_service_contract_and_persistent_volume_are_preserved() -> None:
