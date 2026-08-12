@@ -31,6 +31,7 @@ from dtmo.rc13_administration import router as rc13_administration_router
 from dtmo.rc13_analytics import router as rc13_analytics_router
 from dtmo.rc13_governance import router as rc13_governance_router
 from dtmo.scheduler import ScheduledJob, SchedulerService
+from dtmo.severity_experience import router as severity_experience_router
 from dtmo.source_center import router as source_center_router
 from dtmo.threat_workspace import router as threat_workspace_router
 from dtmo.trace_context import begin_trace, end_trace
@@ -78,13 +79,17 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+# E1/E2 composes the accepted RC13 Governance + Administration console into a
+# shared severity-aware product surface. These roots intentionally win first;
+# the underlying RC13 routers remain registered for their JS/API resources.
+app.include_router(severity_experience_router)
 # RC13.4 composes repository-backed governance knowledge over the accepted
-# RC13.3 canonical shell. These root routes must win before Administration and
-# the underlying unified-console roots while leaving their APIs untouched.
+# RC13.3 canonical shell. The severity layer above already includes this page,
+# while this router still serves its governed JavaScript resource.
 app.include_router(rc13_governance_router)
 # RC13.3 composes governed principal/role administration into the canonical
 # shell without modifying the RC13.1 source/intelligence implementation. These
-# root routes must be registered before the underlying unified-console routes.
+# root routes remain registered for compatibility behind the composed surface.
 app.include_router(rc13_administration_router)
 app.include_router(unified_console_router)
 # RC13.2 intentionally shadows only the shared CSS route so the canonical
