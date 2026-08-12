@@ -6,14 +6,26 @@ This directory contains the authoritative architecture, security, governance, QA
 
 - **Release candidate:** `16.0.0rc12`
 - **Repository-controlled engineering:** Phases 1–7 accepted
-- **Phase 6:** manually/externally accepted by the project owner on 2026-08-11
-- **RC13.1–RC13.5 repository-controlled evidence:** `PASS`
-- **RC13 accountable owner functional retest:** `PASS` on 2026-08-12
-- **RC13 overall:** `PASS`
-- **Phase 8:** `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`
-- **Production readiness:** not yet complete
+- **RC13.1–RC13.5 historical repository evidence:** `PASS`
+- **Earlier RC13 owner acceptance:** recorded on 2026-08-12
+- **RC13 current decision:** `REOPENED / BLOCKED_INTERNAL`
+- **Phase 8:** `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`
+- **Phase 9:** `NOT COMPLETE`
+- **Phase 10:** `NOT STARTED`
+- **Production readiness:** not complete
 
-The project owner explicitly accepted the repaired canonical product with `RC13 owner retest akkoord` on 2026-08-12. Issue #150 is closed. The current priority is **Phase 8.1 — establish one approved production-equivalent staging environment and immutable deployment identity**.
+A subsequent project-owner functional retest on 2026-08-12 found blocking canonical-console defects after the earlier RC13 acceptance. Issue #150 is reopened. Phase 8 issue #158 is paused until the repair is exact-head green, merged and explicitly accepted by the project owner again.
+
+## Current owner-observed blockers
+
+- Overview `Alles vernieuwen` was not a reliable operator action.
+- Empty intelligence could still produce `Data bijgewerkt`.
+- Buttons were not reliably functional under Chrome.
+- The navigation version badge was unnecessary.
+- Administration was insufficiently clear.
+- Empty graph datasets were visually ambiguous.
+
+The current repair adds truthful refresh/empty-state behavior, explicit Chrome-channel interaction evidence, zero page/console-error requirements and a clearer governed Administration surface.
 
 ## Project overview
 
@@ -24,8 +36,6 @@ The project owner explicitly accepted the repaired canonical product with `RC13 
 - [RC13 functional console acceptance gate](qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md)
 - [Phase 8 staging deployment-parity gate](qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md)
 - [Phase 8 external deployment identity record](staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md)
-- [Staging acceptance plan](staging/STAGING_ACCEPTANCE_PLAN.md)
-- [16.0.0rc12 release notes](releases/16.0.0rc12.md)
 
 ## Architecture and engineering
 
@@ -36,13 +46,11 @@ The project owner explicitly accepted the repaired canonical product with `RC13 
 
 The canonical application shell integrates source operations, intelligence investigation, native analytics, governed principal/role administration and Governance while retaining explicit authorization and approval boundaries.
 
-## RC13 accepted product evidence
+## Evidence boundary
 
-The accepted one-session journey is:
+The earlier one-session RC13.5 journey and owner acceptance remain historical evidence. They are not erased. Newer owner-observed product defects control the **current** release decision, so RC13 is reopened until the current repair is accepted.
 
-**Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
-
-Repository-controlled browser evidence remains synthetic. The separate owner acceptance on 2026-08-12 closes RC13 without rewriting historical CI evidence.
+Synthetic Chrome/browser fixtures cannot manufacture project-owner acceptance. After merge, the owner must retest the repaired local product.
 
 ## Intelligence sources
 
@@ -50,7 +58,7 @@ Repository-controlled browser evidence remains synthetic. The separate owner acc
 - [Curated source catalog](intelligence/SOURCE_CATALOG.md)
 - [Safe source execution gate](qa/SAFE_SOURCE_EXECUTION_GATE.md)
 
-Operational vendor feeds remain governed by their accepted source framework. Secret values are never stored in source catalog or repository evidence.
+Secret values are never stored in source catalog or repository evidence.
 
 ## Security and governance
 
@@ -59,19 +67,14 @@ Operational vendor feeds remain governed by their accepted source framework. Sec
 - [Security policy](../SECURITY.md)
 - [Licensing](legal/LICENSING.md)
 - [Third-party material](legal/THIRD_PARTY.md)
-- [ADR-001 — evidence and claim boundaries](project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md)
 
-Normenkader IBP and MITRE ATT&CK remain explicitly `UNMAPPED`, CVSS remains `CONTEXT_ONLY`, and internal DTMO governance mappings remain repository-backed. Missing framework crosswalks are never inferred.
+Normenkader IBP and MITRE ATT&CK remain `UNMAPPED`, CVSS remains `CONTEXT_ONLY`, and internal DTMO governance mappings remain repository-backed. Missing framework crosswalks are never inferred.
 
-Core invariants include RBAC, least privilege, service-account isolation, administrator safety controls, separation of duties, privacy/data minimization, provenance preservation, auditability and separate human review/share approval. Technical execution, Administration access, Governance visibility or staging access never grants publication authority.
+RBAC, least privilege, service-account isolation, administrator safety controls, separation of duties, privacy/data minimization, provenance, auditability and separate human review/share approval remain authoritative. Technical execution, Administration access, Governance visibility or staging access never grants publication authority.
 
 ## Staging and external assurance
 
-- [Phase 8 staging deployment-parity gate](qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md)
-- [Phase 8 external deployment identity record](staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md)
-- [Phase 9 external assurance gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md)
-
-Phase 8 is open for external validation but is **not accepted**. Phase 8.1 remains `PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`: the current repository does not prove a real production-equivalent staging deployment. All later evidence must bind to one immutable external deployment identity.
+Phase 8 is paused. The fail-closed deployment identity record remains preparatory evidence with `evidence_complete: false`; no external deployment is accepted while RC13 is reopened.
 
 ## Operations
 
@@ -80,4 +83,4 @@ Phase 8 is open for external validation but is **not accepted**. Phase 8.1 remai
 
 ## QA evidence model
 
-Missing, queued, skipped, cancelled, failed, stale, inaccessible or inferred evidence is never treated as automated `PASS`. Manual/external acceptance is recorded explicitly as such and is never presented as machine-generated evidence. Historical run records remain immutable point-in-time evidence.
+Missing, queued, skipped, cancelled, failed, stale, inaccessible or inferred evidence is never `PASS`. Manual/external acceptance is recorded explicitly. Historical run records remain immutable point-in-time evidence.
