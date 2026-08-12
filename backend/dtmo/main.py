@@ -26,6 +26,7 @@ from dtmo.governance_knowledge import router as governance_knowledge_router
 from dtmo.logging import bind_request_context, clear_request_context, configure_logging, correlation_id, get_logger, resolve_correlation_id
 from dtmo.operations_metrics import router as operations_metrics_router
 from dtmo.operations_ui import router as operations_ui_router
+from dtmo.post_rc13_severity import router as post_rc13_severity_router
 from dtmo.rbac_admin import router as rbac_admin_router
 from dtmo.rc13_administration import router as rc13_administration_router
 from dtmo.rc13_analytics import router as rc13_analytics_router
@@ -78,6 +79,11 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+# Post-RC13 E1/E2 adds only shared read-side severity filtering and semantic
+# presentation to the accepted canonical shell. These routes intentionally win
+# for root/recent/dashboard reads; lower RC13 routers remain the implementation
+# source for Governance, Administration and all existing security boundaries.
+app.include_router(post_rc13_severity_router)
 # RC13.4 composes repository-backed governance knowledge over the accepted
 # RC13.3 canonical shell. These root routes must win before Administration and
 # the underlying unified-console roots while leaving their APIs untouched.
