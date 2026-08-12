@@ -23,6 +23,7 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         "sources": 0,
         "recent": 0,
         "severity": 0,
+        "trends": 0,
         "rbac": 0,
         "governance": 0,
     }
@@ -97,6 +98,24 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
             "critical": 0,
         },
     }
+    zero_trend = {
+        "window": "7d",
+        "bucket_unit": "dag",
+        "generated_at": "2026-08-12T06:30:00+00:00",
+        "selected_severities": ["informational", "low", "medium", "high", "critical"],
+        "buckets": [],
+        "comparison": {
+            "current_total": 0,
+            "previous_total": 0,
+            "volume_delta": 0,
+            "volume_change_percent": 0.0,
+            "current_elevated": 0,
+            "previous_elevated": 0,
+            "current_elevated_share_percent": 0.0,
+            "previous_elevated_share_percent": 0.0,
+            "elevated_share_delta_percentage_points": 0.0,
+        },
+    }
     governance = {
         "frameworks": [],
         "mappings": [],
@@ -155,6 +174,21 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
                 body=json.dumps(severity_summary),
             )
 
+        async def trend_route(route: Route) -> None:
+            calls["trends"] += 1
+            request_url = route.request.url
+            window = "7d"
+            if "window=24h" in request_url:
+                window = "24h"
+            elif "window=30d" in request_url:
+                window = "30d"
+            payload = {**zero_trend, "window": window, "bucket_unit": "uur" if window == "24h" else "dag"}
+            await route.fulfill(
+                status=200,
+                content_type="application/json",
+                body=json.dumps(payload),
+            )
+
         async def roles_route(route: Route) -> None:
             calls["rbac"] += 1
             await route.fulfill(status=200, content_type="application/json", body="[]")
@@ -175,6 +209,7 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         await page.route("**/api/v1/admin/sources", registered_route)
         await page.route("**/api/v1/console/recent-intelligence?*", recent_route)
         await page.route("**/api/v1/console/severity-summary*", severity_route)
+        await page.route("**/api/v1/console/trends?*", trend_route)
         await page.route("**/api/v1/dashboards/summary", dashboard_route)
         await page.route("**/api/v1/admin/rbac/roles", roles_route)
         await page.route("**/api/v1/admin/rbac/principals", principals_route)
@@ -185,14 +220,12 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
             "Geen intelligence data · bronstatus geladen"
         )
 
-        # Empty datasets must be explicit empty states, not zero-height pseudo-graphs.
-        await expect(page.locator("#overview-trend-chart")).to_contain_text(
-            "Geen data om te visualiseren"
-        )
+        # Empty datasets must remain explicit empty states after the E4 trend layer composes.
+        await expect(page.locator("#overview-trend-chart")).to_contain_text("Geen trenddata")
         await expect(page.locator("#overview-severity-chart")).to_contain_text(
             "Geen data om te visualiseren"
         )
-        await expect(page.locator("#overview-trend-chart .bar")).to_have_count(0)
+        await expect(page.locator("#overview-trend-chart .trend-segment")).to_have_count(0)
         await expect(page.locator("#overview-severity-chart .bar")).to_have_count(0)
         await expect(page.get_by_test_id("overview-recent")).to_contain_text(
             "Nog geen intelligence ingested"
@@ -256,6 +289,7 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         await expect(page.locator("#governance-status")).to_contain_text("0 frameworks")
 
         assert calls["severity"] >= 2
+        assert calls["trends"] >= 1
         assert calls["rbac"] >= 2
         assert calls["governance"] >= 2
         assert page_errors == []
