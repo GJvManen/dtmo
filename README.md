@@ -6,11 +6,11 @@
 
 **Release candidate:** `16.0.0rc12`  
 **Engineering status:** Phases 1–7 accepted  
-**RC13 product status:** `REOPENED / BLOCKED_INTERNAL`  
-**External staging:** `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`  
+**RC13 product status:** `AWAITING_OWNER_RETEST_AFTER_REPAIR`  
+**External staging:** `PAUSED_PENDING_RC13_OWNER_RETEST`  
 **License:** Apache-2.0
 
-> **Current release decision:** DTMO is not production ready. PR #167 is repository-controlled PASS and repaired the canonical connector commit boundary. The subsequent accountable owner retest shows the ingestion path now progresses further, including successful OpenSearch document writes, but supported-source records can still fail canonical validation before durable PostgreSQL visibility.
+> **Current release decision:** DTMO is not production ready. PR #169 is repository-controlled PASS and merged. Accountable owner retesting of the repaired source-to-interface path is now the only RC13 priority.
 
 ## Product scope
 
@@ -24,29 +24,31 @@ Completed bounded repairs include:
 2. PR #160 — Compose runtime packaging;
 3. PR #161 — Grafana datasource provisioning;
 4. PR #163 — source catalog secret-reference/bootstrap contract;
-5. PR #165 — local object-store credential contract;
-6. PR #167 — canonical connector commit/console visibility, exact head `bf18ef2c499edcf8399d1f91b80190937538fdce`, complete returned workflow matrix `completed/success`, merged as `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
+5. PR #165 — local object-store credential contract; merged `65440afea6cfa3c3300b25d577d746432cc95700`;
+6. PR #167 — canonical connector commit/console visibility; merged `e9a0926f9e13b603be759a7d7036058685ebc3cc`;
+7. PR #169 — supported-source normalization; final exact head `53aaa670c75a2f404337620bcf1a8df172efe583`, every returned workflow `completed/success`, merged as `4d182879d851cd22d22ff4f0bab795ed49ee0c1b`.
 
-The latest owner retest confirms healthy local startup, source/admin/read endpoints returning 200 and multiple OpenSearch `201 Created` document writes. It also exposes two new normalization blockers:
+PR #169 preserves the HTTP(S)-only canonical URL boundary, uses stable NVD HTTPS CVE detail URLs for canonical/provenance, retains upstream references in raw evidence, maps only `security-advisory` to canonical `advisory`, rejects unknown item types fail-closed and preserves PR #167 commit-before-success behavior.
 
-- **NVD canonical URL:** an NVD CVE can contain a first upstream reference using `ftp://`. The canonical ingest schema intentionally accepts only HTTP(S), so using that external reference as `canonical_url`/provenance causes validation failure. The repair keeps the stable NVD HTTPS CVE detail URL as canonical/provenance URL while preserving all upstream references in raw evidence.
-- **Advisory item type:** supported source adapters can emit `security-advisory`, while canonical `IntelligenceType` uses `advisory`. The repair normalizes this explicit supported alias at the canonical connector boundary and rejects unknown types fail-closed.
+The first #169 CI pass exposed a README-only governance regression. Commit `53aaa670c75a2f404337620bcf1a8df172efe583` restored the required Apache/governance entry points; the complete final exact-head workflow matrix then passed.
 
-PR #168 was closed without merge because this newer owner evidence superseded its post-#167 documentation reconciliation. Branch-only RUN-205 is not authoritative.
+After merge, connector status handling created three extra commits on `main`, including an immediately restored README write. Compare `4d182879d851cd22d22ff4f0bab795ed49ee0c1b` -> `1fd006b8568a53c1171b9d127d50037ad0027568` returns `files: []`, so the current repository tree is identical to the #169 merge.
+
+RUN-206 remains immutable. PR #168 stayed closed unmerged and branch-only RUN-205 is non-authoritative. RUN-207 records the post-#169 repository acceptance and owner-retest transition.
 
 ## Owner-retest boundary
 
-After the normalization repair is exact-head green and merged, the accountable owner must verify on current `main` that:
+The accountable owner must now verify on current `main` that:
 
 1. NVD executes without failing on non-HTTP upstream references;
 2. supported advisory sources execute without enum/statement errors;
 3. raw evidence persists;
 4. canonical PostgreSQL intelligence is durably committed;
-5. Intelligence/Recent intelligence shows the ingested records;
+5. Intelligence/Recent intelligence shows ingested records;
 6. Overview KPIs and dashboard metrics update;
 7. severity/source/trend/review graphics render from those records;
-8. refresh, Chrome controls, Administration and truthful empty states remain correct;
-9. authorization, review and separate external-share approval boundaries remain unchanged.
+8. `Alles vernieuwen`, Chrome controls, Administration and truthful empty states remain correct;
+9. authorization, human review and separate external-share approval boundaries remain unchanged.
 
 Only explicit accountable owner acceptance closes RC13.
 
@@ -67,12 +69,12 @@ DTMO preserves RBAC, least privilege, code-controlled roles, strict service-acco
 | Phase | Scope | Status |
 |---|---|---|
 | 1–7 | Repository-controlled engineering | ✅ `PASS` |
-| RC13 | Functional unified-console acceptance | ⛔ `REOPENED / BLOCKED_INTERNAL` |
-| 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
+| RC13 | Functional unified-console acceptance | ⏳ `AWAITING_OWNER_RETEST_AFTER_REPAIR` |
+| 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13_OWNER_RETEST` |
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The only current priority is **complete the supported-source normalization repair with complete exact-head CI, merge, then resume accountable owner RC13 retesting**.
+The only current priority is **accountable owner retesting of the repaired source-to-interface flow on current `main`**.
 
 ## Documentation
 
