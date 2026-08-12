@@ -33,9 +33,11 @@ Contains:
 - recent intelligence;
 - native summaries/trends;
 - unified `Alles vernieuwen` refresh action;
-- explicit truthful empty-data states.
+- explicit truthful empty-data states;
+- shared informational/low/medium/high/critical severity filtering;
+- accessible semantic severity colour treatment with text labels and counts.
 
-Planned enhancement: shared informational/low/medium/high severity filtering and accessible semantic colour treatment.
+The current E1/E2 severity experience is specified in [`SEVERITY_EXPERIENCE.md`](SEVERITY_EXPERIENCE.md).
 
 ### Intelligence
 
@@ -46,9 +48,10 @@ Contains:
 - durable PostgreSQL-backed intelligence records;
 - source/provenance context;
 - investigation/search support;
-- structured record presentation.
+- structured record presentation;
+- the same shared severity filter contract as Overview.
 
-Planned enhancement: the same shared severity filter contract as Overview, plus future framework mapping context.
+Framework mapping remains a future first-class capability. The UI must not invent framework relationships from severity, tags or free text.
 
 ### Sources & Catalog
 
@@ -62,7 +65,7 @@ Contains:
 - execution feedback;
 - source/runtime status.
 
-Planned enhancement: governed manual source onboarding with explicit source type, endpoint, freshness/schedule, authentication mode/secret reference, owner, default-disabled state, validation/test-run and audit/RBAC controls.
+Planned enhancement: governed manual source onboarding with explicit source type, endpoint, freshness/schedule, authentication mode/secret reference, owner, default-disabled state, validation/test-run and audit/RBAC controls. Existing governed source-registry APIs must be reused rather than duplicated.
 
 ### Visual Analytics
 
@@ -78,8 +81,7 @@ Contains native views for:
 
 Planned enhancements:
 
-- shared accessible severity semantics;
-- informational/low/medium/high filtering;
+- reuse the accepted shared severity semantics and filter state;
 - configurable trend windows;
 - clear distinction between volume trend and severity/risk trend;
 - framework aggregation only when first-class mappings exist.
@@ -115,15 +117,15 @@ Design requirements:
 
 ### Severity semantics
 
-The planned shared severity system must use a single taxonomy and remain accessible:
+The shared severity system uses the canonical intelligence taxonomy:
 
 - informational — neutral/informational treatment;
 - low — green semantic treatment;
 - medium — yellow/amber semantic treatment;
 - high — red semantic treatment;
-- critical, if introduced/present — distinct highest-severity treatment.
+- critical — distinct highest-severity treatment.
 
-Colour must never be the only indicator. Text labels, accessible names and/or symbols remain mandatory.
+Colour is never the only indicator. Text labels, native checkbox labels, chart/table labels and counts remain mandatory. Severity is a classification dimension only; it is not itself a framework mapping.
 
 ## Interaction model
 
@@ -139,9 +141,18 @@ Refresh actions must:
 
 ### Filtering
 
-Filters should compose rather than replace context. Shared severity filters must use the same semantic values across Overview, Intelligence and later Visual Analytics.
+Overview and Intelligence now share one severity selection state. Filters compose rather than replace context.
 
-Filtered totals, lists and charts must remain internally consistent, and zero results must display a truthful filtered-empty state.
+Current rules:
+
+- informational, low, medium, high and critical are selected by default;
+- at least one severity remains selected;
+- changing either filter surface synchronizes both surfaces;
+- reset restores all severities;
+- Overview filtered KPIs and severity distribution are derived from canonical PostgreSQL data;
+- recent Intelligence is filtered server-side against canonical PostgreSQL records;
+- search reuses the governed OpenSearch severity parameter when one severity is selected and applies the shared selected set to returned results when multiple values are active;
+- zero results display an explicit filtered-empty state.
 
 ### Privileged actions
 
@@ -157,11 +168,13 @@ Tokens/credentials must not be embedded in HTML, committed documentation or pers
 
 Native DTMO analytics are the normal product surface. Grafana remains separately secured for operations/advanced analysis and must not require anonymous access or become a normal-product authentication bypass.
 
+The first shared severity implementation applies to Overview and Intelligence. Visual Analytics adoption is a separate bounded enhancement so analytical trend/filter semantics can be tested independently.
+
 ## Accessibility contract
 
 Phases 1–7, including the accepted accessibility/UX phase, are complete for the current engineering baseline. Continued product changes must preserve the existing keyboard, focus, contrast, reflow, text-size/spacing, responsive and supported-browser regression coverage.
 
-Any enhancement affecting severity colours must explicitly test contrast and non-colour cues.
+Severity controls use native labelled checkboxes, an accessible filter group, visible focus, live filter-status regions, textual severity labels and explicit chart/table counts. Colour remains supplementary.
 
 ## Security contract
 
