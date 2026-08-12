@@ -10,7 +10,7 @@
 **External staging:** `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`  
 **License:** Apache-2.0
 
-> **Current release decision:** DTMO is not production ready. PR #163 is repository-green and its catalog-bootstrap repair is now owner-observed functional, but the same fresh-clone owner run exposed a new local source-to-intelligence object-store credential mismatch. RC13 remains open and Phase 8 remains paused until that bounded repository defect is repaired, exact-head green, merged and retested.
+> **Current release decision:** DTMO is not production ready. PR #165 is repository-green and repaired the local object-store credential contract. The subsequent accountable owner retest shows that source loading can appear successful while ingested intelligence remains invisible in the canonical console, leaving Intelligence, metrics and graphics empty. Repository inspection identified a connector transaction-boundary defect that can skip the canonical PostgreSQL commit.
 
 ## Product scope
 
@@ -26,49 +26,52 @@ DTMO provides:
 
 ## RC13 current state
 
-RC13.1–RC13.5 and the earlier owner acceptance remain historical evidence. Subsequent owner retesting has driven the current bounded repair sequence:
+RC13.1–RC13.5 and earlier owner acceptance remain historical evidence. Subsequent owner retesting controls the current decision.
+
+Completed bounded repairs:
 
 1. **PR #159 — console usability repair** — merged as `b4fffecc47f87b1edab8258514eaa130d949c195`;
 2. **PR #160 — Compose runtime packaging repair** — merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`;
 3. **PR #161 — Grafana datasource provisioning repair** — merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`;
-4. **PR #163 — source catalog secret-reference/bootstrap repair** — final exact head `4198f06e360929d3937065b8528237741cbe189a`, every returned workflow `completed/success`, merged with expected-head protection as `adc027143f1274c604a16446fe1ad2bdc7bc835f`.
+4. **PR #163 — source catalog secret-reference/bootstrap repair** — exact-head green, merged as `adc027143f1274c604a16446fe1ad2bdc7bc835f`, later owner-observed bootstrap `200 OK`;
+5. **PR #165 — local object-store credential contract repair** — exact head `48688977836cf3305b9d90c064e945de00eefb49`, complete returned workflow matrix `completed/success`, merged with expected-head protection as `65440afea6cfa3c3300b25d577d746432cc95700`.
 
-The latest accountable owner run confirms the repaired startup and catalog path:
+## Current blocker — canonical connector commit visibility
 
-- `grafana-db-provision` exits 0;
-- Grafana starts without the former duplicate-default datasource restart loop;
-- API health is available;
-- `POST /api/v1/admin/sources/catalog/bootstrap` returns `200 OK`.
+The latest owner retest reports that loading sources appears to work, but the ingested intelligence does not become visible in the interface. As a consequence the Intelligence view, Overview KPIs, metrics and native graphics remain empty.
 
-That same fresh-clone run successfully fetched CISA KEV upstream data, then failed while writing raw evidence to the local object store with `InvalidAccessKeyId`. Repository inspection confirms the local development configuration was internally inconsistent: `.env.example` supplied API defaults `dtmo/change-me-now`, while `docker-compose.yml` started AIStor from separate `MINIO_ROOT_USER/MINIO_ROOT_PASSWORD` inputs and provisioned no matching `dtmo` identity.
+Repository inspection confirms the canonical console and dashboards read `IntelligenceItem` from PostgreSQL. The built-in connector path calls `ingest_connector_record()`, which previously returned from inside:
 
-## Current bounded repair
+```python
+async for session in database.session():
+    return await _persist_intelligence(...)
+```
 
-Branch `rc13/local-objectstore-credential-contract`:
+`Database.session()` performs `commit()` only after its `yield`. Returning from the loop body prevents the async generator from resuming through that post-yield commit path. The connector can therefore finish raw landing/indexing and report inserted/indexed work without a durable canonical PostgreSQL row becoming visible to the console/dashboard read model.
 
-- makes local-development Compose use the same supplied AIStor identity for the API and local AIStor service;
-- removes misleading runnable `dtmo/change-me-now` object-store defaults from `.env.example`;
-- keeps this credential reuse strictly local-development-only;
-- preserves distinct least-privilege `AISTOR_APP_ACCESS_KEY/AISTOR_APP_SECRET_KEY` credentials for the staging-emulator/production-equivalent model;
-- adds contract tests and an exact-head rendered-Compose credential gate.
+The bounded repair branch `rc13/canonical-connector-commit-visibility` now:
 
-No repository `PASS` is claimed for this new repair until the complete final exact-head workflow matrix is `completed/success`.
+- retains the persistence receipt while the session generator runs to completion;
+- returns connector success only after the canonical session commit has completed;
+- propagates commit failure instead of reporting success;
+- adds regression tests that fail on the former early-return behavior;
+- adds an exact-head `RC13 Canonical Connector Commit Visibility Gate` covering the commit boundary, connector ingestion contract, canonical console read contract and graphical dashboard contract.
+
+The repair is `PENDING_CI`. No repository PASS is claimed until every returned workflow on its final exact head is `completed/success`.
 
 ## Owner-retest boundary
 
-Owner evidence now confirms the specific PR #163 catalog fix, but complete RC13 acceptance still requires a successful source-to-intelligence flow plus the remaining functional console checks. After the object-store repair merges, the owner retest resumes across source execution, Intelligence, Overview, analytics, Chrome controls and Administration.
+After the repair is exact-head green and merged, the accountable owner must verify on current `main` that a real supported source run:
 
-## Historical RC13 evidence
+1. fetches the upstream source;
+2. persists raw evidence without object-store authentication failure;
+3. commits canonical intelligence to PostgreSQL;
+4. becomes visible in **Intelligence** and **Recent intelligence**;
+5. updates Overview KPIs and source/severity/trend metrics;
+6. updates native Visual Analytics truthfully;
+7. preserves truthful refresh/error/empty states and the existing authorization/publication boundaries.
 
-1. **RC13.1 — source-to-intelligence — historical PASS.** PR #151.
-2. **RC13.2 — single-session visual analytics — historical PASS.** PR #152.
-3. **RC13.3 — Administration/RBAC — historical PASS.** PR #153.
-4. **RC13.4 — Governance knowledge — historical PASS.** PR #154.
-5. **RC13.5 — full integrated canonical-console browser acceptance — historical repository PASS.** PR #155.
-6. **Earlier accountable owner functional retest — historical acceptance.** `RC13 owner retest akkoord` on 2026-08-12.
-7. **Subsequent owner testing — newer blockers and bounded repairs.** Newer evidence controls the current decision.
-
-Historical acceptance is not deleted or rewritten.
+Only explicit accountable owner acceptance closes RC13.
 
 ## Phase 8 — paused
 
@@ -101,7 +104,7 @@ DTMO preserves RBAC, least privilege, code-controlled roles, strict service-acco
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The only current priority is **issue #150 — complete the local object-store credential contract repair, require exact-head CI, merge and resume accountable owner RC13 retesting**.
+The only current priority is **issue #150 — complete the canonical connector commit/console-visibility repair, require full exact-head CI, merge, then resume accountable owner RC13 retesting**.
 
 ## Documentation
 
