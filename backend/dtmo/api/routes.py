@@ -130,10 +130,12 @@ async def _persist_intelligence(
 
 
 async def ingest_connector_record(connector_id: str, record: ConnectorRecord) -> IntelligenceIngestResponse:
-    """Land, canonicalize and index one trusted connector record.
+    """Land, canonicalize, commit and index one trusted connector record.
 
     Connector execution is a service ingestion path, never a human publication path.
     Review and external share approval remain separate governed human decisions.
+    A connector receipt is returned only after the canonical database session has
+    resumed past its yield and committed successfully.
     """
 
     request = IntelligenceIngestRequest.model_validate(
@@ -164,12 +166,15 @@ async def ingest_connector_record(connector_id: str, record: ConnectorRecord) ->
             "raw_payload": record.raw,
         }
     )
+    persisted: IntelligenceIngestResponse | None = None
     async for session in database.session():
-        return await _persist_intelligence(
+        persisted = await _persist_intelligence(
             request,
             actor_subject=f"connector:{connector_id}",
             session=session,
         )
+    if persisted is not None:
+        return persisted
     raise RuntimeError("database session unavailable")
 
 

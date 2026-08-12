@@ -31,32 +31,25 @@ RC13.1–RC13.5 and earlier owner acceptance remain historical evidence. Subsequ
 1. PR #159 repaired refresh behavior, empty-data truthfulness, Chrome interactions, Administration clarity, graph empty states and menu version clutter.
 2. PR #160 repaired the canonical runtime image so `tools/provision_grafana_reader.py` is available to `grafana-db-provision`.
 3. PR #161 removed duplicate default Prometheus datasource provisioning and added a real Grafana 13.1.0 runtime health gate.
-4. PR #163 repaired the source catalog secret-reference/bootstrap contract; final exact head `4198f06e360929d3937065b8528237741cbe189a` completed every returned workflow successfully and merged as `adc027143f1274c604a16446fe1ad2bdc7bc835f`.
+4. PR #163 repaired the source catalog secret-reference/bootstrap contract and was later owner-observed with bootstrap `200 OK`.
+5. PR #165 repaired the local object-store credential contract; exact head `48688977836cf3305b9d90c064e945de00eefb49` completed every returned workflow successfully and merged as `65440afea6cfa3c3300b25d577d746432cc95700`.
 
-The latest owner run confirms #160/#161/#163 on the observed path: startup proceeds, Grafana does not re-enter the former restart loop, and supported source catalog bootstrap returns `200 OK`.
+### Current blocker — canonical connector commit visibility
 
-### Current blocker — local object-store credential contract
+The latest owner retest reports that source loading appears to work, but resulting intelligence remains absent from the interface, metrics and graphics.
 
-The same fresh-clone run successfully fetched CISA KEV upstream data, then failed when raw evidence was written to the local object store with `InvalidAccessKeyId`.
+Repository inspection confirms the canonical console and dashboard summary derive their intelligence data from PostgreSQL `IntelligenceItem` rows. The built-in connector path previously returned from inside the async database-session iteration before the session generator resumed to the `commit()` that occurs after `yield`. A connector could therefore complete raw landing/indexing and report inserted/indexed work without a durable canonical database row becoming visible to the UI.
 
-Repository inspection confirmed a source-controlled local-development mismatch:
-
-- API `.env.example` defaults before repair: `DTMO_MINIO_ACCESS_KEY=dtmo`, `DTMO_MINIO_SECRET_KEY=change-me-now`;
-- AIStor local Compose identity: required `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD`;
-- no local provisioner created the `dtmo` identity.
-
-A fresh-clone operator could therefore start the topology successfully but could not complete source-to-intelligence persistence with the shipped credential contract.
+The prior connector-pipeline test mocked the persistence function and did not cover this transaction lifecycle.
 
 ### Current bounded repair
 
-Branch `rc13/local-objectstore-credential-contract`:
+Branch `rc13/canonical-connector-commit-visibility`:
 
-- aligns the effective local API object-store identity with the supplied local AIStor bootstrap identity;
-- removes misleading runnable API object-store defaults from `.env.example`;
-- marks the shared identity as a development-only topology exception;
-- preserves distinct least-privilege `AISTOR_APP_ACCESS_KEY/AISTOR_APP_SECRET_KEY` requirements for the staging/production-equivalent model;
-- tests both local consistency and staging separation;
-- renders `docker compose config` in a dedicated exact-head gate and asserts the effective credentials match locally.
+- allows the database session generator to complete and commit before returning connector success;
+- propagates commit failure rather than reporting a successful ingest;
+- regression-tests commit-before-return and commit-failure behavior;
+- retains the existing connector ingestion, source-to-intelligence console and graphical dashboard contracts in a dedicated exact-head gate.
 
 The repair is `PENDING_CI`. It is not accepted until every returned workflow on the final exact PR head is `completed/success`.
 
@@ -64,26 +57,24 @@ The repair is `PENDING_CI`. It is not accepted until every returned workflow on 
 
 The accountable project owner must retest current merged `main` and verify:
 
-1. local Compose startup remains successful;
-2. Grafana remains healthy;
-3. source catalog bootstrap remains successful;
-4. a supported source run fetches and persists raw evidence without object-store authentication failure;
-5. source validation/run controls behave truthfully;
-6. `Alles vernieuwen` executes a real refresh and exposes loading/success/failure state;
-7. empty canonical intelligence never produces a false `Data bijgewerkt` claim;
-8. zero-only intelligence datasets render explicit empty states;
-9. Chrome navigation and operator controls work without page/console errors;
-10. governed Administration is the primary admin workspace;
-11. after successful source ingestion, Intelligence, Overview and analytics update truthfully;
+1. local Compose startup and Grafana remain healthy;
+2. source catalog bootstrap remains successful;
+3. a supported source run fetches and persists raw evidence;
+4. canonical intelligence is durably committed to PostgreSQL;
+5. recent Intelligence appears in the canonical console;
+6. Overview KPIs and dashboard metrics update truthfully;
+7. native severity/source/trend/review graphics render from the ingested dataset;
+8. `Alles vernieuwen` executes a real refresh and re-enables;
+9. Chrome navigation/operator controls remain functional;
+10. governed Administration remains the primary admin workspace;
+11. true empty datasets still render explicit empty states;
 12. authorization/publication boundaries remain unchanged.
 
 Only explicit accountable owner acceptance closes RC13.
 
 ## Documentation status note
 
-PR #164 was closed unmerged because its post-#163 `AWAITING_OWNER_RETEST` reconciliation became stale before merge when the new owner run exposed the object-store defect. Its branch-only RUN-201 never became authoritative on `main`.
-
-The assistant tooling incident that briefly created and deleted an empty `dummy` file on `main` is documented in RUN-20260812-202. A GitHub compare from the #163 merge commit to the cleanup head returned no changed files.
+PR #166 was closed unmerged because this newer owner retest made its post-#165 owner-retest-pending status stale. Its branch-only RUN-203 never became authoritative on `main`.
 
 ## Phase 8 — paused external staging gate
 
@@ -103,4 +94,4 @@ Phase 10 is the formal production go/no-go and begins only after all prior gates
 
 ## Exactly one next priority
 
-**Issue #150 — complete the local object-store credential contract repair, require complete exact-head CI, merge, then resume accountable owner functional retesting.**
+**Issue #150 — complete the canonical connector commit/console-visibility repair, require complete exact-head CI, merge, then resume accountable owner functional retesting.**
