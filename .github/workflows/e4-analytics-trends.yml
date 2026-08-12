@@ -1,0 +1,84 @@
+name: E4 Analytics Trends Gate
+
+on:
+  pull_request:
+    branches: [main, enhancement/e1-e2-severity-experience]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analytics-trends:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Validate E4 analytics and preserved console contracts
+        run: |
+          pytest -q \
+            backend/tests/test_e4_analytics_trends.py \
+            backend/tests/test_e1_e2_severity_experience.py \
+            backend/tests/test_rc13_2_visual_analytics_browser_e2e.py \
+            backend/tests/test_rc13_owner_retest_usability_contract.py \
+            backend/tests/test_rc13_5_acceptance_contract.py
+
+      - name: Validate bounded code quality
+        run: |
+          ruff check backend/dtmo/analytics_experience.py backend/tests/test_e4_analytics_trends.py
+          mypy backend/dtmo/analytics_experience.py
+
+      - name: Record exact-head evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p evidence
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = {
+              "workflow": "E4 Analytics Trends Gate",
+              "repository": os.environ.get("GITHUB_REPOSITORY"),
+              "sha": os.environ.get("GITHUB_SHA"),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "event": os.environ.get("GITHUB_EVENT_NAME"),
+              "scope": ["24h/7d/30d trends", "severity mix", "period comparison"],
+              "claim_boundary": (
+                  "Volume trend and high/critical severity mix are reported separately. "
+                  "No autonomous risk score or framework mapping is inferred."
+              ),
+          }
+          Path("evidence/e4-analytics-trends.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e4-analytics-trends-${{ github.event.pull_request.head.sha || github.sha }}
+          path: evidence/e4-analytics-trends.json
