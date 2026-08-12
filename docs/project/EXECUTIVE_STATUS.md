@@ -4,51 +4,53 @@ Last updated: **2026-08-12**
 
 ## Executive summary
 
-DTMO has completed repository-controlled engineering through Phase 7 and RC13 functional unified-console acceptance. The current release candidate is `16.0.0rc12`.
+DTMO has accepted repository-controlled engineering through Phase 7. RC13.1–RC13.5 and the earlier project-owner functional acceptance remain valid historical evidence, but a **subsequent owner retest on 2026-08-12 found new blocking canonical-console usability defects**.
 
-The project owner explicitly accepted the repaired canonical product on 2026-08-12 with `RC13 owner retest akkoord`. RC13 issue #150 is closed as completed.
+**RC13 = `REOPENED / BLOCKED_INTERNAL`.**
 
-**RC13 = PASS. Phase 8 is now the active gate.**
+**Phase 8 = `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`.**
 
-Phase 8 is `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`: external staging work may begin, but the repository does not yet contain reviewable evidence for a real production-equivalent staging deployment identity.
+Issue #150 is reopened and is the single active repair gate. External staging issue #158 is paused. DTMO is **not production ready**.
 
-**DTMO is not production ready.**
+## Current blockers
+
+The owner reported that Overview `Alles vernieuwen` did not work as a usable action, `Data bijgewerkt` could be shown with no intelligence data, buttons were unreliable under Chrome, the menu version badge was unnecessary, Administration was unclear and empty graphs were misleading.
+
+Repository inspection confirmed unconditional dashboard success wording, zero-only trend rendering and stale/duplicated Administration composition. The prior browser gate did not explicitly validate refresh-all, broad Chrome interactions or browser page/console errors.
+
+## Repair scope
+
+The current bounded repair:
+
+- makes refresh-all visible, stateful and fail-closed;
+- reports an explicit empty-data state instead of false update success;
+- renders zero-only graph datasets as empty states;
+- removes the menu version badge;
+- uses explicit button semantics and a Google Chrome-channel regression journey;
+- requires zero browser page errors and zero console errors;
+- makes governed user/role Administration the primary admin surface;
+- preserves RBAC, provenance, privacy, auditability and separate human share approval.
 
 ## Status
 
 | Phase | Executive status |
 |---|---|
 | 1–7 | `PASS` — repository-controlled engineering accepted |
-| RC13 | `PASS` — repository evidence plus accountable owner functional acceptance complete |
-| 8 | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
-| 9 | `NOT COMPLETE` — independent external assurance remains required |
-| 10 | `NOT STARTED` — production go/no-go follows completion of prior gates |
+| RC13 | `REOPENED / BLOCKED_INTERNAL` — newer owner findings supersede earlier acceptance for current readiness |
+| 8 | `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
+| 9 | `NOT COMPLETE` |
+| 10 | `NOT STARTED` |
 
-## Phase 8.1
+## Historical evidence boundary
 
-The first Phase 8 decision is not a test-suite result. It is the establishment of one approved production-equivalent staging environment and one immutable deployment identity to which every subsequent evidence class can be bound.
+PRs #151–#157 and the earlier `RC13 owner retest akkoord` remain historical evidence. They are not rewritten or deleted. Newer owner-observed defects govern the current release decision.
 
-`docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md` is fail-closed and currently records `evidence_complete: false`. Repository staging emulators and Docker Compose do not satisfy this external identity requirement.
-
-## Security/governance boundary
-
-RBAC, least privilege, separation of duties, distinct review/share approval, privacy, provenance and auditability remain unchanged. Source execution, analytics, Administration, Governance, CI or staging access does not grant publication authority. Arbitrary custom browser-defined token roles and inferred framework mappings remain prohibited.
+Synthetic browser evidence cannot close the owner gate. After exact-head CI and merge, accountable project-owner local retest is required again.
 
 ## Production decision
 
-Current decision: **NO-GO pending Phase 8, Phase 9 and Phase 10**.
+Current decision: **NO-GO pending reopened RC13 acceptance and Phases 8–10**.
 
 ## Exactly one current priority
 
-**Phase 8.1 — establish and record the approved production-equivalent staging environment and immutable deployment identity.**
-
-## Authoritative records
-
-- `README.md`
-- `docs/project/CURRENT_STATE.md`
-- `docs/roadmap/PRODUCTION_ROADMAP.md`
-- `docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`
-- `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`
-- `docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`
-- `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`
-- GitHub issues #3 and #1; issue #150 is closed.
+**Issue #150 — complete the canonical-console usability repair, exact-head Chrome/browser evidence and accountable owner retest.**

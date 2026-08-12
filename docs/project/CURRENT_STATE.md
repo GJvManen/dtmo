@@ -4,13 +4,13 @@ Last reconciled: **2026-08-12**
 
 ## Executive summary
 
-DTMO `16.0.0rc12` has completed repository-controlled engineering through Phase 7 and the RC13 functional unified-console remediation programme.
+DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7. RC13.1–RC13.5 and the earlier owner acceptance remain historical evidence, but a subsequent project-owner functional retest on 2026-08-12 identified new blocking canonical-console defects.
 
-RC13 repository evidence is accepted through PR #155, and PR #156 reconciled the post-CI state. On **2026-08-12**, the accountable project owner explicitly accepted the repaired canonical product journey with `RC13 owner retest akkoord`.
+**RC13 = `REOPENED / BLOCKED_INTERNAL`.**
 
-**RC13 = PASS.** Issue #150 is closed as completed.
+**Phase 8 = `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`.**
 
-Phase 8 is now the active programme: `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`. DTMO remains **not production ready**.
+DTMO remains **not production ready**.
 
 ## Phase status
 
@@ -21,37 +21,51 @@ Phase 8 is now the active programme: `READY_FOR_EXTERNAL_VALIDATION / PENDING_EX
 | 3. Data integrity and recovery | `PASS` |
 | 4. Connector reliability and provenance | `PASS` |
 | 5. Performance and scalability | `PASS` |
-| 6. Accessibility and operational UX | `PASS` — project-owner manual/external acceptance on 2026-08-11 |
+| 6. Accessibility and operational UX | `PASS` |
 | 7. Observability and incident operations | `PASS` |
-| RC13. Functional unified-console acceptance | `PASS` — accountable owner acceptance recorded 2026-08-12 |
-| 8. Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
+| RC13. Functional unified-console acceptance | `REOPENED / BLOCKED_INTERNAL` |
+| 8. Real staging acceptance | `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
 | 9. Independent external assurance | `NOT COMPLETE` |
 | 10. Production go/no-go | `NOT STARTED` |
 
-## RC13 accepted product state
+## New owner-observed blockers
 
-The accepted product state covers source register/enable/run → canonical ingest/index → recent Intelligence and Overview updates; native Visual analytics without a normal-product Grafana login dependency; governed Administration/RBAC; repository-backed Governance knowledge; and the integrated canonical browser journey:
+The current blocking findings are:
 
-**Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
+- Overview `Alles vernieuwen` did not function as a reliable operator action;
+- `Data bijgewerkt` could be shown although canonical intelligence was empty;
+- buttons were not reliably functional under Chrome;
+- the navigation version badge was unnecessary;
+- Administration was unclear and mixed governed management with legacy/development controls;
+- zero-only graph datasets were visually ambiguous.
 
-RC13.5 CI remained synthetic repository-controlled evidence. The distinct accountable owner acceptance on 2026-08-12 closes the product-acceptance boundary without changing what CI itself proved.
+## Current repair state
 
-## Phase 8.1 — external deployment identity
+The repair branch makes the following changes:
 
-The repository already contains a source-controlled staging acceptance plan, staging-readiness gate and staging emulator. Those assets explicitly do not establish that a real staging environment exists.
+- refresh-all has explicit loading, completion and partial-failure states;
+- empty intelligence reports `Geen intelligence data · bronstatus geladen`;
+- zero-only intelligence datasets render an explicit `Geen data om te visualiseren` state;
+- navigation and non-submit controls use explicit button semantics;
+- a dedicated Google Chrome-channel E2E covers refresh, navigation, Administration, Governance and requires zero page/console errors;
+- the menu version badge is removed;
+- governed `Gebruikers & rollen` is visually prioritized in Administration;
+- source administration is kept in `Bronnen & catalogus` and technical local identity context is de-emphasized.
 
-The first Phase 8 requirement is therefore one approved production-equivalent staging environment with an immutable deployment identity. The authoritative intake surface is:
+Repository-controlled evidence remains synthetic where APIs are fixture-backed. It cannot replace project-owner acceptance after merge.
 
-`docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`
+## Historical evidence boundary
 
-Current decision: `PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`.
+PRs #151–#157 and the earlier `RC13 owner retest akkoord` remain immutable historical evidence. They do not establish current acceptance after newer owner-observed defects.
 
-The record currently fails closed with real-environment fields `NOT_PROVIDED` and `evidence_complete: false`. Later Phase 8 evidence may only be credited if it refers to the same immutable deployment identity.
+## Phase 8 boundary
 
-## Source, identity and governance boundaries
+The Phase 8 intake/deployment identity record from PR #157 remains fail-closed preparatory evidence. Issue #158 is paused. No external staging, pentest or production-readiness progression is allowed while issue #150 remains open.
 
-Credentialed integrations continue to use logical secret references only. Production bearer tokens remain externally issued; managed assignments do not rewrite issued tokens. RBAC, least privilege, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, analytics, Administration, Governance, CI or staging access cannot authorize publication.
+## Security and governance boundaries
+
+Credentialed integrations use logical secret references only. Production bearer tokens remain externally issued. RBAC, least privilege, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, analytics, Administration, Governance, CI or staging access cannot authorize publication.
 
 ## Exactly one current priority
 
-**Phase 8.1 — establish and record the approved production-equivalent staging environment and immutable deployment identity.**
+**Issue #150 — complete the canonical-console usability repair, complete exact-head Chrome/browser CI, merge, and require accountable project-owner functional retest again.**

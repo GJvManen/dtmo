@@ -80,13 +80,15 @@ def test_console_exposes_functional_source_to_intelligence_journey() -> None:
     assert "overview-trend-chart" in body
     assert "overview-severity-chart" in body
     assert "overview-connector-chart" in body
-    assert "Core analytics werken direct op de DTMO API" in body
+    assert "Native DTMO-analytics tonen alleen meetbare data" in body
+    assert "Geen data om te visualiseren" in body
+    assert "Geen intelligence data · bronstatus geladen" in body
 
 
 def test_grafana_is_not_required_for_initial_console_render() -> None:
     body = unified_console_root().body.decode("utf-8")
 
     assert "Advanced Grafana dashboards" in body
-    assert "wordt alleen geladen wanneer je die opent" in body
+    assert "Grafana blijft een afzonderlijk geauthenticeerde operations-view" in body
     startup = body.split("const initial=", 1)[1]
     assert "initGrafana();" not in startup

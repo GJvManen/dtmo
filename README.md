@@ -5,12 +5,12 @@
 **DTMO** is an open Cyber Threat Intelligence platform for the education sector. It combines vulnerability intelligence, vendor advisories, provenance, operational health, investigation and governance in one controlled platform.
 
 **Release candidate:** `16.0.0rc12`  
-**Engineering status:** Phases 1–7 and RC13 accepted  
-**RC13 product status:** `PASS`  
-**External staging:** `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`  
+**Engineering status:** Phases 1–7 accepted; RC13 reopened  
+**RC13 product status:** `REOPENED / BLOCKED_INTERNAL`  
+**External staging:** `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`  
 **License:** Apache-2.0
 
-> **Current release decision:** DTMO is not production ready. RC13 is complete after accountable project-owner functional acceptance on 2026-08-12. Phase 8 is now the active gate, beginning with one real production-equivalent staging environment and immutable deployment identity.
+> **Current release decision:** DTMO is not production ready. A subsequent project-owner functional retest on 2026-08-12 found blocking canonical-console usability defects after the earlier RC13 acceptance. Issue #150 is reopened and Phase 8 is paused until the repair is exact-head green, merged and explicitly accepted by the project owner again.
 
 ## Product scope
 
@@ -24,68 +24,72 @@ DTMO provides:
 - **Repository-backed Governance knowledge** with explicit mapping/provenance truth boundaries;
 - **Auditability, privacy and separation of duties** across ingestion, analysis, review and external share approval.
 
-## RC13 functional acceptance
+## RC13 functional acceptance — reopened
 
-Project-owner testing on 2026-08-11 showed that earlier component-level CI did not prove a usable product journey. RC13 repaired and re-proved the canonical console before Phase 8.
+RC13.1–RC13.5 and the earlier project-owner acceptance remain valid historical evidence. The project owner subsequently found new product defects on 2026-08-12:
 
-1. **RC13.1 — source-to-intelligence — PASS.** PR #151.
-2. **RC13.2 — single-session visual analytics — PASS.** PR #152.
-3. **RC13.3 — Administration/RBAC — PASS.** PR #153.
-4. **RC13.4 — Governance knowledge — PASS.** PR #154.
-5. **RC13.5 — full integrated canonical-console browser acceptance — PASS within the repository-controlled evidence boundary.** PR #155 merged as `d6f83557ab18d26f82ad6289b1b95f728346631d` after exact head `56805ec4ead5a14e9a2f776f84df42eb772302a4` completed the full returned workflow matrix successfully.
-6. **Accountable project-owner functional retest — PASS.** On 2026-08-12 the project owner explicitly stated `RC13 owner retest akkoord`. No unprovided test-environment metadata is inferred.
+- Overview `Alles vernieuwen` was not a usable/reliable action;
+- the console could report `Data bijgewerkt` while no intelligence data existed;
+- buttons were not reliably functional under Chrome;
+- the release/version badge in the navigation was unnecessary;
+- Administration was insufficiently clear;
+- graphs were not truthful/useful for empty datasets.
 
-The accepted RC13.5 Chromium journey covered:
+Repository inspection confirmed unconditional dashboard-success wording, zero-only trend rendering and stale/duplicated Administration composition. The earlier browser gate also did not explicitly gate refresh-all, zero-data semantics, Chrome page/console errors or broad button interaction.
 
-**Overview → Intelligence → Sources & Catalog → register/enable/run → Intelligence update → Visual analytics → Administration → Governance → Overview state confirmation.**
+The current repair therefore adds truthful refresh state, explicit graph empty states, Chrome-channel interaction regression coverage, a simplified Administration workspace and removal of the menu version badge.
 
-Issue #150 is closed as completed.
+## Historical RC13 evidence
 
-## Phase 8 — real staging acceptance
+1. **RC13.1 — source-to-intelligence — historical PASS.** PR #151.
+2. **RC13.2 — single-session visual analytics — historical PASS.** PR #152.
+3. **RC13.3 — Administration/RBAC — historical PASS.** PR #153.
+4. **RC13.4 — Governance knowledge — historical PASS.** PR #154.
+5. **RC13.5 — full integrated canonical-console browser acceptance — historical repository PASS.** PR #155.
+6. **Earlier accountable owner functional retest — historical acceptance.** `RC13 owner retest akkoord` on 2026-08-12.
+7. **Subsequent owner retest — blocking findings.** Current release decision is reopened.
 
-Phase 8 is now `READY_FOR_EXTERNAL_VALIDATION`, but **not PASS**.
+Historical acceptance is not deleted or rewritten, but newer owner-observed evidence controls the current readiness decision.
 
-The first active gate is **Phase 8.1 — external deployment identity**. DTMO requires one approved production-equivalent staging environment with an immutable, independently observable deployment identity before later external validation can be credited.
+## Phase 8 — paused
 
-Authoritative intake record: [`docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`](docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md).
+PR #157 and the fail-closed external deployment identity record remain historical/preparatory evidence. They do not permit Phase 8 to advance while RC13 is reopened.
 
-Current Phase 8.1 decision: `PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`. The repository's staging-readiness contract, Docker Compose and staging emulators do not prove a real staging deployment.
+Phase 8 is now `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`. External staging issue #158 is paused. After the canonical-console repair is exact-head green and merged, the project owner must retest the repaired local product before Phase 8 can resume.
 
 ## Governance mapping model
 
-[`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md) is authoritative for Governance mapping claims.
+[`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md) remains authoritative:
 
-- **Normenkader IBP:** `UNMAPPED` — no control-level repository crosswalk exists yet.
-- **MITRE ATT&CK:** `UNMAPPED` — no technique-level mapping dataset exists yet.
-- **CVSS:** `CONTEXT_ONLY` — canonical ingest has severity/free metadata but no first-class vector/base-score field.
-- **DTMO security & release governance:** `MAPPED_INTERNAL` — internal mappings point to explicit repository evidence.
+- **Normenkader IBP:** `UNMAPPED`;
+- **MITRE ATT&CK:** `UNMAPPED`;
+- **CVSS:** `CONTEXT_ONLY`;
+- **DTMO security & release governance:** `MAPPED_INTERNAL`.
 
-Missing mappings are visible evidence and are never inferred from semantic similarity, tags or free metadata.
+Missing mappings are visible evidence and are never inferred.
 
 ## Security and governance model
 
 DTMO preserves RBAC, least privilege, code-controlled roles, strict service-account/human-role separation, administrator safety controls, separate human review and external share approval, provenance, privacy/data minimization, tamper-evident auditability and request correlation. Connectors, CI, dashboards, Administration, Governance or staging access do not grant publication authority.
-
-See [`SECURITY.md`](SECURITY.md) and [`docs/security/SECURITY_OVERVIEW.md`](docs/security/SECURITY_OVERVIEW.md).
 
 ## Project status
 
 | Phase | Scope | Status |
 |---|---|---|
 | 1–7 | Repository-controlled engineering | ✅ `PASS` |
-| RC13 | Functional unified-console acceptance | ✅ `PASS` |
-| 8 | Real staging acceptance | ▶ `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
+| RC13 | Functional unified-console acceptance | ⛔ `REOPENED / BLOCKED_INTERNAL` |
+| 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The only current priority is **Phase 8.1 — establish and record the approved production-equivalent staging environment and immutable deployment identity**.
+The only current priority is **issue #150 — complete the canonical-console usability repair, exact-head Chrome/browser evidence and accountable owner retest**.
 
 ## Documentation
 
-Start with [`docs/README.md`](docs/README.md). Key records include [`docs/project/CURRENT_STATE.md`](docs/project/CURRENT_STATE.md), [`docs/roadmap/PRODUCTION_ROADMAP.md`](docs/roadmap/PRODUCTION_ROADMAP.md), [`docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`](docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md), [`docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`](docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md), [`docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`](docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md), [`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md) and [`docs/architecture/SYSTEM_ARCHITECTURE.md`](docs/architecture/SYSTEM_ARCHITECTURE.md).
+Start with [`docs/README.md`](docs/README.md). Current authoritative records include [`docs/project/CURRENT_STATE.md`](docs/project/CURRENT_STATE.md), [`docs/roadmap/PRODUCTION_ROADMAP.md`](docs/roadmap/PRODUCTION_ROADMAP.md), [`docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`](docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md) and [`docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`](docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md).
 
 ## Open source and responsible use
 
-DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). Repository governance entry points are `LICENSE`, `NOTICE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` and `docs/legal/THIRD_PARTY.md`.
+DTMO is licensed under the **Apache License, Version 2.0** (`Apache-2.0`). The repository governance entry points are `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` and `docs/legal/THIRD_PARTY.md`; canonical licence/notice files are `LICENSE` and `NOTICE`.
 
 Use DTMO only with lawful access to intelligence sources and infrastructure. A technically successful connector does not itself establish legal permission to collect, process or redistribute third-party material.

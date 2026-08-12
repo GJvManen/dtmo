@@ -9,25 +9,37 @@ Last updated: **2026-08-12**
 - [x] Phase 3 — data integrity and recovery accepted.
 - [x] Phase 4 — connector reliability and provenance accepted.
 - [x] Phase 5 — performance/scalability accepted.
-- [x] Phase 6 — accessibility and operational UX accepted; project-owner manual/external acceptance recorded 2026-08-11.
+- [x] Phase 6 — accessibility and operational UX accepted.
 - [x] Phase 7 — observability and incident operations accepted.
-- [x] RC13 — functional unified-console acceptance complete.
-  - [x] RC13.1 — source-to-intelligence accepted via PR #151.
-  - [x] RC13.2 — single-session Visual analytics accepted via PR #152.
-  - [x] RC13.3 — governed Administration/RBAC accepted via PR #153.
-  - [x] RC13.4 — Governance knowledge surface accepted via PR #154.
-  - [x] RC13.5 — complete canonical-console browser acceptance accepted via PR #155.
-  - [x] post-CI status reconciliation accepted via PR #156.
-  - [x] accountable project-owner functional retest explicitly accepted on 2026-08-12 with `RC13 owner retest akkoord`.
+- [ ] RC13 — functional unified-console acceptance currently complete.
+  - [x] RC13.1–RC13.5 historical repository evidence complete.
+  - [x] Earlier project-owner acceptance recorded on 2026-08-12.
+  - [ ] Subsequent owner-observed Overview refresh defect repaired.
+  - [ ] Empty-data status is truthful and never reports false update success.
+  - [ ] Chrome button/navigation regression evidence succeeds with zero page/console errors.
+  - [ ] Menu version badge removed.
+  - [ ] Administration reorganized around governed users/roles.
+  - [ ] Zero-only graph datasets render explicit empty states.
+  - [ ] Complete exact-head workflow matrix succeeds on final repair head.
+  - [ ] Repair merged with expected-head protection.
+  - [ ] Accountable project-owner functional retest explicitly accepted after merge.
 - [ ] Phase 8 — real staging acceptance complete.
 - [ ] Phase 9 — external assurance complete.
 - [ ] Phase 10 — production go/no-go approved.
 
-## Phase 8.1 — external deployment identity
+## Current RC13 decision
 
-Current decision: **`PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`**.
+`REOPENED / BLOCKED_INTERNAL`.
 
-All items must refer to the same immutable production-equivalent staging deployment identity. Current repository evidence does not yet satisfy these items.
+The prior `RC13 owner retest akkoord` remains historical evidence, but a subsequent owner retest found blocking canonical-console defects. Newer owner-observed evidence governs current readiness.
+
+## Phase 8
+
+Current decision: **`PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`**.
+
+The fail-closed external deployment identity record from PR #157 remains preparatory evidence. Issue #158 is paused. No external staging evidence is credited while RC13 is reopened.
+
+When Phase 8 resumes, all evidence must refer to the same immutable production-equivalent staging deployment identity:
 
 - [ ] Approved staging environment identifier and accountable owner.
 - [ ] Reachable staging endpoint through approved access path.
@@ -39,25 +51,8 @@ All items must refer to the same immutable production-equivalent staging deploym
 - [ ] Explicit no-production-credential confirmation.
 - [ ] Deployment/change record tied to immutable release identity.
 - [ ] Rollback target/procedure tied to staged release.
-- [ ] Deployment-time threat/CVE/vendor-advisory review with provenance, time and confidence.
-
-Authoritative intake record: `docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`.
-
-A `NOT_PROVIDED`, stale, inaccessible, contradictory or inferred field is not PASS. Docker Compose and staging-emulator evidence cannot substitute for a real external deployment identity.
-
-## Phase 8 — deployed-environment validation
-
-After Phase 8.1 establishes one immutable staging deployment identity:
-
-- [ ] Staging smoke tests executed against the approved immutable deployment.
-- [ ] Integration tests executed against the approved deployment.
-- [ ] Migration validation executed against the approved deployment.
-- [ ] Connector validation executed against the approved deployment.
-- [ ] Recovery/rollback behavior validated against the approved deployment.
-- [ ] Performance behavior validated against the approved deployment.
-- [ ] Relevant accessibility/UX journeys validated in staging.
-- [ ] Observability/alerting behavior validated in staging.
-- [ ] Project-owner Phase 8 staging acceptance recorded.
+- [ ] Deployment-time threat/CVE/vendor-advisory review.
+- [ ] Project-owner Phase 8 staging acceptance.
 
 ## Phase 9 — external assurance
 
@@ -82,6 +77,6 @@ After Phase 8.1 establishes one immutable staging deployment identity:
 
 ## Decision
 
-Current decision: **NO-GO pending Phases 8–10**.
+Current decision: **NO-GO pending reopened RC13 acceptance and Phases 8–10**.
 
-The only current priority is **Phase 8.1 — external staging deployment identity**.
+The only current priority is **issue #150 — canonical-console usability repair and owner retest**.
