@@ -12,6 +12,7 @@ from dtmo.admin_center import router as admin_center_router
 from dtmo.admin_sources import router as admin_sources_router
 from dtmo.admin_ui import router as admin_ui_router
 from dtmo.alerts import connector_alerts
+from dtmo.analytics_experience import router as analytics_experience_router
 from dtmo.api.routes import close_services, ingest_connector_record, router as intelligence_router
 from dtmo.api_alerts import api_error_alerts
 from dtmo.auditor_ui import router as auditor_ui_router
@@ -79,6 +80,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+# E4 composes selectable 24h/7d/30d trend analytics over the shared E1/E2
+# severity experience. These roots intentionally win before lower UI layers.
+app.include_router(analytics_experience_router)
 # E1/E2 composes the accepted RC13 Governance + Administration console into a
 # shared severity-aware product surface. These roots intentionally win first;
 # the underlying RC13 routers remain registered for their JS/API resources.
