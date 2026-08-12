@@ -4,7 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current runs
 
-- [RUN-20260812-206 — RC13 owner retest: supported-source normalization blockers](runs/RUN-20260812-206.md) — newest accountable owner evidence after PR #167: runtime and OpenSearch writes progress, while NVD FTP canonical URLs and `security-advisory` enum mismatch block complete canonical source-to-interface acceptance; bounded normalization repair is `PENDING_CI`.
+- [RUN-20260812-207 — RC13 PR #169 repository acceptance and owner-retest transition](runs/RUN-20260812-207.md) — PR #169 final exact head completed every returned workflow successfully and merged; post-merge connector handling changed no repository files; RC13 returned to owner-retest pending.
+- [RUN-20260812-206 — RC13 owner retest: supported-source normalization blockers](runs/RUN-20260812-206.md) — historical accountable owner evidence after PR #167 that led to PR #169.
 - [RUN-20260812-204 — RC13 owner retest: source load not visible in canonical interface](runs/RUN-20260812-204.md) — historical owner evidence that led to PR #167.
 - [RUN-20260812-202 — RC13 owner retest: catalog repaired, local object-store credential contract blocked](runs/RUN-20260812-202.md) — historical evidence that led to PR #165.
 - [RUN-20260812-200 — RC13 source catalog bootstrap secret-reference blocker](runs/RUN-20260812-200.md) — historical record repaired by PR #163.
@@ -27,11 +28,11 @@ Historical run records remain immutable point-in-time evidence. Newer evidence m
 - PR #161 Grafana datasource provisioning: repository-controlled `PASS`.
 - PR #163 source catalog bootstrap: repository-controlled `PASS`; later owner-observed bootstrap 200.
 - PR #165 local object-store credential contract: repository-controlled `PASS`; merged `65440afea6cfa3c3300b25d577d746432cc95700`.
-- PR #167 canonical connector commit visibility: repository-controlled `PASS`; exact head `bf18ef2c499edcf8399d1f91b80190937538fdce`; merged `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
-- newest owner retest: runtime healthy and multiple OpenSearch documents created, but NVD FTP URL validation and advisory enum normalization failures remain.
-- supported-source normalization repair: `PENDING_CI`.
-- RC13 overall: `REOPENED / BLOCKED_INTERNAL`; issue #150 remains open.
-- Phase 8: `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`.
+- PR #167 canonical connector commit visibility: repository-controlled `PASS`; merged `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
+- PR #169 supported-source normalization: repository-controlled `PASS`; final exact head `53aaa670c75a2f404337620bcf1a8df172efe583`; every returned workflow `completed/success`; merged `4d182879d851cd22d22ff4f0bab795ed49ee0c1b`.
+- post-merge connector status handling: three additional commits, but compare merge -> repaired current head `1fd006b8568a53c1171b9d127d50037ad0027568` returns `files: []`.
+- RC13 overall: `AWAITING_OWNER_RETEST_AFTER_REPAIR`; issue #150 remains open.
+- Phase 8: `PAUSED_PENDING_RC13_OWNER_RETEST`.
 - Phase 9: `NOT COMPLETE`.
 - Phase 10: `NOT STARTED`.
 
@@ -39,4 +40,4 @@ Repository CI and local runtime evidence do not manufacture accountable owner ac
 
 ## Exactly one next priority
 
-**Complete the supported-source normalization repair, require complete exact-head CI, merge, then resume accountable project-owner RC13 retesting.**
+**Run the accountable project-owner RC13 functional retest on current `main` and record the source-to-interface result.**
