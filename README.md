@@ -25,12 +25,14 @@ DTMO focuses on five principles:
 
 The canonical DTMO web application provides a single operator experience for:
 
-- **Overview** — security and intelligence KPIs, source state, trends and recent intelligence;
-- **Intelligence** — recent normalized intelligence records with provenance and investigation context;
+- **Overview** — security and intelligence KPIs, source state, trends, recent intelligence and a shared severity filter with accessible semantic presentation;
+- **Intelligence** — recent normalized intelligence records, governed search, provenance/investigation context and the same shared severity filter;
 - **Sources & Catalog** — governed source registration, catalog state, enable/disable controls and source execution;
 - **Visual Analytics** — native analytical views for severity, source, connector and review state;
 - **Administration** — governed principal and role assignment management with safety controls;
 - **Governance** — repository-backed governance/framework knowledge and evidence boundaries.
+
+The shared severity taxonomy is `informational`, `low`, `medium`, `high` and `critical`. Severity is never communicated by colour alone: visible labels and accessible names accompany semantic colour treatment. Overview KPIs, intelligence-derived trend/source/review aggregates and recent canonical records use the same selected severity predicate. Connector health remains operational and deliberately unfiltered. The existing governed search endpoint composes with the same severity selection.
 
 ### Intelligence pipeline
 
@@ -66,6 +68,8 @@ DTMO implements and preserves:
 - explicit secret references instead of raw credentials in repository/catalog evidence;
 - truthful framework mapping states (`MAPPED`, `UNMAPPED`, `CONTEXT_ONLY`) based on explicit evidence.
 
+Severity filtering is an analytical/read-side convenience only. It does not create framework mappings, change review state or grant publication/share authority.
+
 ## Architecture
 
 The reference platform consists of:
@@ -100,14 +104,13 @@ Repository CI, local Docker Compose and synthetic staging/browser fixtures are e
 
 ## Product roadmap
 
-Post-RC13 product evolution is tracked separately from production-readiness evidence. The next planned product slices are:
+Post-RC13 product evolution is tracked separately from production-readiness evidence. Shared severity semantics/filtering for Overview and Intelligence are part of the current enhancement baseline. The next planned slices are:
 
-1. consistent accessible severity semantics and filtering across Overview and Intelligence;
-2. governed manual source onboarding;
-3. richer Visual Analytics and trend analysis;
-4. first-class provenance-backed framework mappings;
-5. deeper Administration role/permission management;
-6. deeper framework-oriented Governance coverage and evidence drill-down.
+1. governed manual source onboarding in Sources & Catalog;
+2. richer Visual Analytics and configurable trend analysis;
+3. first-class provenance-backed framework mappings;
+4. deeper Administration role/permission management;
+5. deeper framework-oriented Governance coverage and evidence drill-down.
 
 See [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md) and GitHub issue #171 for the detailed enhancement sequence.
 
@@ -120,6 +123,7 @@ The professional documentation portal is [docs/README.md](docs/README.md). Key b
 - [Security Overview](docs/security/SECURITY_OVERVIEW.md)
 - [Governance Mapping Registry](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md)
 - [Source Catalog](docs/intelligence/SOURCE_CATALOG.md)
+- [Intelligence API](docs/api/INTELLIGENCE_API.md)
 - [Traceability Matrix](docs/traceability/TRACEABILITY_MATRIX.md)
 - [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md)
 - [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md)
