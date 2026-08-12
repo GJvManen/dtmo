@@ -1,0 +1,85 @@
+name: E1 E2 Severity Experience Gate
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  severity-experience:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Validate severity UX and preserved RC13 contracts
+        run: |
+          pytest -q \
+            backend/tests/test_e1_e2_severity_experience.py \
+            backend/tests/test_rc10_unified_console.py \
+            backend/tests/test_rc13_owner_retest_usability_contract.py \
+            backend/tests/test_rc13_5_acceptance_contract.py \
+            backend/tests/test_professional_documentation_contract.py
+
+      - name: Validate code quality for bounded slice
+        run: |
+          ruff check backend/dtmo/severity_experience.py backend/tests/test_e1_e2_severity_experience.py
+          mypy backend/dtmo/severity_experience.py
+
+      - name: Record exact-head evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p evidence
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = {
+              "workflow": "E1 E2 Severity Experience Gate",
+              "repository": os.environ.get("GITHUB_REPOSITORY"),
+              "sha": os.environ.get("GITHUB_SHA"),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "event": os.environ.get("GITHUB_EVENT_NAME"),
+              "scope": ["Overview severity UX", "Intelligence severity filtering"],
+              "claim_boundary": (
+                  "Repository-controlled evidence for shared canonical severity filtering, "
+                  "accessible non-colour-only semantics and preserved RC13 product boundaries. "
+                  "It does not create framework mappings or alter publication authority."
+              ),
+          }
+          Path("evidence/e1-e2-severity-experience.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e1-e2-severity-experience-${{ github.event.pull_request.head.sha || github.sha }}
+          path: evidence/e1-e2-severity-experience.json
