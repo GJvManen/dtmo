@@ -274,8 +274,8 @@ _SCRIPT = r'''
     try {
       const summary = await loadSeveritySummary();
       return { ...base, data: { ...base.data, ...summary } };
-    } catch (error) {
-      return { ok: false, error };
+    } catch (_) {
+      return base;
     }
   };
 
