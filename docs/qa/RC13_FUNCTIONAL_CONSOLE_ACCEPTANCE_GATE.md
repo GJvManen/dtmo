@@ -1,62 +1,68 @@
 # RC13 — Functional Console Acceptance Gate
 
-Status: `PASS`
+Status: `REOPENED / BLOCKED_INTERNAL`
 
 ## Trigger
 
-A project-owner functional test of `http://localhost:8000/` on 2026-08-11 found that the repository-controlled product was not yet functionally usable despite the earlier RC12 close-out. RC13 superseded the previous Phase 8 handoff until the repaired product journey was technically proven and explicitly retested by the accountable project owner.
+A project-owner functional test of `http://localhost:8000/` on 2026-08-11 first showed that repository-controlled component evidence did not prove a usable product. RC13.1–RC13.5 repaired the initial blockers and repository browser evidence passed. The accountable project owner explicitly accepted that repaired journey on 2026-08-12.
 
-## Required acceptance journey
+A **subsequent project-owner functional retest on 2026-08-12** found additional blocking product defects. That newer owner-observed evidence supersedes the earlier acceptance for the current release decision and reopens RC13.
 
-The canonical console must support, as one usable product journey:
+## Reopened owner-observed blockers
 
-1. Overview with useful statistics and graphics;
-2. canonical recent Intelligence independently of OpenSearch search availability;
-3. Sources & Catalog with truthful execution states;
-4. register, enable/configure and manually execute an eligible framework source;
-5. fetched/inserted/indexed feedback, connector health and resulting Intelligence state;
-6. native Visual analytics without a separate Grafana login prerequisite;
-7. governed principal/role administration without weakening token or service-account boundaries;
-8. repository-backed Governance coverage, mappings, provenance and authority boundaries;
-9. preservation of RBAC, separation of duties, privacy, provenance, auditability, human review and separate external share approval.
+1. Overview **`Alles vernieuwen`** does not function as a usable/reliable operator action.
+2. The console can state **`Data bijgewerkt`** while no canonical intelligence data exists.
+3. Buttons are not reliably functional under Chrome.
+4. The release/version badge in the product navigation is unnecessary clutter.
+5. Administration is not sufficiently clear/usable.
+6. Graphs are not truthful/useful when datasets are empty.
 
-## Accepted RC13 slices
+## Confirmed implementation gaps
 
-- **RC13.1 — PASS.** PR #151 merged as `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2`.
-- **RC13.2 — PASS.** PR #152 merged as `b8c254c5d099cde5dca624aa85b17c320594847e`.
-- **RC13.3 — PASS.** PR #153 merged as `2e1029a43f7b44d8525fb89197d0a10458a3e992`.
-- **RC13.4 — PASS.** PR #154 merged as `21672aaf1cf097228699810660eaac167da842d6`.
-- **RC13.5 — PASS within the repository-controlled evidence boundary.** PR #155 merged as `d6f83557ab18d26f82ad6289b1b95f728346631d`; exact head `56805ec4ead5a14e9a2f776f84df42eb772302a4` completed the full returned workflow matrix successfully, including RC4 Quality Gate #815, RC13 Full Functional Console Acceptance Gate #1, RC13 Functional Console Browser E2E Gate #13, RC13 Single-session Visual Analytics Gate #8, RC13 Governed Administration RBAC Gate #7, RC13 Governance Knowledge Surface Gate #4 and Open Source Governance Gate #279.
-- **RC13.5 status reconciliation — PASS.** PR #156 merged as `e0119b2eb1865ad5b4f2634fd71ccd809fba96a0` after exact head `22a04c8511c5d43cbf78b1ddb39a7be993dc7a1a` completed the full returned workflow set successfully.
+Repository inspection confirms at least these root causes in the pre-repair `main` implementation:
 
-## Integrated browser evidence
+- `loadDashboard()` unconditionally changed the global status to `Data bijgewerkt` after a successful summary response, even when `total_intelligence == 0` and recent intelligence was empty.
+- the dashboard trend API always returns seven date buckets, so an empty dataset still produced zero-height pseudo-bars instead of a clear empty state;
+- the canonical Administration base markup still contained stale pre-RC13.3 copy and legacy source/identity panels, while governed RBAC was appended below that surface;
+- the earlier RC13.5 E2E journey did not explicitly gate `Alles vernieuwen`, zero-data semantics, broad button interaction, browser page errors or browser console errors.
 
-`RC13 Full Functional Console Acceptance Gate` executed one Chromium browser context through:
+## Current bounded repair
 
-**Overview → Intelligence → Sources & Catalog → source register/enable/run → Intelligence state update → Visual analytics → Administration → Governance → Overview state confirmation.**
+The reopened RC13 repair must prove:
 
-The CI journey used bounded synthetic repository-controlled fixtures. That evidence proves integration but does not manufacture manual owner acceptance.
+1. `Alles vernieuwen` visibly enters a loading state, executes source/dashboard/recent-intelligence refreshes and returns to an enabled state;
+2. a successful empty response reports **`Geen intelligence data · bronstatus geladen`**, never `Data bijgewerkt`;
+3. partial refresh failure is visible and cannot be reported as success;
+4. zero-only intelligence datasets render explicit empty states instead of ambiguous bars;
+5. real connector state may still render when it contains measurable operational values;
+6. all non-submit product controls use explicit button semantics and the canonical navigation remains functional under the Google Chrome browser channel;
+7. browser acceptance captures and requires zero page errors and zero console errors;
+8. the navigation version badge is absent;
+9. Administration presents governed user/role management as the central surface, with source management kept in `Bronnen & catalogus` and local development identity context de-emphasized;
+10. RBAC, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain unchanged.
 
-## Accountable owner acceptance
+## Historical RC13 evidence
 
-On **2026-08-12**, the project owner explicitly accepted the repaired canonical product journey with the statement:
+The following remains valid historical repository evidence and is not rewritten:
 
-`RC13 owner retest akkoord`
+- RC13.1 — PR #151 / merge `95c4a5b072d141f50a02d23f8bf9abb862d6f8e2`;
+- RC13.2 — PR #152 / merge `b8c254c5d099cde5dca624aa85b17c320594847e`;
+- RC13.3 — PR #153 / merge `2e1029a43f7b44d8525fb89197d0a10458a3e992`;
+- RC13.4 — PR #154 / merge `21672aaf1cf097228699810660eaac167da842d6`;
+- RC13.5 — PR #155 / merge `d6f83557ab18d26f82ad6289b1b95f728346631d`;
+- post-RC13.5 reconciliation — PR #156 / merge `e0119b2eb1865ad5b4f2634fd71ccd809fba96a0`;
+- Phase 8 transition/intake — PR #157 / merge `a7b7b1503bd7206bd026f87038cb709f141a9459`.
 
-No unprovided browser, operating-system, recording, assistive-technology or environment details are inferred or fabricated.
+The earlier statement `RC13 owner retest akkoord` is retained as historical accountable evidence, but it no longer closes the gate because the same project owner subsequently reported new blocking defects.
 
-## Final decision
+## Current decision
 
-**RC13 = PASS.** Issue #150 is closed as completed.
+**RC13 = REOPENED / BLOCKED_INTERNAL.** Issue #150 is open.
 
-The accepted owner retest closes the functional-console remediation programme. Phase 8 may proceed to real production-equivalent staging validation.
+**Phase 8 = `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`.**
 
-## Phase 8 boundary
+No staging, pentest or production-readiness progression is permitted until the repair passes complete exact-head CI, is merged, and the accountable project owner explicitly retests and accepts the repaired local product again.
 
-RC13 acceptance does **not** establish Phase 8 staging acceptance. Real staging must still satisfy `PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md` against one immutable production-equivalent deployment identity.
+## Exactly one next priority
 
-Repository CI, Docker Compose and staging emulators remain supporting engineering evidence only and cannot substitute for real staging evidence.
-
-## Release rule
-
-Do not claim Phase 8 `PASS`, pentest readiness or production readiness until the separate external staging, assurance and production gates are complete.
+Complete the reopened canonical-console usability repair and exact-head Chrome/browser evidence, then require accountable project-owner functional retest.
