@@ -7,14 +7,14 @@ PHASE8_GATE = ROOT / "docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md"
 RC13_GATE = ROOT / "docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md"
 
 
-def test_accountable_owner_acceptance_closes_rc13_without_claiming_production_readiness() -> None:
+def test_accountable_owner_acceptance_closes_rc13_without_claiming_external_acceptance() -> None:
     text = RC13_GATE.read_text(encoding="utf-8")
     assert "PASS / OWNER_ACCEPTED" in text
     assert "2026-08-12" in text
     assert "RC13.4" in text
     assert "RC13.5" in text
-    assert "Phase 8" in text
-    assert "not production ready" in text.lower()
+    assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in text
+    assert "CI/browser fixtures cannot create external staging or production acceptance" in text
 
 
 def test_phase8_is_ready_but_external_identity_record_stays_fail_closed() -> None:
