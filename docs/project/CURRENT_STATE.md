@@ -1,85 +1,165 @@
 # DTMO Current Project State
 
-Last reconciled: **2026-08-12**
+Last reconciled: **2026-08-12**  
+Release baseline: **16.0.0rc12**
 
 ## Executive summary
 
-DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7 and has now completed RC13 functional unified-console acceptance.
+DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted the current functional product.
 
-PR #169 repaired the final owner-observed supported-source normalization defects. Its final exact head `53aaa670c75a2f404337620bcf1a8df172efe583` completed every returned workflow successfully and merged as `4d182879d851cd22d22ff4f0bab795ed49ee0c1b`.
+The project is therefore ready to enter **Phase 8 real production-equivalent staging validation**, but it is **not production ready**. Independent external assurance and formal production go/no-go remain outstanding.
 
-The accountable project owner then explicitly reported: **“Het project werkt! Gefelciteerd!”** This is accepted as successful functional owner acceptance of the repaired source-to-interface flow.
+## Current phase position
 
-**RC13 = `PASS / OWNER_ACCEPTED`.**
+| Stage | Scope | Status |
+|---|---|---|
+| Phases 1–7 | Engineering, security, integrity/recovery, connectors, performance, accessibility/UX, observability/operations | `PASS` |
+| RC13 | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
+| Phase 8 | Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
+| Phase 9 | Independent external assurance | `NOT COMPLETE` |
+| Phase 10 | Production go/no-go | `NOT STARTED` |
 
-**Phase 8 = `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`.**
+## Product capabilities available in the accepted baseline
 
-DTMO remains **not production ready** because Phase 8 real staging, Phase 9 independent assurance and Phase 10 formal production approval remain incomplete.
+### Overview
 
-## Phase status
+- intelligence KPIs;
+- source/runtime status;
+- recent intelligence;
+- native analytical summaries and trend representation;
+- truthful no-data/empty-state behavior;
+- unified refresh behavior.
 
-| Phase | Status |
-|---|---|
-| 1. CI and workflow integrity | `PASS` |
-| 2. Application security and identity | `PASS` |
-| 3. Data integrity and recovery | `PASS` |
-| 4. Connector reliability and provenance | `PASS` |
-| 5. Performance and scalability | `PASS` |
-| 6. Accessibility and operational UX | `PASS` |
-| 7. Observability and incident operations | `PASS` |
-| RC13. Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
-| 8. Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
-| 9. Independent external assurance | `NOT COMPLETE` |
-| 10. Production go/no-go | `NOT STARTED` |
+### Intelligence
 
-## Accepted RC13 evidence
+- canonical recent intelligence from PostgreSQL application state;
+- provenance/source context;
+- OpenSearch-backed investigation/search support;
+- normalized supported source types and references;
+- durable commit-before-success ingestion behavior.
 
-- PR #159 console usability — repository-controlled PASS.
-- PR #160 Compose runtime packaging — repository-controlled PASS.
-- PR #161 Grafana datasource provisioning — repository-controlled PASS.
-- PR #163 source catalog secret-reference/bootstrap — repository-controlled PASS and later owner-observed bootstrap 200.
-- PR #165 local object-store credential contract — repository-controlled PASS; merged `65440afea6cfa3c3300b25d577d746432cc95700`.
-- PR #167 canonical connector commit/console visibility — repository-controlled PASS; merged `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
-- PR #169 supported-source normalization — repository-controlled PASS; final exact head `53aaa670c75a2f404337620bcf1a8df172efe583`; merged `4d182879d851cd22d22ff4f0bab795ed49ee0c1b`.
-- accountable owner functional retest — accepted on 2026-08-12.
+### Sources & Catalog
 
-Issue #150 is closed `completed`.
+- curated/built-in source catalog;
+- catalog bootstrap and idempotent registration;
+- source enable/disable operations;
+- supported source execution;
+- credentialed source support through logical secret references;
+- connector state/freshness/runtime evidence.
 
-Historical records remain immutable. RUN-206 remains historical evidence. PR #170 was closed unmerged because owner acceptance superseded its pending-retest status; branch-only RUN-207 is non-authoritative. RUN-208 records the accepted state.
+Manual source onboarding through the product UI/API is a planned post-RC13 enhancement.
 
-## Phase 8 boundary
+### Visual Analytics
 
-Issue #158 is now active and ready for real external validation. Phase 8.1 must establish a real approved production-equivalent staging environment and immutable deployment identity with, at minimum:
+- native severity/source/connector/review analytical views;
+- zero-data truthful empty states;
+- canonical application analytics without requiring Grafana authentication for normal users;
+- separately secured Grafana operations/advanced dashboards.
 
-- accountable staging owner and approved environment identifier;
-- reachable approved staging access path;
-- deployed exact commit and immutable image digests;
-- infrastructure/runtime inventory and configuration-parity evidence;
-- least-privilege application identities and approved secrets handling;
-- TLS/network/data-sanitization/no-production-credential evidence;
-- change/rollback records and deployment-time security review.
+Richer severity colours, shared filtering and configurable trend analysis are planned enhancements.
 
-Repository CI, local Docker Compose and staging emulators cannot satisfy real staging acceptance.
+### Administration
 
-## Post-RC13 owner enhancement backlog
+- managed principals and role assignments;
+- human/service-account role separation;
+- administrator self-management protection;
+- final-active-admin protection;
+- auditable privileged changes with request correlation.
 
-Issue #171 tracks non-blocking product improvements:
+A richer role-to-permission administration model is planned.
 
-1. shared accessible severity colours and informational/low/medium/high filtering across Overview and Intelligence;
+### Governance
+
+- authenticated repository-backed governance knowledge surface;
+- explicit framework coverage states;
+- repository provenance for internal mappings;
+- publication/share authority boundaries.
+
+First-class external framework crosswalks remain deliberately incomplete until explicit provenance-backed mapping datasets are implemented.
+
+## Canonical data and persistence state
+
+DTMO's application truth is intentionally layered:
+
+- **PostgreSQL:** canonical intelligence/application/RBAC state;
+- **OpenSearch:** search/index representation;
+- **S3-compatible object storage:** raw source/evidence objects;
+- **Redis:** queue/cache/runtime coordination;
+- **Prometheus/Grafana:** operational observability.
+
+A connector result is not considered durably successful until canonical PostgreSQL persistence completes. Search-index or raw-object success alone does not substitute for canonical application truth.
+
+## Security and governance state
+
+The accepted baseline preserves:
+
+- server-side RBAC and least privilege;
+- externally issued bearer-token trust validation;
+- human/service-account separation;
+- separation of duties;
+- tamper-evident/auditable privileged state transitions;
+- provenance and confidence preservation;
+- privacy/data minimization;
+- logical secret references instead of raw credential values;
+- explicit human review and separate external-share approval;
+- no automatic publication authority from connectors, CI, analytics, Administration, Governance or staging access.
+
+## Framework mapping state
+
+The current governance truth model is intentionally conservative:
+
+| Framework | Current state | Meaning |
+|---|---|---|
+| Normenkader IBP | `UNMAPPED` | no complete first-class control crosswalk yet |
+| MITRE ATT&CK | `UNMAPPED` | no complete first-class technique crosswalk yet |
+| CVSS | `CONTEXT_ONLY` | severity context exists, but first-class score/vector mapping is not yet implemented |
+| DTMO internal governance | `MAPPED_INTERNAL` | repository-backed mappings to explicit project evidence |
+
+The next mapping architecture must record framework/version, control/technique identifier, provenance, confidence/status and review state. Missing mappings must remain visible and must never be inferred from free text or tags.
+
+## Active production-readiness workstream
+
+**Phase 8.1** is the single active production-readiness gate.
+
+It requires a real approved production-equivalent staging environment and an immutable deployment identity tied to:
+
+- environment and accountable owner;
+- approved reachable access path;
+- exact deployed commit/release;
+- immutable application/supporting image digests;
+- infrastructure/runtime inventory;
+- configuration parity;
+- separate least-privilege application identities;
+- TLS/network controls;
+- controlled staging data and no-production-credential confirmation;
+- deployment/change and rollback records;
+- deployment-time security/CVE/vendor-advisory review.
+
+## Active product-enhancement workstream
+
+GitHub issue #171 tracks the post-RC13 product roadmap. Delivery order:
+
+1. shared accessible severity semantics and filters for Overview + Intelligence;
 2. governed manual source onboarding;
-3. richer Visual Analytics including trend analysis;
-4. first-class evidence-backed framework mappings;
-5. richer Administration RBAC role/right management;
-6. deeper framework-oriented Governance coverage and drill-down.
+3. richer Visual Analytics and trend analysis;
+4. first-class framework mapping data/API model;
+5. deeper Administration role/permission management;
+6. deeper framework-oriented Governance evidence surface.
 
-The current repository truth remains explicit: missing framework mappings are not inferred. `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md` remains authoritative until a first-class mapping model is implemented.
+These enhancements do not reopen RC13 and do not themselves satisfy Phase 8 evidence requirements.
 
-## Security and governance boundaries
+## Known limitations
 
-RBAC, least privilege, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, analytics, Administration, Governance, CI or staging access cannot authorize publication.
+- DTMO has not yet completed real production-equivalent staging acceptance.
+- Independent penetration testing/external assurance is not yet complete.
+- Formal production go/no-go has not started.
+- First-class Normenkader IBP and MITRE ATT&CK crosswalks are not implemented.
+- CVSS is not yet a complete first-class structured mapping model.
+- Manual arbitrary source onboarding is not yet available through the canonical Sources & Catalog UI.
+- Administration does not yet expose the planned full role/permission management matrix.
 
-## Exactly one production-readiness priority
+## Documentation and evidence boundary
 
-**Execute Phase 8.1 real staging environment and immutable deployment identity under issue #158.**
+Stable professional documents describe the platform and controlled current state. Operational chronology belongs under `docs/development/runs/`, GitHub issues/PRs and CI evidence.
 
-Product enhancements are tracked separately in issue #171 and do not alter the current production-readiness gate.
+Historical run records remain immutable point-in-time evidence, but they must not replace architecture, security, product or governance documentation.
