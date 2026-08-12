@@ -4,13 +4,14 @@ Last reconciled: **2026-08-12**
 
 ## Executive summary
 
-DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7. Repository-controlled RC13 repairs through PR #165 remain valid.
+DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7. PR #167 repaired the canonical connector commit boundary, completed every returned workflow on exact head `bf18ef2c499edcf8399d1f91b80190937538fdce`, and merged as `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
 
-PR #165 repaired the local AIStor/object-store credential contract and completed every returned workflow on exact head `48688977836cf3305b9d90c064e945de00eefb49`; it merged with expected-head protection as `65440afea6cfa3c3300b25d577d746432cc95700`.
+The subsequent accountable owner retest confirms the repair moved source ingestion further: local services start, Grafana and API are healthy, source/admin/read endpoints return 200, and multiple documents are created in `dtmo-intelligence-v1` with OpenSearch `201 Created` responses.
 
-The subsequent accountable owner retest reports a new internal blocker: source loading appears to succeed, but ingested intelligence is not visible in the canonical interface. Intelligence, Overview KPIs, metrics and native graphics therefore remain empty.
+The same retest exposes a narrower repository-controlled blocker before complete source-to-interface acceptance:
 
-Repository inspection confirms a transaction-boundary defect in the built-in connector ingestion path. `ingest_connector_record()` returned from inside an `async for session in database.session()` body, while `Database.session()` performs its `commit()` only after the generator resumes beyond `yield`. The early return can therefore skip the durable canonical PostgreSQL commit even when raw landing/indexing has already occurred.
+1. NVD can supply a non-HTTP `ftp://` external reference. Using that external reference as the canonical/provenance URL violates the intentional HTTP(S)-only canonical ingest schema and produces an `IntelligenceIngestRequest` validation error.
+2. Supported advisory adapters can emit `security-advisory`, while the canonical persisted `IntelligenceType` enum uses `advisory`, producing an SQLAlchemy enum/statement failure.
 
 **RC13 = `REOPENED / BLOCKED_INTERNAL`.**
 
@@ -36,67 +37,61 @@ DTMO remains **not production ready**.
 
 ## Valid recent repair evidence
 
-- PR #159 console usability: repository-controlled `PASS`; merged as `b4fffecc47f87b1edab8258514eaa130d949c195`.
-- PR #160 Compose runtime packaging: repository-controlled `PASS`; merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`.
-- PR #161 Grafana datasource provisioning: repository-controlled `PASS`; merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`.
-- PR #163 source catalog secret-reference/bootstrap: repository-controlled `PASS`; merged as `adc027143f1274c604a16446fe1ad2bdc7bc835f`; later owner-observed bootstrap `200 OK`.
-- PR #165 local object-store credential contract: repository-controlled `PASS`; exact head `48688977836cf3305b9d90c064e945de00eefb49`; merged as `65440afea6cfa3c3300b25d577d746432cc95700`.
+- PR #159 console usability — repository-controlled PASS.
+- PR #160 Compose runtime packaging — repository-controlled PASS.
+- PR #161 Grafana datasource provisioning — repository-controlled PASS.
+- PR #163 source catalog secret-reference/bootstrap — repository-controlled PASS and later owner-observed bootstrap 200.
+- PR #165 local object-store credential contract — repository-controlled PASS; merged `65440afea6cfa3c3300b25d577d746432cc95700`.
+- PR #167 canonical connector commit/console visibility — repository-controlled PASS; exact head `bf18ef2c499edcf8399d1f91b80190937538fdce`; merged `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
 
-Historical evidence is not rewritten; newer owner-observed evidence controls the current readiness decision.
+Historical evidence remains immutable. Newer owner-observed evidence controls current readiness.
 
-## Current RC13 blocker — canonical connector persistence visibility
+## Current bounded repair — supported-source normalization
 
-The canonical UI and dashboard endpoints read `IntelligenceItem` rows from PostgreSQL:
+The repair branch `rc13/source-record-normalization-contract` keeps normalization at the canonical connector boundary:
 
-- `/api/v1/console/recent-intelligence` returns recent `IntelligenceItem` records;
-- `/api/v1/dashboards/summary` derives totals, source/severity/review distributions and the seven-day trend from the same model.
+- explicit supported alias `security-advisory` normalizes to canonical `advisory`;
+- canonical enum values pass unchanged;
+- unknown connector item types remain fail-closed;
+- NVD CVE canonical/provenance URLs use the stable HTTPS `https://nvd.nist.gov/vuln/detail/<CVE>` page even when raw NVD references include FTP or another non-HTTP scheme;
+- raw upstream NVD references remain preserved in raw evidence;
+- the existing HTTP(S)-only `HttpUrl` security boundary is not relaxed;
+- PR #167 commit-before-success behavior remains covered.
 
-The built-in CISA path fetches and parses records, then calls `ingest_connector_record()`. Before repair that function returned immediately from the body of `async for session in database.session()`. Because `Database.session()` commits after its `yield`, the generator did not reach the commit path before connector success was returned.
+A dedicated `RC13 Source Record Normalization Gate` covers the normalization regressions together with source adapter, connector ingestion, canonical console and graphical dashboard contracts.
 
-The existing connector-pipeline test mocked `ingest_connector_record()` and therefore verified call counts/receipt fields but not durable canonical commit visibility.
+No repository PASS is claimed until every returned workflow on the final exact PR head is `completed/success`.
 
-## Current bounded repair
+## Documentation lineage
 
-Branch `rc13/canonical-connector-commit-visibility`:
+PR #168 was closed without merge because this newer owner evidence superseded its post-#167 owner-retest-pending reconciliation. Its branch-only RUN-205 is not authoritative on `main`. RUN-204 remains immutable historical evidence. RUN-206 records the new owner evidence and current repair decision.
 
-- preserves the persistence receipt while the async session generator runs to completion;
-- returns a successful connector receipt only after the session commit path has completed;
-- propagates a commit failure instead of reporting successful insertion;
-- adds regression tests for commit-before-return and commit-failure propagation;
-- adds `RC13 Canonical Connector Commit Visibility Gate` covering the new regression test plus the connector pipeline, source-to-intelligence console contract and graphical dashboard contract.
+## Required owner retest after repair
 
-The repair is `PENDING_CI`. No repository pass is claimed until every returned workflow on the final exact PR head is `completed/success`.
+After the repair is exact-head green and merged, verify on current merged `main`:
 
-## Documentation status
-
-PR #166 was closed unmerged after this newer owner evidence made its post-#165 owner-retest-pending reconciliation stale. Its branch-only RUN-203 is not authoritative on `main`.
-
-## Remaining owner acceptance after repair
-
-After the repair is exact-head green and merged, verify on current `main`:
-
-1. local Compose startup and Grafana remain healthy;
-2. source catalog bootstrap remains successful;
-3. a real supported source run fetches and lands raw evidence;
-4. canonical PostgreSQL intelligence is durably committed;
-5. recent Intelligence becomes visible in the unified console;
-6. Overview KPIs and dashboard summary increase truthfully;
-7. severity/source/trend/review graphics render from those records;
-8. `Alles vernieuwen` refreshes and re-enables correctly;
-9. Chrome navigation/operator controls and Administration remain functional;
-10. empty states remain truthful when datasets are actually empty;
+1. local Compose startup/Grafana/API remain healthy;
+2. source catalog and source operations remain functional;
+3. NVD completes without FTP canonical/provenance validation failure;
+4. Chrome, Mozilla, NCSC and other supported advisory sources do not fail on `security-advisory` enum mismatch;
+5. raw evidence persists successfully;
+6. canonical PostgreSQL intelligence commits successfully;
+7. recent Intelligence appears in the canonical console;
+8. Overview KPIs and dashboard summary update truthfully;
+9. severity/source/trend/review graphics render from those records;
+10. `Alles vernieuwen`, Chrome controls, Administration and true empty states remain functional;
 11. authorization/publication boundaries remain unchanged.
 
 Only explicit accountable owner acceptance closes RC13.
 
 ## Phase 8 boundary
 
-The Phase 8 intake/deployment identity record from PR #157 remains fail-closed preparatory evidence. Issue #158 remains paused. No real staging, pentest or production-readiness progression is allowed while RC13 is blocked.
+Issue #158 remains paused. No real staging, independent assurance or production-readiness progression is allowed while RC13 is blocked. The staging least-privilege identity model remains unchanged and separate from local-development credential exceptions.
 
 ## Security and governance boundaries
 
-Credentialed integrations store logical secret references only; raw secret values remain forbidden. Production bearer tokens remain externally issued. RBAC, least privilege, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, analytics, Administration, Governance, CI or staging access cannot authorize publication.
+RBAC, least privilege, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, analytics, Administration, Governance, CI or staging access cannot authorize publication.
 
 ## Exactly one current priority
 
-**Complete the canonical connector commit/console-visibility repair, require complete exact-head CI, merge, then resume accountable project-owner RC13 local functional retesting.**
+**Complete the supported-source normalization repair, require complete exact-head CI, merge, then resume accountable project-owner RC13 functional retesting.**
