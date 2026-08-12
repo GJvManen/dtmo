@@ -15,38 +15,46 @@ This roadmap separates **repository-controlled engineering acceptance**, **funct
 | 5 | Performance and scalability | `PASS` |
 | 6 | Accessibility and operational UX | `PASS` |
 | 7 | Observability and incident operations | `PASS` |
-| RC13 | Functional unified-console acceptance | `REOPENED / BLOCKED_INTERNAL` |
-| 8 | Real staging acceptance | `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
+| RC13 | Functional unified-console acceptance | `AWAITING_OWNER_RETEST_AFTER_REPAIR` |
+| 8 | Real staging acceptance | `PAUSED_PENDING_RC13_OWNER_RETEST` |
 | 9 | Independent external assurance | `NOT COMPLETE` |
 | 10 | Production go/no-go | `NOT STARTED` |
 
 DTMO is **not production ready**.
 
-## RC13 — current reopened gate
+## RC13 — current gate
 
-RC13.1–RC13.5 and the earlier owner acceptance remain historical evidence. A subsequent owner retest on 2026-08-12 found blocking usability defects involving Overview refresh, truthful empty-data status, Chrome button interaction, menu clutter, Administration clarity and graph empty-state behavior.
+RC13.1–RC13.5 and the earlier accountable owner acceptance remain historical evidence. Subsequent owner retesting exposed additional functional/runtime defects; repository-controlled repairs have now been completed through PR #161.
 
-Issue #150 is reopened and controls the current readiness decision.
+### Repair sequence
 
-### Current repair acceptance
+1. PR #159 repaired refresh behavior, empty-data truthfulness, Chrome interactions, Administration clarity, graph empty states and menu version clutter.
+2. PR #160 repaired the canonical runtime image so `tools/provision_grafana_reader.py` is available to `grafana-db-provision`.
+3. PR #161 removed duplicate default Prometheus datasource provisioning and added a real Grafana 13.1.0 runtime health gate.
 
-The repair must prove:
+PR #161 final exact head `e471d6368639a45cee6dccadd353a9068e5205e9` completed every returned workflow successfully and merged with expected-head protection as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`.
 
-1. `Alles vernieuwen` executes a real refresh and exposes loading/success/failure state;
-2. empty canonical intelligence never produces a false `Data bijgewerkt` claim;
-3. zero-only intelligence datasets render explicit empty states;
-4. Chrome navigation and operator controls work without page/console errors;
-5. the menu version badge is removed;
-6. governed Administration is the primary admin workspace;
-7. authorization/publication boundaries remain unchanged;
-8. complete exact-head CI succeeds;
-9. the accountable project owner retests and explicitly accepts the merged repair.
+### Remaining RC13 acceptance
+
+The accountable project owner must retest current merged `main` and verify:
+
+1. local Compose startup is successful;
+2. Grafana remains healthy without datasource provisioning restart loops;
+3. `Alles vernieuwen` executes a real refresh and exposes loading/success/failure state;
+4. empty canonical intelligence never produces a false `Data bijgewerkt` claim;
+5. zero-only intelligence datasets render explicit empty states;
+6. Chrome navigation and operator controls work without page/console errors;
+7. governed Administration is the primary admin workspace;
+8. after source ingestion, Intelligence, Overview and analytics update truthfully;
+9. authorization/publication boundaries remain unchanged.
+
+Only explicit accountable owner acceptance closes RC13.
 
 ## Phase 8 — paused external staging gate
 
 PR #157 remains valid historical/preparatory evidence. The external deployment identity record remains fail-closed and issue #158 remains open but paused.
 
-No Phase 8 evidence may advance while RC13 is reopened. After a successful owner retest, Phase 8 may return to `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` and issue #158 can resume.
+No Phase 8 evidence may advance while RC13 awaits owner retest. After successful owner acceptance, Phase 8 may return to `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` and issue #158 can resume.
 
 Repository CI, Docker Compose and staging emulators cannot substitute for a real staging deployment or owner functional acceptance.
 
@@ -60,4 +68,4 @@ Phase 10 is the formal production go/no-go and begins only after all prior gates
 
 ## Exactly one next priority
 
-**Issue #150 — complete the canonical-console usability repair, exact-head Chrome/browser evidence, merge and accountable project-owner retest.**
+**Issue #150 — accountable project-owner local Compose and functional-console retest of current merged `main`.**

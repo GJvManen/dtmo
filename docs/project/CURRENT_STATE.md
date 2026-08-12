@@ -4,13 +4,17 @@ Last reconciled: **2026-08-12**
 
 ## Executive summary
 
-DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7. RC13 console repair PR #159 passed its complete exact-head workflow matrix and merged as `b4fffecc47f87b1edab8258514eaa130d949c195`, but the accountable post-merge owner retest is not yet complete.
+DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7. The subsequent RC13 product-repair sequence is also repository-green through PR #161:
 
-A fresh local `docker compose up --build` owner retest attempt on 2026-08-12 exposed a runtime packaging blocker: the `grafana-db-provision` service invokes `/app/tools/provision_grafana_reader.py`, while the runtime Dockerfile did not package that repository file into the image.
+- PR #159 repaired owner-observed console usability defects;
+- PR #160 repaired the missing Grafana database-reader provisioner in the canonical runtime image;
+- PR #161 repaired duplicate Prometheus datasource provisioning that caused Grafana 13.1.0 restart loops.
 
-**RC13 = `REOPENED / BLOCKED_INTERNAL`.**
+PR #161 final exact head `e471d6368639a45cee6dccadd353a9068e5205e9` completed every returned workflow successfully and merged with expected-head protection as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`.
 
-**Phase 8 = `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`.**
+**RC13 = `AWAITING_OWNER_RETEST_AFTER_REPAIR`.**
+
+**Phase 8 = `PAUSED_PENDING_RC13_OWNER_RETEST`.**
 
 DTMO remains **not production ready**.
 
@@ -25,45 +29,52 @@ DTMO remains **not production ready**.
 | 5. Performance and scalability | `PASS` |
 | 6. Accessibility and operational UX | `PASS` |
 | 7. Observability and incident operations | `PASS` |
-| RC13. Functional unified-console acceptance | `REOPENED / BLOCKED_INTERNAL` |
-| 8. Real staging acceptance | `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
+| RC13. Functional unified-console acceptance | `AWAITING_OWNER_RETEST_AFTER_REPAIR` |
+| 8. Real staging acceptance | `PAUSED_PENDING_RC13_OWNER_RETEST` |
 | 9. Independent external assurance | `NOT COMPLETE` |
 | 10. Production go/no-go | `NOT STARTED` |
 
-## Current RC13 blocker
+## RC13 repair evidence
 
-The post-#159 owner retest reached local Compose startup but failed before the repaired console could be re-accepted:
+### PR #159 — console usability
 
-```text
-grafana-db-provision-1 | python: can't open file '/app/tools/provision_grafana_reader.py': [Errno 2] No such file or directory
-grafana-db-provision-1 exited with code 2
-```
+Repository-controlled `PASS`; merged as `b4fffecc47f87b1edab8258514eaa130d949c195`.
 
-Repository inspection confirms:
+Scope included truthful refresh/no-data behavior, Chrome interaction coverage, clearer Administration, graph empty states and removal of the navigation version badge.
 
-- `docker-compose.yml` correctly calls `python tools/provision_grafana_reader.py`;
-- `tools/provision_grafana_reader.py` exists and implements the least-privilege Grafana database-reader provisioning path;
-- the runtime `Dockerfile` copied `backend` and `database` but omitted that required tool.
+### PR #160 — Compose runtime packaging
 
-This is a runtime packaging defect, not accepted owner-test evidence.
+Repository-controlled `PASS`; merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`.
 
-## Current repair state
+The canonical image now contains `tools/provision_grafana_reader.py`, and the runtime packaging gate verifies the required file boundary.
 
-The targeted branch `rc13/compose-grafana-provisioner-packaging`:
+### PR #161 — Grafana datasource provisioning
 
-- copies only `tools/provision_grafana_reader.py` into `/app/tools/` in the canonical runtime image;
-- adds a static packaging assertion to the existing Grafana reader contract test;
-- adds `RC13 Compose Runtime Packaging Gate`, which builds the runtime image and verifies that the provisioner exists and compiles inside it.
+Repository-controlled `PASS`; final exact head `e471d6368639a45cee6dccadd353a9068e5205e9`; merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`.
 
-The repair is `PENDING_CI`. No pass is claimed until every returned workflow on the final exact PR head is `completed/success`.
+The obsolete duplicate Prometheus datasource file was removed. Directory-wide contracts now enforce unique datasource UIDs and at most one default datasource per organization. The RC13 Grafana Provisioning Runtime Gate starts Grafana 13.1.0 with the complete provisioning directory and requires a healthy API response without provisioning failure.
 
-## Historical evidence boundary
+## Acceptance boundary
 
-PR #159 exact-head CI and prior RC13 browser evidence remain valid repository-controlled point-in-time evidence. They do not establish current accountable owner acceptance because the subsequent local startup attempt found a new blocker.
+These repository-controlled results resolve the known code/configuration blockers but do **not** establish accountable project-owner acceptance. RC13 remains open until the owner retests current merged `main` and explicitly accepts the product behavior.
+
+## Required owner retest
+
+Verify on current local `main`:
+
+1. `docker compose up --build` proceeds without the former Grafana provisioner file-not-found failure;
+2. Grafana remains running and does not re-enter the duplicate-default datasource restart loop;
+3. Overview `Alles vernieuwen` visibly refreshes and returns to an enabled state;
+4. with no intelligence data, status reports `Geen intelligence data · bronstatus geladen`, not `Data bijgewerkt`;
+5. main navigation and operator buttons work in Chrome;
+6. the version number is absent from product navigation;
+7. Administration presents `Gebruikers & rollen` clearly and does not duplicate source operations;
+8. empty intelligence graphs clearly state that no data is available;
+9. after a source run ingests records, Intelligence, Overview and graphs update truthfully.
 
 ## Phase 8 boundary
 
-The Phase 8 intake/deployment identity record from PR #157 remains fail-closed preparatory evidence. Issue #158 remains paused. No external staging, pentest or production-readiness progression is allowed while RC13 remains blocked.
+The Phase 8 intake/deployment identity record from PR #157 remains fail-closed preparatory evidence. Issue #158 remains paused. No real staging, pentest or production-readiness progression is allowed until RC13 is explicitly accepted after this owner retest.
 
 ## Security and governance boundaries
 
@@ -71,4 +82,4 @@ Credentialed integrations use logical secret references only. Production bearer 
 
 ## Exactly one current priority
 
-**Complete the Compose runtime packaging repair, pass complete exact-head CI, merge, then resume the accountable project-owner RC13 functional retest.**
+**Accountable project-owner local Compose and functional console retest of current merged `main`.**
