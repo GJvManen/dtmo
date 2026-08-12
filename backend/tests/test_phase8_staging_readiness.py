@@ -41,12 +41,16 @@ def test_staging_evidence_matrix_requires_exact_environment_evidence() -> None:
     assert "missing, inaccessible, queued, cancelled, failed, stale-head" in text
 
 
-def test_phase8_qa_preserves_accepted_baseline_and_claim_boundary() -> None:
+def test_phase8_qa_preserves_accepted_readiness_and_external_claim_boundary() -> None:
     text = QA.read_text(encoding="utf-8")
-    assert "`PASS`" in text
-    assert "RUN-147 / PR #101 exact head" in text
-    assert "46/46 registered workflows successfully" in text
-    assert "does **not** claim that a staging environment exists" in text
-    assert "staging tests have executed" in text
-    assert "production acceptance is complete" in text
+    assert "**Decision:** `PASS`" in text
+    assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in text
+    assert "immutable deployment identity" in text
+    assert "configuration parity" in text
+    assert "approved IAM/secrets references and least privilege" in text
+    assert "It does **not** claim that:" in text
+    assert "a production-equivalent staging environment has been provisioned" in text
+    assert "external staging suites have executed" in text
+    assert "Phase 8 is complete" in text
+    assert "production deployment is approved" in text
     assert "PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md" in text
