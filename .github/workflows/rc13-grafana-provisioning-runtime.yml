@@ -1,0 +1,118 @@
+name: RC13 Grafana Provisioning Runtime Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  grafana-provisioning-runtime:
+    runs-on: ubuntu-latest
+    env:
+      EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head checkout
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Validate Grafana provisioning contract
+        run: python -m pytest backend/tests/test_rc12_2_grafana_dashboarding.py backend/tests/test_rc10_8_operational_dashboard.py -q
+
+      - name: Start Grafana with the complete DTMO provisioning directory
+        run: |
+          set -euo pipefail
+          docker run -d --name dtmo-grafana-runtime \
+            -p 3000:3000 \
+            -e GF_SECURITY_ADMIN_USER=dtmo-ci-admin \
+            -e GF_SECURITY_ADMIN_PASSWORD=dtmo-ci-password-not-for-production \
+            -e GF_AUTH_ANONYMOUS_ENABLED=false \
+            -e GF_USERS_ALLOW_SIGN_UP=false \
+            -e GRAFANA_DB_PASSWORD=dtmo-ci-reader-password-not-for-production \
+            -v "$PWD/infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro" \
+            -v "$PWD/infrastructure/grafana/dashboards:/var/lib/grafana/dashboards:ro" \
+            grafana/grafana:13.1.0
+
+      - name: Require healthy Grafana startup without provisioning failure
+        run: |
+          set -euo pipefail
+          healthy=0
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3000/api/health >/tmp/grafana-health.json; then
+              healthy=1
+              break
+            fi
+            if ! docker ps --format '{{.Names}}' | grep -qx dtmo-grafana-runtime; then
+              break
+            fi
+            sleep 2
+          done
+          docker logs dtmo-grafana-runtime > /tmp/grafana.log 2>&1 || true
+          cat /tmp/grafana.log
+          test "$healthy" -eq 1
+          ! grep -Fq 'Datasource provisioning error' /tmp/grafana.log
+          ! grep -Fq 'Only one datasource per organization can be marked as default' /tmp/grafana.log
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          health = json.loads(Path('/tmp/grafana-health.json').read_text())
+          assert health.get('database') == 'ok', health
+          PY
+
+      - name: Record exact-head evidence
+        if: always()
+        env:
+          GATE_CONCLUSION: ${{ job.status }}
+        run: |
+          mkdir -p artifacts
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+              "schema_version": 1,
+              "workflow": "RC13 Grafana Provisioning Runtime Gate",
+              "gate": "grafana-provisioning-runtime",
+              "head_sha": os.environ["EXPECTED_HEAD_SHA"].lower(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "conclusion": os.environ["GATE_CONCLUSION"],
+              "checks": [
+                  "exact PR-head checkout",
+                  "single canonical default datasource per organization",
+                  "Grafana 13.1.0 starts with the complete provisioning directory",
+                  "Grafana /api/health returns database=ok",
+                  "no datasource provisioning error in runtime logs",
+              ],
+          }
+          Path("artifacts/rc13-grafana-provisioning-runtime.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n"
+          )
+          print(json.dumps(evidence, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rc13-grafana-provisioning-runtime-evidence
+          path: artifacts/rc13-grafana-provisioning-runtime.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Stop Grafana runtime
+        if: always()
+        run: docker rm -f dtmo-grafana-runtime || true
