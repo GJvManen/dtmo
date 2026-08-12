@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ipaddress
+import re
 from datetime import UTC, datetime
 from urllib.parse import urlparse
 
@@ -13,6 +14,7 @@ from dtmo.persistence.models import Base
 
 ALLOWED_SOURCE_TYPES = frozenset({"cisa-kev", "json-feed"})
 ALLOWED_RELIABILITY = frozenset({"authoritative", "high", "medium", "low"})
+_ENV_SECRET_REF = re.compile(r"^env:([A-Z][A-Z0-9_]*)$")
 
 
 def utc_now() -> datetime:
@@ -45,6 +47,30 @@ def validate_source_url(value: str) -> str:
         if not address.is_global:
             raise ValueError("source URL IP address must be globally routable")
     return value.strip()
+
+
+def validate_secret_ref(value: str | None) -> str | None:
+    """Validate and canonicalize logical source-secret references.
+
+    Secret values never belong in the registry. Environment references use the
+    executable canonical form ``env:VARIABLE``. The previously accepted
+    ``env://VARIABLE`` spelling is normalized for compatibility so existing
+    operator input cannot become valid-at-write but unusable-at-runtime.
+    Vault and external secret-manager references remain opaque logical refs.
+    """
+    if value is None:
+        return None
+    reference = value.strip()
+    if not reference:
+        return None
+    if reference.startswith("env://"):
+        reference = f"env:{reference.removeprefix('env://')}"
+    if _ENV_SECRET_REF.fullmatch(reference):
+        return reference
+    for prefix in ("vault://", "secret://"):
+        if reference.startswith(prefix) and len(reference) > len(prefix):
+            return reference
+    raise ValueError("secret_ref must be a logical secret reference, never a raw secret")
 
 
 class SourceDefinition(Base):
@@ -106,8 +132,7 @@ class SourceRegistry:
         if not 60 <= interval_seconds <= 86400:
             raise ValueError("interval_seconds must be between 60 and 86400")
         endpoint_url = validate_source_url(endpoint_url)
-        if secret_ref and not secret_ref.startswith(("vault://", "secret://", "env://")):
-            raise ValueError("secret_ref must be a secret reference, never a raw secret")
+        secret_ref = validate_secret_ref(secret_ref)
         if await self.get(source_id) is not None:
             raise ValueError("source id already exists")
         source = SourceDefinition(
@@ -155,9 +180,7 @@ class SourceRegistry:
                 raise ValueError("unsupported reliability value")
             source.reliability = reliability
         if secret_ref is not None:
-            if secret_ref and not secret_ref.startswith(("vault://", "secret://", "env://")):
-                raise ValueError("secret_ref must be a secret reference, never a raw secret")
-            source.secret_ref = secret_ref or None
+            source.secret_ref = validate_secret_ref(secret_ref)
         source.updated_by = actor
         source.updated_at = utc_now()
         await self.session.flush()

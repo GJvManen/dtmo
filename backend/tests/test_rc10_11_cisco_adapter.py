@@ -10,7 +10,7 @@ from dtmo.credentialed_source_executor import (
 )
 from dtmo.source_catalog import CISCO_CREDENTIAL_REFERENCE, catalog_by_id
 from dtmo.source_executor import SourceExecutionError
-from dtmo.sources import SourceDefinition
+from dtmo.sources import SourceDefinition, validate_secret_ref
 
 API_FIXTURE_VALUE = "fixture-value"
 
@@ -37,6 +37,7 @@ def test_cisco_catalog_contract_is_supported_and_credential_referenced() -> None
     assert source.execution_profile == "cisco-openvuln-v2"
     assert source.execution_status == "supported"
     assert source.secret_ref == CISCO_CREDENTIAL_REFERENCE
+    assert validate_secret_ref(source.secret_ref) == CISCO_CREDENTIAL_REFERENCE
     assert source.execution_profile in CREDENTIALED_EXECUTION_PROFILES
 
 
@@ -69,13 +70,15 @@ def test_cisco_parser_fails_closed_on_missing_advisories() -> None:
         parse_cisco_openvuln({"advisories": [{"advisoryId": "invalid"}]}, reliability="authoritative")
 
 
-def test_secret_reference_is_fail_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_secret_reference_is_fail_closed_and_legacy_env_ref_normalizes(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("CISCO_OPENVULN_TOKEN", raising=False)
     with pytest.raises(SourceExecutionError, match="not available"):
         _resolve_secret(CISCO_CREDENTIAL_REFERENCE)
     unsupported_reference = "plain:" + "fixture"
     with pytest.raises(SourceExecutionError, match="unsupported"):
         _resolve_secret(unsupported_reference)
+    monkeypatch.setenv("CISCO_OPENVULN_TOKEN", API_FIXTURE_VALUE)
+    assert _resolve_secret("env://CISCO_OPENVULN_TOKEN") == API_FIXTURE_VALUE
 
 
 @pytest.mark.asyncio
