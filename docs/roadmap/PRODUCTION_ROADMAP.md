@@ -1,93 +1,239 @@
-# DTMO Production Readiness Roadmap
+# DTMO Roadmap — Production Readiness and Product Evolution
+
+Last updated: **2026-08-12**
 
 ## Purpose
 
-This roadmap separates repository-controlled engineering acceptance, functional product acceptance and external staging/assurance/production approval. A phase is complete only when its own evidence boundary is satisfied.
+This roadmap separates two complementary tracks:
 
-## Current status — 2026-08-12
+1. **Production readiness** — the formal evidence path from accepted engineering/product baseline to production approval.
+2. **Product evolution** — bounded enhancements that improve the operator experience and governance model without conflating feature development with staging/assurance evidence.
 
-| Phase | Scope | Status |
+## Current position
+
+| Stage | Scope | Status |
 |---|---|---|
-| 1 | CI and workflow integrity | `PASS` |
-| 2 | Application security and identity | `PASS` |
-| 3 | Data integrity and recovery | `PASS` |
-| 4 | Connector reliability and provenance | `PASS` |
-| 5 | Performance and scalability | `PASS` |
-| 6 | Accessibility and operational UX | `PASS` |
-| 7 | Observability and incident operations | `PASS` |
+| Phases 1–7 | Repository-controlled engineering baseline | `PASS` |
 | RC13 | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
-| 8 | Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
-| 9 | Independent external assurance | `NOT COMPLETE` |
-| 10 | Production go/no-go | `NOT STARTED` |
+| Phase 8 | Real production-equivalent staging acceptance | `READY / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
+| Phase 9 | Independent external assurance | `NOT COMPLETE` |
+| Phase 10 | Formal production go/no-go | `NOT STARTED` |
 
 DTMO is **not production ready**.
 
-## RC13 — complete
+# Track A — Production readiness
 
-The final RC13 repair sequence is accepted:
-
-1. PR #159 repaired refresh behavior, empty-data truthfulness, Chrome interactions, Administration clarity and graph empty states.
-2. PR #160 repaired Compose runtime packaging for the Grafana reader provisioner.
-3. PR #161 repaired Grafana datasource provisioning and added a real Grafana runtime health gate.
-4. PR #163 repaired the source catalog secret-reference/bootstrap contract.
-5. PR #165 repaired the local object-store credential contract.
-6. PR #167 repaired canonical connector commit visibility.
-7. PR #169 repaired supported-source normalization while preserving the HTTP(S)-only canonical URL boundary, raw upstream references, fail-closed unknown item types and commit-before-success behavior.
-8. The accountable project owner explicitly accepted the repaired product on 2026-08-12: **“Het project werkt! Gefelciteerd!”**
-
-PR #169 final exact head `53aaa670c75a2f404337620bcf1a8df172efe583` completed every returned workflow successfully and merged as `4d182879d851cd22d22ff4f0bab795ed49ee0c1b`.
-
-Issue #150 is closed `completed`.
-
-## Phase 8 — real external staging gate
-
-Phase 8 is now ready to start. Issue #158 tracks Phase 8.1.
+## Phase 8 — real staging acceptance
 
 ### Phase 8.1 — environment and immutable deployment identity
 
-Required evidence includes:
+**Objective:** establish one approved production-equivalent staging environment and bind all evidence to one immutable deployment identity.
 
-- approved staging environment identifier;
+Required outputs:
+
+- approved environment identifier;
 - accountable staging owner;
-- approved reachable staging access path;
-- deployed release and exact commit;
+- approved endpoint/access path;
+- exact deployed release and Git commit;
 - immutable application/supporting image digests;
 - infrastructure/runtime inventory;
-- configuration-parity evidence;
-- approved least-privilege identities and secrets handling;
-- TLS/network/data-sanitization/no-production-credential evidence;
-- change/rollback records;
-- deployment-time security/CVE review.
+- configuration parity and approved deviations;
+- separate least-privilege application/service identities;
+- secret-management references;
+- TLS/network restrictions;
+- controlled data/sanitization evidence;
+- no-production-credential confirmation;
+- deployment/change record;
+- rollback target/procedure;
+- deployment-time CVE/vendor-advisory/security review.
 
-The staging application identity must remain distinct from root/admin infrastructure identities. Local-development compatibility exceptions do not alter staging or production requirements.
+### Phase 8.2 — platform and identity validation
 
-Repository CI, Docker Compose and staging emulators cannot substitute for real staging acceptance.
+Validate against the immutable staging identity:
 
-## Post-RC13 product enhancements
+- application health/readiness;
+- database migrations/connectivity;
+- search/cache/object storage;
+- authentication/authorization;
+- service-account/human separation;
+- privileged Administration controls;
+- audit/correlation behavior;
+- operational metrics and separately authenticated Grafana.
 
-Issue #171 contains the owner's accepted post-RC13 product backlog. Suggested delivery order:
+### Phase 8.3 — source-to-intelligence validation
 
-1. shared severity colour/filter contract across Overview and Intelligence;
-2. governed manual source onboarding;
-3. Visual Analytics trend analysis and richer visual semantics;
-4. first-class evidence-backed framework mapping model;
-5. richer Administration RBAC role/right management;
-6. Governance framework coverage and evidence drill-down built on the verified mapping model.
+Validate:
 
-These enhancements do not reopen RC13 and do not count as Phase 8 evidence unless separately demonstrated in real staging.
+- source catalog/bootstrap;
+- source activation/execution;
+- upstream fetch;
+- raw evidence retention;
+- normalization/provenance;
+- canonical PostgreSQL commit;
+- OpenSearch indexing/search;
+- Intelligence visibility;
+- Overview/dashboard aggregation;
+- Visual Analytics.
 
-## Phase 9 — external assurance
+### Phase 8.4 — operational and recovery validation
 
-Phase 9 covers independent penetration testing, representative load/stress validation, production-equivalent restoration, platform hardening, secrets-management acceptance and required operational/stakeholder approval.
+Validate:
 
-## Phase 10 — production decision
+- operational metrics/alerts;
+- logging/correlation;
+- runbook applicability;
+- agreed backup/restore/recovery scenarios;
+- rollback readiness;
+- change/deployment traceability.
 
-Phase 10 is the formal production go/no-go and begins only after all prior gates are complete and reviewable.
+### Phase 8.5 — accountable staging acceptance
 
-## Evidence lineage
+Phase 8 is complete only after the full evidence package is reviewable and an accountable staging/project acceptance decision is recorded.
 
-Historical run records remain immutable. RUN-206 remains historical evidence. PR #170 was closed unmerged after owner acceptance superseded its pending-retest status; branch-only RUN-207 is non-authoritative. RUN-208 records the owner-accepted transition to Phase 8 readiness.
+## Phase 9 — independent external assurance
 
-## Exactly one next production-readiness priority
+Expected assurance classes:
 
-**Execute Phase 8.1 real staging environment and immutable deployment identity under issue #158.**
+- independent penetration testing;
+- representative production-equivalent load/stress validation;
+- hardening/configuration review;
+- IAM/secrets-management review;
+- resilience/recovery review where required;
+- monitoring/incident-response readiness review;
+- privacy/legal/governance review where required;
+- residual-risk disposition.
+
+## Phase 10 — formal production go/no-go
+
+Required decision inputs:
+
+- accepted Phase 8 evidence;
+- accepted Phase 9 assurance;
+- production environment/ownership model;
+- IAM/secrets/network approval;
+- backup/recovery/rollback approval;
+- monitoring/on-call/escalation approval;
+- privacy/data/legal approval;
+- open finding/residual-risk statement;
+- formal change/release decision.
+
+# Track B — Product evolution
+
+GitHub issue #171 is the umbrella backlog for the owner-approved post-RC13 enhancements.
+
+## E1 — shared severity semantics and filters
+
+**Priority:** 1  
+**Scope:** Overview + Intelligence
+
+Deliver:
+
+- a single shared severity taxonomy/filter contract;
+- informational/low/medium/high filtering;
+- accessible semantic presentation (e.g. low/green, medium/amber, high/red) with labels/icons/non-colour cues;
+- consistent filtered totals and graphics;
+- truthful empty filtered states;
+- browser/keyboard/WCAG coverage.
+
+This is the next product-development slice.
+
+## E2 — governed manual source onboarding
+
+**Priority:** 2
+
+Deliver a controlled Sources & Catalog flow for manually registering sources with:
+
+- source identity/type;
+- endpoint;
+- schedule/freshness expectation;
+- authentication mode/logical secret reference;
+- ownership;
+- default-disabled state;
+- validation/test-run before activation;
+- audit/RBAC controls.
+
+Source creation/execution must not grant publication authority.
+
+## E3 — richer Visual Analytics and trend analysis
+
+**Priority:** 2
+
+Deliver:
+
+- consistent severity semantics with E1;
+- configurable time windows (at minimum 24h/7d/30d when data supports them);
+- distinction between volume trend and severity/risk trend;
+- richer native visualizations;
+- framework aggregation only when backed by explicit first-class mappings.
+
+## E4 — first-class framework mapping model
+
+**Priority:** 3
+
+Create a canonical mapping data/API model supporting explicit, reviewable mappings for agreed frameworks, initially considering:
+
+- Normenkader IBP;
+- MITRE ATT&CK;
+- CVSS fields/context.
+
+Every mapping should record:
+
+- framework/version;
+- control/technique/identifier;
+- mapping type/relationship;
+- evidence/provenance source;
+- confidence/status;
+- review state and reviewer context;
+- timestamps/versioning.
+
+Missing mappings remain `UNMAPPED`; no automatic semantic equivalence is accepted.
+
+## E5 — richer Administration RBAC
+
+**Priority:** 3
+
+Deliver:
+
+- role-to-permission matrix visibility;
+- governed role assignment workflows;
+- policy-bounded custom role/assignment capability where approved;
+- self-lockout and final-admin protections;
+- strict service-account/human separation;
+- auditable actor/reason/correlation/before-after state;
+- explicit separation from review/share approval authority.
+
+## E6 — deeper Governance framework surface
+
+**Priority:** 3
+
+Build on E4 rather than creating a parallel mapping truth model.
+
+Deliver:
+
+- framework/version inventory;
+- mapping coverage and mapped/unmapped counts;
+- evidence provenance/review state;
+- drill-down from framework control/technique to DTMO mapping/control/intelligence evidence;
+- explicit distinction between normative requirement, internal control implementation, intelligence relationship and evidence;
+- truthful `UNMAPPED`/`CONTEXT_ONLY` states.
+
+# Delivery discipline
+
+Each product enhancement is implemented as a bounded PR with:
+
+- explicit acceptance criteria;
+- focused unit/contract/browser tests;
+- preservation of accepted RC13 behavior;
+- preservation of RBAC, privacy, provenance and publication boundaries;
+- complete exact-head CI before merge;
+- staging validation when the enhancement is part of a Phase 8 candidate deployment.
+
+## Documentation discipline
+
+Professional product, architecture, security, governance and readiness documents describe stable capabilities and controlled current state. Operational PR/incident chronology belongs in `docs/development/runs/`, issues and CI evidence and must not replace the professional documentation layers.
+
+## Immediate next steps
+
+1. Complete the professional documentation restoration/reconciliation.
+2. Start product enhancement **E1 — shared severity semantics and filters for Overview + Intelligence**.
+3. Continue Phase 8.1 real staging identity work as the active production-readiness track.
