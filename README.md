@@ -1,88 +1,155 @@
-# DTMO
+# DTMO — Dutch Threat Monitoring for Education
 
-## Dutch Threat Monitoring for Education
+DTMO is an open Cyber Threat Intelligence (CTI) platform designed for education-sector security teams. It brings governed threat-source operations, normalized intelligence, provenance, investigation, visual analytics, role-based administration and governance evidence together in one controlled application.
 
-**DTMO** is an open Cyber Threat Intelligence platform for the education sector. It combines vulnerability intelligence, vendor advisories, provenance, operational health, investigation and governance in one controlled platform.
+> **Release baseline:** `16.0.0rc12`  
+> **Functional product acceptance:** `RC13 PASS / OWNER_ACCEPTED`  
+> **Production-readiness stage:** Phase 8 — real production-equivalent staging validation  
+> **Production status:** **not production ready**
 
-**Release candidate:** `16.0.0rc12`  
-**Engineering status:** Phases 1–7 accepted  
-**RC13 product status:** `PASS / OWNER_ACCEPTED`  
-**External staging:** `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`  
-**License:** Apache-2.0
+## Why DTMO
 
-> **Current release decision:** the accountable owner explicitly accepted the repaired unified console on 2026-08-12 with “Het project werkt! Gefelciteerd!”. RC13 is complete. DTMO is still **not production ready** because real Phase 8 staging acceptance, Phase 9 independent assurance and Phase 10 formal production go/no-go remain incomplete.
+Education environments combine broad digital estates, sensitive data, large user populations, cloud dependencies and a threat landscape that ranges from opportunistic exploitation to targeted campaigns. DTMO is intended to help security teams turn heterogeneous public and governed intelligence sources into traceable, reviewable and operationally useful intelligence without weakening authorization, privacy or publication controls.
 
-## Product scope
+DTMO focuses on five principles:
 
-DTMO provides unified threat intelligence, governed source operations, threat investigation, native visual analytics, governed Administration/RBAC, governance knowledge and auditable separation between ingestion, review and external share approval.
+1. **Provenance first** — source identity and evidence remain traceable through normalization and analysis.
+2. **Fail closed** — missing evidence, invalid source contracts, unknown types or incomplete acceptance never become implicit success.
+3. **Human authority remains human** — ingestion, analytics, Administration, CI and staging access do not grant publication or external-share authority.
+4. **Least privilege by design** — human and service-account responsibilities remain separated and privileged operations are auditable.
+5. **Evidence-based governance** — framework mappings are explicit and provenance-backed; missing mappings remain visibly unmapped rather than inferred.
 
-## RC13 accepted repair sequence
+## Product capabilities
 
-1. PR #159 — console usability;
-2. PR #160 — Compose runtime packaging;
-3. PR #161 — Grafana datasource provisioning;
-4. PR #163 — source catalog secret-reference/bootstrap contract;
-5. PR #165 — local object-store credential contract;
-6. PR #167 — canonical connector commit/console visibility;
-7. PR #169 — supported-source normalization, final exact head `53aaa670c75a2f404337620bcf1a8df172efe583`, every returned workflow `completed/success`, merged as `4d182879d851cd22d22ff4f0bab795ed49ee0c1b`;
-8. accountable owner functional retest — accepted on 2026-08-12.
+### Unified security console
 
-Issue #150 is closed `completed`.
+The canonical DTMO web application provides a single operator experience for:
 
-## Phase 8 — ready for real external validation
+- **Overview** — security and intelligence KPIs, source state, trends and recent intelligence;
+- **Intelligence** — recent normalized intelligence records with provenance and investigation context;
+- **Sources & Catalog** — governed source registration, catalog state, enable/disable controls and source execution;
+- **Visual Analytics** — native analytical views for severity, source, connector and review state;
+- **Administration** — governed principal and role assignment management with safety controls;
+- **Governance** — repository-backed governance/framework knowledge and evidence boundaries.
 
-Issue #158 is now the single active production-readiness priority. Phase 8 requires a real approved production-equivalent staging environment, immutable deployment identity, approved least-privilege application credentials, environment/configuration evidence and accountable external validation. Repository CI, Docker Compose, staging emulators and synthetic browser fixtures cannot substitute for real staging evidence.
+### Intelligence pipeline
 
-The staging application identity must remain distinct from AIStor root/admin credentials. The local-development credential compatibility exception must not be propagated into staging.
+DTMO supports provider-specific and framework-based adapters that feed a canonical intelligence pipeline:
 
-## Post-RC13 product enhancement backlog
+```mermaid
+flowchart LR
+    S[Official / governed sources] --> A[Adapters & connector framework]
+    A --> N[Normalization + provenance]
+    N --> O[Raw evidence object storage]
+    N --> P[(PostgreSQL canonical state)]
+    N --> X[(OpenSearch index)]
+    P --> API[FastAPI application services]
+    X --> API
+    API --> UI[Unified DTMO console]
+    API --> OBS[Prometheus / operational telemetry]
+```
 
-Issue #171 tracks the accountable owner's follow-up recommendations without reopening RC13:
+The canonical PostgreSQL record is the durable application truth for console intelligence and dashboard aggregation. Search/index and raw-evidence storage provide supporting capabilities rather than replacing that canonical state.
 
-- richer accessible severity colour semantics and informational/low/medium/high filtering in Overview, Intelligence and Visual Analytics;
-- governed manual source onboarding in Sources & Catalog;
-- trend analysis and later framework-backed analytical aggregation;
-- first-class, provenance-backed framework mappings;
-- deeper Administration role/permission management;
-- deeper framework-oriented Governance coverage and evidence views.
+### Security and governance
 
-Framework mappings remain truthful: missing mappings stay visibly `UNMAPPED`/`CONTEXT_ONLY` until explicit evidence-backed mappings exist.
+DTMO implements and preserves:
 
-## Governance mapping model
+- server-side RBAC and least privilege;
+- strict human/service-account role separation;
+- privileged Administration protections, including self-management and final-admin safeguards;
+- externally issued and cryptographically validated bearer-token trust;
+- tamper-evident auditability and request correlation;
+- provenance and confidence preservation;
+- privacy/data-minimization boundaries;
+- separate review and external-share approval authority;
+- explicit secret references instead of raw credentials in repository/catalog evidence;
+- truthful framework mapping states (`MAPPED`, `UNMAPPED`, `CONTEXT_ONLY`) based on explicit evidence.
 
-[`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md) remains authoritative until first-class mapping data is implemented. Missing mappings remain visible evidence and are never inferred.
+## Architecture
 
-## Security and governance model
+The reference platform consists of:
 
-DTMO preserves RBAC, least privilege, code-controlled roles, strict service-account/human-role separation, administrator safety controls, separate human review and external share approval, provenance, privacy/data minimization, tamper-evident auditability and request correlation. Credentialed integrations store logical secret references only; raw secret values remain forbidden. Connectors, CI, dashboards, Administration, Governance or staging access do not grant publication authority.
+- Python 3.12+
+- FastAPI / Uvicorn
+- SQLAlchemy / Alembic
+- PostgreSQL 17
+- Redis 8
+- OpenSearch 2.19
+- S3-compatible AIStor/MinIO object storage
+- Prometheus 3
+- Grafana 13 for separately authenticated operational/advanced dashboards
+- Nginx
+- Docker Compose reference topology
 
-## Project status
+See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) for trust boundaries, data flows, deployment boundaries and component responsibilities.
 
-| Phase | Scope | Status |
+## Current maturity and release position
+
+| Stage | Scope | Status |
 |---|---|---|
-| 1–7 | Repository-controlled engineering | ✅ `PASS` |
-| RC13 | Functional unified-console acceptance | ✅ `PASS / OWNER_ACCEPTED` |
-| 8 | Real staging acceptance | ▶ `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
-| 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
-| 10 | Production go/no-go | ⏳ `NOT STARTED` |
+| Phases 1–7 | Repository-controlled engineering, security, recovery, connectors, performance, accessibility and operations | `PASS` |
+| RC13 | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
+| Phase 8 | Real production-equivalent staging acceptance | `READY / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
+| Phase 9 | Independent external assurance | `NOT COMPLETE` |
+| Phase 10 | Formal production go/no-go | `NOT STARTED` |
 
-The current production-readiness priority is **Phase 8.1 real staging and immutable deployment identity under issue #158**. Product enhancements are tracked separately in issue #171.
+The current production-readiness objective is to provision and evidence one approved production-equivalent staging environment with an immutable deployment identity, least-privilege application credentials, configuration parity, TLS/network evidence, controlled data handling, rollback/change evidence and deployment-time security review.
+
+Repository CI, local Docker Compose and synthetic staging/browser fixtures are engineering evidence only; they do not substitute for real staging or independent assurance.
+
+## Product roadmap
+
+Post-RC13 product evolution is tracked separately from production-readiness evidence. The next planned product slices are:
+
+1. consistent accessible severity semantics and filtering across Overview and Intelligence;
+2. governed manual source onboarding;
+3. richer Visual Analytics and trend analysis;
+4. first-class provenance-backed framework mappings;
+5. deeper Administration role/permission management;
+6. deeper framework-oriented Governance coverage and evidence drill-down.
+
+See [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md) and GitHub issue #171 for the detailed enhancement sequence.
 
 ## Documentation
 
-Start with [`docs/README.md`](docs/README.md). Current authoritative status records are [`docs/project/CURRENT_STATE.md`](docs/project/CURRENT_STATE.md), [`docs/roadmap/PRODUCTION_ROADMAP.md`](docs/roadmap/PRODUCTION_ROADMAP.md) and [`docs/development/RUN_LOG.md`](docs/development/RUN_LOG.md).
+The professional documentation portal is [docs/README.md](docs/README.md). Key building blocks include:
+
+- [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
+- [Frontend UX](docs/ux/FRONTEND_UX.md)
+- [Security Overview](docs/security/SECURITY_OVERVIEW.md)
+- [Governance Mapping Registry](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md)
+- [Source Catalog](docs/intelligence/SOURCE_CATALOG.md)
+- [Traceability Matrix](docs/traceability/TRACEABILITY_MATRIX.md)
+- [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md)
+- [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md)
+- [Production Checklist](docs/project/PRODUCTION_CHECKLIST.md)
+- [Operations Manual](docs/operations/OPERATIONS_MANUAL.md)
+
+Operational implementation history and immutable run evidence are intentionally separated under `docs/development/` and are not used as substitutes for professional architecture or product documentation.
+
+## Local reference environment
+
+Copy the example environment file and provide non-default local secrets outside source control:
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+The local Compose topology is a development/reference environment. Local compatibility exceptions — including object-storage bootstrap/admin identity handling — must **not** be propagated into staging or production. Staging and production require distinct least-privilege application identities.
 
 ## Open source and responsible use
 
-DTMO is licensed under the **Apache License, Version 2.0**. The canonical licence text is in `LICENSE`; applicable notices are maintained in `NOTICE`.
+DTMO is licensed under the **Apache License, Version 2.0**. The canonical license text is in [`LICENSE`](LICENSE); applicable notices are maintained in [`NOTICE`](NOTICE).
 
-Open-source governance and security entry points are:
+Open-source governance and security entry points:
 
-- `SECURITY.md` — security policy and vulnerability reporting;
-- `CONTRIBUTING.md` — contribution requirements;
-- `CODE_OF_CONDUCT.md` — contributor conduct;
-- `SUPPORTED_VERSIONS.md` — supported release policy;
-- `docs/legal/LICENSING.md` — DTMO licensing policy;
-- `docs/legal/THIRD_PARTY.md` — third-party material, source terms and redistribution boundaries.
+- [`SECURITY.md`](SECURITY.md)
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
+- [`SUPPORTED_VERSIONS.md`](SUPPORTED_VERSIONS.md)
+- [`docs/legal/LICENSING.md`](docs/legal/LICENSING.md)
+- [`docs/legal/THIRD_PARTY.md`](docs/legal/THIRD_PARTY.md)
 
-Use DTMO only with lawful access to intelligence sources and infrastructure. A technically successful connector does not itself establish legal permission to collect, process or redistribute third-party material.
+Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal permission to collect, process, publish or redistribute third-party material.

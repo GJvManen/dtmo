@@ -4,6 +4,7 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current runs
 
+- [RUN-20260812-209 — Professional documentation architecture restoration](runs/RUN-20260812-209.md) — owner-directed restoration of professional project, architecture, security, governance, QA, source, readiness and staging documentation after repeated lifecycle reconciliations mixed operational chronology into project-facing documentation; adds a documentation standard and preserves operational history in the dedicated evidence layer; `PENDING_CI`.
 - [RUN-20260812-208 — RC13 owner acceptance and Phase 8 readiness transition](runs/RUN-20260812-208.md) — accountable owner explicitly accepts the repaired unified console after PR #169; RC13 becomes `PASS / OWNER_ACCEPTED`; Phase 8 becomes `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`; post-RC13 enhancements are tracked separately in issue #171.
 - [RUN-20260812-206 — RC13 owner retest: supported-source normalization blockers](runs/RUN-20260812-206.md) — historical owner evidence that led to PR #169.
 - [RUN-20260812-204 — RC13 owner retest: source load not visible in canonical interface](runs/RUN-20260812-204.md) — historical owner evidence that led to PR #167.
@@ -20,25 +21,23 @@ RUN-201, RUN-203 and RUN-205 existed only on unmerged/superseded documentation b
 
 Historical run records remain immutable point-in-time evidence. Newer evidence may change the current decision without rewriting earlier records.
 
+Professional product, architecture, security, governance and readiness documentation is maintained separately from this operational audit layer under `docs/project/DOCUMENTATION_STANDARD.md`.
+
 ## Current decision
 
 - Phases 1–7: `PASS`.
-- PR #159 console usability: repository-controlled `PASS`.
-- PR #160 Compose runtime packaging: repository-controlled `PASS`.
-- PR #161 Grafana datasource provisioning: repository-controlled `PASS`.
-- PR #163 source catalog bootstrap: repository-controlled `PASS`.
-- PR #165 local object-store credential contract: repository-controlled `PASS`; merged `65440afea6cfa3c3300b25d577d746432cc95700`.
-- PR #167 canonical connector commit visibility: repository-controlled `PASS`; merged `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
-- PR #169 supported-source normalization: repository-controlled `PASS`; final exact head `53aaa670c75a2f404337620bcf1a8df172efe583`; all returned workflows `completed/success`; merged `4d182879d851cd22d22ff4f0bab795ed49ee0c1b`.
-- accountable owner functional retest: accepted on 2026-08-12 with “Het project werkt! Gefelciteerd!”.
 - RC13 overall: `PASS / OWNER_ACCEPTED`; issue #150 closed `completed`.
 - Phase 8: `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`; issue #158 active.
 - Phase 9: `NOT COMPLETE`.
 - Phase 10: `NOT STARTED`.
-- post-RC13 enhancement backlog: issue #171.
+- DTMO: not production ready.
+- post-RC13 product enhancement backlog: issue #171.
+- professional documentation restoration: `PENDING_CI` under RUN-209.
 
-Repository CI and local runtime evidence do not substitute for real staging or independent assurance. DTMO is not production ready.
+Repository CI and local runtime evidence do not substitute for real staging or independent assurance.
 
-## Exactly one production-readiness priority
+## Step-by-step next actions
 
-**Execute Phase 8.1 real staging environment and immutable deployment identity under issue #158.**
+1. Complete exact-head CI and merge the professional documentation restoration.
+2. Start E1 shared accessible severity semantics/filtering across Overview and Intelligence.
+3. Continue Phase 8.1 real staging environment and immutable deployment identity under issue #158 as the production-readiness track.

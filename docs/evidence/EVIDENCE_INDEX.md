@@ -1,102 +1,162 @@
 # DTMO Evidence Index
 
-Last updated: 2026-08-10
+Last updated: **2026-08-12**
 
 ## Purpose
 
-This index provides the top-level map from roadmap phases to QA records, workflows, artifacts, run records, pull requests and authoritative issues. It does not replace the detailed evidence files.
+This index maps the DTMO roadmap stages to their primary evidence classes and authoritative documentation. It is a professional evidence map, not a chronological CI/incident log.
+
+Exact workflow/job/commit history is retained in `docs/development/`, GitHub pull requests/issues and CI artifacts.
 
 ## Authoritative sources
 
-- Roadmap: `docs/roadmap/PRODUCTION_ROADMAP.md`
+- Project/documentation portal: `docs/README.md`
+- System architecture: `docs/architecture/SYSTEM_ARCHITECTURE.md`
 - Current state: `docs/project/CURRENT_STATE.md`
-- Run audit trail: `docs/development/RUN_LOG.md` and `docs/development/runs/`
-- QA decisions: `docs/qa/`
-- External gates: issue #1
-- Continuous development coordination: issue #2
-- Production roadmap tracking: issue #3
+- Executive status: `docs/project/EXECUTIVE_STATUS.md`
+- Production readiness report: `docs/project/PRODUCTION_READINESS_REPORT.md`
+- Production checklist: `docs/project/PRODUCTION_CHECKLIST.md`
+- Production roadmap: `docs/roadmap/PRODUCTION_ROADMAP.md`
+- QA/release model: `docs/qa/QA_AND_RELEASE_GATES.md`
+- Traceability: `docs/traceability/TRACEABILITY_MATRIX.md`
+- Operational run evidence: `docs/development/RUN_LOG.md` and `docs/development/runs/`
+- External production-readiness gates: GitHub issues #1, #3 and Phase 8 issue #158
+
+## Evidence hierarchy
+
+DTMO distinguishes four main evidence layers:
+
+1. **Repository-controlled engineering evidence** — exact-head CI, contracts, browser tests, recovery/performance/observability evidence.
+2. **Accountable functional evidence** — project-owner functional acceptance of the merged product.
+3. **Real environment evidence** — production-equivalent staging deployment and validation tied to an immutable identity.
+4. **Independent assurance and formal approval** — external assessment and production go/no-go.
+
+These layers are additive and non-interchangeable.
 
 ## Phase evidence map
 
-### Phase 1 — CI and workflow integrity
+### Phases 1–7 — engineering baseline
 
-Status: `PASS`.
+**Status:** `PASS`.
 
-Evidence classes: exact-head workflow execution, regression protection, workflow-contract validation, quality gate execution and retained CI evidence.
+Evidence classes include:
 
-### Phase 2 — Application security and identity
+- exact-head workflow/release integrity;
+- authentication/authorization/RBAC and approval boundaries;
+- migrations, persistence, integrity and recovery;
+- connector contracts, provenance, retry, timeout, replay, freshness and failure isolation;
+- ingestion/read/concurrency/degraded-dependency performance;
+- browser/accessibility/UX evidence;
+- request/trace observability, alerting, dashboards, runbooks and exercises;
+- open-source governance.
 
-Status: `PASS` internally.
+### RC13 — functional unified-console acceptance
 
-Evidence classes: RBAC, authentication/authorization, token/session behavior, separation of duties, auditability, security headers and human approval controls.
+**Status:** `PASS / OWNER_ACCEPTED`.
 
-### Phase 3 — Data integrity and recovery
+Primary documentation:
 
-Status: `PASS` internally.
+- `docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md`
+- `docs/project/CURRENT_STATE.md`
+- immutable acceptance record in `docs/development/runs/`
 
-Evidence classes: migrations, object-storage migration, OpenSearch recovery, multi-store recovery, storage integrity and controlled recovery behavior.
+Evidence classes:
 
-### Phase 4 — Connector reliability and provenance
+- one canonical unified-console journey;
+- source-to-intelligence persistence/visibility;
+- native analytics;
+- Administration/RBAC;
+- Governance knowledge;
+- browser interaction/truthful state;
+- explicit accountable owner acceptance.
 
-Status: `PASS` internally.
+### Phase 8 — real staging acceptance
 
-Evidence classes: connector contracts, state, retry, timeout, replay, freshness, failure isolation, live canary execution and payload provenance. Provider credential/rate-limit/licence/terms acceptance is separately recorded in issue #1.
+**Status:** `READY / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`.
 
-### Phase 5 — Performance and scalability
+Primary documentation:
 
-Status: `PASS` internally.
+- `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`
+- `docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`
+- GitHub issue #158
 
-Evidence classes: ingestion performance, queue burst behavior, API reads, OpenSearch reads, degraded dependencies and concurrency saturation.
+Repository staging-emulator/readiness workflows are supporting preparation only.
 
-### Phase 6 — Accessibility and operational UX
+Required real evidence includes:
 
-Status: `BLOCKED_EXTERNAL`.
+- approved environment and owner;
+- immutable deployed release/commit/image identity;
+- infrastructure/runtime/configuration parity;
+- least-privilege IAM and secret-management references;
+- TLS/network controls;
+- data/sanitization/no-production-credential statement;
+- deployment/change and rollback evidence;
+- deployment-time security review;
+- deployed functional/operational acceptance suites;
+- accountable staging acceptance.
 
-Accepted: bounded automated/browser accessibility evidence.
+### Phase 9 — independent external assurance
 
-Missing: genuine VoiceOver/NVDA execution on supported real combinations.
+**Status:** `NOT COMPLETE`.
 
-### Phase 7 — Observability and incident operations
+Primary contract: `docs/qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md`.
 
-Status: `PASS`.
+Required evidence classes include:
 
-Evidence classes: request observability, distributed trace context, queue backlog alerting, connector failure alerting, storage integrity alerting, API/search health alerting, dashboards, runbooks, exercises and on-call handover.
+- independent penetration testing;
+- representative production-equivalent load/stress;
+- resilience/recovery review where applicable;
+- platform/configuration hardening;
+- IAM/secrets-management review;
+- operational/security monitoring readiness;
+- privacy/legal/governance assurance where required;
+- findings disposition/residual-risk acceptance.
 
-### Phase 8 — Staging acceptance
+### Phase 10 — production go/no-go
 
-Status: `BLOCKED_EXTERNAL`.
+**Status:** `NOT STARTED`.
 
-Accepted bounded evidence:
-- staging-emulator configuration contract;
-- application-container runtime smoke.
+Required inputs:
 
-Key accepted PRs/artifacts:
-- PR #104, final head `93d1a659b7b136546ffcf73102890f5d2d00ba84`, 47/47 workflows, artifact `9045039742`;
-- PR #107, final head `52d7a37660c9bb1c9f8468f11010f36d17bd1fba`, 48/48 workflows, artifact `9057259246`;
-- PR #108 lifecycle remediation and documentation finalization, 48/48 exact-head workflow evidence before merge;
-- PR #109 RUN-158 documentation/evidence recheck, 48/48 workflows before merge.
+- accepted Phase 8;
+- accepted Phase 9;
+- approved production identity/environment/ownership;
+- release/change/rollback evidence;
+- monitoring/on-call/escalation acceptance;
+- privacy/data/security governance approval;
+- formal accountable production decision.
 
-Missing: one real approved staging deployment and the ten deployment-parity classes documented in `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`.
+## Framework/governance evidence
 
-### Phase 9 — External assurance
+Framework mapping claims are governed by `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`.
 
-Status: `NOT COMPLETE`.
+Current external coverage remains:
 
-Evidence contract: `docs/qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md`.
+- Normenkader IBP: `UNMAPPED`;
+- MITRE ATT&CK: `UNMAPPED`;
+- CVSS: `CONTEXT_ONLY`;
+- DTMO internal governance: repository-backed internal mappings.
 
-Required independent classes: penetration test, representative load/stress, full restoration, platform hardening, secrets-management acceptance, operational/stakeholder acceptance and deployment acceptance.
-
-### Phase 10 — Production go/no-go
-
-Status: `NOT STARTED`.
-
-Required inputs: all prior phase evidence, all issue #1 blocking gates, immutable release/deployment identity, SBOM/release manifest, rollback/recovery proof, findings disposition and required approvals.
+No mapping evidence is inferred.
 
 ## Evidence handling rules
 
-- Evidence must be attributable and reviewable.
-- Exact-head CI evidence must match the commit being accepted.
-- Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not PASS.
-- Evidence must not contain secret values, credentials, tokens or unnecessary personal data.
-- Threat-intelligence/CVE/vendor-advisory evidence must preserve source provenance, review time, applicability and confidence.
-- Human share approval remains separate from technical execution and review.
+- Evidence must be attributable, scoped and reviewable.
+- Automated acceptance evidence must match the exact state being accepted.
+- A new commit invalidates earlier PR-head CI evidence.
+- Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
+- Evidence must not contain raw credentials, tokens, secret values or unnecessary personal data.
+- Threat/CVE/vendor-advisory evidence must retain provenance, review time, applicability and confidence.
+- Human review and external-share approval remain separate from technical execution.
+- Historical immutable run records are not rewritten to reflect later decisions.
+
+## Operational evidence location
+
+Detailed implementation chronology, workflow identifiers, root-cause findings and point-in-time blockers are intentionally retained under:
+
+- `docs/development/RUN_LOG.md`;
+- `docs/development/runs/`;
+- GitHub issues and pull requests;
+- CI artifacts.
+
+Those records support auditability but do not replace professional project/architecture documentation.

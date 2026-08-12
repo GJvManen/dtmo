@@ -1,43 +1,104 @@
-# Safe Registered-Source Execution QA Gate
+# Safe Registered-Source Execution Gate
 
-Release candidate: 16.0.0rc9
+**Status:** `PASS` for the accepted source-execution contract
 
-Status: `CI_VALIDATION_PENDING`
+## Objective
 
-## Gate scope
+Define the fail-closed trust boundary for executing registered external intelligence sources without weakening SSRF protection, provenance, credential handling, canonical persistence or human approval controls.
 
-This gate covers the registered `json-feed` execution trust boundary and curated source catalog. It does not convert external staging, assistive-technology testing, penetration testing or production acceptance into repository-controlled evidence.
+## Authorization requirements
 
-## Required evidence
+- Manual source execution requires server-side connector-management authority.
+- Human/admin requirements apply where the administrative source surface requires them.
+- Disabled sources cannot execute through governed source operations.
+- Service-account and human authorities remain separated.
+- Source execution never grants review or external-share approval.
 
-- human-admin + `manage:connectors` authorization remains required for manual source runs;
-- disabled sources cannot execute;
-- URL validation permits only direct HTTPS on the default port;
-- DNS is freshly resolved immediately before outbound connection;
-- execution fails closed if any resolved destination is non-global/private/local/reserved;
-- the outbound TLS connection is pinned to a validated resolved IP while the configured hostname is retained for SNI/certificate verification;
-- redirects are rejected rather than followed;
-- environment proxy settings cannot redirect this execution path;
-- only JSON responses are accepted and the response body is capped at 5 MiB;
-- NVD and GitHub supported profiles normalize to `ConnectorRecord` with source provenance and reliability;
-- uncatalogued JSON feeds require the DTMO JSON v1 `items[]` contract;
-- normalized records pass through raw-object storage, canonical persistence, provenance and OpenSearch indexing;
-- repeat execution remains idempotent and can repair a previously failed derived search index document;
-- source execution feeds connector health/failure isolation and operational alerting;
-- source execution never grants review or external share approval;
-- curated catalog distinguishes `supported`, `planned-parser`, `research-reference` and built-in execution states;
-- complete registered GitHub workflow matrix succeeds on one final exact PR head.
+## Network and SSRF contract
 
-## Latest CI evidence
+Registered/generic source execution must preserve the applicable controls for:
 
-PR #115 exact head `d7b51cc9aace6f87cfe34b8aeb50be59e15b800a` completed 47 of 48 registered workflows successfully. The sole workflow failure was RC4 Quality Gate. Its lint and mypy steps succeeded; pytest stopped on one stale rc8 regression assertion that required the global application version to remain `16.0.0rc8`. The RC4 aggregate `release-gate` then failed as consequence of the red `test` job.
+- HTTPS-only registered source URLs;
+- public/global destinations;
+- fresh DNS resolution immediately before connection where the executor requires it;
+- rejection of non-global/private/local/reserved destinations;
+- protection against DNS rebinding;
+- original hostname retention for TLS SNI/certificate verification when connecting to a validated address;
+- redirect restrictions for profiles that require direct execution;
+- no untrusted environment-proxy redirection of the protected execution path;
+- bounded response size and supported content types.
 
-RUN-20260810-173 narrows that earlier feature test back to the admin wiring/accessibility contract it was intended to protect. Production code and security controls are unchanged. Because this change creates a new exact head, the previous 47/48 result is not reusable as final acceptance evidence. A fresh complete matrix is required.
+Provider-specific adapters may implement profile-appropriate first-party discovery while remaining bounded to the documented provider trust contract.
 
-## Fail-closed conditions
+## Credential handling
 
-Any missing CI run, failing/cancelled/skipped required workflow, private/non-global DNS resolution, redirect, invalid TLS identity, unsupported content type, oversized response, malformed payload, disabled source or authorization failure blocks a PASS claim for the affected operation.
+- Credential values are never stored in the source catalog or registry.
+- Credentialed sources use approved logical secret references.
+- Execution fails closed when a required secret reference cannot be resolved or its reference scheme is unsupported.
+- Staging/production identity references must map to approved least-privilege identities.
+- Local infrastructure/root credential compatibility exceptions are not valid staging/production source identity patterns.
 
-## External claim boundary
+## Parsing and normalization
 
-A green rc9 gate proves only the repository-controlled implementation and CI contracts above. It does not prove real staging network policy, enterprise egress controls, external service availability, VoiceOver/NVDA behavior, independent penetration-test results, vendor contractual permission to automate restricted feeds, or production go/no-go readiness.
+Only supported profiles/contracts are normalized into canonical connector records.
+
+The accepted baseline includes provider-specific and shared profiles for vulnerability/advisory sources. Normalization must preserve:
+
+- source identity;
+- reliability/context;
+- canonical intelligence type;
+- canonical URL/reference policy;
+- raw upstream evidence/references;
+- relevant publication timestamps/context.
+
+Explicit supported aliases may be normalized; unknown canonical intelligence types fail closed.
+
+## Persistence and replay
+
+Normalized records enter the accepted pipeline:
+
+```text
+source execution
+  -> raw evidence object
+  -> canonical normalization/provenance
+  -> PostgreSQL durable commit
+  -> OpenSearch index/search representation
+  -> application visibility
+```
+
+Application-level durable success must not be reported before the canonical PostgreSQL transaction completes.
+
+Where the connector contract defines idempotency/replay behavior, repeat execution must not create inconsistent canonical duplicates and may repair supporting derived index state without bypassing canonical truth.
+
+## Operational behavior
+
+Source execution integrates with connector state/freshness/failure-isolation and relevant alerting/observability. Failures must remain diagnosable without leaking raw sensitive credentials or unnecessary payload data.
+
+## Evidence required for changes
+
+Future changes to source execution require applicable coverage for:
+
+- authorization/disabled-state behavior;
+- URL/network/SSRF protections;
+- credential/secret-reference behavior;
+- profile parsing/normalization;
+- provenance/raw evidence;
+- canonical commit behavior;
+- idempotency/replay;
+- connector state/failure isolation;
+- application visibility;
+- complete exact-head CI.
+
+## Claim boundary
+
+This gate does not prove:
+
+- current provider SLA/availability;
+- enterprise production egress policy;
+- legal/contractual permission to automate restricted sources;
+- real Phase 8 staging acceptance;
+- independent penetration-test results;
+- production go/no-go;
+- publication/external-share authority.
+
+Those remain separate evidence/authority classes.

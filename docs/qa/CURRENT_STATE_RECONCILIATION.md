@@ -1,44 +1,87 @@
 # Current-State Documentation Reconciliation Gate
 
-Status: `PASS` in the final protected merged state, valid only after the final status-bearing exact head completes all 36 registered workflows successfully.
+**Status:** `PASS` as a documentation-control contract
 
 ## Control objective
 
-Ensure every authoritative human-visible current-state entry point accurately reflects implementation, exact-head acceptance evidence, open blockers and the actual state of `main`.
+Ensure authoritative professional DTMO documentation reflects the implemented product, accepted lifecycle and evidence boundaries without turning project-facing documentation into an operational incident or PR diary.
 
-## RUN-20260809-128 reconciliation scope
+## Documents in the reconciliation set
 
-RUN-128 reconciles README, project current state, production roadmap, RUN_LOG, QA/release gates, RC10.3 QA and RUN-127/128 through accepted RC10.3 evidence.
+When a lifecycle or material architecture/product decision changes, the following current-state set must be reviewed together:
 
-## Underlying RC10.3 evidence
+- root `README.md`;
+- `docs/README.md`;
+- `docs/project/CURRENT_STATE.md`;
+- `docs/project/EXECUTIVE_STATUS.md`;
+- `docs/project/PRODUCTION_READINESS_REPORT.md`;
+- `docs/project/PRODUCTION_CHECKLIST.md`;
+- `docs/architecture/SYSTEM_ARCHITECTURE.md` when architecture/trust boundaries change;
+- `docs/security/SECURITY_OVERVIEW.md` when security boundaries change;
+- `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md` when mapping claims change;
+- `docs/qa/QA_AND_RELEASE_GATES.md`;
+- the active phase/acceptance gate;
+- `docs/roadmap/PRODUCTION_ROADMAP.md`;
+- the current release notes;
+- traceability/evidence index where stage status changes.
 
-- PR #84 exact head `8058b476298eee4bcd2942d9cca54384ec12aa74`;
-- 36/36 registered workflows successful;
-- artifact `9040996591`;
-- digest `sha256:42aaad1424d7c1ad40accd056b4746ea6fb328a561b24df5ebc293c0425b1910`;
-- raise threshold 0.80 and clear threshold 0.50;
-- bounded queue metrics, hysteresis, correlation and actionable guidance confirmed;
-- RC8 queue-pressure contract reused;
-- no queue-item mutation, producer/consumer policy change, production data or publication-approval change;
-- no separate durable queue-service or external notification-delivery claim;
-- JUnit 5/5;
-- merge `42ccbe04cbc1081f93e4a155243627b5a3038573`.
+## Current reconciled lifecycle
 
-## Reconciliation validation
+The professional documentation must consistently state:
 
-The first complete RUN-128 documentation head `118d10c7b3ac971176fb7390499397049d7b4269` completed all 36 registered workflows successfully. This final status-bearing head must independently repeat 36/36 success before protected merge; otherwise this PASS is invalid and the PR must not merge.
+- Phases 1–7: `PASS`;
+- RC13 functional unified-console acceptance: `PASS / OWNER_ACCEPTED`;
+- Phase 8: `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`;
+- Phase 9: `NOT COMPLETE`;
+- Phase 10: `NOT STARTED`;
+- DTMO: **not production ready**.
 
-## Preserved boundaries
+## Professional versus operational documentation
 
-- Phase 6 remains `BLOCKED_EXTERNAL` for genuine VoiceOver/NVDA evidence.
-- Issue #1 external production gates remain open.
-- Storage-integrity, API-error and search-health alerting remain open.
-- Phase 7 remains `IN PROGRESS`.
+The reconciliation gate applies the rules in `docs/project/DOCUMENTATION_STANDARD.md`.
 
-## Current decision
+### Professional layer
 
-RUN-128 is authoritative `PASS` only in the final protected merged state after complete exact-head success.
+Architecture, product, security, governance, QA and readiness documents describe:
 
-## Exactly one next priority
+- stable platform purpose/capabilities;
+- controlled current state;
+- trust and authority boundaries;
+- known limitations;
+- formal next-stage requirements;
+- durable evidence links.
 
-Phase 7 / RC10.4 — bounded storage-integrity alerting with controlled integrity-failure/recovery evidence, actionable correlation, no raw sensitive payload leakage and retained exact-head evidence.
+### Operational evidence layer
+
+Exact workflow IDs, PR chronology, investigation notes, incident timelines and point-in-time blocker details belong in:
+
+- `docs/development/RUN_LOG.md`;
+- `docs/development/runs/`;
+- GitHub issues/PRs;
+- CI artifacts.
+
+Operational evidence must remain available for auditability but must not replace the professional layer.
+
+## Validation requirements
+
+A documentation reconciliation is acceptable only when:
+
+1. formal lifecycle statements agree across the reconciliation set;
+2. current architecture/security/governance claims match the implementation and accepted evidence;
+3. historical immutable run records have not been rewritten;
+4. operational detail is confined to the appropriate evidence layer;
+5. framework mapping claims remain explicit and non-inferred;
+6. security/privacy/publication authority boundaries are preserved;
+7. open-source governance entry points remain available;
+8. all links/paths referenced by the professional documentation exist;
+9. the documentation PR completes the required exact-head CI matrix before protected merge.
+
+## Evidence rule
+
+A successful documentation reconciliation does not manufacture product, staging, assurance or production acceptance. It records those decisions only when the corresponding evidence class already exists.
+
+## Current use
+
+The current restoration applies this gate after repeated status reconciliations had shortened multiple professional documents and mixed temporary operational details into project-facing documentation.
+
+The restoration re-establishes the complete product/architecture/security/governance/readiness building blocks while preserving operational history under the dedicated evidence layer.

@@ -47,7 +47,9 @@ def test_administration_links_to_single_source_operations_workspace_without_dupl
 
 def test_source_connection_matrix_has_no_remaining_vendor_adapter_blocker() -> None:
     text = MATRIX.read_text(encoding="utf-8")
-    assert "Broadcom/VMware Security Advisories" in text
-    assert "| Broadcom/VMware Security Advisories | `broadcom-vmware-vmsa-v1` | CONNECTED |" in text
+    rows = [line for line in text.splitlines() if line.startswith("| Broadcom/VMware Security Advisories |")]
+    assert len(rows) == 1
+    assert "`broadcom-vmware-vmsa-v1`" in rows[0]
+    assert "`CONNECTED`" in rows[0]
     assert "ADAPTER_REQUIRED" not in text
     assert "PENDING_CI" not in text

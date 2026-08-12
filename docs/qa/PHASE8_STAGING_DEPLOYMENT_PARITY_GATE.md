@@ -1,65 +1,167 @@
-# Phase 8 Staging Deployment-Parity Gate
+# Phase 8 — Production-Equivalent Staging Deployment-Parity Gate
 
-## Decision
-
-`PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`
+**Status:** `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`
 
 ## Objective
 
-Require independently observable, production-equivalent staging deployment evidence before staging acceptance can be declared, but only after the canonical local product has a current accountable functional acceptance.
+Phase 8 establishes that the accepted DTMO product can be deployed and operated in one approved production-equivalent staging environment with evidence tied to a single immutable deployment identity.
 
-## Entry condition — reopened
+This gate deliberately separates real deployed-environment evidence from repository CI, local Docker Compose and synthetic staging/browser fixtures.
 
-RC13.1–RC13.5 repository evidence and the earlier project-owner acceptance remain historical evidence. However, a **subsequent project-owner functional retest on 2026-08-12 reported new blocking canonical-console defects**.
+## Entry condition
 
-Issue #150 is therefore reopened and authoritative.
+The Phase 8 entry condition is satisfied:
 
-The current RC13 entry condition is **not satisfied** until all of the following are true:
+- Phases 1–7: `PASS`;
+- RC13 functional console: `PASS / OWNER_ACCEPTED`;
+- accountable owner acceptance recorded;
+- no production-readiness claim has yet been made.
 
-1. the reopened Overview refresh/usability defects are repaired;
-2. zero-data status and graph semantics are truthful;
-3. Chrome button/navigation interaction evidence succeeds without browser page/console errors;
-4. Administration is presented as a clear governed workspace;
-5. the complete repair passes exact-head CI and merges;
-6. the accountable project owner explicitly retests and accepts the repaired local product again.
+Issue #158 is the active Phase 8.1 work item.
 
-## Phase 8.1 external deployment identity
+## Phase 8.1 — immutable deployment identity
 
-PR #157 remains valid historical repository evidence and the fail-closed intake record remains at `docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`.
+Before staging validation can be credited, one immutable deployment identity must be established.
 
-No real production-equivalent staging deployment identity has been accepted. Issue #158 is paused while RC13 is reopened.
+### Required identity fields
 
-Do not provision, credit or accept Phase 8 evidence against the current product while this gate is paused.
+1. approved staging environment identifier;
+2. accountable staging owner;
+3. approved reachable endpoint/access path;
+4. deployed DTMO release;
+5. exact Git commit;
+6. immutable application image digest;
+7. immutable supporting service image digests;
+8. infrastructure/runtime inventory;
+9. configuration baseline/parity reference;
+10. deployment/change record;
+11. rollback target/procedure;
+12. deployment-time security-review record.
 
-## Required external evidence when Phase 8 resumes
+No Phase 8 functional evidence may be combined across different deployments or inferred from a later/earlier image.
 
-All evidence must be tied to the **same immutable staging deployment identity**:
+## Identity and secrets requirements
 
-1. approved staging environment identifier and accountable owner;
-2. reachable staging endpoint through the approved access path;
-3. immutable deployed application/container image digests and release identity;
-4. infrastructure/runtime versions and configuration-parity evidence;
-5. approved secrets-manager/identity references and least-privilege staging identities, with no secret values committed;
-6. TLS certificate/termination and network-restriction evidence;
-7. production-equivalent data-class/sanitization statement and explicit no-production-credential confirmation;
-8. deployment log/change record tied to the immutable release identity;
-9. rollback target/procedure tied to the staged release;
-10. deployment-time security/CVE/vendor-advisory review evidence.
+The staging identity model must preserve least privilege:
+
+- application/service identities are separate from infrastructure root/admin identities;
+- human/admin roles remain separate from service-account roles;
+- secrets are resolved through approved staging secret-management mechanisms;
+- repository evidence contains secret references, never raw secret values;
+- local-development AIStor root/bootstrap credential compatibility is **not** used as the staging identity model;
+- production credentials are not reused in staging;
+- bearer-token issuer/audience/key trust is explicitly documented for staging.
+
+## Infrastructure and configuration parity
+
+Required evidence includes:
+
+- platform/runtime versions;
+- PostgreSQL, OpenSearch, Redis and object-storage configuration;
+- persistence volumes/storage classes;
+- backup/recovery configuration relevant to the staging acceptance scope;
+- application environment/configuration parity;
+- approved deviations with rationale/risk disposition;
+- observability/metrics/logging configuration;
+- separately authenticated Grafana operations access.
+
+## Network and TLS evidence
+
+- approved ingress path;
+- TLS certificate and termination details;
+- administrative/operational access restrictions;
+- required source egress connectivity;
+- network segmentation/restriction evidence as applicable;
+- no anonymous operational dashboard access.
+
+## Data and privacy evidence
+
+- staging data classification;
+- approved synthetic/sanitized/representative data approach;
+- confirmation that production credentials are absent;
+- confirmation that unnecessary personal data is not used;
+- retention/deletion expectations;
+- evidence-export minimization for logs, screenshots and artifacts.
+
+## Deployment-time security review
+
+The immutable deployment identity must be accompanied by a review of:
+
+- application dependencies;
+- container/base images;
+- relevant CVEs/vendor advisories;
+- deployment configuration/hardening;
+- outstanding findings and accountable disposition.
+
+## Deployed acceptance suites
+
+All suites below must run against the same deployment identity.
+
+### Platform health
+
+- health/readiness;
+- PostgreSQL connectivity and migrations;
+- OpenSearch health/search;
+- Redis coordination;
+- object-storage read/write contract;
+- Prometheus/operational metrics;
+- separately authenticated Grafana operational access.
+
+### Identity and authorization
+
+- bearer-token trust validation;
+- role/permission enforcement;
+- service-account/human separation;
+- privileged Administration protections;
+- audit/correlation behavior;
+- separate review/external-share authority.
+
+### Source and intelligence pipeline
+
+- source catalog/bootstrap;
+- source activation;
+- supported source fetch;
+- raw evidence persistence;
+- normalization;
+- canonical PostgreSQL commit;
+- OpenSearch indexing;
+- Intelligence visibility;
+- dashboard/analytics aggregation.
+
+### Canonical product
+
+- Overview;
+- Intelligence;
+- Sources & Catalog;
+- Visual Analytics;
+- Administration;
+- Governance;
+- supported browser/interaction expectations.
+
+### Operations and resilience
+
+- alert/metrics visibility;
+- logging/correlation;
+- operational runbook applicability;
+- agreed backup/restore/recovery validation;
+- rollback readiness.
 
 ## Acceptance rule
 
-Phase 8 becomes `PASS` only when the current RC13 functional owner gate is accepted and all external staging evidence is reviewable and consistently tied to one immutable production-equivalent deployment identity, deployed-environment acceptance suites succeed, and the project owner records external staging acceptance.
+Phase 8 may be marked `PASS` only when:
 
-Missing, stale, inaccessible, contradictory or inferred evidence blocks acceptance.
+1. the immutable staging identity is complete and approved;
+2. required configuration/security/privacy evidence is reviewable;
+3. deployed suites succeed against that exact identity;
+4. contradictory, stale or missing evidence is resolved;
+5. accountable staging/project acceptance is explicitly recorded.
 
-## Governance and privacy
+Repository CI, local Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this gate by themselves.
 
-- RBAC and separation of duties remain unchanged.
-- Human share approval remains a separate human authority.
-- Staging access or Governance visibility does not grant publication authority.
-- Secret values, tokens, credentials and unnecessary personal data are excluded from repository evidence.
-- Provenance and immutable deployment identity remain mandatory.
+## Governance boundaries
 
-## Exactly one next priority
+Phase 8 does not alter publication authority. Staging access, source execution, Administration, Governance, CI or operational dashboard access cannot approve external sharing.
 
-**Paused. Complete issue #150 canonical-console repair and accountable project-owner retest before Phase 8.1 may resume.**
+## Current priority
+
+**Provision and evidence the real approved Phase 8.1 staging environment and immutable deployment identity.**

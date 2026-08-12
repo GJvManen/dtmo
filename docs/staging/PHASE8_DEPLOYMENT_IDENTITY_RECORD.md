@@ -1,10 +1,13 @@
 # Phase 8 External Deployment Identity Record
 
-## Decision
+**Decision:** `PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`  
+**Phase 8 entry state:** `READY_FOR_EXTERNAL_VALIDATION`
 
-`PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`
+## Purpose
 
-This record is the authoritative Phase 8.1 intake surface for the first real production-equivalent staging deployment. It is intentionally fail-closed: repository preparation, Docker Compose and staging-emulator evidence do not populate external deployment facts.
+This record is the authoritative fail-closed Phase 8.1 intake surface for the first real approved production-equivalent staging deployment.
+
+Repository preparation, Docker Compose and staging-emulator evidence do not populate external deployment facts. Values must be based on the real approved staging environment or deployment platform.
 
 ## Machine-readable state
 
@@ -13,7 +16,8 @@ decision: PENDING_EXTERNAL_DEPLOYMENT_IDENTITY
 evidence_complete: false
 phase8_pass: false
 release_target: 16.0.0rc12
-repository_baseline_when_phase8_opened: e0119b2eb1865ad5b4f2634fd71ccd809fba96a0
+accepted_repository_baseline_at_phase8_entry: 514b59809838317be8213bafc7422710663634e8
+rc13_functional_acceptance: PASS_OWNER_ACCEPTED
 environment_id: NOT_PROVIDED
 accountable_staging_owner: NOT_PROVIDED
 approved_endpoint: NOT_PROVIDED
@@ -37,32 +41,61 @@ project_owner_staging_acceptance: NOT_RECORDED
 
 ## Evidence rules
 
-1. `environment_id`, `approved_endpoint`, deployed commit and image/container digests must refer to the same deployment.
+1. `environment_id`, approved endpoint, deployed commit and container digests must refer to the same deployment.
 2. The deployed identity must be immutable and independently observable from the real staging environment or approved deployment platform.
 3. No secret value, bearer token, password, API key or unnecessary personal data may be committed to this record.
-4. Logical secrets-manager and identity references are allowed; secret values are not.
-5. Local Docker Compose, application-container smoke tests, GitHub Actions emulators or source-controlled intent are supporting evidence only.
+4. Logical secret-manager and identity references are allowed; secret values are not.
+5. Local Docker Compose, application-container smoke tests, GitHub Actions emulators and source-controlled intent are supporting evidence only.
 6. A `NOT_PROVIDED`, inaccessible, contradictory, stale or inferred field blocks the corresponding acceptance claim.
-7. Phase 8 may not become `PASS` until all deployment-parity classes and deployed-environment acceptance suites are complete against this same identity and the project owner explicitly accepts staging.
+7. A later redeployment requires a new deployment identity/evidence binding; evidence may not be mixed across identities.
+8. Phase 8 may not become `PASS` until deployment-parity evidence and deployed-environment acceptance suites are complete against this same identity and accountable staging acceptance is recorded.
 
-## Current repository inspection
+## Identity and least-privilege requirements
 
-At Phase 8 opening on 2026-08-12, the repository contains `docs/staging/STAGING_ACCEPTANCE_PLAN.md`, `docs/qa/PHASE8_STAGING_READINESS_GATE.md` and staging-emulator automation. Those sources explicitly preserve the boundary that they do **not** prove a real staging environment exists.
+Staging must use a deployment-appropriate identity model:
 
-No Helm/Kubernetes/Terraform staging target or other independently observable production-equivalent external deployment identity was established by the repository inspection used to open Phase 8.1. Absence from repository evidence does not prove that infrastructure does not exist elsewhere; it means it cannot yet be credited to Phase 8.
+- application/service identities are separate from AIStor/database/platform root/admin identities;
+- human/admin and service-account roles remain separated;
+- credential values come from approved secret-management mechanisms;
+- repository evidence records references/identifiers only;
+- the local-development AIStor root/bootstrap credential compatibility exception is not propagated into staging;
+- production credentials are not reused.
 
-## Required next evidence
+## Initial evidence sequence
 
-Populate, through reviewable external evidence, at minimum:
+Populate and independently verify, in order:
 
-- approved staging environment identifier;
-- accountable staging owner;
-- reachable approved endpoint;
-- deployed release/commit and immutable container digest set;
-- infrastructure/runtime/configuration parity record.
+1. approved staging environment identifier;
+2. accountable staging owner;
+3. approved reachable endpoint/access path;
+4. exact deployed release/commit;
+5. immutable application/supporting image digests;
+6. infrastructure/runtime inventory;
+7. configuration parity/deviations;
+8. IAM/secrets references;
+9. TLS/network controls;
+10. data/sanitization/no-production-credential statement;
+11. deployment/change and rollback records;
+12. deployment-time security review.
 
-Only after those identity fields are coherent should the remaining TLS/network, identity/secrets, data, deployment, rollback and security-review classes be credited.
+Only after the identity is coherent should deployed functional, operational and recovery suites be credited.
+
+## Phase 8 acceptance suites
+
+Evidence must then cover, against this identity:
+
+- platform health/readiness;
+- authentication/RBAC;
+- source catalog and source execution;
+- raw evidence storage;
+- canonical PostgreSQL persistence;
+- OpenSearch index/search behavior;
+- Overview/Intelligence/Visual Analytics;
+- Administration/Governance authority boundaries;
+- observability/operations;
+- agreed recovery/rollback validation;
+- accountable staging acceptance.
 
 ## Publication authority boundary
 
-Staging ownership, deployment access, CI success or infrastructure administration never grants intelligence publication or external share authority. Existing RBAC, human review and separate share approval remain authoritative.
+Staging ownership, deployment access, CI success or infrastructure administration never grants intelligence publication or external-share authority. Existing RBAC, human review and separate share approval remain authoritative.
