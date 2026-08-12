@@ -301,6 +301,19 @@ _SCRIPT = r'''
     $(tableTarget).innerHTML = `<table><thead><tr><th>Periode</th><th>Totaal</th><th>Informatief</th><th>Laag</th><th>Middel</th><th>Hoog</th><th>Kritiek</th><th>Hoog/kritiek</th></tr></thead><tbody>${rows||'<tr><td colspan="8">Geen data</td></tr>'}</tbody></table>`;
   }
 
+  function renderTrendUnavailable(error) {
+    const detail = error?.message || 'onbekende fout';
+    ['overview','analytics'].forEach((prefix) => {
+      const chart = $(`${prefix}-trend-chart`);
+      if (!chart) return;
+      const stats = $(`${prefix}-trend-stats`);
+      const table = $(`${prefix}-trend-table`);
+      if (stats) stats.innerHTML = '';
+      chart.innerHTML = `<div class="chart-empty"><div><strong>Trenddata tijdelijk niet beschikbaar</strong><p class="muted">${esc(detail)}</p></div></div>`;
+      if (table) table.innerHTML = '';
+    });
+  }
+
   async function loadTrend() {
     const severity = selectedSeverityQuery();
     const payload = await api(`/api/v1/console/trends?window=${encodeURIComponent(trendWindow)}${severity?`&${severity}`:''}`);
@@ -314,27 +327,29 @@ _SCRIPT = r'''
     });
   }
 
+  function refreshTrend() {
+    void loadTrend().catch(renderTrendUnavailable);
+  }
+
   document.querySelectorAll('[data-trend-window]').forEach((button) => {
     button.addEventListener('click',() => {
       const requested = button.dataset.trendWindow;
       if (!['24h','7d','30d'].includes(requested)) return;
       trendWindow = requested;
-      void loadTrend().catch((error) => {$('global-status').textContent=`Trend laden mislukt: ${error.message}`;});
+      refreshTrend();
     });
   });
 
   document.querySelectorAll('[data-severity-filter]').forEach((group) => {
-    group.addEventListener('change',() => {
-      void loadTrend().catch((error) => {$('global-status').textContent=`Trend laden mislukt: ${error.message}`;});
-    });
+    group.addEventListener('change',refreshTrend);
   });
   document.querySelectorAll('[data-severity-reset]').forEach((button) => {
     button.addEventListener('click',() => {
-      queueMicrotask(() => void loadTrend().catch((error) => {$('global-status').textContent=`Trend laden mislukt: ${error.message}`;}));
+      queueMicrotask(refreshTrend);
     });
   });
 
-  void loadTrend().catch((error) => {$('global-status').textContent=`Trend laden mislukt: ${error.message}`;});
+  refreshTrend();
 })();
 '''
 
