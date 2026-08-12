@@ -59,7 +59,10 @@ def test_administration_copy_no_longer_claims_future_rc13_work() -> None:
     assert "Zelfbeheer is server-side geblokkeerd" in admin
 
 
-def test_phase8_is_paused_again_until_repaired_owner_retest() -> None:
+def test_phase8_resumes_only_at_external_identity_gate_after_owner_acceptance() -> None:
     text = PHASE8.read_text(encoding="utf-8")
-    assert "PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST" in text
-    assert "project-owner" in text.lower() or "project owner" in text.lower()
+    assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in text
+    assert "RC13 functional console: `PASS / OWNER_ACCEPTED`" in text
+    assert "accountable owner acceptance recorded" in text
+    assert "Phase 8 may be marked `PASS` only when" in text
+    assert "Repository CI, local Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this gate" in text
