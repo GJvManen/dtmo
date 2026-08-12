@@ -6,11 +6,11 @@
 
 **Release candidate:** `16.0.0rc12`  
 **Engineering status:** Phases 1–7 accepted  
-**RC13 product status:** `REOPENED / BLOCKED_INTERNAL`  
-**External staging:** `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`  
+**RC13 product status:** `AWAITING_OWNER_RETEST_AFTER_REPAIR`  
+**External staging:** `PAUSED_PENDING_RC13_OWNER_RETEST`  
 **License:** Apache-2.0
 
-> **Current release decision:** DTMO is not production ready. PR #163 is repository-green and its catalog-bootstrap repair is now owner-observed functional, but the same fresh-clone owner run exposed a new local source-to-intelligence object-store credential mismatch. RC13 remains open and Phase 8 remains paused until that bounded repository defect is repaired, exact-head green, merged and retested.
+> **Current release decision:** DTMO is not production ready. Repository-controlled RC13 repairs through PR #165 are complete and exact-head green. The next gate is accountable owner functional retesting on current merged `main`; repository CI does not manufacture that acceptance.
 
 ## Product scope
 
@@ -26,55 +26,39 @@ DTMO provides:
 
 ## RC13 current state
 
-RC13.1–RC13.5 and the earlier owner acceptance remain historical evidence. Subsequent owner retesting has driven the current bounded repair sequence:
+The current bounded repair sequence is repository-green:
 
 1. **PR #159 — console usability repair** — merged as `b4fffecc47f87b1edab8258514eaa130d949c195`;
 2. **PR #160 — Compose runtime packaging repair** — merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`;
 3. **PR #161 — Grafana datasource provisioning repair** — merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`;
-4. **PR #163 — source catalog secret-reference/bootstrap repair** — final exact head `4198f06e360929d3937065b8528237741cbe189a`, every returned workflow `completed/success`, merged with expected-head protection as `adc027143f1274c604a16446fe1ad2bdc7bc835f`.
+4. **PR #163 — source catalog secret-reference/bootstrap repair** — exact head `4198f06e360929d3937065b8528237741cbe189a`, complete returned workflow matrix `completed/success`, merged as `adc027143f1274c604a16446fe1ad2bdc7bc835f`, later owner-observed bootstrap `200 OK`;
+5. **PR #165 — local object-store credential contract repair** — exact head `48688977836cf3305b9d90c064e945de00eefb49`, complete returned workflow matrix `completed/success`, merged with expected-head protection as `65440afea6cfa3c3300b25d577d746432cc95700`.
 
-The latest accountable owner run confirms the repaired startup and catalog path:
-
-- `grafana-db-provision` exits 0;
-- Grafana starts without the former duplicate-default datasource restart loop;
-- API health is available;
-- `POST /api/v1/admin/sources/catalog/bootstrap` returns `200 OK`.
-
-That same fresh-clone run successfully fetched CISA KEV upstream data, then failed while writing raw evidence to the local object store with `InvalidAccessKeyId`. Repository inspection confirms the local development configuration was internally inconsistent: `.env.example` supplied API defaults `dtmo/change-me-now`, while `docker-compose.yml` started AIStor from separate `MINIO_ROOT_USER/MINIO_ROOT_PASSWORD` inputs and provisioned no matching `dtmo` identity.
-
-## Current bounded repair
-
-Branch `rc13/local-objectstore-credential-contract`:
-
-- makes local-development Compose use the same supplied AIStor identity for the API and local AIStor service;
-- removes misleading runnable `dtmo/change-me-now` object-store defaults from `.env.example`;
-- keeps this credential reuse strictly local-development-only;
-- preserves distinct least-privilege `AISTOR_APP_ACCESS_KEY/AISTOR_APP_SECRET_KEY` credentials for the staging-emulator/production-equivalent model;
-- adds contract tests and an exact-head rendered-Compose credential gate.
-
-No repository `PASS` is claimed for this new repair until the complete final exact-head workflow matrix is `completed/success`.
+PR #165 aligns only the local-development API object-store identity with local AIStor startup credentials. The staging/production-equivalent model continues to require a distinct least-privilege `AISTOR_APP_ACCESS_KEY/AISTOR_APP_SECRET_KEY` application identity.
 
 ## Owner-retest boundary
 
-Owner evidence now confirms the specific PR #163 catalog fix, but complete RC13 acceptance still requires a successful source-to-intelligence flow plus the remaining functional console checks. After the object-store repair merges, the owner retest resumes across source execution, Intelligence, Overview, analytics, Chrome controls and Administration.
+The accountable owner must now retest current merged `main` and verify the real source-to-intelligence and console path, including:
+
+- local Compose startup and Grafana health;
+- supported source-catalog bootstrap remains successful and idempotent;
+- bootstrapped sources remain disabled by default until explicitly enabled;
+- a supported source can fetch and persist raw evidence without object-store authentication failure;
+- successful ingestion appears truthfully in Intelligence, Overview and analytics;
+- `Alles vernieuwen`, empty-data states, Chrome controls and Administration behave truthfully;
+- authorization/publication boundaries remain unchanged.
+
+Only explicit accountable owner acceptance closes RC13.
 
 ## Historical RC13 evidence
 
-1. **RC13.1 — source-to-intelligence — historical PASS.** PR #151.
-2. **RC13.2 — single-session visual analytics — historical PASS.** PR #152.
-3. **RC13.3 — Administration/RBAC — historical PASS.** PR #153.
-4. **RC13.4 — Governance knowledge — historical PASS.** PR #154.
-5. **RC13.5 — full integrated canonical-console browser acceptance — historical repository PASS.** PR #155.
-6. **Earlier accountable owner functional retest — historical acceptance.** `RC13 owner retest akkoord` on 2026-08-12.
-7. **Subsequent owner testing — newer blockers and bounded repairs.** Newer evidence controls the current decision.
-
-Historical acceptance is not deleted or rewritten.
+RC13.1–RC13.5 and earlier owner acceptance remain historical evidence. Subsequent owner testing controls the current decision; historical records are not rewritten.
 
 ## Phase 8 — paused
 
-PR #157 and the fail-closed external deployment identity record remain historical/preparatory evidence. Issue #158 remains paused while RC13 is blocked.
+PR #157 and the fail-closed external deployment identity record remain preparatory evidence. Issue #158 remains paused until RC13 is explicitly accepted.
 
-After explicit owner acceptance, Phase 8 may return to `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`. Repository CI, Docker Compose and staging emulators cannot substitute for real staging evidence.
+After owner acceptance, Phase 8 may return to `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`. Repository CI, Docker Compose and staging emulators cannot substitute for real staging evidence.
 
 ## Governance mapping model
 
@@ -89,19 +73,19 @@ Missing mappings are visible evidence and are never inferred.
 
 ## Security and governance model
 
-DTMO preserves RBAC, least privilege, code-controlled roles, strict service-account/human-role separation, administrator safety controls, separate human review and external share approval, provenance, privacy/data minimization, tamper-evident auditability and request correlation. Credentialed integrations store logical secret references only; raw secret values remain forbidden. Local-development credential reuse does not alter staging/production least-privilege requirements. Connectors, CI, dashboards, Administration, Governance or staging access do not grant publication authority.
+DTMO preserves RBAC, least privilege, code-controlled roles, strict service-account/human-role separation, administrator safety controls, separate human review and external share approval, provenance, privacy/data minimization, tamper-evident auditability and request correlation. Credentialed integrations store logical secret references only; raw secret values remain forbidden. Local-development object-store credential reuse does not alter staging/production least-privilege requirements. Connectors, CI, dashboards, Administration, Governance or staging access do not grant publication authority.
 
 ## Project status
 
 | Phase | Scope | Status |
 |---|---|---|
 | 1–7 | Repository-controlled engineering | ✅ `PASS` |
-| RC13 | Functional unified-console acceptance | ⛔ `REOPENED / BLOCKED_INTERNAL` |
-| 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
+| RC13 | Functional unified-console acceptance | ⏳ `AWAITING_OWNER_RETEST_AFTER_REPAIR` |
+| 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13_OWNER_RETEST` |
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The only current priority is **issue #150 — complete the local object-store credential contract repair, require exact-head CI, merge and resume accountable owner RC13 retesting**.
+The only current product priority is **issue #150 — accountable owner RC13 functional retesting on current merged `main` containing PR #165**.
 
 ## Documentation
 
