@@ -7,20 +7,23 @@ PHASE8_GATE = ROOT / "docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md"
 RC13_GATE = ROOT / "docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md"
 
 
-def test_prior_owner_acceptance_is_historical_and_rc13_is_reopened() -> None:
+def test_accountable_owner_acceptance_closes_rc13_without_claiming_production_readiness() -> None:
     text = RC13_GATE.read_text(encoding="utf-8")
-    assert "Status: `REOPENED / BLOCKED_INTERNAL`" in text
+    assert "PASS / OWNER_ACCEPTED" in text
     assert "2026-08-12" in text
-    assert "RC13 owner retest akkoord" in text
-    assert "subsequent project-owner functional retest" in text
+    assert "RC13.4" in text
+    assert "RC13.5" in text
+    assert "Phase 8" in text
+    assert "not production ready" in text.lower()
 
 
-def test_phase8_is_paused_while_external_identity_record_stays_fail_closed() -> None:
+def test_phase8_is_ready_but_external_identity_record_stays_fail_closed() -> None:
     text = PHASE8_GATE.read_text(encoding="utf-8")
-    assert "PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST" in text
-    assert "Issue #150" in text
+    assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in text
     assert "Issue #158" in text
-    assert "same immutable staging deployment identity" in text
+    assert "one immutable deployment identity" in text
+    assert "Phase 8 may be marked `PASS` only when" in text
+    assert "Repository CI, local Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this gate" in text
 
 
 def test_external_deployment_identity_record_fails_closed() -> None:
