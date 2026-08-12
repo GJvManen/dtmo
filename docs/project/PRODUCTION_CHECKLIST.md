@@ -1,8 +1,8 @@
 # DTMO Production Acceptance Checklist
 
-Last updated: **2026-08-11**
+Last updated: **2026-08-12**
 
-## Repository-controlled readiness
+## Repository-controlled and functional readiness
 
 - [x] Phase 1 — CI/workflow integrity accepted.
 - [x] Phase 2 — application security and identity accepted.
@@ -11,38 +11,23 @@ Last updated: **2026-08-11**
 - [x] Phase 5 — performance/scalability accepted.
 - [x] Phase 6 — accessibility and operational UX accepted; project-owner manual/external acceptance recorded 2026-08-11.
 - [x] Phase 7 — observability and incident operations accepted.
-- [ ] RC13 — functional unified-console acceptance complete.
-  - [x] RC13.1 — source register/enable/run → ingest/index → recent intelligence → Overview accepted via PR #151.
+- [x] RC13 — functional unified-console acceptance complete.
+  - [x] RC13.1 — source-to-intelligence accepted via PR #151.
   - [x] RC13.2 — single-session Visual analytics accepted via PR #152.
   - [x] RC13.3 — governed Administration/RBAC accepted via PR #153.
   - [x] RC13.4 — Governance knowledge surface accepted via PR #154.
   - [x] RC13.5 — complete canonical-console browser acceptance accepted via PR #155.
-  - [ ] accountable project-owner functional retest of the complete repaired local product recorded.
+  - [x] post-CI status reconciliation accepted via PR #156.
+  - [x] accountable project-owner functional retest explicitly accepted on 2026-08-12 with `RC13 owner retest akkoord`.
 - [ ] Phase 8 — real staging acceptance complete.
 - [ ] Phase 9 — external assurance complete.
 - [ ] Phase 10 — production go/no-go approved.
 
-## RC13.5 — accepted repository-controlled evidence
+## Phase 8.1 — external deployment identity
 
-- [x] `RC13 Full Functional Console Acceptance Gate` succeeded on exact head `56805ec4ead5a14e9a2f776f84df42eb772302a4`.
-- [x] One Chromium browser context covered Overview → Intelligence → Sources & Catalog → Visual analytics → Administration → Governance.
-- [x] Eligible framework source register/enable/run was executed through the canonical console fixture.
-- [x] Source execution result was visible as fetched/inserted/indexed state.
-- [x] Resulting Intelligence and Overview state updated in the same browser session.
-- [x] Native severity/source/connector/review analytics rendered from the resulting state.
-- [x] Normal product navigation made no `/grafana/` request or second-login dependency.
-- [x] Governed RBAC create/update/deactivate remained functional with unique mutation request IDs.
-- [x] Administrator self-management protection remained visible/enforced.
-- [x] Governance framework coverage, repository mapping provenance and authority boundaries rendered in the same session.
-- [x] No connector, analytics, Administration or Governance action granted publication authority.
-- [x] Complete returned exact-head workflow set succeeded before PR #155 merged as `d6f83557ab18d26f82ad6289b1b95f728346631d`.
-- [ ] Accountable project-owner functional retest of the repaired local product explicitly accepted.
+Current decision: **`PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`**.
 
-## Phase 8 — deployment-parity package
-
-**`PAUSED_PENDING_RC13_OWNER_RETEST`.** Do not execute or credit Phase 8 items until the owner functional retest is explicitly accepted.
-
-When reopened, all items must refer to the same immutable staging deployment identity:
+All items must refer to the same immutable production-equivalent staging deployment identity. Current repository evidence does not yet satisfy these items.
 
 - [ ] Approved staging environment identifier and accountable owner.
 - [ ] Reachable staging endpoint through approved access path.
@@ -56,7 +41,13 @@ When reopened, all items must refer to the same immutable staging deployment ide
 - [ ] Rollback target/procedure tied to staged release.
 - [ ] Deployment-time threat/CVE/vendor-advisory review with provenance, time and confidence.
 
-## Phase 8 — external staging validation
+Authoritative intake record: `docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`.
+
+A `NOT_PROVIDED`, stale, inaccessible, contradictory or inferred field is not PASS. Docker Compose and staging-emulator evidence cannot substitute for a real external deployment identity.
+
+## Phase 8 — deployed-environment validation
+
+After Phase 8.1 establishes one immutable staging deployment identity:
 
 - [ ] Staging smoke tests executed against the approved immutable deployment.
 - [ ] Integration tests executed against the approved deployment.
@@ -91,6 +82,6 @@ When reopened, all items must refer to the same immutable staging deployment ide
 
 ## Decision
 
-Current decision: **NO-GO pending accountable RC13 owner retest and Phases 8–10**.
+Current decision: **NO-GO pending Phases 8–10**.
 
-The only current acceptance action is the accountable project-owner functional retest of the repaired canonical console.
+The only current priority is **Phase 8.1 — external staging deployment identity**.
