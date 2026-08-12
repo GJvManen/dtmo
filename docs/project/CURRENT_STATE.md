@@ -5,9 +5,9 @@ Release baseline: **16.0.0rc12**
 
 ## Executive summary
 
-DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted the current functional product.
+DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted the functional product.
 
-The project is therefore ready to enter **Phase 8 real production-equivalent staging validation**, but it is **not production ready**. Independent external assurance and formal production go/no-go remain outstanding.
+Post-RC13 product evolution now includes a shared severity filter contract for Overview and Intelligence while preserving the RC13 product boundary. The project is ready for **Phase 8 real production-equivalent staging validation**, but it is **not production ready**. Independent external assurance and formal production go/no-go remain outstanding.
 
 ## Current phase position
 
@@ -19,24 +19,32 @@ The project is therefore ready to enter **Phase 8 real production-equivalent sta
 | Phase 9 | Independent external assurance | `NOT COMPLETE` |
 | Phase 10 | Production go/no-go | `NOT STARTED` |
 
-## Product capabilities available in the accepted baseline
+## Product capabilities
 
 ### Overview
 
 - intelligence KPIs;
 - source/runtime status;
-- recent intelligence;
+- recent canonical intelligence;
 - native analytical summaries and trend representation;
 - truthful no-data/empty-state behavior;
-- unified refresh behavior.
+- unified refresh behavior;
+- shared severity filtering using `informational`, `low`, `medium`, `high` and `critical`;
+- accessible semantic severity treatment with visible labels/non-colour cues.
+
+When a severity is selected, all intelligence-derived Overview KPIs/aggregates and recent canonical records use the same PostgreSQL predicate. Connector health remains operational and unfiltered.
 
 ### Intelligence
 
 - canonical recent intelligence from PostgreSQL application state;
 - provenance/source context;
-- OpenSearch-backed investigation/search support;
+- OpenSearch-backed governed investigation/search support;
 - normalized supported source types and references;
-- durable commit-before-success ingestion behavior.
+- durable commit-before-success ingestion behavior;
+- the same shared severity selection as Overview;
+- filter-aware search and truthful filtered-empty states.
+
+Severity filtering does not infer framework mappings and does not change review/share state.
 
 ### Sources & Catalog
 
@@ -45,9 +53,10 @@ The project is therefore ready to enter **Phase 8 real production-equivalent sta
 - source enable/disable operations;
 - supported source execution;
 - credentialed source support through logical secret references;
-- connector state/freshness/runtime evidence.
+- connector state/freshness/runtime evidence;
+- governed backend source create/update/list/validate API with RBAC/audit controls.
 
-Manual source onboarding through the product UI/API is a planned post-RC13 enhancement.
+The next source enhancement is the missing professional **manual onboarding journey in the canonical Sources & Catalog UI**, using the existing governed registry rather than a parallel source subsystem.
 
 ### Visual Analytics
 
@@ -56,7 +65,7 @@ Manual source onboarding through the product UI/API is a planned post-RC13 enhan
 - canonical application analytics without requiring Grafana authentication for normal users;
 - separately secured Grafana operations/advanced dashboards.
 
-Richer severity colours, shared filtering and configurable trend analysis are planned enhancements.
+Broader reuse of the shared severity filter, richer semantic graphics and configurable trend analysis remain the next dedicated Visual Analytics enhancement.
 
 ### Administration
 
@@ -76,6 +85,26 @@ A richer role-to-permission administration model is planned.
 - publication/share authority boundaries.
 
 First-class external framework crosswalks remain deliberately incomplete until explicit provenance-backed mapping datasets are implemented.
+
+## Shared severity contract
+
+The current canonical severity taxonomy is:
+
+- `informational` — neutral/informational treatment;
+- `low` — green semantic treatment;
+- `medium` — amber/yellow semantic treatment;
+- `high` — red semantic treatment;
+- `critical` — distinct highest-severity treatment.
+
+Colour is never the sole carrier of meaning. Text labels/accessibility names accompany semantic colour.
+
+The selected value composes with:
+
+- `/api/v1/dashboards/summary`;
+- `/api/v1/console/recent-intelligence`;
+- the existing `/api/v1/intelligence/search` severity parameter.
+
+The preference is read-side/session-scoped. It does not mutate canonical intelligence, framework mappings, source state, review state or publication state.
 
 ## Canonical data and persistence state
 
@@ -102,7 +131,7 @@ The accepted baseline preserves:
 - privacy/data minimization;
 - logical secret references instead of raw credential values;
 - explicit human review and separate external-share approval;
-- no automatic publication authority from connectors, CI, analytics, Administration, Governance or staging access.
+- no automatic publication authority from connectors, CI, filtering, analytics, Administration, Governance or staging access.
 
 ## Framework mapping state
 
@@ -115,7 +144,7 @@ The current governance truth model is intentionally conservative:
 | CVSS | `CONTEXT_ONLY` | severity context exists, but first-class score/vector mapping is not yet implemented |
 | DTMO internal governance | `MAPPED_INTERNAL` | repository-backed mappings to explicit project evidence |
 
-The next mapping architecture must record framework/version, control/technique identifier, provenance, confidence/status and review state. Missing mappings must remain visible and must never be inferred from free text or tags.
+The next mapping architecture must record framework/version, control/technique identifier, provenance, confidence/status and review state. Missing mappings must remain visible and must never be inferred from severity, free text or tags.
 
 ## Active production-readiness workstream
 
@@ -137,14 +166,14 @@ It requires a real approved production-equivalent staging environment and an imm
 
 ## Active product-enhancement workstream
 
-GitHub issue #171 tracks the post-RC13 product roadmap. Delivery order:
+GitHub issue #171 tracks the post-RC13 product roadmap.
 
-1. shared accessible severity semantics and filters for Overview + Intelligence;
-2. governed manual source onboarding;
-3. richer Visual Analytics and trend analysis;
-4. first-class framework mapping data/API model;
-5. deeper Administration role/permission management;
-6. deeper framework-oriented Governance evidence surface.
+- **E1 + E2:** shared accessible severity semantics/filtering for Overview and Intelligence — current enhancement baseline;
+- **E3:** governed manual source-onboarding UI — next product slice;
+- **E4:** richer Visual Analytics and trend analysis;
+- **E5:** first-class framework mapping data/API model;
+- **E6:** deeper Administration role/permission management;
+- **E7:** deeper framework-oriented Governance evidence surface.
 
 These enhancements do not reopen RC13 and do not themselves satisfy Phase 8 evidence requirements.
 
@@ -155,7 +184,8 @@ These enhancements do not reopen RC13 and do not themselves satisfy Phase 8 evid
 - Formal production go/no-go has not started.
 - First-class Normenkader IBP and MITRE ATT&CK crosswalks are not implemented.
 - CVSS is not yet a complete first-class structured mapping model.
-- Manual arbitrary source onboarding is not yet available through the canonical Sources & Catalog UI.
+- Manual arbitrary source onboarding is not yet available through the canonical Sources & Catalog UI, even though the governed backend registry API exists.
+- Visual Analytics does not yet expose the full shared filter/trend enrichment planned for E4.
 - Administration does not yet expose the planned full role/permission management matrix.
 
 ## Documentation and evidence boundary
