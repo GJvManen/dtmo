@@ -2,81 +2,126 @@
 
 ## Purpose
 
-DTMO uses explicit evidence gates for engineering changes and keeps repository-controlled acceptance separate from functional product acceptance, external staging and production assurance.
+DTMO uses layered acceptance gates so that engineering confidence, functional product acceptance, external staging evidence, independent assurance and production authorization remain distinct claims.
 
-A configured, queued, cancelled, failed or unexecuted automated test is never `PASS`. Manual/external acceptance is recorded explicitly and is never presented as machine-generated evidence. Newer accountable functional evidence may reopen a previously accepted product gate without rewriting historical evidence.
+The gate model is intentionally fail-closed. A configured check is not evidence; a workflow must execute successfully against the required exact state before it can support an acceptance decision.
+
+## Core release principles
+
+1. **Exact-head evidence** — automated pull-request evidence belongs to the exact final PR head.
+2. **New commit, new evidence** — any new commit invalidates earlier green CI for that PR.
+3. **No inferred PASS** — queued, in-progress, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
+4. **Expected-head merge protection** — merge is protected against a moved PR head.
+5. **Evidence classes remain separate** — repository CI, accountable owner acceptance, real staging and independent assurance are not interchangeable.
+6. **Historical evidence is immutable** — later evidence can change the current decision without rewriting earlier run records.
 
 ## Gate families
 
-| Domain | Blocking evidence |
+| Gate family | Primary objective | Evidence boundary |
+|---|---|---|
+| Build & quality | Compile, packaging, lint, type safety and unit/integration correctness | Repository CI |
+| Security & identity | Authentication, authorization, privileged action and secrets boundaries | Repository CI + later staging/assurance |
+| Data integrity & recovery | Migrations, persistence, integrity and recovery | Repository CI + later staging/assurance |
+| Connector reliability | Contract, state, retry, timeout, replay, freshness, provenance and failure isolation | Repository CI + deployed validation |
+| Performance | Ingestion/read/concurrency/degraded dependency behavior | Repository CI + representative external validation |
+| Accessibility & browser UX | Keyboard, contrast, reflow, responsive/browser journeys | Repository CI + accountable functional acceptance |
+| Observability & operations | Metrics, correlation, tracing, alerts, dashboards and runbooks | Repository CI + staging operations |
+| Functional console | End-to-end canonical product behavior | Repository CI + accountable owner acceptance |
+| Source/persistence contract | Raw evidence, canonical commit and index/search behavior | Repository CI + staging validation |
+| Governance | Truthful mapping claims and authority separation | Repository CI + governance review |
+| Open source governance | License, notices, security/contribution policy | Repository CI |
+| Staging identity/parity | One immutable production-equivalent deployment and configuration evidence | Real external Phase 8 evidence |
+| External assurance | Independent security/resilience/operational review | Phase 9 evidence |
+| Production decision | Formal accountable go/no-go | Phase 10 approval |
+
+## Current acceptance status
+
+| Stage | Status |
 |---|---|
-| Build & quality | Source compiles, packages resolve, tests/lint/type checks succeed |
-| Security & identity | Authentication, authorization, secrets and privileged actions are verified |
-| Governance | Human review, separate share approval, separation of duties and truthful mapping claims are preserved |
-| Data integrity & privacy | Provenance, confidence, migrations, minimization and retention controls are verified |
-| Recovery | Clean-target and multi-store recovery/integrity behavior is evidenced |
-| Connector reliability | Contracts, state, provenance, retry, timeout, replay, freshness and isolation succeed |
-| Performance | Ingestion/read/concurrency/degraded-dependency behavior meets accepted bounds |
-| Accessibility / UX | Browser, keyboard, responsive, WCAG and accountable external/manual acceptance succeed |
-| Observability & operations | Metrics, correlation, trace context, alerting, dashboards, runbooks and exercises succeed |
-| Functional console | Canonical product journeys produce truthful usable state changes |
-| Chrome interaction | Google Chrome-channel navigation/controls succeed with zero page/console errors |
-| Owner functional acceptance | Accountable owner retests the merged product and explicitly accepts or reports blockers |
-| External deployment identity | One approved production-equivalent staging environment and immutable deployment identity are independently evidenced |
-| Staging deployment parity | All required external evidence binds to the same deployment |
-| External staging validation | Required deployed-environment suites succeed against the accepted staging identity |
-| Release | Complete exact-head workflow set succeeds before expected-head protected merge |
+| Phases 1–7 repository-controlled engineering | `PASS` |
+| RC13 functional console | `PASS / OWNER_ACCEPTED` |
+| Phase 8 real staging | `READY / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
+| Phase 9 independent assurance | `NOT COMPLETE` |
+| Phase 10 production go/no-go | `NOT STARTED` |
 
-## Current phase status — 2026-08-12
+## Repository-controlled gate coverage
 
-- Phases 1–7: `PASS`.
-- RC13.1–RC13.5 repository evidence: historical `PASS`.
-- earlier accountable owner retest: historical acceptance.
-- subsequent owner retest: blocking canonical-console findings.
-- RC13 overall: `REOPENED / BLOCKED_INTERNAL`; issue #150 open.
-- Phase 8: `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`; issue #158 paused.
-- Phase 9: `NOT COMPLETE`.
-- Phase 10: `NOT STARTED`.
+The current workflow portfolio covers, among other areas:
 
-## Exact-head release discipline
+- RC4 Quality Gate;
+- open-source governance;
+- connector contracts, state, freshness, retry, timeout, replay and failure isolation;
+- payload provenance;
+- multi-store and OpenSearch recovery;
+- ingestion/read/concurrency/degraded-dependency performance;
+- keyboard, contrast, reflow, text resize/spacing, responsive layout and supported browsers;
+- request observability, trace context, queue/search/storage/connectors alerting and runbook exercises;
+- canonical source catalog/bootstrap and source execution contracts;
+- canonical connector commit visibility;
+- source-record normalization;
+- functional console/browser acceptance;
+- native visual analytics;
+- governed Administration/RBAC;
+- Governance knowledge surface;
+- object-storage migration/runtime contracts;
+- Grafana provisioning/runtime contracts;
+- Phase 8 staging readiness/emulator engineering contracts.
 
-Workflow configuration is not acceptance evidence. A merge candidate must execute the registered release-critical workflow set on the exact final pull-request head. Merge uses expected-head protection so a moved head cannot be accepted accidentally.
+These workflows establish engineering evidence only within their declared scopes.
 
-## Reopened RC13 usability gate
+## Functional owner acceptance
 
-The dedicated `RC13 Owner Retest Usability Gate` adds coverage for defects not explicitly exercised by the earlier RC13.5 journey:
+RC13 is complete because the repository-controlled functional evidence was followed by explicit accountable owner testing and acceptance of the merged product.
 
-- Overview `Alles vernieuwen` must make real refresh requests and restore enabled UI state;
-- empty intelligence must produce explicit empty-data status, not false update success;
-- zero-only intelligence graph datasets must render clear empty states;
-- canonical navigation and non-mutating refresh controls must work using the Google Chrome browser channel;
-- the navigation version badge must be absent;
-- governed Administration and Governance refresh controls must remain usable;
-- browser page errors must equal zero;
-- browser console errors must equal zero.
+Owner acceptance is not machine-generated and is not implied by green CI. If future owner testing identifies a product regression, the relevant current functional gate can be reopened without modifying historical evidence.
 
-The browser APIs are bounded synthetic fixtures. Successful CI proves regression coverage only. Project-owner local functional retest remains a separate required gate after merge.
+## Phase 8 acceptance model
 
-## Historical RC13 evidence boundary
+Phase 8 starts only from an accepted functional product baseline and requires a real production-equivalent staging environment.
 
-PRs #151–#157 and the earlier `RC13 owner retest akkoord` remain historical evidence. They are not erased. The later owner-observed defects supersede them only for the **current release decision**.
+Every Phase 8 evidence item must bind to the same immutable deployment identity, including:
 
-## Phase 8 boundary
+- environment and owner;
+- endpoint/access path;
+- release/commit and image digests;
+- infrastructure/runtime versions;
+- configuration parity;
+- IAM/secrets references and least privilege;
+- TLS/network controls;
+- data handling/sanitization;
+- deployment/change and rollback records;
+- deployment-time security review.
 
-The Phase 8 deployment identity record remains fail-closed preparatory evidence. No staging/deployment evidence may advance while RC13 is reopened. Repository readiness contracts, Docker Compose and staging emulators cannot substitute for current owner acceptance or real staging.
+Repository staging emulators are preparatory engineering evidence and cannot satisfy Phase 8 by themselves.
 
-## Security, privacy and publication invariants
+## Security and publication invariants
+
+Release gates must preserve the following invariants:
 
 - ingestion creates candidate intelligence only;
-- publication requires explicit human share approval;
-- service accounts, connectors, CI and staging access do not grant publication authority;
-- human and machine roles may not be combined;
+- external sharing requires separate human approval;
+- connectors, CI and service accounts do not gain publication authority;
+- human and machine roles remain separated;
+- Administration changes remain least-privilege and auditable;
 - Governance visibility does not grant publication/share authority;
-- external framework mappings are never inferred;
-- provenance and confidence may not be silently discarded;
-- missing or incomplete evidence blocks the corresponding acceptance claim;
-- analytics convenience must not introduce anonymous Grafana access, authentication bypass or privilege broadening.
+- external framework mappings are not inferred;
+- provenance and confidence are preserved;
+- no raw secret values are committed as evidence;
+- no anonymous Grafana access or authentication bypass is introduced for convenience.
 
-## Exactly one next priority
+## Product enhancement gating
 
-**Issue #150 — complete the reopened canonical-console usability repair, full exact-head CI, expected-head merge and accountable project-owner retest.**
+Post-RC13 product enhancements are delivered as bounded PRs. Each enhancement must:
+
+1. define explicit acceptance criteria;
+2. include focused unit/contract/browser evidence where appropriate;
+3. preserve accepted RC13 behavior;
+4. preserve security/governance invariants;
+5. pass the complete exact-head workflow set before merge;
+6. be validated in staging if it is part of the Phase 8 candidate deployment.
+
+The first planned enhancement combines shared severity semantics and filters for Overview and Intelligence.
+
+## Release decision rule
+
+A PR may be merged only after all returned release-critical workflows for the exact final head are `completed/success` and the PR remains mergeable. A product or phase may be accepted only after its additional non-CI evidence boundary is also satisfied.
