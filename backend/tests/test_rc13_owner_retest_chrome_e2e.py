@@ -26,6 +26,7 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         "trends": 0,
         "rbac": 0,
         "governance": 0,
+        "frameworks": 0,
     }
     page_errors: list[str] = []
     console_errors: list[str] = []
@@ -204,6 +205,14 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
                 body=json.dumps(governance),
             )
 
+        async def frameworks_route(route: Route) -> None:
+            calls["frameworks"] += 1
+            await route.fulfill(
+                status=200,
+                content_type="application/json",
+                body=json.dumps({"frameworks": []}),
+            )
+
         await page.route("**/api/v1/admin/sources/catalog", catalog_route)
         await page.route("**/api/v1/source-center/status", status_route)
         await page.route("**/api/v1/admin/sources", registered_route)
@@ -214,6 +223,7 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         await page.route("**/api/v1/admin/rbac/roles", roles_route)
         await page.route("**/api/v1/admin/rbac/principals", principals_route)
         await page.route("**/api/v1/governance/knowledge", governance_route)
+        await page.route("**/api/v1/governance/frameworks", frameworks_route)
 
         await page.goto(f"{BASE_URL}/")
         await expect(page.get_by_test_id("global-status")).to_have_text(
@@ -287,11 +297,13 @@ async def test_owner_reported_console_usability_in_chrome() -> None:
         await page.get_by_role("button", name="Governance", exact=True).click()
         await page.locator("#governance-refresh").click()
         await expect(page.locator("#governance-status")).to_contain_text("0 frameworks")
+        await expect(page.locator("#framework-status")).to_contain_text("0 versioneerde kaders geladen")
 
         assert calls["severity"] >= 2
         assert calls["trends"] >= 1
         assert calls["rbac"] >= 2
         assert calls["governance"] >= 2
+        assert calls["frameworks"] >= 1
         assert page_errors == []
         assert console_errors == []
 
