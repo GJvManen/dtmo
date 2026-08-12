@@ -30,12 +30,19 @@ def test_run_action_handles_built_in_and_registered_framework_sources() -> None:
     assert "Nog niet geregistreerd" in text
 
 
-def test_administration_reuses_source_operations_in_same_shell() -> None:
+def test_administration_links_to_single_source_operations_workspace_without_duplication() -> None:
     text = CONSOLE.read_text(encoding="utf-8")
     assert 'data-view="administration"' in text
     assert 'data-view="sources">Open bronbeheer</button>' in text
-    assert "Bronbeheer en huidige identity-context binnen dezelfde applicatieshell" in text
-    assert "Administrators kunnen bronnen registreren, valideren, activeren en uitvoeren" in text
+    assert "Bronbeheer blijft bewust in Bronnen & catalogus" in text
+    assert "Bronregistratie en feeduitvoering worden op één plek beheerd" in text
+    administration = text.split(
+        '<section class="view" data-view-panel="administration">', 1
+    )[1].split('<section class="view" data-view-panel="governance">', 1)[0]
+    assert 'data-enabled="' not in administration
+    assert 'data-run="' not in administration
+    assert 'data-save="' not in administration
+    assert 'data-validate="' not in administration
 
 
 def test_source_connection_matrix_has_no_remaining_vendor_adapter_blocker() -> None:
