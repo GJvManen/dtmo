@@ -22,6 +22,8 @@ from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
 from dtmo.dashboards import router as dashboards_router
+from dtmo.framework_experience import router as framework_experience_router
+from dtmo.framework_governance import router as framework_governance_router
 from dtmo.frontend import router as frontend_router
 from dtmo.governance_knowledge import router as governance_knowledge_router
 from dtmo.logging import bind_request_context, clear_request_context, configure_logging, correlation_id, get_logger, resolve_correlation_id
@@ -80,6 +82,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+# E5/E7 composes first-class versioned framework inventory and explicit mapping
+# governance over E4. These canonical roots intentionally win before lower UI layers.
+app.include_router(framework_experience_router)
 # E4 composes selectable 24h/7d/30d trend analytics over the shared E1/E2
 # severity experience. These roots intentionally win before lower UI layers.
 app.include_router(analytics_experience_router)
@@ -88,17 +93,11 @@ app.include_router(analytics_experience_router)
 # the underlying RC13 routers remain registered for their JS/API resources.
 app.include_router(severity_experience_router)
 # RC13.4 composes repository-backed governance knowledge over the accepted
-# RC13.3 canonical shell. The severity layer above already includes this page,
-# while this router still serves its governed JavaScript resource.
+# RC13.3 canonical shell. Higher composition layers include this page, while
+# this router still serves its governed JavaScript resource.
 app.include_router(rc13_governance_router)
-# RC13.3 composes governed principal/role administration into the canonical
-# shell without modifying the RC13.1 source/intelligence implementation. These
-# root routes remain registered for compatibility behind the composed surface.
 app.include_router(rc13_administration_router)
 app.include_router(unified_console_router)
-# RC13.2 intentionally shadows only the shared CSS route so the canonical
-# console exposes native analytics without a separately authenticated Grafana
-# embed. The Grafana service itself remains authenticated and operational.
 app.include_router(rc13_analytics_router)
 app.include_router(frontend_router)
 app.include_router(operations_ui_router)
@@ -112,6 +111,7 @@ app.include_router(intelligence_router)
 app.include_router(admin_sources_router)
 app.include_router(rbac_admin_router)
 app.include_router(governance_knowledge_router)
+app.include_router(framework_governance_router)
 app.include_router(admin_ui_router)
 app.include_router(ui_router)
 app.include_router(ciso_ui_router)
