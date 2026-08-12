@@ -1,48 +1,98 @@
-# Intelligence Pipeline Release Gate — DTMO 16.0.0rc7
+# DTMO Intelligence Pipeline Release Gate
 
-## Scope
+**Status:** `PASS` for the accepted RC13 intelligence pipeline
 
-This gate covers the repository-controlled end-to-end path from the existing CISA KEV connector through raw evidence landing, canonical persistence and provenance into OpenSearch-backed operator search. It does not authorize arbitrary new sources and does not close staging or external-assurance gates.
+## Objective
 
-## Required evidence
+Define the end-to-end repository-controlled contract from supported source execution through raw evidence, normalization/provenance, durable canonical persistence, search/index representation and operator-facing application visibility.
 
-The final exact release head must demonstrate all of the following:
+## Canonical pipeline
 
-1. search on a fresh deployment does not fail merely because the intelligence index has not yet been created;
-2. the strict OpenSearch mapping matches every field written by canonical ingestion;
-3. search sorting uses the same canonical confidence field that is indexed;
-4. a successful CISA KEV connector run lands and persists every record through the governed intelligence pipeline;
-5. connector provenance includes source identity/reliability and raw payload evidence;
-6. connector replay is idempotent for the canonical record and can repair a missing/failed derived OpenSearch document;
-7. connector execution never changes review or share-approval state;
-8. manual connector execution requires `manage:connectors` server-side;
-9. service-account and human separation-of-duties invariants remain enforced;
-10. the registered CI/workflow matrix completes successfully on the final exact head.
+```mermaid
+flowchart LR
+    SRC[Supported source] --> EXEC[Governed source execution]
+    EXEC --> RAW[(Raw evidence storage)]
+    EXEC --> NORM[Normalization + provenance]
+    NORM --> PG[(PostgreSQL canonical intelligence)]
+    PG --> OS[(OpenSearch index)]
+    PG --> UI[Intelligence / Overview / Analytics]
+```
 
-## Known user-facing defect addressed
+PostgreSQL is the canonical application truth. Raw evidence and OpenSearch are essential supporting stores, but neither replaces the canonical database state used by application reads and dashboard aggregation.
 
-The accepted rc6 deployment could show:
+## Required source behavior
 
-`Zoeken mislukt: search backend unavailable: HTTPStatusError`
+- Source execution is authorized and disabled sources fail closed.
+- Supported source profiles preserve provider/source identity and provenance.
+- Credentialed sources use logical secret references rather than raw repository credentials.
+- Network/response behavior remains bounded by the relevant safe execution or provider adapter contract.
+- Unsupported/invalid records do not bypass normalization validation.
 
-Two repository defects could produce this symptom: an absent index on a fresh deployment and strict-mapping rejection because canonical ingestion wrote confidence fields not declared by the index mapping. Both contracts are remediated in rc7.
+## Required normalization behavior
 
-## Source ingestion boundary
+Canonical normalization must preserve or explicitly derive only supported values.
 
-16.0.0rc7 makes the already-supported CISA KEV connector operational end-to-end. It does **not** introduce arbitrary source creation. Adding sources is intentionally deferred to a governed admin source-registry objective because arbitrary externally supplied URLs can create SSRF, credential-exposure, provenance and trust-boundary risks.
+The accepted baseline includes:
 
-## External and deferred evidence
+- explicit supported item-type normalization (including the supported `security-advisory` → `advisory` alias);
+- fail-closed unknown intelligence types;
+- HTTP(S)-only canonical URL/reference behavior where defined by the schema;
+- stable HTTPS NVD CVE canonical/provenance identity while preserving upstream references in raw evidence;
+- source/reliability and publication/context provenance.
 
-This gate does not claim:
+## Required persistence behavior
 
-- additional live-source connectors beyond the existing CISA KEV integration;
-- production-safe arbitrary source registration;
-- real staging deployment parity;
+- Raw source evidence is retained through the evidence-storage path.
+- Canonical intelligence is written through the PostgreSQL repository/session boundary.
+- Connector ingestion returns durable success only after the database session completes its commit.
+- A raw-object write or successful OpenSearch document creation alone is not reported as canonical application success.
+- Repeat ingestion remains idempotent according to the canonical record contract.
+- Supporting OpenSearch state can be repaired/rebuilt without redefining canonical intelligence truth.
+
+## Search and application visibility
+
+- Search behaves safely on fresh/empty index state.
+- OpenSearch mappings match indexed canonical fields.
+- Intelligence views read durable canonical records.
+- Overview/dashboard summaries aggregate canonical PostgreSQL intelligence.
+- Native Visual Analytics represents canonical analytical state.
+- Empty canonical datasets produce truthful empty states rather than false success/pseudo-data.
+
+## Provenance and authority
+
+Source execution and ingestion must not modify or grant:
+
+- human review authority;
+- external-share approval;
+- publication authority;
+- unrelated privileged Administration authority.
+
+Provenance/raw evidence remains traceable from normalized records where the model provides the reference.
+
+## Evidence requirements for changes
+
+Future pipeline changes require applicable tests for:
+
+1. source execution/authorization;
+2. raw evidence persistence;
+3. normalization/type/reference contracts;
+4. canonical PostgreSQL commit semantics;
+5. idempotency/replay;
+6. OpenSearch indexing/search;
+7. canonical console/dashboard visibility;
+8. provenance and authority boundaries;
+9. complete exact-head CI on the final PR head.
+
+A new commit invalidates earlier exact-head evidence.
+
+## Claim boundary
+
+This gate's PASS is repository-controlled engineering and accepted functional-product evidence. It does not establish:
+
+- real production-equivalent staging persistence/network configuration;
 - independent penetration testing;
-- genuine VoiceOver/NVDA execution;
-- external stakeholder acceptance;
-- production go/no-go.
+- provider SLA/contractual authorization;
+- production backup/restoration acceptance;
+- Phase 10 production approval.
 
-## Current decision
-
-`CI_VALIDATION_PENDING` until every registered workflow succeeds on the final exact PR head. No locally inferred or unexecuted test is accepted as PASS.
+Those remain Phase 8/9/10 evidence classes.
