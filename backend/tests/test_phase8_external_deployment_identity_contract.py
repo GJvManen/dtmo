@@ -11,8 +11,9 @@ def test_accountable_owner_acceptance_closes_rc13_without_claiming_external_acce
     text = RC13_GATE.read_text(encoding="utf-8")
     assert "PASS / OWNER_ACCEPTED" in text
     assert "2026-08-12" in text
-    assert "RC13.4" in text
-    assert "RC13.5" in text
+    assert "Accepted canonical journey" in text
+    assert "Accountable owner acceptance" in text
+    assert "historical evidence must remain immutable" in text
     assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in text
     assert "CI/browser fixtures cannot create external staging or production acceptance" in text
 
