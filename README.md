@@ -6,11 +6,11 @@
 
 **Release candidate:** `16.0.0rc12`  
 **Engineering status:** Phases 1–7 accepted  
-**RC13 product status:** `REOPENED / BLOCKED_INTERNAL`  
-**External staging:** `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`  
+**RC13 product status:** `AWAITING_OWNER_RETEST_AFTER_REPAIR`  
+**External staging:** `PAUSED_PENDING_RC13_OWNER_RETEST`  
 **License:** Apache-2.0
 
-> **Current release decision:** DTMO is not production ready. PR #165 is repository-green and repaired the local object-store credential contract. The subsequent accountable owner retest shows that source loading can appear successful while ingested intelligence remains invisible in the canonical console, leaving Intelligence, metrics and graphics empty. Repository inspection identified a connector transaction-boundary defect that can skip the canonical PostgreSQL commit.
+> **Current release decision:** DTMO is not production ready. PR #167 repaired the canonical connector transaction boundary, completed every returned workflow on exact head `bf18ef2c499edcf8399d1f91b80190937538fdce` with `completed/success`, and merged with expected-head protection as `e9a0926f9e13b603be759a7d7036058685ebc3cc`. Accountable owner retesting of the repaired source → PostgreSQL → Intelligence → metrics/graphics path is still required.
 
 ## Product scope
 
@@ -33,49 +33,29 @@ Completed bounded repairs:
 1. **PR #159 — console usability repair** — merged as `b4fffecc47f87b1edab8258514eaa130d949c195`;
 2. **PR #160 — Compose runtime packaging repair** — merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`;
 3. **PR #161 — Grafana datasource provisioning repair** — merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`;
-4. **PR #163 — source catalog secret-reference/bootstrap repair** — exact-head green, merged as `adc027143f1274c604a16446fe1ad2bdc7bc835f`, later owner-observed bootstrap `200 OK`;
-5. **PR #165 — local object-store credential contract repair** — exact head `48688977836cf3305b9d90c064e945de00eefb49`, complete returned workflow matrix `completed/success`, merged with expected-head protection as `65440afea6cfa3c3300b25d577d746432cc95700`.
+4. **PR #163 — source catalog secret-reference/bootstrap repair** — merged as `adc027143f1274c604a16446fe1ad2bdc7bc835f`, later owner-observed bootstrap `200 OK`;
+5. **PR #165 — local object-store credential contract repair** — exact head `48688977836cf3305b9d90c064e945de00eefb49`, complete returned workflow matrix `completed/success`, merged as `65440afea6cfa3c3300b25d577d746432cc95700`;
+6. **PR #167 — canonical connector commit/console-visibility repair** — exact head `bf18ef2c499edcf8399d1f91b80190937538fdce`, complete returned workflow matrix `completed/success`, merged as `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
 
-## Current blocker — canonical connector commit visibility
-
-The latest owner retest reports that loading sources appears to work, but the ingested intelligence does not become visible in the interface. As a consequence the Intelligence view, Overview KPIs, metrics and native graphics remain empty.
-
-Repository inspection confirms the canonical console and dashboards read `IntelligenceItem` from PostgreSQL. The built-in connector path calls `ingest_connector_record()`, which previously returned from inside:
-
-```python
-async for session in database.session():
-    return await _persist_intelligence(...)
-```
-
-`Database.session()` performs `commit()` only after its `yield`. Returning from the loop body prevents the async generator from resuming through that post-yield commit path. The connector can therefore finish raw landing/indexing and report inserted/indexed work without a durable canonical PostgreSQL row becoming visible to the console/dashboard read model.
-
-The bounded repair branch `rc13/canonical-connector-commit-visibility` now:
-
-- retains the persistence receipt while the session generator runs to completion;
-- returns connector success only after the canonical session commit has completed;
-- propagates commit failure instead of reporting success;
-- adds regression tests that fail on the former early-return behavior;
-- adds an exact-head `RC13 Canonical Connector Commit Visibility Gate` covering the commit boundary, connector ingestion contract, canonical console read contract and graphical dashboard contract.
-
-The repair is `PENDING_CI`. No repository PASS is claimed until every returned workflow on its final exact head is `completed/success`.
+PR #167 ensures a connector run only reports successful canonical ingestion after the PostgreSQL session generator has completed its commit path. Commit failures propagate rather than producing a successful ingest receipt.
 
 ## Owner-retest boundary
 
-After the repair is exact-head green and merged, the accountable owner must verify on current `main` that a real supported source run:
+The accountable owner must now verify on current merged `main` that a real supported source run:
 
 1. fetches the upstream source;
 2. persists raw evidence without object-store authentication failure;
-3. commits canonical intelligence to PostgreSQL;
+3. durably commits canonical intelligence to PostgreSQL;
 4. becomes visible in **Intelligence** and **Recent intelligence**;
-5. updates Overview KPIs and source/severity/trend metrics;
-6. updates native Visual Analytics truthfully;
+5. updates Overview KPIs and dashboard metrics;
+6. updates severity/source/trend/review graphics truthfully;
 7. preserves truthful refresh/error/empty states and the existing authorization/publication boundaries.
 
 Only explicit accountable owner acceptance closes RC13.
 
 ## Phase 8 — paused
 
-PR #157 and the fail-closed external deployment identity record remain historical/preparatory evidence. Issue #158 remains paused while RC13 is blocked.
+PR #157 and the fail-closed external deployment identity record remain historical/preparatory evidence. Issue #158 remains paused while RC13 awaits owner retesting.
 
 After explicit owner acceptance, Phase 8 may return to `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`. Repository CI, Docker Compose and staging emulators cannot substitute for real staging evidence.
 
@@ -99,12 +79,12 @@ DTMO preserves RBAC, least privilege, code-controlled roles, strict service-acco
 | Phase | Scope | Status |
 |---|---|---|
 | 1–7 | Repository-controlled engineering | ✅ `PASS` |
-| RC13 | Functional unified-console acceptance | ⛔ `REOPENED / BLOCKED_INTERNAL` |
-| 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
+| RC13 | Functional unified-console acceptance | ⏳ `AWAITING_OWNER_RETEST_AFTER_REPAIR` |
+| 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13_OWNER_RETEST` |
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The only current priority is **issue #150 — complete the canonical connector commit/console-visibility repair, require full exact-head CI, merge, then resume accountable owner RC13 retesting**.
+The only current product priority is **issue #150 — accountable owner RC13 functional retesting on current merged `main` containing PR #167**.
 
 ## Documentation
 
