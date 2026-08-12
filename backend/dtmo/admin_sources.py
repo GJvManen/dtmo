@@ -15,8 +15,9 @@ from dtmo.audit.store import append_persistent_audit_event
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal, Role
 from dtmo.connectors.state import ConnectorStateStore
-from dtmo.source_catalog import SOURCE_CATALOG
-from dtmo.source_framework import execute_source
+from dtmo.source_catalog import SOURCE_CATALOG, catalog_by_id
+from dtmo.source_framework import SOURCE_ADAPTER_REGISTRY, execute_source
+from dtmo.source_onboarding import test_manual_source
 from dtmo.sources import SourceDefinition, SourceRegistry, validate_source_url
 
 router = APIRouter(prefix="/api/v1/admin/sources", tags=["admin-sources"])
@@ -51,6 +52,8 @@ class SourceResponse(BaseModel):
     interval_seconds: int
     reliability: str
     secret_ref: str | None
+    authentication_mode: str
+    owner: str
     created_by: str
     updated_by: str
 
@@ -60,6 +63,27 @@ def _human_admin(principal: Principal) -> None:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="source registry changes require a human admin role",
+        )
+
+
+def _authentication_mode(source: SourceDefinition) -> str:
+    return "credentialed-secret-reference" if source.secret_ref else "anonymous"
+
+
+def _validate_manual_auth_contract(request: SourceCreateRequest) -> None:
+    if not request.secret_ref:
+        return
+    entry = catalog_by_id(request.id.strip().lower())
+    if entry is None or entry.execution_status != "supported":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="manual credentialed sources require a code-reviewed registered adapter profile",
+        )
+    spec = SOURCE_ADAPTER_REGISTRY.get(entry.execution_profile)
+    if spec is None or not spec.requires_secret:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="the selected source profile does not use a credential reference",
         )
 
 
@@ -73,6 +97,8 @@ def _response(source: SourceDefinition) -> SourceResponse:
         interval_seconds=source.interval_seconds,
         reliability=source.reliability,
         secret_ref=source.secret_ref,
+        authentication_mode=_authentication_mode(source),
+        owner=source.created_by,
         created_by=source.created_by,
         updated_by=source.updated_by,
     )
@@ -166,6 +192,12 @@ async def create_source(
     request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
 ) -> SourceResponse:
     _human_admin(principal)
+    if request.enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="new manual sources must be created disabled; validate/test before activation",
+        )
+    _validate_manual_auth_contract(request)
     registry = SourceRegistry(session)
     try:
         source = await registry.create(
@@ -173,7 +205,7 @@ async def create_source(
             name=request.name,
             source_type=request.source_type,
             endpoint_url=request.endpoint_url,
-            enabled=request.enabled,
+            enabled=False,
             interval_seconds=request.interval_seconds,
             reliability=request.reliability,
             secret_ref=request.secret_ref,
@@ -248,8 +280,42 @@ async def validate_source(
         "valid": True,
         "source_type": source.source_type,
         "enabled": source.enabled,
+        "owner": source.created_by,
+        "authentication_mode": _authentication_mode(source),
         "execution": "built-in" if source.source_type == "cisa-kev" else "governed-adapter",
         "note": "runtime re-resolves DNS, rejects non-global destinations and redirects, pins TLS to the validated address, enforces response bounds, and resolves credential references without storing secret values in the registry",
+    }
+
+
+@router.post("/{source_id}/test")
+async def test_registered_source(
+    source_id: str,
+    principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
+) -> dict[str, object]:
+    """Execute a bounded non-ingesting pre-activation test for a manual JSON source."""
+    _human_admin(principal)
+    source = await SourceRegistry(session).get(source_id)
+    if source is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="source not found")
+    result = await test_manual_source(source)
+    await _audit(
+        session,
+        principal=principal,
+        action="source.test",
+        resource=f"source:{source.id}",
+        request_id=request_id,
+        provenance_reference=source.endpoint_url,
+    )
+    return {
+        "id": source.id,
+        "status": result.status,
+        "records": len(result.records),
+        "error": result.error,
+        "enabled": source.enabled,
+        "ingested": False,
+        "publication_gate": "human-review-and-separate-share-approval-required",
     }
 
 

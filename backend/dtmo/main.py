@@ -36,6 +36,7 @@ from dtmo.rc13_governance import router as rc13_governance_router
 from dtmo.scheduler import ScheduledJob, SchedulerService
 from dtmo.severity_experience import router as severity_experience_router
 from dtmo.source_center import router as source_center_router
+from dtmo.source_onboarding_experience import router as source_onboarding_experience_router
 from dtmo.threat_workspace import router as threat_workspace_router
 from dtmo.trace_context import begin_trace, end_trace
 from dtmo.ui import router as ui_router
@@ -82,6 +83,10 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+# E3 composes governed disabled-first manual source onboarding into the same
+# canonical Sources & Catalog product surface. It intentionally wins before
+# the lower E5/E7, E4 and E1/E2 composition layers.
+app.include_router(source_onboarding_experience_router)
 # E5/E7 composes first-class versioned framework inventory and explicit mapping
 # governance over E4. These canonical roots intentionally win before lower UI layers.
 app.include_router(framework_experience_router)
