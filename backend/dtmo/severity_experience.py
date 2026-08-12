@@ -18,6 +18,8 @@ from dtmo.rc13_governance import _PAGE as GOVERNANCE_CONSOLE_PAGE
 router = APIRouter()
 
 _SEVERITY_ORDER = tuple(item.value for item in IntelligenceSeverity)
+LimitParam = Annotated[int, Query(ge=1, le=100)]
+SeverityFilter = Annotated[list[str] | None, Query()]
 
 
 def _selected_severities(values: list[str] | None) -> tuple[IntelligenceSeverity, ...]:
@@ -62,8 +64,8 @@ def _serialize(item: IntelligenceItem) -> dict[str, object]:
 async def severity_filtered_recent_intelligence(
     principal: Annotated[Principal, Depends(require_permission(Permission.READ_INTELLIGENCE))],
     session: Annotated[AsyncSession, Depends(get_session)],
-    limit: int = Query(default=20, ge=1, le=100),
-    severity: list[str] | None = Query(default=None),
+    limit: LimitParam = 20,
+    severity: SeverityFilter = None,
 ) -> list[dict[str, object]]:
     del principal
     selected = _selected_severities(severity)
@@ -81,7 +83,7 @@ async def severity_filtered_recent_intelligence(
 async def severity_summary(
     principal: Annotated[Principal, Depends(require_permission(Permission.READ_INTELLIGENCE))],
     session: Annotated[AsyncSession, Depends(get_session)],
-    severity: list[str] | None = Query(default=None),
+    severity: SeverityFilter = None,
 ) -> dict[str, object]:
     del principal
     selected = _selected_severities(severity)
@@ -115,24 +117,29 @@ async def severity_summary(
         )
     ).all()
     counts = {_enum_value(key): int(value) for key, value in grouped}
+    selected_values = {item.value for item in selected}
 
     return {
         "selected_severities": [item.value for item in selected],
         "total_intelligence": total,
         "new_last_24h": new_last_24h,
         "average_confidence": average_confidence,
-        "severity": {name: counts.get(name, 0) for name in _SEVERITY_ORDER if name in {item.value for item in selected}},
+        "severity": {
+            name: counts.get(name, 0)
+            for name in _SEVERITY_ORDER
+            if name in selected_values
+        },
     }
 
 
 _FILTER_CONTROLS = r'''
-<div class="severity-filter" data-severity-filter role="group" aria-label="Filter op severity">
+<div class="severity-filter" data-severity-filter role="group" aria-label="Filter op classificatie">
   <span class="severity-filter-label">Severityfilter</span>
-  <label class="severity-choice severity-informational"><input type="checkbox" value="informational" checked> <span aria-hidden="true" class="severity-dot"></span>Informational</label>
-  <label class="severity-choice severity-low"><input type="checkbox" value="low" checked> <span aria-hidden="true" class="severity-dot"></span>Low</label>
-  <label class="severity-choice severity-medium"><input type="checkbox" value="medium" checked> <span aria-hidden="true" class="severity-dot"></span>Medium</label>
-  <label class="severity-choice severity-high"><input type="checkbox" value="high" checked> <span aria-hidden="true" class="severity-dot"></span>High</label>
-  <label class="severity-choice severity-critical"><input type="checkbox" value="critical" checked> <span aria-hidden="true" class="severity-dot"></span>Critical</label>
+  <label class="severity-choice severity-informational"><input type="checkbox" value="informational" checked> <span aria-hidden="true" class="severity-dot"></span>Informatief</label>
+  <label class="severity-choice severity-low"><input type="checkbox" value="low" checked> <span aria-hidden="true" class="severity-dot"></span>Laag</label>
+  <label class="severity-choice severity-medium"><input type="checkbox" value="medium" checked> <span aria-hidden="true" class="severity-dot"></span>Middel</label>
+  <label class="severity-choice severity-high"><input type="checkbox" value="high" checked> <span aria-hidden="true" class="severity-dot"></span>Hoog</label>
+  <label class="severity-choice severity-critical"><input type="checkbox" value="critical" checked> <span aria-hidden="true" class="severity-dot"></span>Kritiek</label>
   <button type="button" class="button secondary severity-reset" data-severity-reset>Alles</button>
 </div>
 <div class="severity-filter-status status" data-severity-filter-status role="status" aria-live="polite"></div>
@@ -141,7 +148,7 @@ _FILTER_CONTROLS = r'''
 _SEVERITY_CSS = r'''
 <style id="e1-e2-severity-style">
 .severity-filter{display:flex;gap:.55rem;align-items:center;flex-wrap:wrap;margin:0 0 1rem;padding:.8rem 1rem;border:1px solid var(--line);border-radius:12px;background:var(--surface-2)}
-.severity-filter-label{font-weight:800;margin-right:.25rem}.severity-choice{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .55rem;border:1px solid var(--line);border-radius:999px;font-weight:700;cursor:pointer;background:var(--surface)}.severity-choice:focus-within{outline:3px solid currentColor;outline-offset:2px}.severity-choice input{margin:0}.severity-dot{width:.7rem;height:.7rem;border-radius:50%;background:var(--severity-color,#52606d);border:1px solid currentColor}.severity-informational{--severity-color:#52606d;color:#3e4c59}.severity-low{--severity-color:#13795b;color:#0f6149}.severity-medium{--severity-color:#b7791f;color:#7a4f01}.severity-high{--severity-color:#b42318;color:#8a1c13}.severity-critical{--severity-color:#7a271a;color:#5f1d14}.severity-filter-status{margin-top:-.45rem;margin-bottom:.8rem}.severity-pill{display:inline-flex;align-items:center;gap:.35rem;border:1px solid currentColor;border-radius:999px;padding:.15rem .5rem;font-weight:800;background:var(--surface)}.severity-pill .severity-dot{flex:0 0 auto}.card.severity-card{border-left:5px solid var(--severity-color,#52606d)}.severity-bar{background:var(--severity-color,#52606d)!important;opacity:.88}.severity-count{font-variant-numeric:tabular-nums}.severity-filter-empty{padding:1rem;border:1px dashed var(--line);border-radius:10px}.kpi-filter-note{display:block;font-size:.75rem;color:var(--muted);margin-top:.2rem}
+.severity-filter-label{font-weight:800;margin-right:.25rem}.severity-choice{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .55rem;border:1px solid var(--line);border-radius:999px;font-weight:700;cursor:pointer;background:var(--surface)}.severity-choice:focus-within{outline:3px solid currentColor;outline-offset:2px}.severity-choice input{margin:0}.severity-dot{width:.7rem;height:.7rem;border-radius:50%;background:var(--severity-color,#52606d);border:1px solid currentColor}.severity-informational{--severity-color:#667085;color:#475467}.severity-low{--severity-color:#16803c;color:#116329}.severity-medium{--severity-color:#c2410c;color:#9a3412}.severity-high{--severity-color:#b42318;color:#8a1c13}.severity-critical{--severity-color:#7a271a;color:#5f1d14}.severity-filter-status{margin-top:-.45rem;margin-bottom:.8rem}.severity-pill{display:inline-flex;align-items:center;gap:.35rem;border:1px solid currentColor;border-radius:999px;padding:.15rem .5rem;font-weight:800;background:var(--surface)}.severity-pill .severity-dot{flex:0 0 auto}.card.severity-card{border-left:5px solid var(--severity-color,#52606d)}.severity-bar{background:var(--severity-color,#52606d)!important;opacity:.88}.severity-count{font-variant-numeric:tabular-nums}.severity-filter-empty{padding:1rem;border:1px dashed var(--line);border-radius:10px}.kpi-filter-note{display:block;font-size:.75rem;color:var(--muted);margin-top:.2rem}
 </style>
 '''
 
@@ -159,8 +166,8 @@ def extend_console_page(page: str) -> str:
         raise RuntimeError("canonical Overview/Intelligence markers not found")
     extended = page.replace(overview_marker, _FILTER_CONTROLS + overview_marker, 1)
     extended = extended.replace(intelligence_marker, _FILTER_CONTROLS + intelligence_marker, 1)
-    extended = extended.replace('</head>', _SEVERITY_CSS + '</head>', 1)
-    extended = extended.replace('</body>', _SEVERITY_SCRIPT + '</body>', 1)
+    extended = extended.replace("</head>", _SEVERITY_CSS + "</head>", 1)
+    extended = extended.replace("</body>", _SEVERITY_SCRIPT + "</body>", 1)
     return extended
 
 
@@ -176,6 +183,13 @@ def severity_console() -> HTMLResponse:
 _SCRIPT = r'''
 (() => {
   const order = ['informational', 'low', 'medium', 'high', 'critical'];
+  const labels = {
+    informational: 'Informatief',
+    low: 'Laag',
+    medium: 'Middel',
+    high: 'Hoog',
+    critical: 'Kritiek',
+  };
   const selected = new Set(order);
   const originalLoadDashboard = loadDashboard;
 
@@ -184,8 +198,17 @@ _SCRIPT = r'''
     return `severity-${severity}`;
   }
 
+  function severityLabel(value) {
+    const severity = order.includes(String(value || '').toLowerCase()) ? String(value).toLowerCase() : 'informational';
+    return labels[severity] || severity;
+  }
+
   function selectedValues() {
     return order.filter((value) => selected.has(value));
+  }
+
+  function allSeveritiesSelected() {
+    return selected.size === order.length;
   }
 
   function queryString() {
@@ -198,8 +221,8 @@ _SCRIPT = r'''
         input.checked = selected.has(input.value);
       });
     });
-    const labels = selectedValues();
-    const message = `Actief severityfilter: ${labels.join(', ')}.`;
+    const activeLabels = selectedValues().map(severityLabel);
+    const message = `Actief severityfilter: ${activeLabels.join(', ')}.`;
     document.querySelectorAll('[data-severity-filter-status]').forEach((target) => { target.textContent = message; });
     if (origin) origin.textContent = message;
   }
@@ -208,10 +231,14 @@ _SCRIPT = r'''
     return `<div class="severity-filter-empty"><strong>Geen intelligence binnen dit severityfilter.</strong><p class="muted">${esc(message)}</p></div>`;
   }
 
+  function baselineEmpty() {
+    return '<div class="empty-state"><strong>Nog geen intelligence ingested.</strong><p>Open Bronnen & catalogus, registreer/activeer een bron en kies “Feed nu laden”.</p><button type="button" class="button secondary" data-view="sources">Open bronnen</button></div>';
+  }
+
   intelCard = function severityIntelCard(item) {
     const severity = String(item.severity || 'informational').toLowerCase();
     const className = severityClass(severity);
-    return `<article class="card severity-card ${className}" data-severity="${esc(severity)}"><div class="intel-meta"><span class="severity-pill ${className}"><span aria-hidden="true" class="severity-dot"></span>${esc(severity)}</span><span>${esc(item.source_id || 'onbekende bron')}</span><span>${esc(item.discovered_at ? new Date(item.discovered_at).toLocaleString() : '')}</span></div><strong>${esc(item.title || item.id)}</strong><p>${esc(item.summary || item.description || '')}</p>${item.canonical_url ? `<a href="${esc(item.canonical_url)}" rel="noopener noreferrer">Bron openen</a>` : ''}</article>`;
+    return `<article class="card severity-card ${className}" data-severity="${esc(severity)}"><div class="intel-meta"><span class="severity-pill ${className}"><span aria-hidden="true" class="severity-dot"></span>${esc(severityLabel(severity))}</span><span>${esc(item.source_id || 'onbekende bron')}</span><span>${esc(item.discovered_at ? new Date(item.discovered_at).toLocaleString() : '')}</span></div><strong>${esc(item.title || item.id)}</strong><p>${esc(item.summary || item.description || '')}</p>${item.canonical_url ? `<a href="${esc(item.canonical_url)}" rel="noopener noreferrer">Bron openen</a>` : ''}</article>`;
   };
 
   function severityBars(target, tableTarget, values) {
@@ -223,8 +250,8 @@ _SCRIPT = r'''
       return;
     }
     const max = Math.max(1, ...entries.map(([, value]) => value));
-    $(target).innerHTML = entries.map(([name, value]) => `<div class="bar-wrap ${severityClass(name)}"><div class="bar severity-bar" style="height:${value > 0 ? Math.max(8, Math.min(160, (value / max) * 160)) : 2}px" title="${esc(name)}: ${esc(value)}"></div><div class="bar-label">${esc(name)} · ${esc(value)}</div></div>`).join('');
-    $(tableTarget).innerHTML = `<table><thead><tr><th>Severity</th><th>Aantal</th></tr></thead><tbody>${entries.map(([name, value]) => `<tr class="${severityClass(name)}"><td><span class="severity-pill ${severityClass(name)}"><span aria-hidden="true" class="severity-dot"></span>${esc(name)}</span></td><td class="severity-count">${esc(value)}</td></tr>`).join('')}</tbody></table>`;
+    $(target).innerHTML = entries.map(([name, value]) => `<div class="bar-wrap ${severityClass(name)}"><div class="bar severity-bar" style="height:${value > 0 ? Math.max(8, Math.min(160, (value / max) * 160)) : 2}px" title="${esc(severityLabel(name))}: ${esc(value)}"></div><div class="bar-label">${esc(severityLabel(name))} · ${esc(value)}</div></div>`).join('');
+    $(tableTarget).innerHTML = `<table><thead><tr><th>Severity</th><th>Aantal</th></tr></thead><tbody>${entries.map(([name, value]) => `<tr class="${severityClass(name)}"><td><span class="severity-pill ${severityClass(name)}"><span aria-hidden="true" class="severity-dot"></span>${esc(severityLabel(name))}</span></td><td class="severity-count">${esc(value)}</td></tr>`).join('')}</tbody></table>`;
   }
 
   async function loadSeveritySummary() {
@@ -256,10 +283,16 @@ _SCRIPT = r'''
     try {
       const suffix = queryString();
       const rows = await api(`/api/v1/console/recent-intelligence?limit=100${suffix ? `&${suffix}` : ''}`);
-      const html = rows.length ? rows.map(intelCard).join('') : filteredEmpty('Pas het filter aan of laad nieuwe brondata.');
+      const html = rows.length
+        ? rows.map(intelCard).join('')
+        : (allSeveritiesSelected() ? baselineEmpty() : filteredEmpty('Pas het filter aan of laad nieuwe brondata.'));
       $('intel-recent').innerHTML = html;
       $('overview-recent').innerHTML = rows.length ? rows.slice(0, 5).map(intelCard).join('') : html;
-      $('intel-recent-status').textContent = rows.length ? `${rows.length} recente records binnen het actieve severityfilter.` : 'Geen recente canonical intelligence binnen het actieve severityfilter.';
+      $('intel-recent-status').textContent = rows.length
+        ? `${rows.length} recente records binnen het actieve severityfilter.`
+        : (allSeveritiesSelected()
+          ? 'Nog geen canonical intelligence beschikbaar.'
+          : 'Geen recente canonical intelligence binnen het actieve severityfilter.');
       return { ok: true, rows };
     } catch (error) {
       $('intel-recent-status').textContent = `Recente intelligence laden mislukt: ${error.message}`;
@@ -271,7 +304,11 @@ _SCRIPT = r'''
     updateControls();
     const [dashboard, recent] = await Promise.all([loadDashboard(), loadRecentIntelligence()]);
     if (!dashboard.ok || !recent.ok) $('global-status').textContent = 'Severityfilter deels mislukt';
-    else $('global-status').textContent = `Severityfilter bijgewerkt · ${dashboard.data.total_intelligence ?? 0} records`;
+    else if ((dashboard.data.total_intelligence ?? 0) === 0 && recent.rows.length === 0 && allSeveritiesSelected()) {
+      $('global-status').textContent = 'Geen intelligence data · bronstatus geladen';
+    } else {
+      $('global-status').textContent = `Severityfilter bijgewerkt · ${dashboard.data.total_intelligence ?? 0} records`;
+    }
   }
 
   document.querySelectorAll('[data-severity-filter]').forEach((group) => {
@@ -282,8 +319,8 @@ _SCRIPT = r'''
       if (!selected.size) {
         selected.add(input.value);
         input.checked = true;
-        const status = group.nextElementSibling;
-        if (status) status.textContent = 'Minimaal één severity moet geselecteerd blijven.';
+        const filterStatus = group.nextElementSibling;
+        if (filterStatus) filterStatus.textContent = 'Minimaal één severity moet geselecteerd blijven.';
         return;
       }
       void refreshSeverityViews();
