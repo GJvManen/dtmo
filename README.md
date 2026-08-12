@@ -10,7 +10,7 @@
 **External staging:** `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`  
 **License:** Apache-2.0
 
-> **Current release decision:** DTMO is not production ready. The latest owner retest confirmed the PR #160/#161 startup repairs, then exposed a source-catalog bootstrap HTTP 500 caused by an internal secret-reference contract mismatch. RC13 remains open and Phase 8 remains paused until that repository defect is repaired, exact-head green, merged and retested by the project owner.
+> **Current release decision:** DTMO is not production ready. PR #163 is repository-green and its catalog-bootstrap repair is now owner-observed functional, but the same fresh-clone owner run exposed a new local source-to-intelligence object-store credential mismatch. RC13 remains open and Phase 8 remains paused until that bounded repository defect is repaired, exact-head green, merged and retested.
 
 ## Product scope
 
@@ -26,23 +26,37 @@ DTMO provides:
 
 ## RC13 current state
 
-RC13.1–RC13.5 and the earlier owner acceptance remain historical evidence. Later owner retesting has driven a bounded repair sequence:
+RC13.1–RC13.5 and the earlier owner acceptance remain historical evidence. Subsequent owner retesting has driven the current bounded repair sequence:
 
 1. **PR #159 — console usability repair** — merged as `b4fffecc47f87b1edab8258514eaa130d949c195`;
 2. **PR #160 — Compose runtime packaging repair** — merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`;
-3. **PR #161 — Grafana datasource provisioning repair** — final exact head `e471d6368639a45cee6dccadd353a9068e5205e9`, complete returned workflow matrix `completed/success`, merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`.
+3. **PR #161 — Grafana datasource provisioning repair** — merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`;
+4. **PR #163 — source catalog secret-reference/bootstrap repair** — final exact head `4198f06e360929d3937065b8528237741cbe189a`, every returned workflow `completed/success`, merged with expected-head protection as `adc027143f1274c604a16446fe1ad2bdc7bc835f`.
 
-The latest owner run progressed past both startup defects: the Grafana database-reader provisioner exited 0 and Grafana started without the former duplicate-default datasource restart loop.
+The latest accountable owner run confirms the repaired startup and catalog path:
 
-That same run exposed the current blocker: `POST /api/v1/admin/sources/catalog/bootstrap` returns HTTP 500. The Cisco supported catalog entry uses `env:CISCO_OPENVULN_TOKEN`, which is also the runtime executor's supported form, while the registry previously rejected that syntax.
+- `grafana-db-provision` exits 0;
+- Grafana starts without the former duplicate-default datasource restart loop;
+- API health is available;
+- `POST /api/v1/admin/sources/catalog/bootstrap` returns `200 OK`.
 
-The current repair centralizes logical secret-reference validation, keeps raw secrets forbidden, makes `env:VARIABLE` canonical, normalizes legacy `env://VARIABLE`, and regression-tests idempotent supported catalog bootstrap.
+That same fresh-clone run successfully fetched CISA KEV upstream data, then failed while writing raw evidence to the local object store with `InvalidAccessKeyId`. Repository inspection confirms the local development configuration was internally inconsistent: `.env.example` supplied API defaults `dtmo/change-me-now`, while `docker-compose.yml` started AIStor from separate `MINIO_ROOT_USER/MINIO_ROOT_PASSWORD` inputs and provisioned no matching `dtmo` identity.
+
+## Current bounded repair
+
+Branch `rc13/local-objectstore-credential-contract`:
+
+- makes local-development Compose use the same supplied AIStor identity for the API and local AIStor service;
+- removes misleading runnable `dtmo/change-me-now` object-store defaults from `.env.example`;
+- keeps this credential reuse strictly local-development-only;
+- preserves distinct least-privilege `AISTOR_APP_ACCESS_KEY/AISTOR_APP_SECRET_KEY` credentials for the staging-emulator/production-equivalent model;
+- adds contract tests and an exact-head rendered-Compose credential gate.
+
+No repository `PASS` is claimed for this new repair until the complete final exact-head workflow matrix is `completed/success`.
 
 ## Owner-retest boundary
 
-The owner run confirms the bounded PR #160/#161 startup repairs but is not full RC13 acceptance. Source-catalog bootstrap must first be repaired and exact-head green. After merge, owner testing resumes across source bootstrap/execution, Intelligence, Overview, analytics, Chrome controls and Administration.
-
-A MinIO `InvalidAccessKeyId` also appeared during the same source-run attempt. The owner had explicitly identified the local `.env` as incorrect and asked to skip that configuration point, so it is not classified as the current repository defect and no successful-ingestion claim is made from that attempt.
+Owner evidence now confirms the specific PR #163 catalog fix, but complete RC13 acceptance still requires a successful source-to-intelligence flow plus the remaining functional console checks. After the object-store repair merges, the owner retest resumes across source execution, Intelligence, Overview, analytics, Chrome controls and Administration.
 
 ## Historical RC13 evidence
 
@@ -75,7 +89,7 @@ Missing mappings are visible evidence and are never inferred.
 
 ## Security and governance model
 
-DTMO preserves RBAC, least privilege, code-controlled roles, strict service-account/human-role separation, administrator safety controls, separate human review and external share approval, provenance, privacy/data minimization, tamper-evident auditability and request correlation. Credentialed integrations store logical secret references only; raw secret values remain forbidden. Connectors, CI, dashboards, Administration, Governance or staging access do not grant publication authority.
+DTMO preserves RBAC, least privilege, code-controlled roles, strict service-account/human-role separation, administrator safety controls, separate human review and external share approval, provenance, privacy/data minimization, tamper-evident auditability and request correlation. Credentialed integrations store logical secret references only; raw secret values remain forbidden. Local-development credential reuse does not alter staging/production least-privilege requirements. Connectors, CI, dashboards, Administration, Governance or staging access do not grant publication authority.
 
 ## Project status
 
@@ -87,7 +101,7 @@ DTMO preserves RBAC, least privilege, code-controlled roles, strict service-acco
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The only current priority is **issue #150 — repair the source-catalog secret-reference contract, require exact-head CI, merge and resume accountable owner retesting**.
+The only current priority is **issue #150 — complete the local object-store credential contract repair, require exact-head CI, merge and resume accountable owner RC13 retesting**.
 
 ## Documentation
 
