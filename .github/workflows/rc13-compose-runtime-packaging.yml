@@ -12,8 +12,14 @@ permissions:
 jobs:
   compose-runtime-packaging:
     runs-on: ubuntu-latest
+    env:
+      EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact-head checkout
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -45,11 +51,12 @@ jobs:
               "schema_version": 1,
               "workflow": "RC13 Compose Runtime Packaging Gate",
               "gate": "compose-runtime-packaging",
-              "head_sha": os.environ["GITHUB_SHA"].lower(),
+              "head_sha": os.environ["EXPECTED_HEAD_SHA"].lower(),
               "run_id": os.environ["GITHUB_RUN_ID"],
               "repository": os.environ["GITHUB_REPOSITORY"],
               "conclusion": os.environ["GATE_CONCLUSION"],
               "checks": [
+                  "exact PR-head checkout",
                   "grafana provisioner source contract",
                   "runtime image contains /app/tools/provision_grafana_reader.py",
                   "runtime user can read and syntax-compile provisioner in memory",
