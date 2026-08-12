@@ -14,11 +14,11 @@ from dtmo.post_rc13_severity import (
     SEVERITY_VALUES,
     _CSS,
     _PAGE,
-    _SCRIPT,
     _apply_severity,
     filtered_dashboard_summary,
     filtered_recent_console_intelligence,
 )
+from dtmo.post_rc13_severity_assets import _SCRIPT
 
 
 def test_shared_severity_contract_exposes_all_canonical_values() -> None:
@@ -164,11 +164,8 @@ def test_severity_semantics_are_accessible_and_not_colour_only() -> None:
         assert f"severity-{value}" in _SCRIPT
     assert "aria-label=\"Severity" in _SCRIPT
     assert "severityLabel(value)" in _SCRIPT
-    assert "Informational" in _PAGE
-    assert "Low" in _PAGE
-    assert "Medium" in _PAGE
-    assert "High" in _PAGE
-    assert "Critical" in _PAGE
+    for label in ("Informational", "Low", "Medium", "High", "Critical"):
+        assert label in _PAGE
     assert ".severity-critical" in _CSS
     assert "#651426" in _CSS
 
@@ -184,11 +181,11 @@ def test_shared_filter_composes_with_existing_search_and_recent_paths() -> None:
     assert "sessionStorage.getItem('dtmo.severityFilter')" in _SCRIPT
     assert "localStorage" not in _SCRIPT
     assert "Frameworkmapping blijft afzonderlijk en wordt niet afgeleid uit severity" in _PAGE
-    assert "operational-unfiltered" in severity_module.filtered_dashboard_summary.__doc__ or True
 
 
 def test_default_all_filter_must_not_replace_rc13_truthful_initial_status() -> None:
     # A new browser session defaults to `all`. In that state the accepted RC13
-    # refresh/empty-state lifecycle must remain authoritative; only a persisted
-    # non-default filter may trigger a post-load filtered refresh automatically.
+    # refresh/empty-state lifecycle remains authoritative; only a persisted
+    # non-default filter triggers an automatic filtered refresh after load.
     assert "if (selected !== 'all') void applySeverity(selected);" in _SCRIPT
+    assert "syncControls();\n  void applySeverity(selected);" not in _SCRIPT
