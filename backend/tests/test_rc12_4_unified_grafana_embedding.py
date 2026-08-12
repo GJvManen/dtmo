@@ -35,4 +35,5 @@ def test_unified_console_does_not_navigate_operators_to_grafana() -> None:
     assert "window.location" not in page
     assert "location.href" not in page
     assert "target=\"_blank\"" not in page
-    assert "Grafana blijft afzonderlijk geauthenticeerd" in page
+    assert "Grafana blijft een afzonderlijk geauthenticeerde operations-view" in page
+    assert "Normal product analytics" not in page
