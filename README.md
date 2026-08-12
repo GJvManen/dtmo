@@ -6,11 +6,11 @@
 
 **Release candidate:** `16.0.0rc12`  
 **Engineering status:** Phases 1–7 accepted  
-**RC13 product status:** `REOPENED / BLOCKED_INTERNAL`  
-**External staging:** `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`  
+**RC13 product status:** `AWAITING_OWNER_RETEST_AFTER_REPAIR`  
+**External staging:** `PAUSED_PENDING_RC13_OWNER_RETEST`  
 **License:** Apache-2.0
 
-> **Current release decision:** DTMO is not production ready. The latest owner retest confirmed the PR #160/#161 startup repairs, then exposed a source-catalog bootstrap HTTP 500 caused by an internal secret-reference contract mismatch. RC13 remains open and Phase 8 remains paused until that repository defect is repaired, exact-head green, merged and retested by the project owner.
+> **Current release decision:** DTMO is not production ready. Repository-controlled repairs through PR #163 are green and merged. RC13 still requires accountable project-owner functional retesting of current `main`; Phase 8 remains paused until that explicit acceptance.
 
 ## Product scope
 
@@ -26,23 +26,31 @@ DTMO provides:
 
 ## RC13 current state
 
-RC13.1–RC13.5 and the earlier owner acceptance remain historical evidence. Later owner retesting has driven a bounded repair sequence:
+RC13.1–RC13.5 and the earlier owner acceptance remain historical evidence. Later owner retesting drove the bounded repair sequence below:
 
 1. **PR #159 — console usability repair** — merged as `b4fffecc47f87b1edab8258514eaa130d949c195`;
 2. **PR #160 — Compose runtime packaging repair** — merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`;
-3. **PR #161 — Grafana datasource provisioning repair** — final exact head `e471d6368639a45cee6dccadd353a9068e5205e9`, complete returned workflow matrix `completed/success`, merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`.
+3. **PR #161 — Grafana datasource provisioning repair** — merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`;
+4. **PR #163 — source catalog secret-reference/bootstrap repair** — final exact head `4198f06e360929d3937065b8528237741cbe189a`; every returned workflow completed successfully; merged with expected-head protection as `adc027143f1274c604a16446fe1ad2bdc7bc835f`.
 
-The latest owner run progressed past both startup defects: the Grafana database-reader provisioner exited 0 and Grafana started without the former duplicate-default datasource restart loop.
+The latest owner run already progressed beyond the former #160/#161 startup defects. PR #163 now repairs the later catalog-bootstrap HTTP 500 by centralizing logical secret-reference validation, using executable `env:VARIABLE` references, normalizing legacy `env://VARIABLE`, preserving external secret-manager references, rejecting raw secrets and regression-testing complete supported catalog bootstrap for idempotency and disabled-by-default registration.
 
-That same run exposed the current blocker: `POST /api/v1/admin/sources/catalog/bootstrap` returns HTTP 500. The Cisco supported catalog entry uses `env:CISCO_OPENVULN_TOKEN`, which is also the runtime executor's supported form, while the registry previously rejected that syntax.
+## Required owner retest
 
-The current repair centralizes logical secret-reference validation, keeps raw secrets forbidden, makes `env:VARIABLE` canonical, normalizes legacy `env://VARIABLE`, and regression-tests idempotent supported catalog bootstrap.
+Current merged `main` must still demonstrate that:
 
-## Owner-retest boundary
+- supported source catalog bootstrap succeeds without HTTP 500 and remains idempotent;
+- bootstrapped sources remain disabled until explicitly enabled;
+- source validation/run controls behave truthfully;
+- `Alles vernieuwen` refreshes and returns to an enabled state;
+- empty intelligence reports `Geen intelligence data · bronstatus geladen`, not false success;
+- Chrome navigation and operator controls work;
+- the navigation version number remains absent;
+- Administration clearly presents `Gebruikers & rollen` without duplicated source operations;
+- empty graphs explicitly report no data;
+- after a successful source run with valid local configuration, Intelligence, Overview and analytics update truthfully.
 
-The owner run confirms the bounded PR #160/#161 startup repairs but is not full RC13 acceptance. Source-catalog bootstrap must first be repaired and exact-head green. After merge, owner testing resumes across source bootstrap/execution, Intelligence, Overview, analytics, Chrome controls and Administration.
-
-A MinIO `InvalidAccessKeyId` also appeared during the same source-run attempt. The owner had explicitly identified the local `.env` as incorrect and asked to skip that configuration point, so it is not classified as the current repository defect and no successful-ingestion claim is made from that attempt.
+The earlier MinIO credential symptom is not classified as a repository defect because the owner explicitly identified the local `.env` as incorrect and asked to skip that point.
 
 ## Historical RC13 evidence
 
@@ -58,7 +66,7 @@ Historical acceptance is not deleted or rewritten.
 
 ## Phase 8 — paused
 
-PR #157 and the fail-closed external deployment identity record remain historical/preparatory evidence. Issue #158 remains paused while RC13 is blocked.
+PR #157 and the fail-closed external deployment identity record remain historical/preparatory evidence. Issue #158 remains paused while RC13 awaits owner retest.
 
 After explicit owner acceptance, Phase 8 may return to `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`. Repository CI, Docker Compose and staging emulators cannot substitute for real staging evidence.
 
@@ -82,12 +90,12 @@ DTMO preserves RBAC, least privilege, code-controlled roles, strict service-acco
 | Phase | Scope | Status |
 |---|---|---|
 | 1–7 | Repository-controlled engineering | ✅ `PASS` |
-| RC13 | Functional unified-console acceptance | ⛔ `REOPENED / BLOCKED_INTERNAL` |
-| 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
+| RC13 | Functional unified-console acceptance | ⏳ `AWAITING_OWNER_RETEST_AFTER_REPAIR` |
+| 8 | Real staging acceptance | ⏸ `PAUSED_PENDING_RC13_OWNER_RETEST` |
 | 9 | Independent external assurance | ⏳ `NOT COMPLETE` |
 | 10 | Production go/no-go | ⏳ `NOT STARTED` |
 
-The only current priority is **issue #150 — repair the source-catalog secret-reference contract, require exact-head CI, merge and resume accountable owner retesting**.
+The only current priority is **issue #150 — accountable project-owner local Compose and functional console retest of current merged `main`**.
 
 ## Documentation
 
