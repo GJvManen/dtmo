@@ -7,7 +7,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 COMPOSE = ROOT / "docker-compose.yml"
-DATASOURCE = ROOT / "infrastructure/grafana/provisioning/datasources/prometheus.yml"
+DATASOURCE_DIR = ROOT / "infrastructure/grafana/provisioning/datasources"
+DATASOURCE = DATASOURCE_DIR / "dtmo-prometheus.yml"
 PROVIDER = ROOT / "infrastructure/grafana/provisioning/dashboards/dtmo.yml"
 DASHBOARD = ROOT / "infrastructure/grafana/dashboards/dtmo-operations.json"
 ENV_EXAMPLE = ROOT / ".env.example"
@@ -31,6 +32,30 @@ def test_prometheus_datasource_is_git_provisioned_and_not_editable() -> None:
     assert source["url"] == "http://prometheus:9090"
     assert source["isDefault"] is True
     assert source["editable"] is False
+
+
+def test_grafana_provisioning_has_only_one_default_datasource_per_org() -> None:
+    defaults: list[tuple[int, str, str]] = []
+    seen_uids: set[tuple[int, str]] = set()
+
+    for path in sorted(DATASOURCE_DIR.glob("*.yml")):
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        for source in data.get("datasources", []):
+            org_id = int(source.get("orgId", 1))
+            uid = str(source["uid"])
+            key = (org_id, uid)
+            assert key not in seen_uids, f"duplicate datasource uid for org {org_id}: {uid}"
+            seen_uids.add(key)
+            if source.get("isDefault") is True:
+                defaults.append((org_id, uid, path.name))
+
+    defaults_by_org: dict[int, list[tuple[str, str]]] = {}
+    for org_id, uid, filename in defaults:
+        defaults_by_org.setdefault(org_id, []).append((uid, filename))
+
+    assert defaults_by_org
+    for org_id, entries in defaults_by_org.items():
+        assert len(entries) == 1, f"org {org_id} has multiple default datasources: {entries}"
 
 
 def test_dashboard_provider_is_file_backed_and_read_only() -> None:
