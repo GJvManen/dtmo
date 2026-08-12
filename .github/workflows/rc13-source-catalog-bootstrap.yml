@@ -1,0 +1,82 @@
+name: RC13 Source Catalog Bootstrap Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  source-catalog-bootstrap:
+    runs-on: ubuntu-latest
+    env:
+      EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head checkout
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Require registry/catalog/runtime secret-reference compatibility
+        run: |
+          python -m pytest \
+            backend/tests/test_rc8_admin_source_registry.py \
+            backend/tests/test_rc10_11_cisco_adapter.py \
+            backend/tests/test_rc13_source_catalog_bootstrap.py \
+            -q
+
+      - name: Record exact-head evidence
+        if: always()
+        env:
+          GATE_CONCLUSION: ${{ job.status }}
+        run: |
+          mkdir -p artifacts
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+              "schema_version": 1,
+              "workflow": "RC13 Source Catalog Bootstrap Gate",
+              "gate": "source-catalog-bootstrap",
+              "head_sha": os.environ["EXPECTED_HEAD_SHA"].lower(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "conclusion": os.environ["GATE_CONCLUSION"],
+              "checks": [
+                  "exact PR-head checkout",
+                  "logical secret values only",
+                  "env:VARIABLE canonical executable reference",
+                  "legacy env://VARIABLE normalization",
+                  "all supported catalog secret references pass registry validation",
+                  "supported source catalog bootstrap succeeds and is idempotent",
+                  "bootstrapped sources remain disabled by default",
+                  "Cisco catalog secret reference contains no credential value",
+              ],
+          }
+          Path("artifacts/rc13-source-catalog-bootstrap.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n"
+          )
+          print(json.dumps(evidence, indent=2, sort_keys=True))
+          PY
+
+      - name: Upload exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rc13-source-catalog-bootstrap-evidence
+          path: artifacts/rc13-source-catalog-bootstrap.json
+          if-no-files-found: error
+          retention-days: 30
