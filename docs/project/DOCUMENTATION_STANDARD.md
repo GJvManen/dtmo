@@ -68,7 +68,7 @@ These may contain:
 - owner retest transcripts;
 - release-gate evidence state at a point in time.
 
-Historical Class B records that are designated immutable must never be rewritten to make a later state appear green.
+**Historical immutable run records** are point-in-time audit evidence and must never be rewritten to make a later state appear green. New evidence is recorded in a new run/evidence record.
 
 ### Class C — operational procedures
 
