@@ -80,4 +80,15 @@ Start with [`docs/README.md`](docs/README.md). Current authoritative status reco
 
 ## Open source and responsible use
 
-DTMO is licensed under Apache-2.0. Use DTMO only with lawful access to intelligence sources and infrastructure. A technically successful connector does not itself establish legal permission to collect, process or redistribute third-party material.
+DTMO is licensed under the **Apache License, Version 2.0**. The canonical licence text is in `LICENSE`; applicable notices are maintained in `NOTICE`.
+
+Open-source governance and security entry points are:
+
+- `SECURITY.md` — security policy and vulnerability reporting;
+- `CONTRIBUTING.md` — contribution requirements;
+- `CODE_OF_CONDUCT.md` — contributor conduct;
+- `SUPPORTED_VERSIONS.md` — supported release policy;
+- `docs/legal/LICENSING.md` — DTMO licensing policy;
+- `docs/legal/THIRD_PARTY.md` — third-party material, source terms and redistribution boundaries.
+
+Use DTMO only with lawful access to intelligence sources and infrastructure. A technically successful connector does not itself establish legal permission to collect, process or redistribute third-party material.
