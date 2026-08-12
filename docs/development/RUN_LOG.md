@@ -4,7 +4,8 @@ This file is the chronological audit record for continuous development runs. Det
 
 ## Current runs
 
-- [RUN-20260812-200 — RC13 source catalog bootstrap secret-reference blocker](runs/RUN-20260812-200.md) — the post-#161 owner retest confirmed the prior Compose/Grafana startup blockers are cleared, then exposed a repository contract mismatch that makes supported source-catalog bootstrap return HTTP 500; targeted repair is `PENDING_CI`.
+- [RUN-20260812-201 — RC13 post-#163 status reconciliation](runs/RUN-20260812-201.md) — PR #163 exact-head CI completed successfully and merged; repository-controlled repairs are green through #163 and RC13 now awaits accountable owner retest.
+- [RUN-20260812-200 — RC13 source catalog bootstrap secret-reference blocker](runs/RUN-20260812-200.md) — immutable point-in-time record of the catalog bootstrap HTTP 500 and the repair while it was still `PENDING_CI`.
 - [RUN-20260812-199 — RC13 post-#161 status reconciliation](runs/RUN-20260812-199.md) — historical point-in-time record after PR #161 merged and before the next owner retest exposed the catalog-bootstrap blocker.
 - [RUN-20260812-198 — RC13 Grafana datasource provisioning runtime failure](runs/RUN-20260812-198.md) — historical point-in-time record of the duplicate-default Grafana datasource failure repaired by PR #161.
 - [RUN-20260812-197 — RC13 local Compose startup packaging blocker](runs/RUN-20260812-197.md) — historical point-in-time record of the missing runtime provisioner defect repaired by PR #160.
@@ -22,19 +23,18 @@ Historical run records remain immutable point-in-time evidence. Newer evidence m
 
 - Phases 1–7: `PASS`.
 - PR #159 console usability repair: repository-controlled `PASS`; merged as `b4fffecc47f87b1edab8258514eaa130d949c195`.
-- PR #160 Compose runtime packaging repair: repository-controlled `PASS`; merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`; the latest owner retest progressed past its former missing-file failure.
-- PR #161 Grafana datasource provisioning repair: repository-controlled `PASS`; final exact head `e471d6368639a45cee6dccadd353a9068e5205e9`; merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`; the latest owner retest showed Grafana starting without the former duplicate-default restart loop.
-- new confirmed repository blocker: supported source-catalog bootstrap fails because Cisco uses executable `env:CISCO_OPENVULN_TOKEN` while the registry rejected that syntax.
-- targeted source-catalog secret-reference repair: `PENDING_CI`.
-- RC13 overall: `REOPENED / BLOCKED_INTERNAL`; issue #150 remains open.
-- Phase 8: `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`.
+- PR #160 Compose runtime packaging repair: repository-controlled `PASS`; merged as `dc6f8c6a2d3ea3e7efc8c45460caea607aa63d9c`; owner retest progressed past its former missing-file failure.
+- PR #161 Grafana datasource provisioning repair: repository-controlled `PASS`; merged as `79037f82d0e6f42fa1cf57457b02f3aeaaa92bd5`; owner retest progressed past its former duplicate-default restart loop.
+- PR #163 source catalog secret-reference/bootstrap repair: repository-controlled `PASS`; final exact head `4198f06e360929d3937065b8528237741cbe189a`; every returned workflow `completed/success`; merged with expected-head protection as `adc027143f1274c604a16446fe1ad2bdc7bc835f`.
+- RC13 overall: `AWAITING_OWNER_RETEST_AFTER_REPAIR`; issue #150 remains open.
+- Phase 8: `PAUSED_PENDING_RC13_OWNER_RETEST`.
 - Phase 9: `NOT COMPLETE`.
 - Phase 10: `NOT STARTED`.
 
-The MinIO `InvalidAccessKeyId` observed in the same owner log is not classified here as a repository defect because the owner explicitly identified the local `.env` as incorrect and asked to skip that configuration point. No successful source-ingestion claim is made from that attempt.
+The earlier MinIO `InvalidAccessKeyId` is not classified as a repository defect because the owner explicitly identified the local `.env` as incorrect and asked to skip that configuration point.
 
 Repository CI and local runtime evidence do not manufacture accountable owner acceptance. DTMO is not production ready.
 
 ## Exactly one next priority
 
-**Complete the source catalog secret-reference contract repair, require complete exact-head CI, merge, then resume accountable project-owner RC13 retesting.**
+**Accountable project-owner local Compose and functional console retest of current merged `main`.**
