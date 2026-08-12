@@ -4,20 +4,17 @@ Last reconciled: **2026-08-12**
 
 ## Executive summary
 
-DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7. PR #167 repaired the canonical connector commit boundary, completed every returned workflow on exact head `bf18ef2c499edcf8399d1f91b80190937538fdce`, and merged as `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
+DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7 and has now completed RC13 functional unified-console acceptance.
 
-The subsequent accountable owner retest confirms the repair moved source ingestion further: local services start, Grafana and API are healthy, source/admin/read endpoints return 200, and multiple documents are created in `dtmo-intelligence-v1` with OpenSearch `201 Created` responses.
+PR #169 repaired the final owner-observed supported-source normalization defects. Its final exact head `53aaa670c75a2f404337620bcf1a8df172efe583` completed every returned workflow successfully and merged as `4d182879d851cd22d22ff4f0bab795ed49ee0c1b`.
 
-The same retest exposes a narrower repository-controlled blocker before complete source-to-interface acceptance:
+The accountable project owner then explicitly reported: **“Het project werkt! Gefelciteerd!”** This is accepted as successful functional owner acceptance of the repaired source-to-interface flow.
 
-1. NVD can supply a non-HTTP `ftp://` external reference. Using that external reference as the canonical/provenance URL violates the intentional HTTP(S)-only canonical ingest schema and produces an `IntelligenceIngestRequest` validation error.
-2. Supported advisory adapters can emit `security-advisory`, while the canonical persisted `IntelligenceType` enum uses `advisory`, producing an SQLAlchemy enum/statement failure.
+**RC13 = `PASS / OWNER_ACCEPTED`.**
 
-**RC13 = `REOPENED / BLOCKED_INTERNAL`.**
+**Phase 8 = `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`.**
 
-**Phase 8 = `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST`.**
-
-DTMO remains **not production ready**.
+DTMO remains **not production ready** because Phase 8 real staging, Phase 9 independent assurance and Phase 10 formal production approval remain incomplete.
 
 ## Phase status
 
@@ -30,68 +27,59 @@ DTMO remains **not production ready**.
 | 5. Performance and scalability | `PASS` |
 | 6. Accessibility and operational UX | `PASS` |
 | 7. Observability and incident operations | `PASS` |
-| RC13. Functional unified-console acceptance | `REOPENED / BLOCKED_INTERNAL` |
-| 8. Real staging acceptance | `PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST` |
+| RC13. Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
+| 8. Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
 | 9. Independent external assurance | `NOT COMPLETE` |
 | 10. Production go/no-go | `NOT STARTED` |
 
-## Valid recent repair evidence
+## Accepted RC13 evidence
 
 - PR #159 console usability — repository-controlled PASS.
 - PR #160 Compose runtime packaging — repository-controlled PASS.
 - PR #161 Grafana datasource provisioning — repository-controlled PASS.
 - PR #163 source catalog secret-reference/bootstrap — repository-controlled PASS and later owner-observed bootstrap 200.
 - PR #165 local object-store credential contract — repository-controlled PASS; merged `65440afea6cfa3c3300b25d577d746432cc95700`.
-- PR #167 canonical connector commit/console visibility — repository-controlled PASS; exact head `bf18ef2c499edcf8399d1f91b80190937538fdce`; merged `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
+- PR #167 canonical connector commit/console visibility — repository-controlled PASS; merged `e9a0926f9e13b603be759a7d7036058685ebc3cc`.
+- PR #169 supported-source normalization — repository-controlled PASS; final exact head `53aaa670c75a2f404337620bcf1a8df172efe583`; merged `4d182879d851cd22d22ff4f0bab795ed49ee0c1b`.
+- accountable owner functional retest — accepted on 2026-08-12.
 
-Historical evidence remains immutable. Newer owner-observed evidence controls current readiness.
+Issue #150 is closed `completed`.
 
-## Current bounded repair — supported-source normalization
-
-The repair branch `rc13/source-record-normalization-contract` keeps normalization at the canonical connector boundary:
-
-- explicit supported alias `security-advisory` normalizes to canonical `advisory`;
-- canonical enum values pass unchanged;
-- unknown connector item types remain fail-closed;
-- NVD CVE canonical/provenance URLs use the stable HTTPS `https://nvd.nist.gov/vuln/detail/<CVE>` page even when raw NVD references include FTP or another non-HTTP scheme;
-- raw upstream NVD references remain preserved in raw evidence;
-- the existing HTTP(S)-only `HttpUrl` security boundary is not relaxed;
-- PR #167 commit-before-success behavior remains covered.
-
-A dedicated `RC13 Source Record Normalization Gate` covers the normalization regressions together with source adapter, connector ingestion, canonical console and graphical dashboard contracts.
-
-No repository PASS is claimed until every returned workflow on the final exact PR head is `completed/success`.
-
-## Documentation lineage
-
-PR #168 was closed without merge because this newer owner evidence superseded its post-#167 owner-retest-pending reconciliation. Its branch-only RUN-205 is not authoritative on `main`. RUN-204 remains immutable historical evidence. RUN-206 records the new owner evidence and current repair decision.
-
-## Required owner retest after repair
-
-After the repair is exact-head green and merged, verify on current merged `main`:
-
-1. local Compose startup/Grafana/API remain healthy;
-2. source catalog and source operations remain functional;
-3. NVD completes without FTP canonical/provenance validation failure;
-4. Chrome, Mozilla, NCSC and other supported advisory sources do not fail on `security-advisory` enum mismatch;
-5. raw evidence persists successfully;
-6. canonical PostgreSQL intelligence commits successfully;
-7. recent Intelligence appears in the canonical console;
-8. Overview KPIs and dashboard summary update truthfully;
-9. severity/source/trend/review graphics render from those records;
-10. `Alles vernieuwen`, Chrome controls, Administration and true empty states remain functional;
-11. authorization/publication boundaries remain unchanged.
-
-Only explicit accountable owner acceptance closes RC13.
+Historical records remain immutable. RUN-206 remains historical evidence. PR #170 was closed unmerged because owner acceptance superseded its pending-retest status; branch-only RUN-207 is non-authoritative. RUN-208 records the accepted state.
 
 ## Phase 8 boundary
 
-Issue #158 remains paused. No real staging, independent assurance or production-readiness progression is allowed while RC13 is blocked. The staging least-privilege identity model remains unchanged and separate from local-development credential exceptions.
+Issue #158 is now active and ready for real external validation. Phase 8.1 must establish a real approved production-equivalent staging environment and immutable deployment identity with, at minimum:
+
+- accountable staging owner and approved environment identifier;
+- reachable approved staging access path;
+- deployed exact commit and immutable image digests;
+- infrastructure/runtime inventory and configuration-parity evidence;
+- least-privilege application identities and approved secrets handling;
+- TLS/network/data-sanitization/no-production-credential evidence;
+- change/rollback records and deployment-time security review.
+
+Repository CI, local Docker Compose and staging emulators cannot satisfy real staging acceptance.
+
+## Post-RC13 owner enhancement backlog
+
+Issue #171 tracks non-blocking product improvements:
+
+1. shared accessible severity colours and informational/low/medium/high filtering across Overview and Intelligence;
+2. governed manual source onboarding;
+3. richer Visual Analytics including trend analysis;
+4. first-class evidence-backed framework mappings;
+5. richer Administration RBAC role/right management;
+6. deeper framework-oriented Governance coverage and drill-down.
+
+The current repository truth remains explicit: missing framework mappings are not inferred. `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md` remains authoritative until a first-class mapping model is implemented.
 
 ## Security and governance boundaries
 
 RBAC, least privilege, separation of duties, privacy, provenance, auditability, human review and separate external share approval remain authoritative. Source execution, analytics, Administration, Governance, CI or staging access cannot authorize publication.
 
-## Exactly one current priority
+## Exactly one production-readiness priority
 
-**Complete the supported-source normalization repair, require complete exact-head CI, merge, then resume accountable project-owner RC13 functional retesting.**
+**Execute Phase 8.1 real staging environment and immutable deployment identity under issue #158.**
+
+Product enhancements are tracked separately in issue #171 and do not alter the current production-readiness gate.
