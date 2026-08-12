@@ -39,7 +39,7 @@ def test_rc13_5_browser_journey_covers_all_canonical_areas() -> None:
     assert "assert grafana_requests == []" in source
 
 
-def test_historical_owner_acceptance_is_preserved_but_current_rc13_is_reopened() -> None:
+def test_rc13_5_historical_evidence_is_preserved_and_current_owner_acceptance_is_recorded() -> None:
     gate = (ROOT / "docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md").read_text(
         encoding="utf-8"
     )
@@ -48,8 +48,8 @@ def test_historical_owner_acceptance_is_preserved_but_current_rc13_is_reopened()
     )
     assert "RC13.4" in gate
     assert "RC13.5" in gate
-    assert "RC13 owner retest akkoord" in gate
-    assert "Status: `REOPENED / BLOCKED_INTERNAL`" in gate
-    assert "subsequent project-owner functional retest" in gate
-    assert "PAUSED_PENDING_RC13_REPAIR_AND_OWNER_RETEST" in phase8
-    assert "Issue #150" in phase8
+    assert "PASS / OWNER_ACCEPTED" in gate
+    assert "2026-08-12" in gate
+    assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in phase8
+    assert "Issue #158" in phase8
+    assert "Phase 8 may be marked `PASS` only when" in phase8
