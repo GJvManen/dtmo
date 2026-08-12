@@ -75,6 +75,8 @@ Validate:
 - Overview/dashboard aggregation;
 - Visual Analytics.
 
+Post-RC13 product enhancements are credited to Phase 8 only when they are separately demonstrated against the accepted immutable staging deployment.
+
 ### Phase 8.4 — operational and recovery validation
 
 Validate:
@@ -119,54 +121,73 @@ Required decision inputs:
 
 # Track B — Product evolution
 
-GitHub issue #171 is the umbrella backlog for the owner-approved post-RC13 enhancements.
+GitHub issue #171 is the umbrella backlog for the owner-approved post-RC13 enhancements. Numbering below matches that authoritative backlog.
 
-## E1 — shared severity semantics and filters
+## E1 — Overview severity UX and filtering
 
 **Priority:** 1  
-**Scope:** Overview + Intelligence
+**Status:** current enhancement baseline
+
+Delivered contract:
+
+- canonical severity taxonomy `informational`, `low`, `medium`, `high`, `critical`;
+- accessible semantic colour treatment with visible labels/non-colour cues;
+- severity selector in Overview;
+- one severity predicate for intelligence-derived KPI totals, 24-hour counts, confidence, trend, severity/source/review aggregation and recent canonical intelligence;
+- connector health explicitly remains operational and unfiltered;
+- truthful filtered empty states;
+- `critical` remains distinct from `high`.
+
+## E2 — Intelligence severity filtering
+
+**Priority:** 1  
+**Status:** current enhancement baseline
+
+Delivered contract:
+
+- the same browser-session severity selection as Overview;
+- filtered Recent Intelligence via canonical PostgreSQL;
+- composition with the existing governed OpenSearch search severity parameter;
+- synchronized Overview/Intelligence selectors;
+- filter-aware search/recent empty states;
+- framework mapping remains separate and is never inferred from severity.
+
+E1 and E2 intentionally share one implementation/data contract rather than creating two independent filters.
+
+## E3 — governed manual source onboarding
+
+**Priority:** 2  
+**Status:** next product slice
+
+The governed backend source registry already supports create/update/list/validate with RBAC, audit, HTTPS validation and logical secret references. The remaining product objective is the canonical Sources & Catalog onboarding journey.
 
 Deliver:
 
-- a single shared severity taxonomy/filter contract;
-- informational/low/medium/high filtering;
-- accessible semantic presentation (e.g. low/green, medium/amber, high/red) with labels/icons/non-colour cues;
-- consistent filtered totals and graphics;
-- truthful empty filtered states;
-- browser/keyboard/WCAG coverage.
-
-This is the next product-development slice.
-
-## E2 — governed manual source onboarding
-
-**Priority:** 2
-
-Deliver a controlled Sources & Catalog flow for manually registering sources with:
-
-- source identity/type;
+- operator-facing source identity/type entry;
 - endpoint;
 - schedule/freshness expectation;
 - authentication mode/logical secret reference;
-- ownership;
+- ownership/context;
 - default-disabled state;
 - validation/test-run before activation;
-- audit/RBAC controls.
+- audit/RBAC controls;
+- no duplicate/parallel source subsystem.
 
 Source creation/execution must not grant publication authority.
 
-## E3 — richer Visual Analytics and trend analysis
+## E4 — richer Visual Analytics and trend analysis
 
 **Priority:** 2
 
 Deliver:
 
-- consistent severity semantics with E1;
+- reuse of E1/E2 severity semantics and filter contract;
 - configurable time windows (at minimum 24h/7d/30d when data supports them);
 - distinction between volume trend and severity/risk trend;
 - richer native visualizations;
 - framework aggregation only when backed by explicit first-class mappings.
 
-## E4 — first-class framework mapping model
+## E5 — first-class framework mapping model
 
 **Priority:** 3
 
@@ -188,7 +209,7 @@ Every mapping should record:
 
 Missing mappings remain `UNMAPPED`; no automatic semantic equivalence is accepted.
 
-## E5 — richer Administration RBAC
+## E6 — richer Administration RBAC
 
 **Priority:** 3
 
@@ -202,11 +223,11 @@ Deliver:
 - auditable actor/reason/correlation/before-after state;
 - explicit separation from review/share approval authority.
 
-## E6 — deeper Governance framework surface
+## E7 — deeper Governance framework surface
 
 **Priority:** 3
 
-Build on E4 rather than creating a parallel mapping truth model.
+Build on E5 rather than creating a parallel mapping truth model.
 
 Deliver:
 
@@ -234,6 +255,6 @@ Professional product, architecture, security, governance and readiness documents
 
 ## Immediate next steps
 
-1. Complete the professional documentation restoration/reconciliation.
-2. Start product enhancement **E1 — shared severity semantics and filters for Overview + Intelligence**.
+1. Complete E1 + E2 exact-head repository acceptance and protected merge.
+2. Start **E3 — governed manual source onboarding in Sources & Catalog** as the next bounded product slice.
 3. Continue Phase 8.1 real staging identity work as the active production-readiness track.
