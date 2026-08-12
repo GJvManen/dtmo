@@ -4,7 +4,9 @@ Last reconciled: **2026-08-12**
 
 ## Executive summary
 
-DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7. RC13.1–RC13.5 and the earlier owner acceptance remain historical evidence, but a subsequent project-owner functional retest on 2026-08-12 identified new blocking canonical-console defects.
+DTMO `16.0.0rc12` has accepted repository-controlled engineering through Phase 7. RC13 console repair PR #159 passed its complete exact-head workflow matrix and merged as `b4fffecc47f87b1edab8258514eaa130d949c195`, but the accountable post-merge owner retest is not yet complete.
+
+A fresh local `docker compose up --build` owner retest attempt on 2026-08-12 exposed a runtime packaging blocker: the `grafana-db-provision` service invokes `/app/tools/provision_grafana_reader.py`, while the runtime Dockerfile did not package that repository file into the image.
 
 **RC13 = `REOPENED / BLOCKED_INTERNAL`.**
 
@@ -28,39 +30,40 @@ DTMO remains **not production ready**.
 | 9. Independent external assurance | `NOT COMPLETE` |
 | 10. Production go/no-go | `NOT STARTED` |
 
-## New owner-observed blockers
+## Current RC13 blocker
 
-The current blocking findings are:
+The post-#159 owner retest reached local Compose startup but failed before the repaired console could be re-accepted:
 
-- Overview `Alles vernieuwen` did not function as a reliable operator action;
-- `Data bijgewerkt` could be shown although canonical intelligence was empty;
-- buttons were not reliably functional under Chrome;
-- the navigation version badge was unnecessary;
-- Administration was unclear and mixed governed management with legacy/development controls;
-- zero-only graph datasets were visually ambiguous.
+```text
+grafana-db-provision-1 | python: can't open file '/app/tools/provision_grafana_reader.py': [Errno 2] No such file or directory
+grafana-db-provision-1 exited with code 2
+```
+
+Repository inspection confirms:
+
+- `docker-compose.yml` correctly calls `python tools/provision_grafana_reader.py`;
+- `tools/provision_grafana_reader.py` exists and implements the least-privilege Grafana database-reader provisioning path;
+- the runtime `Dockerfile` copied `backend` and `database` but omitted that required tool.
+
+This is a runtime packaging defect, not accepted owner-test evidence.
 
 ## Current repair state
 
-The repair branch makes the following changes:
+The targeted branch `rc13/compose-grafana-provisioner-packaging`:
 
-- refresh-all has explicit loading, completion and partial-failure states;
-- empty intelligence reports `Geen intelligence data · bronstatus geladen`;
-- zero-only intelligence datasets render an explicit `Geen data om te visualiseren` state;
-- navigation and non-submit controls use explicit button semantics;
-- a dedicated Google Chrome-channel E2E covers refresh, navigation, Administration, Governance and requires zero page/console errors;
-- the menu version badge is removed;
-- governed `Gebruikers & rollen` is visually prioritized in Administration;
-- source administration is kept in `Bronnen & catalogus` and technical local identity context is de-emphasized.
+- copies only `tools/provision_grafana_reader.py` into `/app/tools/` in the canonical runtime image;
+- adds a static packaging assertion to the existing Grafana reader contract test;
+- adds `RC13 Compose Runtime Packaging Gate`, which builds the runtime image and verifies that the provisioner exists and compiles inside it.
 
-Repository-controlled evidence remains synthetic where APIs are fixture-backed. It cannot replace project-owner acceptance after merge.
+The repair is `PENDING_CI`. No pass is claimed until every returned workflow on the final exact PR head is `completed/success`.
 
 ## Historical evidence boundary
 
-PRs #151–#157 and the earlier `RC13 owner retest akkoord` remain immutable historical evidence. They do not establish current acceptance after newer owner-observed defects.
+PR #159 exact-head CI and prior RC13 browser evidence remain valid repository-controlled point-in-time evidence. They do not establish current accountable owner acceptance because the subsequent local startup attempt found a new blocker.
 
 ## Phase 8 boundary
 
-The Phase 8 intake/deployment identity record from PR #157 remains fail-closed preparatory evidence. Issue #158 is paused. No external staging, pentest or production-readiness progression is allowed while issue #150 remains open.
+The Phase 8 intake/deployment identity record from PR #157 remains fail-closed preparatory evidence. Issue #158 remains paused. No external staging, pentest or production-readiness progression is allowed while RC13 remains blocked.
 
 ## Security and governance boundaries
 
@@ -68,4 +71,4 @@ Credentialed integrations use logical secret references only. Production bearer 
 
 ## Exactly one current priority
 
-**Issue #150 — complete the canonical-console usability repair, complete exact-head Chrome/browser CI, merge, and require accountable project-owner functional retest again.**
+**Complete the Compose runtime packaging repair, pass complete exact-head CI, merge, then resume the accountable project-owner RC13 functional retest.**

@@ -1,0 +1,77 @@
+name: RC13 Compose Runtime Packaging Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  compose-runtime-packaging:
+    runs-on: ubuntu-latest
+    env:
+      EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact-head checkout
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Validate source and Compose contract
+        run: >-
+          python -m pytest
+          backend/tests/test_rc12_3_grafana_intelligence_reader.py
+          -q
+      - name: Build canonical runtime image
+        run: docker build --progress=plain -t dtmo:rc13-compose .
+      - name: Verify Grafana provisioner exists in runtime image
+        run: |
+          set -euo pipefail
+          docker run --rm --entrypoint test dtmo:rc13-compose -f /app/tools/provision_grafana_reader.py
+          docker run --rm --entrypoint python dtmo:rc13-compose -c "from pathlib import Path; p=Path('/app/tools/provision_grafana_reader.py'); compile(p.read_text(), str(p), 'exec')"
+      - name: Record exact-head evidence
+        if: always()
+        env:
+          GATE_CONCLUSION: ${{ job.status }}
+        run: |
+          mkdir -p artifacts
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+              "schema_version": 1,
+              "workflow": "RC13 Compose Runtime Packaging Gate",
+              "gate": "compose-runtime-packaging",
+              "head_sha": os.environ["EXPECTED_HEAD_SHA"].lower(),
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "repository": os.environ["GITHUB_REPOSITORY"],
+              "conclusion": os.environ["GATE_CONCLUSION"],
+              "checks": [
+                  "exact PR-head checkout",
+                  "grafana provisioner source contract",
+                  "runtime image contains /app/tools/provision_grafana_reader.py",
+                  "runtime user can read and syntax-compile provisioner in memory",
+              ],
+          }
+          Path("artifacts/rc13-compose-runtime-packaging.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n"
+          )
+          print(json.dumps(evidence, indent=2, sort_keys=True))
+          PY
+      - name: Upload exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rc13-compose-runtime-packaging-evidence
+          path: artifacts/rc13-compose-runtime-packaging.json
+          if-no-files-found: error
+          retention-days: 30

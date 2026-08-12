@@ -37,6 +37,15 @@ def test_grafana_reader_provisioning_is_least_privilege() -> None:
     assert "change-me" not in script
 
 
+def test_runtime_image_packages_grafana_reader_provisioner() -> None:
+    dockerfile = (ROOT / "Dockerfile").read_text()
+
+    assert (
+        "COPY tools/provision_grafana_reader.py "
+        "./tools/provision_grafana_reader.py"
+    ) in dockerfile
+
+
 def test_grafana_postgres_datasource_uses_runtime_secret_and_readonly_user() -> None:
     config = yaml.safe_load(
         (ROOT / "infrastructure/grafana/provisioning/datasources/dtmo-postgres.yml").read_text()
