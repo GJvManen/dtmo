@@ -16,7 +16,7 @@ from dtmo.source_executor import (
     _resolve_public_endpoint,
     execute_registered_source,
 )
-from dtmo.sources import SourceDefinition
+from dtmo.sources import SourceDefinition, validate_secret_ref
 
 CREDENTIALED_EXECUTION_PROFILES = frozenset({"cisco-openvuln-v2"})
 _SECRET_REF = re.compile(r"^env:([A-Z][A-Z0-9_]*)$")
@@ -25,7 +25,13 @@ _SECRET_REF = re.compile(r"^env:([A-Z][A-Z0-9_]*)$")
 def _resolve_secret(secret_ref: str | None) -> str:
     if not secret_ref:
         raise SourceExecutionError("credentialed source requires a secret reference")
-    match = _SECRET_REF.fullmatch(secret_ref)
+    try:
+        canonical_ref = validate_secret_ref(secret_ref)
+    except ValueError as exc:
+        raise SourceExecutionError("unsupported source secret reference") from exc
+    if not canonical_ref:
+        raise SourceExecutionError("credentialed source requires a secret reference")
+    match = _SECRET_REF.fullmatch(canonical_ref)
     if match is None:
         raise SourceExecutionError("unsupported source secret reference")
     value = os.environ.get(match.group(1), "").strip()
