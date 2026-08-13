@@ -188,6 +188,10 @@ async def test_canonical_administration_creates_and_updates_role_assignment() ->
 
         await page.route("**/api/v1/admin/rbac/roles", roles_route)
         await page.route("**/api/v1/admin/rbac/principals", principals_route)
+        await page.route(
+            "**/api/v1/admin/rbac/principals/*/governed-assignment",
+            principal_update_route,
+        )
         await page.route("**/api/v1/admin/rbac/principals/*", principal_update_route)
         await page.route("**/api/v1/admin/sources/catalog", empty_list_route)
         await page.route("**/api/v1/source-center/status", empty_list_route)
