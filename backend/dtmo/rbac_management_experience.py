@@ -270,6 +270,25 @@ _SCRIPT = r'''
     });
   }
 
+  function reconcilePrincipalCard(card, principal) {
+    if (!card || !principal) return;
+    const heading = card.querySelector('.page-heading');
+    const badge = heading?.querySelector('.status-pill');
+    if (badge) {
+      badge.textContent = principal.active ? 'Actief' : 'Inactief';
+      badge.classList.toggle('good', Boolean(principal.active));
+      badge.classList.toggle('neutral', !principal.active);
+    }
+    const displayName = card.querySelector('[data-rbac-display-name]');
+    if (displayName) displayName.value = principal.display_name || '';
+    const active = card.querySelector('[data-rbac-active]');
+    if (active) active.checked = Boolean(principal.active);
+    const selected = new Set(principal.roles || []);
+    card.querySelectorAll('[data-rbac-role]').forEach((input) => {
+      input.checked = selected.has(input.dataset.rbacRole);
+    });
+  }
+
   async function governedSave(button) {
     const card=button.closest('[data-rbac-principal]');
     if (!card) return;
@@ -281,6 +300,7 @@ _SCRIPT = r'''
     if(result) result.textContent='Governed wijziging opslaan…';
     try {
       const response=await e6Api(`/api/v1/admin/rbac/principals/${encodeURIComponent(principalSubject)}/governed-assignment`,{method:'POST',body:JSON.stringify(payload)});
+      reconcilePrincipalCard(card,response.principal);
       if(result) result.textContent=`Opgeslagen en geaudit · request ${response.request_id}`;
       card.querySelector('[data-e6-reason]').value='';
     } catch(error) { if(result) result.textContent=`Opslaan mislukt: ${error.message}`; }
