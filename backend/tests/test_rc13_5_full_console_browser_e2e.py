@@ -302,15 +302,37 @@ async def test_complete_canonical_console_journey_in_one_browser_session() -> No
             await route.fulfill(status=201, content_type="application/json", body=json.dumps(created))
 
         async def principal_update_route(route: Route) -> None:
-            assert route.request.method == "PATCH"
             mutation_request_ids.append(route.request.headers.get("x-request-id", ""))
-            subject = unquote(route.request.url.rsplit("/", 1)[-1])
             payload = json.loads(route.request.post_data or "{}")
+            if route.request.url.endswith("/governed-assignment"):
+                assert route.request.method == "POST"
+                subject = unquote(route.request.url.rsplit("/", 2)[-2])
+                assert len(payload["reason"].strip()) >= 3
+            else:
+                assert route.request.method == "PATCH"
+                subject = unquote(route.request.url.rsplit("/", 1)[-1])
             current = next(item for item in principals if item["subject"] == subject)
             current["display_name"] = payload.get("display_name") or current["display_name"]
             current["active"] = payload["active"]
             current["roles"] = payload["roles"]
             current["updated_at"] = "2026-08-11T18:02:00+00:00"
+            if route.request.url.endswith("/governed-assignment"):
+                request_id = route.request.headers.get("x-request-id", "")
+                await route.fulfill(
+                    status=200,
+                    content_type="application/json",
+                    body=json.dumps(
+                        {
+                            "principal": current,
+                            "reason": payload["reason"],
+                            "request_id": request_id,
+                            "before": "fixture-before",
+                            "after": "fixture-after",
+                            "authorization_note": "Governed fixture response",
+                        }
+                    ),
+                )
+                return
             await route.fulfill(status=200, content_type="application/json", body=json.dumps(current))
 
         await page.route("**/api/v1/admin/sources/catalog", catalog_route)
@@ -323,6 +345,10 @@ async def test_complete_canonical_console_journey_in_one_browser_session() -> No
         await page.route("**/api/v1/dashboards/summary", dashboard_route)
         await page.route("**/api/v1/admin/rbac/roles", roles_route)
         await page.route("**/api/v1/admin/rbac/principals", principals_route)
+        await page.route(
+            "**/api/v1/admin/rbac/principals/*/governed-assignment",
+            principal_update_route,
+        )
         await page.route("**/api/v1/admin/rbac/principals/*", principal_update_route)
 
         def observe_request(request: object) -> None:
@@ -399,9 +425,14 @@ async def test_complete_canonical_console_journey_in_one_browser_session() -> No
         await managed.locator('[data-rbac-role="reviewer"]').uncheck()
         await managed.locator('[data-rbac-role="publisher"]').check()
         await managed.locator("[data-rbac-active]").uncheck()
-        await managed.locator("[data-rbac-save]").click()
+        await expect(managed.locator("[data-e6-rbac-save]")).to_have_text("Governed opslaan")
+        await managed.locator("[data-e6-reason]").fill(
+            "Reviewer assignment moved to inactive publisher in full-console acceptance."
+        )
+        await managed.locator("[data-e6-rbac-save]").click()
         await expect(managed).to_contain_text("Inactief")
         await expect(managed.locator('[data-rbac-role="publisher"]')).to_be_checked()
+        await expect(managed.locator("[data-rbac-result]")).to_contain_text("Opgeslagen en geaudit")
         assert len(mutation_request_ids) == 2
         assert all(mutation_request_ids)
         assert len(set(mutation_request_ids)) == 2
