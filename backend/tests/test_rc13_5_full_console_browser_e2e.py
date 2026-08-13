@@ -345,6 +345,10 @@ async def test_complete_canonical_console_journey_in_one_browser_session() -> No
         await page.route("**/api/v1/dashboards/summary", dashboard_route)
         await page.route("**/api/v1/admin/rbac/roles", roles_route)
         await page.route("**/api/v1/admin/rbac/principals", principals_route)
+        await page.route(
+            "**/api/v1/admin/rbac/principals/*/governed-assignment",
+            principal_update_route,
+        )
         await page.route("**/api/v1/admin/rbac/principals/*", principal_update_route)
 
         def observe_request(request: object) -> None:
