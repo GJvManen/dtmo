@@ -1,6 +1,6 @@
 # DTMO Framework Governance
 
-Status: `IMPLEMENTED_PENDING_CI`
+Status: `ACCEPTED_MERGED`
 
 ## Purpose
 
@@ -92,6 +92,6 @@ Alembic migration `0010_framework_governance` follows `0009_managed_rbac_assignm
 
 The migration seeds only the framework inventory. It does **not** seed control/technique crosswalks because that would create unsupported mapping claims.
 
-## Release boundary
+## Release evidence
 
-E5/E7 is stacked on E4 while preceding pull requests are still under exact-head CI. It must be retargeted to `main` after dependencies merge and must receive fresh exact-head CI evidence before release.
+Accepted with complete exact-head CI and merged through PR #181 on 2026-08-12. Merge commit: `1065cde58a10e5d7657d5e2a13d81aaaf3cc1a28`.
