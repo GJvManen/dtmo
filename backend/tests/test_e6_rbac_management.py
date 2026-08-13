@@ -92,6 +92,14 @@ def test_e6_console_keeps_single_shell_and_exposes_reasoned_governed_save() -> N
     assert "data-e6-rbac-save" in _SCRIPT
 
 
+def test_governed_save_reconciles_visible_card_with_server_response() -> None:
+    assert "function reconcilePrincipalCard" in _SCRIPT
+    assert "reconcilePrincipalCard(card,response.principal)" in _SCRIPT
+    assert "badge.textContent = principal.active ? 'Actief' : 'Inactief'" in _SCRIPT
+    assert "active.checked = Boolean(principal.active)" in _SCRIPT
+    assert "selected.has(input.dataset.rbacRole)" in _SCRIPT
+
+
 def test_e6_contract_preserves_least_privilege_and_sod_boundaries() -> None:
     source = __import__("inspect").getsource(__import__("dtmo.rbac_management_experience", fromlist=["*"]))
     assert "Service accounts cannot hold human or administrator roles" in source
