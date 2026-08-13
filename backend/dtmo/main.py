@@ -30,6 +30,7 @@ from dtmo.logging import bind_request_context, clear_request_context, configure_
 from dtmo.operations_metrics import router as operations_metrics_router
 from dtmo.operations_ui import router as operations_ui_router
 from dtmo.rbac_admin import router as rbac_admin_router
+from dtmo.rbac_management_experience import router as rbac_management_experience_router
 from dtmo.rc13_administration import router as rc13_administration_router
 from dtmo.rc13_analytics import router as rc13_analytics_router
 from dtmo.rc13_governance import router as rc13_governance_router
@@ -83,6 +84,9 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+# E6 adds policy-bound RBAC matrix visibility and reasoned, before/after-audited
+# assignment changes over the existing managed-principal Administration surface.
+app.include_router(rbac_management_experience_router)
 # E3 composes governed disabled-first manual source onboarding into the same
 # canonical Sources & Catalog product surface. It intentionally wins before
 # the lower E5/E7, E4 and E1/E2 composition layers.
