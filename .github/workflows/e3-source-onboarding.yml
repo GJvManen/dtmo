@@ -1,0 +1,99 @@
+name: E3 Governed Source Onboarding Gate
+
+on:
+  pull_request:
+    branches: [main, enhancement/e5-e7-framework-governance]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-onboarding:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Validate source onboarding and preserved source governance contracts
+        run: |
+          pytest -q \
+            backend/tests/test_e3_source_onboarding.py \
+            backend/tests/test_rc8_admin_source_registry.py \
+            backend/tests/test_rc9_safe_source_execution.py \
+            backend/tests/test_rc11_source_framework.py \
+            backend/tests/test_rc13_source_catalog_bootstrap.py \
+            backend/tests/test_rc13_owner_retest_usability_contract.py \
+            backend/tests/test_professional_documentation_contract.py
+
+      - name: Validate bounded code quality
+        run: |
+          ruff check \
+            backend/dtmo/admin_sources.py \
+            backend/dtmo/source_onboarding.py \
+            backend/dtmo/source_onboarding_experience.py \
+            backend/tests/test_e3_source_onboarding.py
+          mypy \
+            backend/dtmo/admin_sources.py \
+            backend/dtmo/source_onboarding.py \
+            backend/dtmo/source_onboarding_experience.py
+
+      - name: Record exact-head evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p evidence
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = {
+              "workflow": "E3 Governed Source Onboarding Gate",
+              "repository": os.environ.get("GITHUB_REPOSITORY"),
+              "sha": os.environ.get("GITHUB_SHA"),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "event": os.environ.get("GITHUB_EVENT_NAME"),
+              "scope": [
+                  "disabled-first registration",
+                  "explicit owner/auth/schedule",
+                  "validation",
+                  "non-ingesting pre-activation test",
+                  "separate activation",
+              ],
+              "claim_boundary": (
+                  "Source onboarding remains human-admin governed and audited. "
+                  "Raw credentials are not stored. Registration or execution never grants review or publication authority."
+              ),
+          }
+          Path("evidence/e3-source-onboarding.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e3-source-onboarding-${{ github.event.pull_request.head.sha || github.sha }}
+          path: evidence/e3-source-onboarding.json
