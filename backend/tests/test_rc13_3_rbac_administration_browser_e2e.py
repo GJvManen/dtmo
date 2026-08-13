@@ -128,15 +128,37 @@ async def test_canonical_administration_creates_and_updates_role_assignment() ->
             )
 
         async def principal_update_route(route: Route) -> None:
-            assert route.request.method == "PATCH"
             mutation_request_ids.append(route.request.headers.get("x-request-id", ""))
-            subject = unquote(route.request.url.rsplit("/", 1)[-1])
             payload = json.loads(route.request.post_data or "{}")
+            if route.request.url.endswith("/governed-assignment"):
+                assert route.request.method == "POST"
+                subject = unquote(route.request.url.rsplit("/", 2)[-2])
+                assert len(payload["reason"].strip()) >= 3
+            else:
+                assert route.request.method == "PATCH"
+                subject = unquote(route.request.url.rsplit("/", 1)[-1])
             current = next(item for item in principals if item["subject"] == subject)
             current["display_name"] = payload.get("display_name") or current["display_name"]
             current["active"] = payload["active"]
             current["roles"] = payload["roles"]
             current["updated_at"] = "2026-08-11T16:40:00+00:00"
+            if route.request.url.endswith("/governed-assignment"):
+                request_id = route.request.headers.get("x-request-id", "")
+                await route.fulfill(
+                    status=200,
+                    content_type="application/json",
+                    body=json.dumps(
+                        {
+                            "principal": current,
+                            "reason": payload["reason"],
+                            "request_id": request_id,
+                            "before": "fixture-before",
+                            "after": "fixture-after",
+                            "authorization_note": "Governed fixture response",
+                        }
+                    ),
+                )
+                return
             await route.fulfill(
                 status=200,
                 content_type="application/json",
@@ -203,7 +225,11 @@ async def test_canonical_administration_creates_and_updates_role_assignment() ->
         await created.locator('[data-rbac-role="reviewer"]').uncheck()
         await created.locator('[data-rbac-role="publisher"]').check()
         await created.locator("[data-rbac-active]").uncheck()
-        await created.locator("[data-rbac-save]").click()
+        await expect(created.locator("[data-e6-rbac-save]")).to_have_text("Governed opslaan")
+        await created.locator("[data-e6-reason]").fill(
+            "Reviewer assignment moved to inactive publisher for RC13 acceptance."
+        )
+        await created.locator("[data-e6-rbac-save]").click()
 
         updated = page.locator('[data-rbac-principal="reviewer@example.test"]')
         await expect(updated).to_contain_text("Inactief")
