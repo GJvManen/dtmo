@@ -1,6 +1,6 @@
 # DTMO Severity Experience
 
-Status: `IMPLEMENTED_PENDING_CI`
+Status: `ACCEPTED_MERGED`
 
 ## Purpose
 
@@ -123,6 +123,8 @@ The enhancement is accepted only when:
 9. RC13 functional/browser and RC9 accessibility gates remain green;
 10. the complete exact-head workflow matrix succeeds before merge.
 
-## Next product slice
+## Release evidence
 
-After E1/E2 acceptance, the next product enhancement is **E3 — governed manual source onboarding in Sources & Catalog**, reusing the existing source-registry APIs rather than introducing a parallel registry.
+Accepted with complete exact-head CI and merged through PR #175 on 2026-08-12. Merge commit: `156843bfbe005c4207388cca6d9bbd0a7f89388a`.
+
+The subsequent E3 source-onboarding, E4 analytics, E5/E7 framework-governance and E6 RBAC slices were delivered separately and do not alter the severity truth model above.
