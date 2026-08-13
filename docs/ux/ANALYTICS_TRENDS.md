@@ -1,6 +1,6 @@
 # DTMO Analytics Trends
 
-Status: `IMPLEMENTED_PENDING_CI`
+Status: `ACCEPTED_MERGED`
 
 ## Purpose
 
@@ -63,6 +63,6 @@ Unknown window values fail FastAPI validation. Unknown severity values fail clos
 
 Repository-controlled validation is defined in `.github/workflows/e4-analytics-trends.yml` and includes the dedicated trend calculation/UI tests plus preserved E1/E2 and RC13 console contracts.
 
-## Dependency
+## Release evidence
 
-This is a stacked enhancement on E1/E2. Until PR #175 is merged, the E4 pull request targets `enhancement/e1-e2-severity-experience`. After #175 is accepted, E4 can be retargeted to `main` and must receive fresh exact-head CI evidence before merge.
+Accepted with complete exact-head CI and merged through PR #180 on 2026-08-12. Merge commit: `03fb07b9ebab09cda172d76bcfbeb28dc18655b9`.
