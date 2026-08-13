@@ -12,6 +12,8 @@ Roles and permissions remain defined server-side in `dtmo.auth.policy`. The Admi
 
 Role/status changes made through the E6 Administration surface require a concrete change reason. The API records the authenticated human actor, request/correlation identifier, reason, and normalized before/after managed-principal state in the existing tamper-evident persistent audit chain.
 
+After a successful governed update, the Administration card reconciles its visible state from the canonical server response. Display name, active/inactive status and selected roles therefore reflect the accepted persisted assignment immediately; the UI does not present an audit-success message while retaining stale pre-save state.
+
 Existing safety invariants remain authoritative:
 
 - administrators cannot change their own managed assignment;
@@ -32,6 +34,7 @@ The unified Administration view exposes:
 - textual policy-boundary cards in addition to visual matrix marks;
 - existing managed-principal state and role controls;
 - a required reason field before governed assignment changes are submitted;
+- immediate reconciliation of the card from the accepted server-side principal state;
 - request/correlation evidence after a successful update.
 
 The matrix uses textual headers and explicit accessible labels; permission state is never communicated by colour alone.
