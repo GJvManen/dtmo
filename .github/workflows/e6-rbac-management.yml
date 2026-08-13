@@ -1,0 +1,31 @@
+name: E6 Administration RBAC Management Gate
+
+on:
+  pull_request:
+    paths:
+      - 'backend/dtmo/rbac_management_experience.py'
+      - 'backend/dtmo/main.py'
+      - 'backend/tests/test_e6_rbac_management.py'
+      - 'docs/governance/RBAC_MANAGEMENT.md'
+      - '.github/workflows/e6-rbac-management.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e6-rbac-management:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Run E6 focused contracts
+        run: python -m pytest -q backend/tests/test_e6_rbac_management.py backend/tests/test_rc13_3_rbac_administration.py --maxfail=1
+      - name: Lint E6 implementation
+        run: python -m ruff check backend/dtmo/rbac_management_experience.py backend/tests/test_e6_rbac_management.py
+      - name: Type-check E6 implementation
+        run: python -m mypy backend/dtmo/rbac_management_experience.py
