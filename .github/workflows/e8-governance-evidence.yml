@@ -1,0 +1,58 @@
+name: E8 Governance Evidence Mapping Gate
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e8-governance-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          test "$(git rev-parse HEAD)" = "$expected"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Validate E8.10 governance evidence contract
+        run: |
+          pytest -q backend/tests/test_e8_10_governance_evidence.py backend/tests/test_governance_explicit_control_crosswalk.py
+          ruff check backend/dtmo/e8_governance_evidence.py backend/tests/test_e8_10_governance_evidence.py
+          mypy backend/dtmo/e8_governance_evidence.py
+      - name: Record exact-head evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p evidence
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          payload = {
+              "workflow": "E8 Governance Evidence Mapping Gate",
+              "repository": os.environ.get("GITHUB_REPOSITORY"),
+              "sha": os.environ.get("GITHUB_SHA"),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "scope": ["Normenkader IBP SM.07 evidence mapping", "SM.04 supporting evidence", "CVSS/EPSS/KEV semantic separation", "MITRE ATT&CK behavioral context", "MISP taxonomy/TLP/distribution boundaries", "AIL privacy-minimized context"],
+              "claim_boundary": "Repository evidence mapping only; no compliance, certification, maturity, production, owner, pentest, exposure, compromise or remediation-completion claim."
+          }
+          Path("evidence/e8-governance-evidence.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+      - name: Upload exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: e8-governance-evidence-${{ github.event.pull_request.head.sha || github.sha }}
+          path: evidence/e8-governance-evidence.json

@@ -26,6 +26,7 @@ from dtmo.connectors.misp import MispReadConnector
 from dtmo.connectors.opencve import OpenCVEConnector
 from dtmo.connectors.vulnerability_lookup import VulnerabilityLookupConnector
 from dtmo.dashboards import router as dashboards_router
+from dtmo.e8_governance_evidence import router as e8_governance_evidence_router
 from dtmo.framework_experience import router as framework_experience_router
 from dtmo.framework_governance import router as framework_governance_router
 from dtmo.frontend import router as frontend_router
@@ -149,6 +150,7 @@ app.include_router(admin_sources_router)
 app.include_router(rbac_admin_router)
 app.include_router(governance_knowledge_router)
 app.include_router(governance_crosswalk_router)
+app.include_router(e8_governance_evidence_router)
 app.include_router(framework_governance_router)
 app.include_router(admin_ui_router)
 app.include_router(ui_router)
