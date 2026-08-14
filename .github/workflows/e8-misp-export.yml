@@ -1,0 +1,43 @@
+name: E8 MISP Governed Export Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  misp-export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Verify exact-head checkout
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - run: python -m pip install -e '.[test]'
+      - name: Governed MISP export contract tests
+        run: pytest -q backend/tests/test_e8_7_misp_governed_export.py backend/tests/test_rc5_governed_decision_audit.py
+      - name: Ruff
+        run: python -m ruff check backend/dtmo/governance/misp_export.py backend/dtmo/misp_export_api.py backend/dtmo/config.py backend/dtmo/main.py backend/tests/test_e8_7_misp_governed_export.py
+      - name: Mypy
+        run: python -m mypy backend/dtmo/governance/misp_export.py backend/dtmo/misp_export_api.py backend/dtmo/config.py
+      - name: Compile
+        run: python -m compileall -q backend/dtmo
+
+  misp-export-gate:
+    if: always()
+    needs: [misp-export]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.misp-export.result }}
+        run: test "$RESULT" = "success"

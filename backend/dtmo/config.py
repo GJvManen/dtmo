@@ -49,6 +49,7 @@ class Settings(BaseSettings):
     feature_opencve_connector: bool = False
     feature_vulnerability_lookup_connector: bool = False
     feature_misp_connector: bool = False
+    feature_misp_export: bool = False
     feature_ai_analyst: bool = False
 
     @property
@@ -84,11 +85,11 @@ class Settings(BaseSettings):
             raise ValueError("production privacy pseudonymization secret must be at least 32 characters")
         if self.identity_projection_retention_days > self.audit_projection_retention_days:
             raise ValueError("identity projection retention cannot exceed audit projection retention")
-        if self.feature_misp_connector:
+        if self.feature_misp_connector or self.feature_misp_export:
             if not self.misp_api_base.startswith("https://"):
-                raise ValueError("production MISP connector requires an HTTPS API base")
+                raise ValueError("production MISP integration requires an HTTPS API base")
             if not self.misp_api_key.get_secret_value().strip():
-                raise ValueError("production MISP connector requires a runtime API key")
+                raise ValueError("production MISP integration requires a runtime API key")
         return self
 
 

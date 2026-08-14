@@ -9,7 +9,7 @@ DTMO has completed its repository-controlled engineering baseline through Phase 
 
 Phase 8.1 real-staging deployment identity/environment evidence was previously owner-verified for the deployment identity it covered. The repository also contains the Phase 8.2 platform/identity validation mechanism. Phase 8.2–8.5 remain the **IN PROGRESS / NEXT** production-readiness lifecycle, but external execution is intentionally paused while E8 materially changes the intended production candidate. Historical staging evidence is not relabelled as evidence for a newer candidate.
 
-The active repository product line is **E8 — Vulnerability & CTI ecosystem integrations**. E8.1 through E8.5 are merged. E8.6 read-only MISP integration is active under issue #193. DTMO is **not production ready**: the materially updated candidate must later be rebound to an immutable staging deployment identity and complete remaining Phase 8 external acceptance, Phase 9 independent assurance and Phase 10 production go/no-go.
+The active repository product line is **E8 — Vulnerability & CTI ecosystem integrations**. E8.1 through E8.6 are merged. E8.7 governed MISP sharing/export is active under issue #193. DTMO is **not production ready**: the materially updated candidate must later be rebound to an immutable staging deployment identity and complete remaining Phase 8 external acceptance, Phase 9 independent assurance and Phase 10 production go/no-go.
 
 ## Current phase position
 
@@ -17,8 +17,8 @@ The active repository product line is **E8 — Vulnerability & CTI ecosystem int
 |---|---|---|
 | Phases 1–7 | Engineering, security, integrity/recovery, connectors, performance, accessibility/UX, observability/operations | `PASS` |
 | RC13 + targeted post-RC13 owner retest | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
-| E8.1–E8.5 | Vulnerability integrations, relevance/prioritization, analytics and unified-console UX | `MERGED / REPOSITORY PASS` |
-| E8.6 | Governed read-only MISP integration | `ACTIVE` |
+| E8.1–E8.6 | Vulnerability integrations, relevance/prioritization, analytics, unified-console UX and read-only MISP | `MERGED / REPOSITORY PASS` |
+| E8.7 | Governed MISP sharing/export | `ACTIVE` |
 | Phase 8.1 historical deployment identity | Real staging environment + immutable deployment identity for the candidate then deployed | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
 | Phase 8.2–8.5 external execution | Deployed staging validation and accountable staging acceptance | `IN PROGRESS / NEXT — execution paused while E8 changes candidate` |
 | Phase 9 | Independent external assurance | `NOT COMPLETE` |
@@ -47,7 +47,8 @@ The active repository product line is **E8 — Vulnerability & CTI ecosystem int
 - governed manual source onboarding with validation/pretest and disabled-first activation;
 - connector state/freshness/runtime evidence;
 - optional OpenCVE and CIRCL Vulnerability-Lookup read integrations;
-- E8.6 adds optional MISP read integration only after its own exact-head gate passes.
+- optional MISP read integration accepted through E8.6;
+- E8.7 outbound MISP capability remains separately feature-gated and is not implied by enabling MISP read access.
 
 ### Visual Analytics
 
@@ -85,11 +86,12 @@ The targeted owner retest explicitly accepted the Governance framework/control m
 - **E8.3** explainable vulnerability prioritization — merged.
 - **E8.4** governed vendor/product/CPE relevance — merged.
 - **E8.5.1** governed vulnerability analytics contract — merged.
-- **E8.5.2** server-side evidence projection plus Overview, Intelligence and Visual Analytics UX — merged through PRs #199 and #200.
-- **E8.6** governed read-only MISP integration — active.
-- **E8.7–E8.10** not yet accepted.
+- **E8.5.2** server-side evidence projection plus Overview, Intelligence and Visual Analytics UX — merged after its repository-controlled acceptance gates.
+- **E8.6** governed read-only MISP integration — merged after full exact-head repository CI.
+- **E8.7** governed MISP sharing/export — active.
+- **E8.8–E8.10** not yet accepted.
 
-Repository tests and synthetic browser fixtures for E8 are repository evidence only. They do not prove live-feed completeness, deployment, exploitability, compromise, owner acceptance, pentest acceptance or external-share authorization.
+Repository tests and synthetic browser/HTTP fixtures for E8 are repository evidence only. They do not prove live-feed completeness, deployment, exploitability, compromise, owner acceptance, pentest acceptance, successful external MISP delivery or external-share authorization.
 
 ## Canonical data and persistence state
 
@@ -107,7 +109,7 @@ A connector result is not durably successful until canonical PostgreSQL persiste
 
 The accepted baseline preserves server-side RBAC and least privilege, externally issued bearer-token trust validation, human/service-account separation, separation of duties, auditable privileged transitions, provenance/confidence preservation, privacy/data minimization, logical/runtime secret references, explicit human review and separate external-share approval.
 
-No connector, successful import, CI job, analytics view, Administration capability, Governance mapping or staging access grants automatic publication authority. In particular, incoming MISP TLP/distribution/sharing-group restrictions are authoritative constraints; E8.6 import must not be interpreted as permission to redistribute.
+No connector, successful import, CI job, analytics view, Administration capability, Governance mapping or staging access grants automatic publication authority. Incoming MISP TLP/distribution/sharing-group restrictions remain authoritative. E8.7 must fail closed where those source restrictions cannot be proven, and an export creates an unpublished MISP event only; later MISP publication/synchronization is outside the slice.
 
 ## Framework mapping truth
 
@@ -117,13 +119,13 @@ CVSS remains a vulnerability-scoring context rather than a DTMO compliance-contr
 
 ## Active workstream
 
-**E8.6 — governed read-only MISP integration** is the active repository objective under issue #193.
+**E8.7 — governed MISP sharing/export** is the active repository objective under issue #193.
 
-The bounded slice must preserve MISP event/attribute/object/relationship UUIDs and source/time context, tags/taxonomies/galaxies and distribution/TLP constraints while remaining read-only. MISP credentials remain runtime-only. No E8.7 outbound sharing path is accepted by E8.6.
+The bounded slice requires an already reviewed and separately human-share-approved DTMO item, a separate outbound feature flag, runtime-only MISP credentials, explicit TLP/distribution parameters, fail-closed preservation of authoritative incoming MISP constraints, tamper-evident audit evidence and replay protection. Delivery uncertainty blocks automatic replay. The slice creates MISP events as unpublished and grants no autonomous publication/sync authority.
 
 ## Remaining production-readiness limitations
 
-- E8.6–E8.10 are not yet fully accepted;
+- E8.7–E8.10 are not yet fully accepted;
 - the production candidate is still changing and must later be rebound to an updated immutable staging deployment identity;
 - Phase 8.2 platform/identity validation remains IN PROGRESS / NEXT but execution is paused until the updated candidate is immutable;
 - Phase 8.3 source-to-intelligence validation is not yet accepted for the final candidate;
