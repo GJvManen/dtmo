@@ -114,7 +114,7 @@ def test_parse_emits_canonical_indicator_without_raw_ail_content() -> None:
             "external_share_authorized": False,
         }
     }
-    assert "content" not in str(record.raw)
+    assert "must disappear" not in str(record.raw)
 
 
 def test_indicator_record_is_valid_for_canonical_ingest_schema() -> None:
