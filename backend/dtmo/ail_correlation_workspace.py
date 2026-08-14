@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from typing import Annotated, Any
-from urllib.parse import quote
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -17,7 +16,7 @@ from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal
 from dtmo.lake.minio_store import MinioObjectStore
 from dtmo.persistence.models import IntelligenceItem
-from dtmo.threat_workspace import _PAGE as BASE_PAGE
+from dtmo.threat_workspace import _PAGE as BASE_PAGE, router as threat_workspace_router
 
 router = APIRouter()
 _store = MinioObjectStore()
@@ -89,26 +88,12 @@ async def ail_workspace_correlations(
     if source is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="intelligence item not found")
     if source.source_id != "ail":
-        return {
-            "status": "empty",
-            "reason": "correlation experience is scoped to AIL-derived indicators",
-            "correlations": [],
-            "investigation_references": [],
-            "raw_content_exposed": False,
-            "analysis_only": True,
-        }
+        return {"status": "empty", "reason": "correlation experience is scoped to AIL-derived indicators", "correlations": [], "investigation_references": [], "raw_content_exposed": False, "analysis_only": True}
 
     try:
         indicator_type, indicator_value = _indicator_from_external_id(source.external_id)
     except ValueError as exc:
-        return {
-            "status": "degraded",
-            "reason": str(exc),
-            "correlations": [],
-            "investigation_references": [],
-            "raw_content_exposed": False,
-            "analysis_only": True,
-        }
+        return {"status": "degraded", "reason": str(exc), "correlations": [], "investigation_references": [], "raw_content_exposed": False, "analysis_only": True}
 
     degraded_reasons: list[str] = []
     source_raw: dict[str, Any] | None = None
@@ -117,16 +102,7 @@ async def ail_workspace_correlations(
     except (S3Error, OSError, ValueError, json.JSONDecodeError) as exc:
         degraded_reasons.append(f"AIL provenance projection unavailable: {type(exc).__name__}")
 
-    candidates = list(
-        (
-            await session.scalars(
-                select(IntelligenceItem)
-                .where(IntelligenceItem.id != source.id)
-                .order_by(IntelligenceItem.discovered_at.desc())
-                .limit(500)
-            )
-        ).all()
-    )
+    candidates = list((await session.scalars(select(IntelligenceItem).where(IntelligenceItem.id != source.id).order_by(IntelligenceItem.discovered_at.desc()).limit(500))).all())
     projected: list[dict[str, Any]] = []
     for candidate in candidates:
         raw: dict[str, Any] | None = None
@@ -134,28 +110,11 @@ async def ail_workspace_correlations(
             try:
                 raw = await _read_raw_projection(candidate)
             except (S3Error, OSError, ValueError, json.JSONDecodeError) as exc:
-                degraded_reasons.append(
-                    f"MISP projection unavailable for {candidate.external_id or candidate.id}: {type(exc).__name__}"
-                )
+                degraded_reasons.append(f"MISP projection unavailable for {candidate.external_id or candidate.id}: {type(exc).__name__}")
         projected.append(_candidate_projection(candidate, raw))
 
-    hits = correlate_ail_indicator(
-        indicator_type=indicator_type,
-        indicator_value=indicator_value,
-        candidates=projected,
-    )
-    correlations = [
-        {
-            "source_id": hit.source_id,
-            "external_id": hit.external_id,
-            "item_type": hit.item_type,
-            "title": hit.title,
-            "relation": hit.relation,
-            "matched_value": hit.matched_value,
-            "context": hit.context,
-        }
-        for hit in hits
-    ]
+    hits = correlate_ail_indicator(indicator_type=indicator_type, indicator_value=indicator_value, candidates=projected)
+    correlations = [{"source_id": hit.source_id, "external_id": hit.external_id, "item_type": hit.item_type, "title": hit.title, "relation": hit.relation, "matched_value": hit.matched_value, "context": hit.context} for hit in hits]
     state = "degraded" if degraded_reasons else ("ok" if correlations else "empty")
     return {
         "status": state,
@@ -171,6 +130,9 @@ async def ail_workspace_correlations(
 
 _PANEL = """<section id=\"ail-correlation-panel\" class=\"ti-correlation surface\" aria-live=\"polite\"><div class=\"surface-header\"><div><p class=\"eyebrow\">E8.9 AIL correlation</p><h3>Investigation correlations</h3></div><span id=\"ail-correlation-status\" class=\"status-pill neutral\">Selecteer AIL intelligence</span></div><div id=\"ail-correlation-content\"><p class=\"muted\">Voor AIL-derived indicators worden exact-match correlaties met DTMO, MISP en vulnerability-context getoond. Raw leak-content wordt niet weergegeven.</p></div></section>"""
 _PAGE = BASE_PAGE.replace(
+    '<link rel="stylesheet" href="/ui/design-system.css"><link rel="stylesheet" href="/ui/threat-workspace.css">',
+    '<link rel="stylesheet" href="/ui/design-system.css"><link rel="stylesheet" href="/ui/threat-workspace.css"><link rel="stylesheet" href="/ui/ail-correlation-workspace.css">',
+).replace(
     '<div id="detail"><p class="muted">Selecteer een resultaat om context en provenance te bekijken.</p></div></article>',
     '<div id="detail"><p class="muted">Selecteer een resultaat om context en provenance te bekijken.</p></div>' + _PANEL + '</article>',
 ).replace(
@@ -187,30 +149,22 @@ if(!panel||!badge||typeof window.loadDetail!=='function')return;
 const original=window.loadDetail;
 window.loadDetail=async function(id){
   await original(id);
-  badge.textContent='Correlaties laden…'; badge.className='status-pill neutral';
-  panel.innerHTML='<p class="muted">Correlaties laden…</p>';
+  badge.textContent='Correlaties laden…'; badge.className='status-pill neutral'; panel.innerHTML='<p class="muted">Correlaties laden…</p>';
   try{
     const data=await api(`/api/v1/intelligence/${encodeURIComponent(id)}/ail-correlations`);
     badge.textContent=data.status==='ok'?`${data.correlations.length} correlaties`:data.status==='degraded'?'Degraded':'Geen correlaties';
     badge.className=`status-pill ${data.status==='ok'?'good':data.status==='degraded'?'warning':'neutral'}`;
-    if(data.status==='empty'){
-      panel.innerHTML=`<p class="muted">${esc(data.reason||'Geen exacte correlaties gevonden.')}</p>`; return;
-    }
+    if(data.status==='empty'){panel.innerHTML=`<p class="muted">${esc(data.reason||'Geen exacte correlaties gevonden.')}</p>`;return;}
     const refs=(data.investigation_references||[]).map(r=>`<span class="ti-correlation-ref">${esc(r.id)}</span>`).join('')||'<span class="muted">Geen investigation-referenties</span>';
     const hits=(data.correlations||[]).map(hit=>`<article class="ti-correlation-hit" data-relation="${esc(hit.relation)}"><strong>${esc(hit.title)}</strong><div class="ti-meta"><span>${esc(hit.source_id)}</span><span>${esc(hit.item_type)}</span><span>${esc(hit.relation)}</span></div><p>Exact match: <code>${esc(hit.matched_value)}</code></p>${hit.context?.cve_id?`<p>CVE: ${esc(hit.context.cve_id)} · ${esc(hit.context.vendor||'—')} / ${esc(hit.context.product||'—')}</p>`:''}${hit.context?.object_name?`<p>MISP object: ${esc(hit.context.object_name)} · ${esc(hit.context.type||'')}</p>`:''}</article>`).join('')||'<p class="muted">Geen exacte correlaties gevonden.</p>';
     const degraded=(data.degraded_reasons||[]).length?`<div class="inline-status" role="status"><strong>Degraded evidence:</strong> ${(data.degraded_reasons||[]).map(esc).join('; ')}</div>`:'';
     panel.innerHTML=`<p><strong>Indicator:</strong> ${esc(data.indicator?.type)} · <code>${esc(data.indicator?.value)}</code></p><div class="ti-meta">${refs}</div>${degraded}<div class="ti-correlation-list">${hits}</div><p class="muted">${esc(data.claim_boundary||'Analytical context only.')}</p>`;
-  }catch(err){
-    badge.textContent='Degraded'; badge.className='status-pill warning';
-    panel.innerHTML=`<div class="inline-status" role="status">Correlatie-evidence niet beschikbaar: ${esc(err.message)}</div>`;
-  }
+  }catch(err){badge.textContent='Degraded';badge.className='status-pill warning';panel.innerHTML=`<div class="inline-status" role="status">Correlatie-evidence niet beschikbaar: ${esc(err.message)}</div>`;}
 };
 })();
 """
 
-_CSS = """
-.ti-correlation{margin-top:1rem;padding:1rem;background:#091725;border:1px solid #20384f}.ti-correlation-list{display:grid;gap:.65rem;margin-top:.75rem}.ti-correlation-hit{border-left:3px solid #2d648d;padding:.75rem;background:#0a1724}.ti-correlation-hit p{margin:.45rem 0;color:#b9c8d8}.ti-correlation-ref{padding:.2rem .45rem;border:1px solid #24425d;border-radius:999px;color:#cbd8e5}.status-pill.warning{border-color:#b97416;color:#ffd79b}
-"""
+_CSS = ".ti-correlation{margin-top:1rem;padding:1rem;background:#091725;border:1px solid #20384f}.ti-correlation-list{display:grid;gap:.65rem;margin-top:.75rem}.ti-correlation-hit{border-left:3px solid #2d648d;padding:.75rem;background:#0a1724}.ti-correlation-hit p{margin:.45rem 0;color:#b9c8d8}.ti-correlation-ref{padding:.2rem .45rem;border:1px solid #24425d;border-radius:999px;color:#cbd8e5}.status-pill.warning{border-color:#b97416;color:#ffd79b}"
 
 
 @router.get("/ui/intelligence-workspace", response_class=HTMLResponse)
@@ -226,3 +180,10 @@ def ail_correlation_workspace_js() -> Response:
 @router.get("/ui/ail-correlation-workspace.css")
 def ail_correlation_workspace_css() -> Response:
     return Response(_CSS, media_type="text/css")
+
+
+# Main already mounts the canonical threat-workspace router. E8.9b is loaded by
+# the AIL connector module and prepends these bounded routes so the enhanced UI
+# wins the duplicate GET path without replacing any pre-existing RC10.3 routes.
+for _route in reversed(router.routes):
+    threat_workspace_router.routes.insert(0, _route)
