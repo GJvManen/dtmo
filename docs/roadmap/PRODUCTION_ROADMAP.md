@@ -36,7 +36,7 @@ The earlier Phase 8.1 evidence remains valid for the immutable staging deploymen
 
 ### Post-E8 candidate rebind — next active objective
 
-The repository candidate after E8.10 is identified by Git commit `b5d485ba2770a66ef6cf7e387ebab1613f77c9a4`. That repository identity alone does not prove a staging deployment.
+The repository candidate after E8.10 is the current accepted `main` baseline recorded in the corresponding development run record. The stable roadmap deliberately does not duplicate an exact commit SHA; repository identity alone does not prove a staging deployment.
 
 Before Phase 8.2 resumes, the post-E8 candidate must be deployed to the approved production-equivalent staging environment and bound to a new immutable identity containing:
 
