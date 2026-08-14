@@ -44,12 +44,17 @@ class Settings(BaseSettings):
     misp_api_base: str = ""
     misp_api_key: SecretStr = SecretStr("")
     misp_event_limit: int = Field(default=50, ge=1, le=500)
+    ail_api_base: str = ""
+    ail_api_key: SecretStr = SecretStr("")
+    ail_object_global_ids: str = ""
+    ail_object_limit: int = Field(default=50, ge=1, le=500)
     publish_requires_human_approval: bool = True
     feature_live_connectors: bool = False
     feature_opencve_connector: bool = False
     feature_vulnerability_lookup_connector: bool = False
     feature_misp_connector: bool = False
     feature_misp_export: bool = False
+    feature_ail_connector: bool = False
     feature_ai_analyst: bool = False
 
     @property
@@ -90,6 +95,13 @@ class Settings(BaseSettings):
                 raise ValueError("production MISP integration requires an HTTPS API base")
             if not self.misp_api_key.get_secret_value().strip():
                 raise ValueError("production MISP integration requires a runtime API key")
+        if self.feature_ail_connector:
+            if not self.ail_api_base.startswith("https://"):
+                raise ValueError("production AIL integration requires an HTTPS API base")
+            if not self.ail_api_key.get_secret_value().strip():
+                raise ValueError("production AIL integration requires a runtime API key")
+            if not self.ail_object_global_ids.strip():
+                raise ValueError("production AIL integration requires explicit object global ids")
         return self
 
 
