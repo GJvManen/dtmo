@@ -1,0 +1,43 @@
+name: E8 AIL Correlation Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ail-correlation:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Verify exact-head checkout
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - run: python -m pip install -e '.[test]'
+      - name: AIL correlation contract tests
+        run: pytest -q backend/tests/test_e8_9a_ail_correlation.py
+      - name: Ruff
+        run: python -m ruff check backend/dtmo/ail_correlation.py backend/tests/test_e8_9a_ail_correlation.py
+      - name: Mypy
+        run: python -m mypy backend/dtmo/ail_correlation.py
+      - name: Compile
+        run: python -m compileall -q backend/dtmo
+
+  ail-correlation-gate:
+    if: always()
+    needs: [ail-correlation]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.ail-correlation.result }}
+        run: test "$RESULT" = "success"
