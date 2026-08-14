@@ -217,7 +217,7 @@ class MispReadConnector(Connector):
             records.append(
                 ConnectorRecord(
                     external_id=event_uuid,
-                    object_type="misp-event",
+                    object_type="cti_event",
                     title=summary or event_uuid,
                     url=f"{base}/events/view/{event_uuid}",
                     summary=summary,
