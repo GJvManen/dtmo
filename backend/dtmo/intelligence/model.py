@@ -11,6 +11,7 @@ class IntelligenceType(StrEnum):
     ADVISORY = "advisory"
     VULNERABILITY = "vulnerability"
     INDICATOR = "indicator"
+    CTI_EVENT = "cti_event"
     CAMPAIGN = "campaign"
     THREAT_ACTOR = "threat_actor"
     MALWARE = "malware"
