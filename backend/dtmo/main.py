@@ -21,6 +21,7 @@ from dtmo.auth.policy import Permission, Principal
 from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
+from dtmo.connectors.opencve import OpenCVEConnector
 from dtmo.dashboards import router as dashboards_router
 from dtmo.framework_experience import router as framework_experience_router
 from dtmo.framework_governance import router as framework_governance_router
@@ -61,8 +62,8 @@ def _route_template(request: Request) -> str:
     return route_path if isinstance(route_path, str) else "<unmatched>"
 
 
-async def run_cisa_kev() -> dict[str, object]:
-    result = await CisaKevConnector(settings).run()
+async def _persist_connector_result(connector: CisaKevConnector | OpenCVEConnector) -> dict[str, object]:
+    result = await connector.run()
     inserted = 0
     indexed = 0
     if result.status == "completed":
@@ -71,14 +72,44 @@ async def run_cisa_kev() -> dict[str, object]:
             inserted += int(receipt.inserted)
             indexed += int(receipt.indexed)
     alert = connector_alerts.record(result)
-    log.info("connector_run_finished", connector_id=result.connector_id, status=result.status, records=len(result.records), inserted=inserted, indexed=indexed, attempts=result.attempts, alert_state=alert.state, correlation_id=alert.correlation_id)
-    return {"connector_id": result.connector_id, "status": result.status, "records": len(result.records), "inserted": inserted, "indexed": indexed, "attempts": result.attempts, "error": result.error, "alert_state": alert.state, "correlation_id": alert.correlation_id}
+    log.info(
+        "connector_run_finished",
+        connector_id=result.connector_id,
+        status=result.status,
+        records=len(result.records),
+        inserted=inserted,
+        indexed=indexed,
+        attempts=result.attempts,
+        alert_state=alert.state,
+        correlation_id=alert.correlation_id,
+    )
+    return {
+        "connector_id": result.connector_id,
+        "status": result.status,
+        "records": len(result.records),
+        "inserted": inserted,
+        "indexed": indexed,
+        "attempts": result.attempts,
+        "error": result.error,
+        "alert_state": alert.state,
+        "correlation_id": alert.correlation_id,
+    }
+
+
+async def run_cisa_kev() -> dict[str, object]:
+    return await _persist_connector_result(CisaKevConnector(settings))
+
+
+async def run_opencve() -> dict[str, object]:
+    return await _persist_connector_result(OpenCVEConnector(settings))
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if settings.feature_live_connectors:
         scheduler.register(ScheduledJob(id="cisa-kev", interval_seconds=settings.connector_poll_seconds, handler=run_cisa_kev))
+        if settings.feature_opencve_connector:
+            scheduler.register(ScheduledJob(id="opencve", interval_seconds=settings.connector_poll_seconds, handler=run_opencve))
         scheduler.start()
     yield
     scheduler.shutdown()
@@ -86,29 +117,12 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
-# E6 adds policy-bound RBAC matrix visibility and reasoned, before/after-audited
-# assignment changes over the existing managed-principal Administration surface.
 app.include_router(rbac_management_experience_router)
-# E3 composes governed disabled-first manual source onboarding into the same
-# canonical Sources & Catalog product surface. It intentionally wins before
-# the lower E5/E7, E4 and E1/E2 composition layers.
 app.include_router(source_onboarding_experience_router)
-# Post-E7 governance completion composes the explicit repository-backed control
-# crosswalk over the first-class framework inventory in the canonical console.
 app.include_router(governance_crosswalk_experience_router)
-# E5/E7 composes first-class versioned framework inventory and explicit mapping
-# governance over E4. These canonical roots intentionally win before lower UI layers.
 app.include_router(framework_experience_router)
-# E4 composes selectable 24h/7d/30d trend analytics over the shared E1/E2
-# severity experience. These roots intentionally win before lower UI layers.
 app.include_router(analytics_experience_router)
-# E1/E2 composes the accepted RC13 Governance + Administration console into a
-# shared severity-aware product surface. These roots intentionally win first;
-# the underlying RC13 routers remain registered for their JS/API resources.
 app.include_router(severity_experience_router)
-# RC13.4 composes repository-backed governance knowledge over the accepted
-# RC13.3 canonical shell. Higher composition layers include this page, while
-# this router still serves its governed JavaScript resource.
 app.include_router(rc13_governance_router)
 app.include_router(rc13_administration_router)
 app.include_router(unified_console_router)
@@ -182,7 +196,10 @@ def ready() -> dict[str, str]:
 
 @app.get("/connectors")
 def connectors() -> list[dict[str, object]]:
-    return [{"id": "cisa-kev", "enabled": settings.feature_live_connectors, "reliability": "authoritative", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": not settings.production or settings.feature_live_connectors}]
+    return [
+        {"id": "cisa-kev", "enabled": settings.feature_live_connectors, "reliability": "authoritative", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": not settings.production or settings.feature_live_connectors},
+        {"id": "opencve", "enabled": settings.feature_live_connectors and settings.feature_opencve_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_opencve_connector, "api_version": "v2"},
+    ]
 
 
 @app.post("/connectors/cisa-kev/run")
@@ -191,6 +208,14 @@ async def run_connector(principal: Annotated[Principal, Depends(require_permissi
     if settings.production and not settings.feature_live_connectors:
         return {"status": "disabled", "reason": "feature flag is off"}
     return await run_cisa_kev()
+
+
+@app.post("/connectors/opencve/run")
+async def run_opencve_connector(principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))]) -> dict[str, object]:
+    del principal
+    if not settings.feature_opencve_connector:
+        return {"status": "disabled", "reason": "OpenCVE connector feature flag is off"}
+    return await run_opencve()
 
 
 @app.get("/metrics")

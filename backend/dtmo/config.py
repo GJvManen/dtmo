@@ -32,8 +32,13 @@ class Settings(BaseSettings):
     connector_poll_seconds: int = Field(default=3600, ge=60)
     connector_timeout_seconds: int = Field(default=30, ge=1, le=300)
     connector_max_attempts: int = Field(default=4, ge=1, le=10)
+    opencve_api_base: str = "https://app.opencve.io/api/v2"
+    opencve_api_token: SecretStr = SecretStr("")
+    opencve_page_size: int = Field(default=20, ge=1, le=100)
+    opencve_max_pages: int = Field(default=1, ge=1, le=20)
     publish_requires_human_approval: bool = True
     feature_live_connectors: bool = False
+    feature_opencve_connector: bool = False
     feature_ai_analyst: bool = False
 
     @property
