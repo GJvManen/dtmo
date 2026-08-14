@@ -175,10 +175,12 @@ def test_cti_event_record_is_valid_for_canonical_ingest_schema() -> None:
     assert request.item_type == IntelligenceType.CTI_EVENT.value
 
 
-def test_rejects_missing_credentials_and_malformed_event_shapes() -> None:
+@pytest.mark.asyncio
+async def test_rejects_missing_credentials_and_malformed_event_shapes() -> None:
     connector = MispReadConnector(_settings(misp_api_key=SecretStr("")))
-    with pytest.raises(ValueError, match="API key"):
-        connector.parse({"metadata": {}})
+    async with httpx.AsyncClient(transport=httpx.MockTransport(lambda request: httpx.Response(200, json=[]))) as client:
+        with pytest.raises(ValueError, match="API key"):
+            await connector.fetch(client)
 
     normal = MispReadConnector(_settings())
     with pytest.raises(ValueError, match="no event list"):
