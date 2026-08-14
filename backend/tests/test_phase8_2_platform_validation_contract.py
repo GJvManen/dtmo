@@ -1,16 +1,31 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
-
-from tools.phase8_platform_validation import REQUIRED_CHECKS, validate
+from types import ModuleType
+from typing import Any, cast
 
 
 ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE = ROOT / "docs/staging/PHASE8_2_PLATFORM_IDENTITY_EVIDENCE.template.json"
 WORKFLOW = ROOT / ".github/workflows/phase8-platform-identity-validation.yml"
 RUNBOOK = ROOT / "docs/staging/PHASE8_2_PLATFORM_IDENTITY_VALIDATION.md"
+VALIDATOR_PATH = ROOT / "tools/phase8_platform_validation.py"
+
+
+def _load_validator() -> ModuleType:
+    spec = importlib.util.spec_from_file_location("phase8_platform_validation", VALIDATOR_PATH)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+_VALIDATOR = _load_validator()
+REQUIRED_CHECKS = cast(tuple[str, ...], _VALIDATOR.REQUIRED_CHECKS)
+validate = cast(Any, _VALIDATOR.validate)
 
 
 def _valid_payload() -> dict[str, object]:
