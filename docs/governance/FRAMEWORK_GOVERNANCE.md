@@ -1,6 +1,6 @@
 # DTMO Framework Governance
 
-Status: `ACCEPTED_MERGED`
+Status: `ACCEPTED_MERGED` for E5/E7 framework inventory and intelligence mapping; explicit DTMO control crosswalk extension `CI_VALIDATION_PENDING`.
 
 ## Purpose
 
@@ -19,11 +19,11 @@ The initial registry contains:
 
 For Normenkader IBP the registry records 69 information-security norms and 25 privacy norms (94 total) as the known scope for coverage reporting.
 
-Source references are stored on each framework record and were verified on 2026-08-12 against the official framework authorities.
+Source references are stored on each framework record and were verified against the official framework authorities.
 
 ## Mapping truth model
 
-DTMO uses three user-visible states:
+DTMO uses three user-visible states for intelligence mappings:
 
 - `MAPPED`: at least one explicit mapping has been approved by a human reviewer;
 - `UNMAPPED`: no approved explicit mapping exists;
@@ -31,7 +31,27 @@ DTMO uses three user-visible states:
 
 A mapping is never inferred from title text, tags, severity, a CVE identifier, source metadata, or semantic similarity.
 
-## First-class mapping fields
+## Explicit DTMO control crosswalk
+
+The Governance surface also exposes a repository-backed crosswalk between concrete DTMO controls/capabilities and external framework objects through `GET /api/v1/governance/control-crosswalk`.
+
+The initial crosswalk covers high-value implemented DTMO controls including:
+
+| DTMO control | External mappings represented |
+|---|---|
+| `DTMO-IAM-01` Governed RBAC and least privilege | Normenkader IBP `ID.02`, `ID.05`; NIST CSF `PR.AA` |
+| `DTMO-AUTH-01` Authenticated and attributable access | Normenkader IBP `SM.02`; MITRE ATT&CK `T1078` as detection/mitigation context |
+| `DTMO-AUD-01` Tamper-evident audit and correlation | Normenkader IBP `SM.04`; NIST CSF `DE.CM` |
+| `DTMO-TVM-01` Threat and vulnerability intelligence lifecycle | Normenkader IBP `SM.07`; MITRE ATT&CK `T1087` as threat-classification context; NIST CSF `ID.RA`; CVSS 4.0 context |
+| `DTMO-NET-01` Network and deployment trust boundaries | Normenkader IBP `SM.11` |
+| `DTMO-REC-01` Backup, restore and recovery evidence | Normenkader IBP `OP.02`, `BC.03`; NIST CSF `RC.RP` |
+| `DTMO-GOV-01` Evidence-based release governance | Normenkader IBP `GO.03`; NIST CSF `GV` |
+
+Each relationship records an explicit relationship type, rationale, authoritative framework source and DTMO implementation references. `supports`, `partial-support`, `context-only` and threat-context relationships are deliberately distinguished.
+
+These mappings do **not** claim certification, complete Normenkader IBP compliance, full NIST CSF coverage, or semantic equivalence with ATT&CK techniques. Environment-dependent requirements remain partial until the required environment evidence exists.
+
+## First-class intelligence mapping fields
 
 `intelligence_framework_mappings` stores:
 
@@ -46,13 +66,15 @@ A mapping is never inferred from title text, tags, severity, a CVE identifier, s
 - review state (`pending`, `approved`, `rejected`);
 - creator/reviewer identities and timestamps.
 
-Only `approved` mappings contribute to mapping coverage. Pending and rejected objects remain visible for governance and audit but do not make a framework appear mapped.
+Only `approved` intelligence mappings contribute to intelligence mapping coverage. Pending and rejected objects remain visible for governance and audit but do not make an intelligence framework appear mapped.
 
 ## Human authorization and audit
 
-Creating and reviewing a framework mapping requires `review:intelligence`. The existing RBAC model does not grant that permission to service accounts, so automated connectors cannot independently create an authoritative framework mapping.
+Creating and reviewing an intelligence framework mapping requires `review:intelligence`. The existing RBAC model does not grant that permission to service accounts, so automated connectors cannot independently create an authoritative intelligence mapping.
 
-Every mapping create, approve and reject action appends an event to DTMO's existing append-only persistent audit chain. The audit event records actor, action, resource, request/correlation ID and the mapping provenance reference.
+Every intelligence mapping create, approve and reject action appends an event to DTMO's existing append-only persistent audit chain. The audit event records actor, action, resource, request/correlation ID and the mapping provenance reference.
+
+The repository control crosswalk is code-reviewed release content rather than a user-editable runtime crosswalk. Changes therefore require pull-request review and exact-head CI.
 
 ## API
 
@@ -61,27 +83,25 @@ Read endpoints:
 - `GET /api/v1/governance/frameworks`
 - `GET /api/v1/governance/frameworks/{framework_id}`
 - `GET /api/v1/governance/intelligence/{intelligence_id}/framework-mappings`
+- `GET /api/v1/governance/control-crosswalk`
 
 Governed write endpoints:
 
 - `POST /api/v1/governance/framework-mappings`
 - `POST /api/v1/governance/framework-mappings/{mapping_id}/review`
 
-New mappings start as `pending`.
+New intelligence mappings start as `pending`.
 
 ## Console behaviour
 
-The Governance view contains a first-class framework surface with:
+The Governance view contains two complementary first-class surfaces:
 
-- framework name, authority and exact version/revision;
-- `MAPPED`, `UNMAPPED` or `CONTEXT_ONLY` state;
-- approved, pending and rejected mapping counts;
-- mapped-object count and coverage percentage where the authoritative scope count is known;
-- drill-down from framework to control/technique/category;
-- mapped intelligence title/ID;
-- confidence, review state, reviewer, provenance and mapping reason.
+1. **Framework inventory & intelligence mappings** — framework version, mapping state, review state, intelligence object, confidence and provenance.
+2. **DTMO control crosswalk** — implemented DTMO control, external framework object, typed relationship, rationale, authoritative source and implementation evidence.
 
-The older RC13 repository-governance surface remains as the internal governance/evidence layer. It is not a substitute for the new first-class external framework registry.
+This ensures that a fresh environment with no intelligence-specific mapping records still shows the concrete governance relationships already implemented by DTMO, while intelligence-specific ATT&CK/control mappings remain governed and reviewable rather than fabricated.
+
+The older RC13 repository-governance surface remains as the internal governance/evidence layer.
 
 ## Database migration
 
@@ -90,8 +110,8 @@ Alembic migration `0010_framework_governance` follows `0009_managed_rbac_assignm
 - `governance_frameworks`;
 - `intelligence_framework_mappings`.
 
-The migration seeds only the framework inventory. It does **not** seed control/technique crosswalks because that would create unsupported mapping claims.
+The migration seeds only the framework inventory. It does **not** fabricate intelligence-to-control/technique mappings. The new DTMO control crosswalk is repository-backed code with explicit source and rationale instead of synthetic intelligence rows.
 
 ## Release evidence
 
-Accepted with complete exact-head CI and merged through PR #181 on 2026-08-12. Merge commit: `1065cde58a10e5d7657d5e2a13d81aaaf3cc1a28`.
+E5/E7 was accepted with complete exact-head CI and merged through PR #181. The explicit DTMO control crosswalk extension remains `CI_VALIDATION_PENDING` until its own exact-head workflows and functional Governance acceptance are green.
