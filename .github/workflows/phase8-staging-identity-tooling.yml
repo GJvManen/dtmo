@@ -1,0 +1,46 @@
+name: Phase 8 Staging Identity Tooling Gate
+
+on:
+  pull_request:
+    paths:
+      - "tools/phase8_staging_identity.py"
+      - "tests/test_phase8_staging_identity.py"
+      - "docs/staging/PHASE8_DEPLOYMENT_IDENTITY.example.json"
+      - "docs/staging/PHASE8_IDENTITY_COLLECTION_RUNBOOK.md"
+      - ".github/workflows/phase8-staging-identity-tooling.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-tooling:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Lint identity tooling
+        run: python -m ruff check tools/phase8_staging_identity.py tests/test_phase8_staging_identity.py
+      - name: Type check identity tooling
+        run: python -m mypy tools/phase8_staging_identity.py
+      - name: Test fail-closed identity validator
+        run: python -m pytest -q tests/test_phase8_staging_identity.py
+      - name: Prove repository template does not pass as real evidence
+        run: |
+          set +e
+          python tools/phase8_staging_identity.py docs/staging/PHASE8_DEPLOYMENT_IDENTITY.example.json --json > /tmp/phase8-template-result.json
+          rc=$?
+          set -e
+          cat /tmp/phase8-template-result.json
+          test "$rc" -eq 1
+          python - <<'PY'
+          import json
+          data = json.load(open('/tmp/phase8-template-result.json', encoding='utf-8'))
+          assert data['valid'] is False
+          assert data['phase8_pass'] is False
+          assert data['errors']
+          PY
