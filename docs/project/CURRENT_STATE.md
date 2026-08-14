@@ -7,7 +7,9 @@ Release baseline: **16.0.0rc12 + accepted post-RC13 enhancements**
 
 DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted the current functional product, including the targeted post-RC13 owner retest.
 
-The project is ready to execute **Phase 8 real production-equivalent staging validation**, but it is **not production ready**. A real immutable staging deployment identity, environment-specific acceptance, independent external assurance and formal production go/no-go remain outstanding.
+The accountable project owner has also checked and verified the **real staging deployment identity and Phase 8.1 environment evidence**. DTMO is therefore progressing within Phase 8, with **Phase 8.2 platform and identity validation** as the next active objective.
+
+DTMO is **not production ready**. Full Phase 8 deployed-environment acceptance, independent Phase 9 assurance and Phase 10 production go/no-go remain outstanding.
 
 ## Current phase position
 
@@ -15,7 +17,8 @@ The project is ready to execute **Phase 8 real production-equivalent staging val
 |---|---|---|
 | Phases 1–7 | Engineering, security, integrity/recovery, connectors, performance, accessibility/UX, observability/operations | `PASS` |
 | RC13 + targeted post-RC13 owner retest | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
-| Phase 8 | Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
+| Phase 8.1 | Real staging environment + immutable deployment identity | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
+| Phase 8.2–8.5 | Deployed staging validation and accountable staging acceptance | `IN PROGRESS / NEXT` |
 | Phase 9 | Independent external assurance | `NOT COMPLETE` |
 | Phase 10 | Production go/no-go | `NOT STARTED` |
 
@@ -93,34 +96,33 @@ CVSS remains a vulnerability-scoring context rather than a DTMO compliance-contr
 
 ## Active production-readiness workstream
 
-**Phase 8.1** is the single active production-readiness gate.
+**Phase 8.2 — platform and identity validation** is now the single active production-readiness objective.
 
-It requires one real approved production-equivalent staging environment and immutable deployment identity tied to:
+Validation must remain bound to the same owner-verified staging deployment identity and cover:
 
-- environment identifier and accountable owner;
-- approved HTTPS access path;
-- exact deployed commit/release;
-- immutable application/supporting image digests;
-- infrastructure/runtime inventory;
-- configuration parity and approved deviations;
-- separate least-privilege application/service identities and secret-manager references;
-- TLS/network controls;
-- controlled staging data and no-production-credential confirmation;
-- deployment/change and rollback records;
-- deployment-time security/CVE/vendor-advisory review.
+- application health/readiness;
+- database migrations/connectivity;
+- OpenSearch, Redis and object-storage availability;
+- authentication and authorization;
+- human/service-account separation;
+- privileged Administration controls;
+- audit/correlation behavior;
+- operational metrics and separately authenticated Grafana.
 
-Repository CI, local Docker Compose and staging emulators remain supporting engineering evidence only.
+A redeployment changes the immutable evidence identity and requires a new binding rather than mixing evidence across deployments.
 
 ## Remaining production-readiness limitations
 
-- no real production-equivalent staging deployment identity has yet been recorded;
-- Phase 8 deployed-environment validation is not complete;
+- Phase 8.2 platform/identity validation is not yet accepted;
+- Phase 8.3 source-to-intelligence validation is not yet accepted;
+- Phase 8.4 operational/recovery validation is not yet accepted;
+- Phase 8.5 accountable staging acceptance is not yet recorded;
 - Phase 9 independent penetration/security assurance is not complete;
-- representative environment-level load/stress, recovery and hardening acceptance remain outstanding where required by the Phase 9 gate;
+- representative production-equivalent load/stress, hardening and residual-risk acceptance remain outstanding where required by the Phase 9 gate;
 - Phase 10 formal production go/no-go has not started.
 
 ## Documentation and evidence boundary
 
-Detailed acceptance chronology and immutable technical identifiers are retained under `docs/development/runs/` and the repository's CI/evidence records rather than duplicated into this stable current-state document.
+The Phase 8.1 owner-verification decision is retained as an immutable development run record. Environment-specific values remain governed by their approved evidence location and are not reconstructed from repository placeholders.
 
 Stable professional documents describe the controlled current state. Operational chronology belongs under `docs/development/runs/`, GitHub issues/PRs and CI evidence. Environment and independent-assurance claims require evidence attributable to the relevant deployment/assessment identity.
