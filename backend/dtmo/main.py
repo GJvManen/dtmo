@@ -106,6 +106,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+app.include_router(vulnerability_console_ui_router)
 app.include_router(rbac_management_experience_router)
 app.include_router(source_onboarding_experience_router)
 app.include_router(governance_crosswalk_experience_router)
@@ -115,7 +116,6 @@ app.include_router(severity_experience_router)
 app.include_router(rc13_governance_router)
 app.include_router(rc13_administration_router)
 app.include_router(vulnerability_console_router)
-app.include_router(vulnerability_console_ui_router)
 app.include_router(unified_console_router)
 app.include_router(rc13_analytics_router)
 app.include_router(frontend_router)
