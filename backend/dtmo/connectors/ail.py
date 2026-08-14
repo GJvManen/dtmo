@@ -5,6 +5,7 @@ from urllib.parse import quote
 
 import httpx
 
+import dtmo.ail_correlation_workspace  # noqa: F401
 from dtmo.connectors.base import Connector, ConnectorRecord
 from dtmo.intelligence import IntelligenceType
 
