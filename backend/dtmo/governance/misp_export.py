@@ -143,7 +143,10 @@ def _export_records(item: IntelligenceItem) -> list[dict[str, Any]]:
     value = item.metadata_json.get("misp_exports")
     if not isinstance(value, list):
         return []
-    return [entry for entry in value if isinstance(entry, dict)]
+    # JSON columns do not track nested in-place mutation by default. Return
+    # copy-on-write records so finalization/uncertain transitions assign a
+    # genuinely changed top-level value that SQLAlchemy persists reliably.
+    return [dict(entry) for entry in value if isinstance(entry, dict)]
 
 
 def prepare_misp_export(
