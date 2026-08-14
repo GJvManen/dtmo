@@ -7,7 +7,7 @@ Release baseline: **16.0.0rc12 + accepted post-RC13 enhancements + E8 workstream
 
 DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted that functional baseline and the targeted post-RC13 retest.
 
-Phase 8.1 real-staging deployment identity/environment evidence was previously owner-verified for the deployment identity it covered. The repository also contains the Phase 8.2 platform/identity validation mechanism. That external execution is intentionally **paused while E8 materially changes the intended production candidate**. Historical staging evidence is not relabelled as evidence for a newer candidate.
+Phase 8.1 real-staging deployment identity/environment evidence was previously owner-verified for the deployment identity it covered. The repository also contains the Phase 8.2 platform/identity validation mechanism. Phase 8.2–8.5 remain the **IN PROGRESS / NEXT** production-readiness lifecycle, but external execution is intentionally paused while E8 materially changes the intended production candidate. Historical staging evidence is not relabelled as evidence for a newer candidate.
 
 The active repository product line is **E8 — Vulnerability & CTI ecosystem integrations**. E8.1 through E8.5 are merged. E8.6 read-only MISP integration is active under issue #193. DTMO is **not production ready**: the materially updated candidate must later be rebound to an immutable staging deployment identity and complete remaining Phase 8 external acceptance, Phase 9 independent assurance and Phase 10 production go/no-go.
 
@@ -20,7 +20,7 @@ The active repository product line is **E8 — Vulnerability & CTI ecosystem int
 | E8.1–E8.5 | Vulnerability integrations, relevance/prioritization, analytics and unified-console UX | `MERGED / REPOSITORY PASS` |
 | E8.6 | Governed read-only MISP integration | `ACTIVE` |
 | Phase 8.1 historical deployment identity | Real staging environment + immutable deployment identity for the candidate then deployed | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
-| Phase 8.2–8.5 external execution | Deployed staging validation and accountable staging acceptance | `PAUSED WHILE E8 CHANGES CANDIDATE` |
+| Phase 8.2–8.5 external execution | Deployed staging validation and accountable staging acceptance | `IN PROGRESS / NEXT — execution paused while E8 changes candidate` |
 | Phase 9 | Independent external assurance | `NOT COMPLETE` |
 | Phase 10 | Production go/no-go | `NOT STARTED` |
 
@@ -125,7 +125,7 @@ The bounded slice must preserve MISP event/attribute/object/relationship UUIDs a
 
 - E8.6–E8.10 are not yet fully accepted;
 - the production candidate is still changing and must later be rebound to an updated immutable staging deployment identity;
-- Phase 8.2 platform/identity validation must be executed against that updated candidate;
+- Phase 8.2 platform/identity validation remains IN PROGRESS / NEXT but execution is paused until the updated candidate is immutable;
 - Phase 8.3 source-to-intelligence validation is not yet accepted for the final candidate;
 - Phase 8.4 operational/recovery validation is not yet accepted for the final candidate;
 - Phase 8.5 accountable staging acceptance is not yet recorded for the final candidate;
