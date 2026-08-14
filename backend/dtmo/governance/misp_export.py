@@ -167,6 +167,10 @@ def prepare_misp_export(
         raise MispExportError("intelligence requires separate human review and share approval before MISP export")
     if not str(item.metadata_json.get("share_approved_by", "")).strip():
         raise MispExportError("share approval attribution is missing")
+    if item.source_id == "misp" and _authoritative_misp_restrictions(item) is None:
+        raise MispExportError(
+            "MISP-origin intelligence cannot be re-exported until its authoritative source restrictions are projected"
+        )
 
     _validate_distribution(distribution, sharing_group_id)
     normalized_tlp = _normalized_tlp(tlp)
