@@ -1,0 +1,23 @@
+{
+  "environment_id": "NOT_PROVIDED",
+  "accountable_staging_owner": "NOT_PROVIDED",
+  "approved_endpoint": "NOT_PROVIDED",
+  "deployed_release": "16.0.0rc12",
+  "deployed_commit": "NOT_PROVIDED",
+  "application_image_digest": "NOT_PROVIDED",
+  "supporting_container_digests": [],
+  "infrastructure_runtime_inventory": [],
+  "configuration_parity_record": "NOT_PROVIDED",
+  "secrets_manager_identity_references": [],
+  "least_privilege_staging_identities": [],
+  "tls_certificate_or_termination_evidence": "NOT_PROVIDED",
+  "network_restriction_evidence": "NOT_PROVIDED",
+  "data_class_and_sanitization_statement": "NOT_PROVIDED",
+  "no_production_credentials_confirmation": false,
+  "deployment_change_record": "NOT_PROVIDED",
+  "rollback_target_and_procedure": "NOT_PROVIDED",
+  "deployment_time_security_review": "NOT_PROVIDED",
+  "external_validation_authorized": false,
+  "project_owner_staging_acceptance": "NOT_RECORDED",
+  "phase8_pass": false
+}
