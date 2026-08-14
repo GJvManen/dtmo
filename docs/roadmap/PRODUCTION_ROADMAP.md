@@ -15,8 +15,10 @@ This roadmap separates two complementary tracks:
 |---|---|---|
 | Phases 1–7 | Repository-controlled engineering baseline | `PASS` |
 | RC13 + post-RC13 functional owner retest | Unified-console/product acceptance | `PASS / OWNER_ACCEPTED` |
-| Phase 8.1 | Real staging environment + immutable deployment identity | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
-| Phase 8.2–8.5 | Deployed staging validation and accountable staging acceptance | `IN PROGRESS / NEXT` |
+| E8.1–E8.10 | Vulnerability & CTI ecosystem integrations | `PASS / REPOSITORY_COMPLETE` |
+| Phase 8.1 historical identity | Earlier real staging environment + immutable deployment identity | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE — HISTORICAL IDENTITY ONLY` |
+| Post-E8 candidate rebind | Deploy and bind the final E8 candidate to a new immutable staging identity | `NEXT ACTIVE OBJECTIVE / EXTERNAL EVIDENCE REQUIRED` |
+| Phase 8.2–8.5 | Deployed staging validation and accountable staging acceptance against the new identity | `IN PROGRESS / NEXT` |
 | Phase 9 | Independent external assurance | `NOT COMPLETE` |
 | Phase 10 | Formal production go/no-go | `NOT STARTED` |
 
@@ -28,17 +30,35 @@ DTMO is **not production ready**.
 
 ### Phase 8.1 — environment and immutable deployment identity
 
-**Status:** `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE`
+**Historical status:** `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE`
 
-The accountable project owner has checked and verified the real staging deployment identity and the required environment evidence. Environment-specific identifiers and sensitive infrastructure values remain governed by their approved external evidence location and are not reconstructed from repository placeholders.
+The earlier Phase 8.1 evidence remains valid for the immutable staging deployment identity it originally covered. E8 materially changed the intended production candidate after that evidence was accepted. Historical evidence is therefore not relabelled as evidence for the post-E8 candidate.
 
-The accepted evidence scope covers environment identity/ownership, approved access path, exact deployed release/commit, immutable image identities, runtime inventory, configuration parity/deviations, least-privilege identities and secret handling, TLS/network/data controls, no-production-credential reuse, change/rollback records and deployment-time security review.
+### Post-E8 candidate rebind — next active objective
+
+The repository candidate after E8.10 is identified by Git commit `b5d485ba2770a66ef6cf7e387ebab1613f77c9a4`. That repository identity alone does not prove a staging deployment.
+
+Before Phase 8.2 resumes, the post-E8 candidate must be deployed to the approved production-equivalent staging environment and bound to a new immutable identity containing:
+
+- approved staging environment identity and accountable owner;
+- approved reachable staging access path;
+- deployed release and exact Git commit;
+- immutable application/supporting image digests;
+- runtime/infrastructure inventory;
+- configuration parity and approved deviations;
+- least-privilege identities and approved secret handling;
+- TLS/network/data-sanitization evidence;
+- no-production-credential reuse confirmation;
+- deployment/change and rollback records;
+- deployment-time security/CVE review.
+
+Repository CI, Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this evidence requirement.
 
 ### Phase 8.2 — platform and identity validation
 
-**Status:** `NEXT ACTIVE OBJECTIVE`
+**Status:** `IN PROGRESS / NEXT — blocked pending post-E8 immutable deployment identity`
 
-Validate against the same verified immutable staging identity:
+After the new identity is externally verified, validate against that same immutable staging identity:
 
 - application health/readiness;
 - database migrations/connectivity;
@@ -51,18 +71,17 @@ Validate against the same verified immutable staging identity:
 
 ### Phase 8.3 — source-to-intelligence validation
 
-Validate against the same staging identity:
+Validate against the same new staging identity:
 
-- source catalog/bootstrap;
-- source activation/execution;
-- upstream fetch;
-- raw evidence retention;
-- normalization/provenance;
-- canonical PostgreSQL commit;
+- source catalog/bootstrap and activation/execution;
+- OpenCVE and Vulnerability-Lookup ingestion;
+- MISP read integration and governed outbound-sharing boundaries;
+- AIL read/enrichment and correlation boundaries;
+- upstream fetch and raw evidence retention;
+- normalization/provenance and canonical PostgreSQL commit;
 - OpenSearch indexing/search;
-- Intelligence visibility;
-- Overview/dashboard aggregation;
-- Visual Analytics.
+- Intelligence, Overview, Governance and Visual Analytics visibility;
+- vulnerability CVSS/EPSS/KEV/vendor/product/CWE/sighting analytics and degraded states.
 
 ### Phase 8.4 — operational and recovery validation
 
@@ -77,7 +96,7 @@ Validate:
 
 ### Phase 8.5 — accountable staging acceptance
 
-Phase 8 is complete only after the full deployed-environment evidence package is reviewable and an accountable staging/project acceptance decision is recorded.
+Phase 8 is complete only after the full deployed-environment evidence package is reviewable, bound to the final immutable staging identity and an accountable staging/project acceptance decision is recorded.
 
 ## Phase 9 — independent external assurance
 
@@ -115,14 +134,18 @@ The accepted post-RC13 enhancement baseline now includes:
 - configurable analytics trends and richer native analytics;
 - versioned framework governance and explicit provenance-backed DTMO control crosswalks;
 - deeper Administration/RBAC management;
-- deeper Governance framework/control evidence and drill-down;
-- accepted contrast/usability repairs for recent intelligence and Governance mapping visibility.
+- OpenCVE and CIRCL Vulnerability-Lookup integrations;
+- explainable vulnerability prioritization and governed vendor/product relevance;
+- vulnerability analytics in Overview, Intelligence and Visual Analytics;
+- governed MISP read and separately approved outbound sharing;
+- governed AIL read/enrichment and exact correlation workspace;
+- Normenkader IBP SM.07 vulnerability-management evidence mapping with explicit CVSS, EPSS, KEV, MITRE ATT&CK, MISP and AIL semantic boundaries.
 
-Further product evolution may continue as a separate bounded backlog, but it no longer replaces the active Phase 8 production-readiness work.
+E8.1–E8.10 are repository-complete. Further product evolution must not displace the active Phase 8 production-readiness gate.
 
 # Delivery discipline
 
-Each further change is implemented as a bounded PR with explicit acceptance criteria, focused tests, preservation of accepted behavior and governance boundaries, complete exact-head CI before merge, and staging validation when the change affects the deployed Phase 8 candidate.
+Each further change is implemented as a bounded PR with explicit acceptance criteria, focused tests, preservation of accepted behavior and governance boundaries, complete exact-head CI before merge, and staging revalidation when a change affects the deployed Phase 8 candidate.
 
 ## Documentation discipline
 
@@ -130,7 +153,7 @@ Professional product, architecture, security, governance and readiness documents
 
 ## Immediate next steps
 
-1. Execute **Phase 8.2 platform and identity validation** against the same owner-verified staging deployment identity.
-2. Preserve evidence binding to that identity; do not mix later redeployments without a new identity/evidence record.
-3. Continue to Phase 8.3 and Phase 8.4 only after the Phase 8.2 evidence is coherent.
+1. Deploy and externally verify the **post-E8 immutable staging deployment identity** for the final candidate.
+2. Execute **Phase 8.2 platform and identity validation** against that exact identity.
+3. Continue to Phase 8.3 and Phase 8.4 only while evidence remains bound to the same immutable deployment identity.
 4. Record accountable Phase 8.5 staging acceptance before entering Phase 9 independent assurance.
