@@ -1,0 +1,92 @@
+name: E8 AIL Correlation Workspace Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ail-correlation-workspace:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:dtmo@127.0.0.1:5432/dtmo
+      DTMO_REDIS_URL: redis://127.0.0.1:6379/0
+      DTMO_OPENSEARCH_URL: http://127.0.0.1:9200
+      DTMO_MINIO_ENDPOINT: 127.0.0.1:9000
+      DTMO_FEATURE_LIVE_CONNECTORS: "false"
+      DTMO_E2E_BASE_URL: http://127.0.0.1:8765
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Verify exact-head checkout
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - run: python -m pip install -e '.[test]'
+      - name: Contract tests
+        run: pytest -q backend/tests/test_e8_9_ail_correlation.py backend/tests/test_e8_9b_ail_correlation_workspace.py
+      - name: Ruff
+        run: python -m ruff check backend/dtmo/ail_correlation.py backend/dtmo/ail_correlation_workspace.py backend/dtmo/connectors/ail.py backend/tests/test_e8_9b_ail_correlation_workspace.py backend/tests/test_e8_9b_ail_correlation_browser_e2e.py
+      - name: Mypy
+        run: python -m mypy backend/dtmo/ail_correlation.py backend/dtmo/ail_correlation_workspace.py backend/dtmo/connectors/ail.py
+      - name: Compile
+        run: python -m compileall -q backend/dtmo
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Start bounded DTMO workspace target
+        run: |
+          mkdir -p artifacts
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/e8-ail-correlation-server.log 2>&1 &
+          echo $! > artifacts/e8-ail-correlation-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/health.json; then exit 0; fi
+            sleep 1
+          done
+          cat artifacts/e8-ail-correlation-server.log
+          exit 1
+      - name: Chromium investigation journey
+        run: pytest -q backend/tests/test_e8_9b_ail_correlation_browser_e2e.py --junitxml=artifacts/e8-ail-correlation-browser.xml
+      - name: Record repository evidence boundary
+        if: success()
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          Path('artifacts/e8-ail-correlation-evidence.json').write_text(json.dumps({
+            'decision': 'pass', 'exact_head': os.environ['EXACT_HEAD'], 'browser': 'chromium',
+            'synthetic_repository_fixtures_only': True, 'raw_leak_content_exposed': False,
+            'live_ail_misp_connectivity_proven': False, 'owner_acceptance_proven': False,
+            'production_deployment_proven': False, 'pentest_acceptance_proven': False
+          }, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Stop workspace target
+        if: always()
+        run: |
+          if test -f artifacts/e8-ail-correlation-server.pid; then kill "$(cat artifacts/e8-ail-correlation-server.pid)" || true; fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: e8-ail-correlation-workspace-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
+
+  ail-correlation-workspace-gate:
+    if: always()
+    needs: [ail-correlation-workspace]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.ail-correlation-workspace.result }}
+        run: test "$RESULT" = "success"
