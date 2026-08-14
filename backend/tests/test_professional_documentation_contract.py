@@ -103,20 +103,29 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         text = _read(path)
         assert "PASS / OWNER_ACCEPTED" in text, f"RC13 accepted state missing from {path}"
 
-    phase8_identity_docs = (
-        "README.md",
-        "docs/README.md",
+    # Phase 8.1 has moved from a pending-identity entry condition to an
+    # accountable owner-verified external-evidence state. Stable transition
+    # documents must reflect that new state while Phase 8 as a whole remains
+    # incomplete and proceeds through Phase 8.2-8.5.
+    for path in (
         "docs/project/CURRENT_STATE.md",
-        "docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md",
-    )
-    for path in phase8_identity_docs:
+        "docs/roadmap/PRODUCTION_ROADMAP.md",
+    ):
         text = _read(path)
-        assert "PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in text, f"Phase 8 identity state missing from {path}"
+        assert "PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE" in text, (
+            f"Phase 8.1 owner-verified state missing from {path}"
+        )
+        assert "Phase 8.2" in text, f"Phase 8.2 next-state marker missing from {path}"
 
-    roadmap = _read("docs/roadmap/PRODUCTION_ROADMAP.md")
-    assert "PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in roadmap or "PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in _read(
-        "docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md"
-    )
+    current_state = _read("docs/project/CURRENT_STATE.md")
+    assert "IN PROGRESS / NEXT" in current_state
+    assert "Phase 9" in current_state and "NOT COMPLETE" in current_state
+    assert "Phase 10" in current_state and "NOT STARTED" in current_state
+
+    # Older entry/readiness documents may retain the historical pending marker
+    # until their dedicated reconciliation, but they must not be used to
+    # override the current owner-verified Phase 8.1 state above.
+    assert "PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in _read("docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md")
 
 
 def test_stable_professional_documents_do_not_become_operational_run_logs() -> None:
