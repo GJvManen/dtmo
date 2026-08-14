@@ -192,7 +192,8 @@ def prepare_misp_export(
     replay_key = _replay_key(payload)
     existing = _export_records(item)
     if any(
-        record.get("replay_key") == replay_key and record.get("status") in {"pending", "success", "uncertain"}
+        record.get("event_uuid") == event_uuid
+        and record.get("status") in {"pending", "success", "uncertain"}
         for record in existing
     ):
         append_persistent_audit_event(
@@ -206,7 +207,9 @@ def prepare_misp_export(
             provenance_reference=item.canonical_url,
         )
         session.flush()
-        raise MispExportError("MISP export replay blocked; inspect prior delivery evidence before retry")
+        raise MispExportError(
+            "MISP export replay blocked for this canonical revision; inspect prior delivery evidence before retry"
+        )
 
     item.metadata_json = {
         **item.metadata_json,
