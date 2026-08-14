@@ -32,6 +32,7 @@ from dtmo.governance_crosswalk import router as governance_crosswalk_router
 from dtmo.governance_crosswalk_experience import router as governance_crosswalk_experience_router
 from dtmo.governance_knowledge import router as governance_knowledge_router
 from dtmo.logging import bind_request_context, clear_request_context, configure_logging, correlation_id, get_logger, resolve_correlation_id
+from dtmo.misp_export_api import router as misp_export_router
 from dtmo.operations_metrics import router as operations_metrics_router
 from dtmo.operations_ui import router as operations_ui_router
 from dtmo.rbac_admin import router as rbac_admin_router
@@ -136,6 +137,7 @@ app.include_router(source_center_router)
 app.include_router(admin_center_router)
 app.include_router(ux_preferences_router)
 app.include_router(intelligence_router)
+app.include_router(misp_export_router)
 app.include_router(admin_sources_router)
 app.include_router(rbac_admin_router)
 app.include_router(governance_knowledge_router)
@@ -200,7 +202,7 @@ def connectors() -> list[dict[str, object]]:
         {"id": "cisa-kev", "enabled": settings.feature_live_connectors, "reliability": "authoritative", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": not settings.production or settings.feature_live_connectors},
         {"id": "opencve", "enabled": settings.feature_live_connectors and settings.feature_opencve_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_opencve_connector, "api_version": "v2"},
         {"id": "vulnerability-lookup", "enabled": settings.feature_live_connectors and settings.feature_vulnerability_lookup_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_vulnerability_lookup_connector, "api_version": "public API"},
-        {"id": "misp", "enabled": settings.feature_live_connectors and settings.feature_misp_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_misp_connector, "mode": "read-only"},
+        {"id": "misp", "enabled": settings.feature_live_connectors and settings.feature_misp_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_misp_connector, "mode": "read-only", "export_enabled": settings.feature_misp_export},
     ]
 
 
