@@ -41,6 +41,14 @@ The crosswalk is exposed by `GET /api/v1/governance/control-crosswalk` and rende
 
 The crosswalk is intentionally partial. It describes verified relationships for implemented DTMO capabilities and leaves unrelated or unverified framework objects unmapped.
 
+## E8 vulnerability & CTI evidence chain
+
+The detailed implementation evidence behind `DTMO-TVM-01` / Normenkader IBP `SM.07` is maintained in `docs/governance/E8_VULNERABILITY_CTI_EVIDENCE_MAPPING.md`.
+
+That mapping binds the completed E8 product slices to repository evidence for OpenCVE, CIRCL Vulnerability-Lookup, explainable prioritization, vendor/product relevance, vulnerability analytics, MISP read/export, AIL read/enrichment and AIL exact-match correlation. It also records supporting Normenkader IBP `SM.04` and `GO.03` relationships and preserves separate semantic boundaries for CVSS, EPSS, KEV, MITRE ATT&CK, MISP TLP/distribution, AIL and DTMO provenance.
+
+The E8 mapping is an implementation-evidence chain under the existing explicit crosswalk; it is not a second authority model and does not convert repository CI into production, owner, legal or external assurance evidence.
+
 ## Intelligence mapping model
 
 DTMO also maintains a persistent first-class intelligence mapping model in `intelligence_framework_mappings`. Those records bind a canonical intelligence UUID to a framework object and retain:
@@ -94,6 +102,6 @@ Governed intelligence mapping writes remain available through the review-control
 
 ## Production-readiness boundary
 
-The framework/control crosswalk is a product and governance capability. It does not constitute Phase 8 production-equivalent environment evidence, Phase 9 independent assurance or Phase 10 production authorization.
+The framework/control crosswalk and E8 evidence mapping are product and governance capabilities. They do not constitute Phase 8 production-equivalent environment evidence, Phase 9 independent assurance or Phase 10 production authorization.
 
-Status of the explicit control-crosswalk extension: `CI_VALIDATION_PENDING` until its exact-head gates and functional Governance acceptance complete successfully.
+Status of E8.10 on this branch: `CI_VALIDATION_PENDING` until the dedicated exact-head E8 governance evidence gate and the applicable regression matrix complete successfully.
