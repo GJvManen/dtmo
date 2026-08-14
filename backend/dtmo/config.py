@@ -36,9 +36,15 @@ class Settings(BaseSettings):
     opencve_api_token: SecretStr = SecretStr("")
     opencve_page_size: int = Field(default=20, ge=1, le=100)
     opencve_max_pages: int = Field(default=1, ge=1, le=20)
+    vulnerability_lookup_api_base: str = "https://vulnerability.circl.lu/api"
+    vulnerability_lookup_api_token: SecretStr = SecretStr("")
+    vulnerability_lookup_page_size: int = Field(default=50, ge=1, le=1000)
+    vulnerability_lookup_since: str = ""
+    vulnerability_lookup_user_agent: str = "DTMO vulnerability-intelligence connector (contact: repository owner)"
     publish_requires_human_approval: bool = True
     feature_live_connectors: bool = False
     feature_opencve_connector: bool = False
+    feature_vulnerability_lookup_connector: bool = False
     feature_ai_analyst: bool = False
 
     @property
