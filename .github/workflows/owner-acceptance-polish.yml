@@ -1,0 +1,30 @@
+name: Owner Acceptance Polish Gate
+
+on:
+  pull_request:
+    paths:
+      - 'backend/dtmo/governance_crosswalk_experience.py'
+      - 'backend/dtmo/severity_experience.py'
+      - 'backend/tests/test_owner_acceptance_polish.py'
+      - '.github/workflows/owner-acceptance-polish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  owner-acceptance-polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Lint bounded repair
+        run: python -m ruff check backend/dtmo/governance_crosswalk_experience.py backend/tests/test_owner_acceptance_polish.py
+      - name: Type check bounded repair
+        run: python -m mypy backend/dtmo/governance_crosswalk_experience.py
+      - name: Verify owner acceptance repair
+        run: python -m pytest -q backend/tests/test_owner_acceptance_polish.py backend/tests/test_governance_explicit_control_crosswalk.py

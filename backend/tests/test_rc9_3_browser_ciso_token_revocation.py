@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import os
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
@@ -29,23 +30,35 @@ async def _assert_revocation_persisted(jti: str) -> None:
     assert store.is_revoked(jti) is True
 
     database = Database(settings)
-    async for session in database.session():
-        event = await session.scalar(
-            select(AuditEventRecord).where(
-                AuditEventRecord.principal == "carol-ciso",
-                AuditEventRecord.action == "token.revoke",
-                AuditEventRecord.resource == f"token:jti:{jti}",
-            )
-        )
-        assert event is not None
-        assert event.decision == "allow"
-        assert event.principal_type == "human"
-        assert event.provenance_reference is not None
-        assert "RC9.3 synthetic compromised token" in event.provenance_reference
-        valid, error = await session.run_sync(verify_persistent_audit_chain)
-        assert valid is True, error
-        break
-    await database.close()
+    try:
+        async for session in database.session():
+            event: AuditEventRecord | None = None
+            # The HTTP response can reach Chromium just before FastAPI finishes
+            # the request-scoped database dependency and commits the audit row.
+            # Keep the evidence requirement strict, but allow that bounded commit
+            # hand-off to become visible instead of racing it with a one-shot read.
+            for _ in range(40):
+                event = await session.scalar(
+                    select(AuditEventRecord).where(
+                        AuditEventRecord.principal == "carol-ciso",
+                        AuditEventRecord.action == "token.revoke",
+                        AuditEventRecord.resource == f"token:jti:{jti}",
+                    )
+                )
+                if event is not None:
+                    break
+                await asyncio.sleep(0.05)
+
+            assert event is not None, "token revocation audit event was not durably persisted"
+            assert event.decision == "allow"
+            assert event.principal_type == "human"
+            assert event.provenance_reference is not None
+            assert "RC9.3 synthetic compromised token" in event.provenance_reference
+            valid, error = await session.run_sync(verify_persistent_audit_chain)
+            assert valid is True, error
+            break
+    finally:
+        await database.close()
 
 
 @pytest.mark.asyncio
