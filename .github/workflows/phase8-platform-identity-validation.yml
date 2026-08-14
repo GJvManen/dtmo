@@ -1,0 +1,43 @@
+name: Phase 8 Platform Identity Validation Gate
+
+on:
+  pull_request:
+    paths:
+      - 'tools/phase8_platform_validation.py'
+      - 'backend/tests/test_phase8_2_platform_validation_contract.py'
+      - 'docs/staging/PHASE8_2_PLATFORM_IDENTITY_EVIDENCE.template.json'
+      - 'docs/staging/PHASE8_2_PLATFORM_IDENTITY_VALIDATION.md'
+      - '.github/workflows/phase8-platform-identity-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  phase8-platform-identity-validation:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Validate Phase 8.2 contract
+        run: pytest -q backend/tests/test_phase8_2_platform_validation_contract.py
+      - name: Prove template fails closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if python tools/phase8_platform_validation.py docs/staging/PHASE8_2_PLATFORM_IDENTITY_EVIDENCE.template.json; then
+            echo 'Template unexpectedly passed' >&2
+            exit 1
+          fi

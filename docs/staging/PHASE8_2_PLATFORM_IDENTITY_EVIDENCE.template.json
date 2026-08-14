@@ -1,0 +1,27 @@
+{
+  "environment_id": "NOT_PROVIDED",
+  "phase8_1_identity_fingerprint": "NOT_PROVIDED",
+  "deployment_identity_fingerprint": "NOT_PROVIDED",
+  "deployed_commit": "NOT_PROVIDED",
+  "application_image_digest": "NOT_PROVIDED",
+  "supporting_image_digests": {},
+  "evidence_location_reference": "NOT_PROVIDED",
+  "validated_by": "NOT_PROVIDED",
+  "validated_at": "NOT_PROVIDED",
+  "checks": {
+    "application_health_readiness": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "postgres_connectivity_migrations": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "opensearch_health_search": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "redis_coordination": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "object_storage_read_write": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "bearer_token_trust": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "rbac_enforcement": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "human_service_account_separation": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "privileged_administration_controls": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "audit_correlation": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "prometheus_metrics": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "grafana_separate_authentication": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"}
+  },
+  "phase8_2_pass": false,
+  "phase8_pass": false
+}
