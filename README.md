@@ -130,14 +130,21 @@ Operational implementation history and immutable run evidence are intentionally 
 
 ## Local reference environment
 
-Copy the example environment file and provide non-default local secrets outside source control:
+A fresh clone now has a dedicated preflight/bootstrap helper. It checks that Docker is actually running, generates strong **development-only** credentials into the local `.env`, validates the AIStor image/license prerequisites and runs `docker compose config` before startup.
 
 ```bash
-cp .env.example .env
+git clone https://github.com/GJvManen/dtmo.git
+cd dtmo
+python3 tools/bootstrap_local.py
+# Follow any ACTION REQUIRED message for the real AIStor image/license.
 docker compose up --build
 ```
 
-The local Compose topology is a development/reference environment. Local compatibility exceptions — including object-storage bootstrap/admin identity handling — must **not** be propagated into staging or production. Staging and production require distinct least-privilege application identities.
+If Docker Desktop is not running, the helper stops immediately with an actionable message instead of failing later while pulling PostgreSQL or another service.
+
+`AISTOR_IMAGE` is deliberately **not** given a fake runnable default. The value in `.env.example` is documentation-shaped only. Supply a real vendor-supported AIStor release reference (preferably digest pinned). Likewise, provide a real local license path through `AISTOR_LICENSE_FILE`; if the license is stored as `./AISTOR_LICENSE_FILE`, the helper will detect it automatically.
+
+The local Compose topology is a development/reference environment. Generated local credentials and compatibility exceptions — including object-storage bootstrap/admin identity handling — must **not** be propagated into staging or production. Staging and production require distinct least-privilege application identities and independently governed secrets.
 
 ## Open source and responsible use
 
