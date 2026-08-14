@@ -72,6 +72,12 @@ async def export_intelligence_to_misp(
         await session.commit()
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
+    # The replay reservation must be durable before any external side effect.
+    # If the process stops after MISP accepts the event but before DTMO can
+    # finalize the response, the persisted pending record blocks automatic
+    # replay and forces operator inspection instead of risking a duplicate.
+    await session.commit()
+
     try:
         async with httpx.AsyncClient(timeout=settings.connector_timeout_seconds) as client:
             misp_event_id = await deliver_misp_event(prepared, settings=settings, client=client)
