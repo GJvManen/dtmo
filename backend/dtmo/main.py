@@ -22,6 +22,7 @@ from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
 from dtmo.connectors.opencve import OpenCVEConnector
+from dtmo.connectors.vulnerability_lookup import VulnerabilityLookupConnector
 from dtmo.dashboards import router as dashboards_router
 from dtmo.framework_experience import router as framework_experience_router
 from dtmo.framework_governance import router as framework_governance_router
@@ -62,7 +63,7 @@ def _route_template(request: Request) -> str:
     return route_path if isinstance(route_path, str) else "<unmatched>"
 
 
-async def _persist_connector_result(connector: CisaKevConnector | OpenCVEConnector) -> dict[str, object]:
+async def _persist_connector_result(connector: CisaKevConnector | OpenCVEConnector | VulnerabilityLookupConnector) -> dict[str, object]:
     result = await connector.run()
     inserted = 0
     indexed = 0
@@ -72,28 +73,8 @@ async def _persist_connector_result(connector: CisaKevConnector | OpenCVEConnect
             inserted += int(receipt.inserted)
             indexed += int(receipt.indexed)
     alert = connector_alerts.record(result)
-    log.info(
-        "connector_run_finished",
-        connector_id=result.connector_id,
-        status=result.status,
-        records=len(result.records),
-        inserted=inserted,
-        indexed=indexed,
-        attempts=result.attempts,
-        alert_state=alert.state,
-        correlation_id=alert.correlation_id,
-    )
-    return {
-        "connector_id": result.connector_id,
-        "status": result.status,
-        "records": len(result.records),
-        "inserted": inserted,
-        "indexed": indexed,
-        "attempts": result.attempts,
-        "error": result.error,
-        "alert_state": alert.state,
-        "correlation_id": alert.correlation_id,
-    }
+    log.info("connector_run_finished", connector_id=result.connector_id, status=result.status, records=len(result.records), inserted=inserted, indexed=indexed, attempts=result.attempts, alert_state=alert.state, correlation_id=alert.correlation_id)
+    return {"connector_id": result.connector_id, "status": result.status, "records": len(result.records), "inserted": inserted, "indexed": indexed, "attempts": result.attempts, "error": result.error, "alert_state": alert.state, "correlation_id": alert.correlation_id}
 
 
 async def run_cisa_kev() -> dict[str, object]:
@@ -104,12 +85,18 @@ async def run_opencve() -> dict[str, object]:
     return await _persist_connector_result(OpenCVEConnector(settings))
 
 
+async def run_vulnerability_lookup() -> dict[str, object]:
+    return await _persist_connector_result(VulnerabilityLookupConnector(settings))
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if settings.feature_live_connectors:
         scheduler.register(ScheduledJob(id="cisa-kev", interval_seconds=settings.connector_poll_seconds, handler=run_cisa_kev))
         if settings.feature_opencve_connector:
             scheduler.register(ScheduledJob(id="opencve", interval_seconds=settings.connector_poll_seconds, handler=run_opencve))
+        if settings.feature_vulnerability_lookup_connector:
+            scheduler.register(ScheduledJob(id="vulnerability-lookup", interval_seconds=settings.connector_poll_seconds, handler=run_vulnerability_lookup))
         scheduler.start()
     yield
     scheduler.shutdown()
@@ -199,6 +186,7 @@ def connectors() -> list[dict[str, object]]:
     return [
         {"id": "cisa-kev", "enabled": settings.feature_live_connectors, "reliability": "authoritative", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": not settings.production or settings.feature_live_connectors},
         {"id": "opencve", "enabled": settings.feature_live_connectors and settings.feature_opencve_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_opencve_connector, "api_version": "v2"},
+        {"id": "vulnerability-lookup", "enabled": settings.feature_live_connectors and settings.feature_vulnerability_lookup_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_vulnerability_lookup_connector, "api_version": "public API"},
     ]
 
 
@@ -216,6 +204,14 @@ async def run_opencve_connector(principal: Annotated[Principal, Depends(require_
     if not settings.feature_opencve_connector:
         return {"status": "disabled", "reason": "OpenCVE connector feature flag is off"}
     return await run_opencve()
+
+
+@app.post("/connectors/vulnerability-lookup/run")
+async def run_vulnerability_lookup_connector(principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))]) -> dict[str, object]:
+    del principal
+    if not settings.feature_vulnerability_lookup_connector:
+        return {"status": "disabled", "reason": "Vulnerability-Lookup connector feature flag is off"}
+    return await run_vulnerability_lookup()
 
 
 @app.get("/metrics")
