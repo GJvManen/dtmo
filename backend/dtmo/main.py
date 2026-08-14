@@ -48,6 +48,7 @@ from dtmo.ui import router as ui_router
 from dtmo.unified_console import router as unified_console_router
 from dtmo.ux_preferences import router as ux_preferences_router
 from dtmo.vulnerability_console import router as vulnerability_console_router
+from dtmo.vulnerability_console_ui import router as vulnerability_console_ui_router
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -105,6 +106,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
 
 
 app = FastAPI(title="DTMO API", version="16.0.0rc12", description="Education-focused cyber threat intelligence platform", lifespan=lifespan)
+app.include_router(vulnerability_console_ui_router)
 app.include_router(rbac_management_experience_router)
 app.include_router(source_onboarding_experience_router)
 app.include_router(governance_crosswalk_experience_router)
