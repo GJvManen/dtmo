@@ -32,7 +32,7 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
       - run: python -m pip install -e '.[test]'
       - name: Contract tests
-        run: pytest -q backend/tests/test_e8_9_ail_correlation.py backend/tests/test_e8_9b_ail_correlation_workspace.py
+        run: pytest -q backend/tests/test_e8_9a_ail_correlation.py backend/tests/test_e8_9b_ail_correlation_workspace.py
       - name: Ruff
         run: python -m ruff check backend/dtmo/ail_correlation.py backend/dtmo/ail_correlation_workspace.py backend/dtmo/connectors/ail.py backend/tests/test_e8_9b_ail_correlation_workspace.py backend/tests/test_e8_9b_ail_correlation_browser_e2e.py
       - name: Mypy
