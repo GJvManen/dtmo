@@ -1,0 +1,43 @@
+name: E8 MISP Read Integration Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  misp-read:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Verify exact-head checkout
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - run: python -m pip install -e '.[test]'
+      - name: MISP read contract tests
+        run: pytest -q backend/tests/test_e8_6_misp_read_connector.py
+      - name: Ruff
+        run: python -m ruff check backend/dtmo/connectors/misp.py backend/dtmo/config.py backend/dtmo/main.py backend/dtmo/intelligence/model.py backend/tests/test_e8_6_misp_read_connector.py
+      - name: Mypy
+        run: python -m mypy backend/dtmo/connectors/misp.py backend/dtmo/config.py backend/dtmo/intelligence/model.py
+      - name: Compile
+        run: python -m compileall -q backend/dtmo
+
+  misp-read-gate:
+    if: always()
+    needs: [misp-read]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.misp-read.result }}
+        run: test "$RESULT" = "success"

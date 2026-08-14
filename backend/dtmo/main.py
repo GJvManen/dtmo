@@ -21,6 +21,7 @@ from dtmo.auth.policy import Permission, Principal
 from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
 from dtmo.connectors.cisa_kev import CisaKevConnector
+from dtmo.connectors.misp import MispReadConnector
 from dtmo.connectors.opencve import OpenCVEConnector
 from dtmo.connectors.vulnerability_lookup import VulnerabilityLookupConnector
 from dtmo.dashboards import router as dashboards_router
@@ -65,7 +66,9 @@ def _route_template(request: Request) -> str:
     return route_path if isinstance(route_path, str) else "<unmatched>"
 
 
-async def _persist_connector_result(connector: CisaKevConnector | OpenCVEConnector | VulnerabilityLookupConnector) -> dict[str, object]:
+async def _persist_connector_result(
+    connector: CisaKevConnector | OpenCVEConnector | VulnerabilityLookupConnector | MispReadConnector,
+) -> dict[str, object]:
     result = await connector.run()
     inserted = 0
     indexed = 0
@@ -91,6 +94,10 @@ async def run_vulnerability_lookup() -> dict[str, object]:
     return await _persist_connector_result(VulnerabilityLookupConnector(settings))
 
 
+async def run_misp() -> dict[str, object]:
+    return await _persist_connector_result(MispReadConnector(settings))
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if settings.feature_live_connectors:
@@ -99,6 +106,8 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
             scheduler.register(ScheduledJob(id="opencve", interval_seconds=settings.connector_poll_seconds, handler=run_opencve))
         if settings.feature_vulnerability_lookup_connector:
             scheduler.register(ScheduledJob(id="vulnerability-lookup", interval_seconds=settings.connector_poll_seconds, handler=run_vulnerability_lookup))
+        if settings.feature_misp_connector:
+            scheduler.register(ScheduledJob(id="misp", interval_seconds=settings.connector_poll_seconds, handler=run_misp))
         scheduler.start()
     yield
     scheduler.shutdown()
@@ -191,6 +200,7 @@ def connectors() -> list[dict[str, object]]:
         {"id": "cisa-kev", "enabled": settings.feature_live_connectors, "reliability": "authoritative", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": not settings.production or settings.feature_live_connectors},
         {"id": "opencve", "enabled": settings.feature_live_connectors and settings.feature_opencve_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_opencve_connector, "api_version": "v2"},
         {"id": "vulnerability-lookup", "enabled": settings.feature_live_connectors and settings.feature_vulnerability_lookup_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_vulnerability_lookup_connector, "api_version": "public API"},
+        {"id": "misp", "enabled": settings.feature_live_connectors and settings.feature_misp_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_misp_connector, "mode": "read-only"},
     ]
 
 
@@ -216,6 +226,14 @@ async def run_vulnerability_lookup_connector(principal: Annotated[Principal, Dep
     if not settings.feature_vulnerability_lookup_connector:
         return {"status": "disabled", "reason": "Vulnerability-Lookup connector feature flag is off"}
     return await run_vulnerability_lookup()
+
+
+@app.post("/connectors/misp/run")
+async def run_misp_connector(principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))]) -> dict[str, object]:
+    del principal
+    if not settings.feature_misp_connector:
+        return {"status": "disabled", "reason": "MISP connector feature flag is off"}
+    return await run_misp()
 
 
 @app.get("/metrics")
