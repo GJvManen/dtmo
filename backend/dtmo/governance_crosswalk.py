@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, cast
 
 from fastapi import APIRouter, Depends
 
@@ -246,7 +246,11 @@ _CONTROL_CROSSWALK: tuple[dict[str, object], ...] = (
 
 
 def control_crosswalk() -> dict[str, object]:
-    mappings = [mapping for control in _CONTROL_CROSSWALK for mapping in control["mappings"]]  # type: ignore[index]
+    mappings = [
+        mapping
+        for control in _CONTROL_CROSSWALK
+        for mapping in cast(list[dict[str, object]], control["mappings"])
+    ]
     by_framework: dict[str, int] = {}
     for mapping in mappings:
         framework_id = str(mapping["framework_id"])
