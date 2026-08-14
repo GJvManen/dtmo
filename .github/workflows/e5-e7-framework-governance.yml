@@ -37,6 +37,7 @@ jobs:
         run: |
           pytest -q \
             backend/tests/test_e5_e7_framework_governance.py \
+            backend/tests/test_governance_explicit_control_crosswalk.py \
             backend/tests/test_e4_analytics_trends.py \
             backend/tests/test_e1_e2_severity_experience.py \
             backend/tests/test_rc13_4_governance_knowledge.py \
@@ -48,12 +49,17 @@ jobs:
           ruff check \
             backend/dtmo/framework_governance.py \
             backend/dtmo/framework_experience.py \
+            backend/dtmo/governance_crosswalk.py \
+            backend/dtmo/governance_crosswalk_experience.py \
             backend/dtmo/persistence/framework_models.py \
             backend/tests/test_e5_e7_framework_governance.py \
+            backend/tests/test_governance_explicit_control_crosswalk.py \
             database/migrations/versions/0010_framework_governance.py
           mypy \
             backend/dtmo/framework_governance.py \
             backend/dtmo/framework_experience.py \
+            backend/dtmo/governance_crosswalk.py \
+            backend/dtmo/governance_crosswalk_experience.py \
             backend/dtmo/persistence/framework_models.py
 
       - name: Record exact-head evidence
@@ -76,13 +82,16 @@ jobs:
               "scope": [
                   "versioned framework inventory",
                   "explicit intelligence mappings",
+                  "explicit DTMO control crosswalk",
+                  "typed mapping relationships and authoritative sources",
                   "human review state",
                   "append-only audit trail",
                   "coverage and provenance drill-down",
               ],
               "claim_boundary": (
-                  "Only explicit provenance-backed mappings are first-class. Pending or rejected mappings "
-                  "do not count as coverage. Missing mappings remain UNMAPPED and no semantic crosswalk is inferred."
+                  "Only explicit provenance-backed relationships are displayed. Intelligence mappings remain "
+                  "human-reviewed; DTMO control crosswalk relationships do not constitute certification or full "
+                  "framework compliance. Missing relationships remain unmapped and no semantic crosswalk is inferred."
               ),
           }
           Path("evidence/e5-e7-framework-governance.json").write_text(
