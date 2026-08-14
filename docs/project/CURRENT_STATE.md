@@ -1,15 +1,15 @@
 # DTMO Current Project State
 
 Last reconciled: **2026-08-14**  
-Release baseline: **16.0.0rc12 + accepted post-RC13 enhancements**
+Release baseline: **16.0.0rc12 + accepted post-RC13 enhancements + E8 workstream**
 
 ## Executive summary
 
-DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted the current functional product, including the targeted post-RC13 owner retest.
+DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted that functional baseline and the targeted post-RC13 retest.
 
-The accountable project owner has also checked and verified the **real staging deployment identity and Phase 8.1 environment evidence**. DTMO is therefore progressing within Phase 8, with **Phase 8.2 platform and identity validation** as the next active objective.
+Phase 8.1 real-staging deployment identity/environment evidence was previously owner-verified for the deployment identity it covered. The repository also contains the Phase 8.2 platform/identity validation mechanism. That external execution is intentionally **paused while E8 materially changes the intended production candidate**. Historical staging evidence is not relabelled as evidence for a newer candidate.
 
-DTMO is **not production ready**. Full Phase 8 deployed-environment acceptance, independent Phase 9 assurance and Phase 10 production go/no-go remain outstanding.
+The active repository product line is **E8 — Vulnerability & CTI ecosystem integrations**. E8.1 through E8.5 are merged. E8.6 read-only MISP integration is active under issue #193. DTMO is **not production ready**: the materially updated candidate must later be rebound to an immutable staging deployment identity and complete remaining Phase 8 external acceptance, Phase 9 independent assurance and Phase 10 production go/no-go.
 
 ## Current phase position
 
@@ -17,8 +17,10 @@ DTMO is **not production ready**. Full Phase 8 deployed-environment acceptance, 
 |---|---|---|
 | Phases 1–7 | Engineering, security, integrity/recovery, connectors, performance, accessibility/UX, observability/operations | `PASS` |
 | RC13 + targeted post-RC13 owner retest | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
-| Phase 8.1 | Real staging environment + immutable deployment identity | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
-| Phase 8.2–8.5 | Deployed staging validation and accountable staging acceptance | `IN PROGRESS / NEXT` |
+| E8.1–E8.5 | Vulnerability integrations, relevance/prioritization, analytics and unified-console UX | `MERGED / REPOSITORY PASS` |
+| E8.6 | Governed read-only MISP integration | `ACTIVE` |
+| Phase 8.1 historical deployment identity | Real staging environment + immutable deployment identity for the candidate then deployed | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
+| Phase 8.2–8.5 external execution | Deployed staging validation and accountable staging acceptance | `PAUSED WHILE E8 CHANGES CANDIDATE` |
 | Phase 9 | Independent external assurance | `NOT COMPLETE` |
 | Phase 10 | Production go/no-go | `NOT STARTED` |
 
@@ -32,20 +34,26 @@ DTMO is **not production ready**. Full Phase 8 deployed-environment acceptance, 
 - source/provenance context;
 - configurable analytical trends and truthful empty states;
 - OpenSearch-backed investigation/search support;
-- durable commit-before-success ingestion behavior.
+- durable commit-before-success ingestion behavior;
+- vulnerability analytics based on governed OpenCVE evidence and Vulnerability-Lookup sightings;
+- CVSS/EPSS/KEV/vendor/product/CWE/sighting filters and 24h/7d/30d windows;
+- explicit vulnerability `ok`, `empty` and `degraded` states with raw-evidence provenance.
 
 ### Sources & Catalog
 
 - curated/built-in source catalog and idempotent bootstrap;
 - source enable/disable and supported execution;
-- credentialed source support through logical secret references;
+- credentialed source support through logical/runtime secret references;
 - governed manual source onboarding with validation/pretest and disabled-first activation;
-- connector state/freshness/runtime evidence.
+- connector state/freshness/runtime evidence;
+- optional OpenCVE and CIRCL Vulnerability-Lookup read integrations;
+- E8.6 adds optional MISP read integration only after its own exact-head gate passes.
 
 ### Visual Analytics
 
 - native severity/source/connector/review analytical views;
 - configurable trend analysis;
+- native vulnerability CVSS/EPSS/KEV/sighting/vendor/product/CWE facets and trends;
 - canonical application analytics without requiring Grafana authentication for normal users;
 - separately secured Grafana operations/advanced dashboards.
 
@@ -68,7 +76,20 @@ DTMO is **not production ready**. Full Phase 8 deployed-environment acceptance, 
 - CVSS context with explicit claim boundaries;
 - implementation-evidence references and publication/share authority boundaries.
 
-The targeted owner retest explicitly accepted the Governance framework/control mapping surface.
+The targeted owner retest explicitly accepted the Governance framework/control mapping surface. E8 repository changes do not create new owner acceptance by implication.
+
+## E8 delivery state
+
+- **E8.1** OpenCVE vulnerability intelligence — merged.
+- **E8.2** CIRCL Vulnerability-Lookup and sightings — merged.
+- **E8.3** explainable vulnerability prioritization — merged.
+- **E8.4** governed vendor/product/CPE relevance — merged.
+- **E8.5.1** governed vulnerability analytics contract — merged.
+- **E8.5.2** server-side evidence projection plus Overview, Intelligence and Visual Analytics UX — merged through PRs #199 and #200.
+- **E8.6** governed read-only MISP integration — active.
+- **E8.7–E8.10** not yet accepted.
+
+Repository tests and synthetic browser fixtures for E8 are repository evidence only. They do not prove live-feed completeness, deployment, exploitability, compromise, owner acceptance, pentest acceptance or external-share authorization.
 
 ## Canonical data and persistence state
 
@@ -80,13 +101,13 @@ DTMO's application truth is layered:
 - **Redis:** queue/cache/runtime coordination;
 - **Prometheus/Grafana:** operational observability.
 
-A connector result is not durably successful until canonical PostgreSQL persistence completes.
+A connector result is not durably successful until canonical PostgreSQL persistence completes. External platform state never replaces DTMO review, audit or authorization state.
 
 ## Security and governance state
 
-The accepted baseline preserves server-side RBAC and least privilege, externally issued bearer-token trust validation, human/service-account separation, separation of duties, auditable privileged transitions, provenance/confidence preservation, privacy/data minimization, logical secret references, explicit human review and separate external-share approval.
+The accepted baseline preserves server-side RBAC and least privilege, externally issued bearer-token trust validation, human/service-account separation, separation of duties, auditable privileged transitions, provenance/confidence preservation, privacy/data minimization, logical/runtime secret references, explicit human review and separate external-share approval.
 
-No connector, CI job, analytics view, Administration capability, Governance mapping or staging access grants automatic publication authority.
+No connector, successful import, CI job, analytics view, Administration capability, Governance mapping or staging access grants automatic publication authority. In particular, incoming MISP TLP/distribution/sharing-group restrictions are authoritative constraints; E8.6 import must not be interpreted as permission to redistribute.
 
 ## Framework mapping truth
 
@@ -94,35 +115,26 @@ Framework mapping is explicit and provenance-backed. The project does not infer 
 
 CVSS remains a vulnerability-scoring context rather than a DTMO compliance-control framework. MITRE ATT&CK mappings are threat/detection/classification relationships rather than compliance claims.
 
-## Active production-readiness workstream
+## Active workstream
 
-**Phase 8.2 — platform and identity validation** is now the single active production-readiness objective.
+**E8.6 — governed read-only MISP integration** is the active repository objective under issue #193.
 
-Validation must remain bound to the same owner-verified staging deployment identity and cover:
-
-- application health/readiness;
-- database migrations/connectivity;
-- OpenSearch, Redis and object-storage availability;
-- authentication and authorization;
-- human/service-account separation;
-- privileged Administration controls;
-- audit/correlation behavior;
-- operational metrics and separately authenticated Grafana.
-
-A redeployment changes the immutable evidence identity and requires a new binding rather than mixing evidence across deployments.
+The bounded slice must preserve MISP event/attribute/object/relationship UUIDs and source/time context, tags/taxonomies/galaxies and distribution/TLP constraints while remaining read-only. MISP credentials remain runtime-only. No E8.7 outbound sharing path is accepted by E8.6.
 
 ## Remaining production-readiness limitations
 
-- Phase 8.2 platform/identity validation is not yet accepted;
-- Phase 8.3 source-to-intelligence validation is not yet accepted;
-- Phase 8.4 operational/recovery validation is not yet accepted;
-- Phase 8.5 accountable staging acceptance is not yet recorded;
+- E8.6–E8.10 are not yet fully accepted;
+- the production candidate is still changing and must later be rebound to an updated immutable staging deployment identity;
+- Phase 8.2 platform/identity validation must be executed against that updated candidate;
+- Phase 8.3 source-to-intelligence validation is not yet accepted for the final candidate;
+- Phase 8.4 operational/recovery validation is not yet accepted for the final candidate;
+- Phase 8.5 accountable staging acceptance is not yet recorded for the final candidate;
 - Phase 9 independent penetration/security assurance is not complete;
 - representative production-equivalent load/stress, hardening and residual-risk acceptance remain outstanding where required by the Phase 9 gate;
 - Phase 10 formal production go/no-go has not started.
 
 ## Documentation and evidence boundary
 
-The Phase 8.1 owner-verification decision is retained as an immutable development run record. Environment-specific values remain governed by their approved evidence location and are not reconstructed from repository placeholders.
+Historical Phase 8.1 owner verification remains immutable evidence for the deployment identity it covered. It is not rewritten to cover later E8 commits. Environment-specific values remain governed by their approved evidence location and are not reconstructed from repository placeholders.
 
 Stable professional documents describe the controlled current state. Operational chronology belongs under `docs/development/runs/`, GitHub issues/PRs and CI evidence. Environment and independent-assurance claims require evidence attributable to the relevant deployment/assessment identity.
