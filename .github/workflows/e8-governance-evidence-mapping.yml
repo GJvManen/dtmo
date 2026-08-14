@@ -1,0 +1,65 @@
+name: E8 Governance Evidence Mapping Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  governance-evidence:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Verify exact-head checkout
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - run: python -m pip install -e '.[test]'
+      - name: E8.10 governance evidence contract
+        run: pytest -q backend/tests/test_e8_10_governance_evidence_mapping.py
+      - name: Ruff
+        run: python -m ruff check backend/tests/test_e8_10_governance_evidence_mapping.py
+      - name: Record repository evidence boundary
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          mkdir -p artifacts
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          Path('artifacts/e8-governance-evidence.json').write_text(json.dumps({
+            'decision': 'pass',
+            'exact_head': os.environ['EXACT_HEAD'],
+            'mapping': 'Normenkader IBP SM.07 with supporting SM.04 and GO.03 evidence chain',
+            'repository_contract_proven': True,
+            'live_connector_evidence_proven': False,
+            'production_deployment_proven': False,
+            'owner_acceptance_proven': False,
+            'legal_collection_or_redistribution_authority_proven': False,
+            'pentest_acceptance_proven': False
+          }, indent=2) + '\n', encoding='utf-8')
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: e8-governance-evidence-mapping
+          path: artifacts/e8-governance-evidence.json
+          retention-days: 30
+          if-no-files-found: error
+
+  governance-evidence-gate:
+    if: always()
+    needs: [governance-evidence]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.governance-evidence.result }}
+        run: test "$RESULT" = "success"
