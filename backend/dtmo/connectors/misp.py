@@ -120,7 +120,8 @@ def normalize_misp_event(event: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(event_uuid, str) or not event_uuid.strip():
         raise ValueError("MISP event has no UUID")
     tags = _tags(event.get("Tag"))
-    orgc = event.get("Orgc") if isinstance(event.get("Orgc"), dict) else {}
+    orgc_value = event.get("Orgc")
+    orgc: dict[str, Any] = orgc_value if isinstance(orgc_value, dict) else {}
     attributes = [
         _attribute_projection(attribute)
         for attribute in _list_of_dicts(event.get("Attribute"), field="Attribute")
