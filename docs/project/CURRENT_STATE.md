@@ -5,7 +5,7 @@ Release baseline: **16.0.0rc12 + accepted post-RC13 enhancements**
 
 ## Executive summary
 
-DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted the current functional product, including the targeted post-RC13 owner retest completed after PR #189.
+DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted the current functional product, including the targeted post-RC13 owner retest.
 
 The project is ready to execute **Phase 8 real production-equivalent staging validation**, but it is **not production ready**. A real immutable staging deployment identity, environment-specific acceptance, independent external assurance and formal production go/no-go remain outstanding.
 
@@ -65,7 +65,7 @@ The project is ready to execute **Phase 8 real production-equivalent staging val
 - CVSS context with explicit claim boundaries;
 - implementation-evidence references and publication/share authority boundaries.
 
-The targeted owner retest on 2026-08-14 explicitly accepted the Governance framework/control mapping surface after PR #189.
+The targeted owner retest explicitly accepted the Governance framework/control mapping surface.
 
 ## Canonical data and persistence state
 
@@ -93,7 +93,7 @@ CVSS remains a vulnerability-scoring context rather than a DTMO compliance-contr
 
 ## Active production-readiness workstream
 
-**Phase 8.1** is the single active production-readiness gate under issue #158.
+**Phase 8.1** is the single active production-readiness gate.
 
 It requires one real approved production-equivalent staging environment and immutable deployment identity tied to:
 
@@ -121,6 +121,6 @@ Repository CI, local Docker Compose and staging emulators remain supporting engi
 
 ## Documentation and evidence boundary
 
-The post-#189 owner acceptance is recorded under `docs/development/runs/RUN-OWNER-ACCEPTANCE-2026-08-14.md`.
+Detailed acceptance chronology and immutable technical identifiers are retained under `docs/development/runs/` and the repository's CI/evidence records rather than duplicated into this stable current-state document.
 
 Stable professional documents describe the controlled current state. Operational chronology belongs under `docs/development/runs/`, GitHub issues/PRs and CI evidence. Environment and independent-assurance claims require evidence attributable to the relevant deployment/assessment identity.
