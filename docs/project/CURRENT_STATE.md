@@ -86,8 +86,8 @@ The targeted owner retest explicitly accepted the Governance framework/control m
 - **E8.3** explainable vulnerability prioritization — merged.
 - **E8.4** governed vendor/product/CPE relevance — merged.
 - **E8.5.1** governed vulnerability analytics contract — merged.
-- **E8.5.2** server-side evidence projection plus Overview, Intelligence and Visual Analytics UX — merged through PRs #199 and #200.
-- **E8.6** governed read-only MISP integration — merged through PR #201 after full exact-head repository CI.
+- **E8.5.2** server-side evidence projection plus Overview, Intelligence and Visual Analytics UX — merged after its repository-controlled acceptance gates.
+- **E8.6** governed read-only MISP integration — merged after full exact-head repository CI.
 - **E8.7** governed MISP sharing/export — active.
 - **E8.8–E8.10** not yet accepted.
 
