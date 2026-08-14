@@ -1,6 +1,6 @@
 # DTMO Roadmap — Production Readiness and Product Evolution
 
-Last updated: **2026-08-12**
+Last updated: **2026-08-14**
 
 ## Purpose
 
@@ -14,8 +14,9 @@ This roadmap separates two complementary tracks:
 | Stage | Scope | Status |
 |---|---|---|
 | Phases 1–7 | Repository-controlled engineering baseline | `PASS` |
-| RC13 | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
-| Phase 8 | Real production-equivalent staging acceptance | `READY / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
+| RC13 + post-RC13 functional owner retest | Unified-console/product acceptance | `PASS / OWNER_ACCEPTED` |
+| Phase 8.1 | Real staging environment + immutable deployment identity | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
+| Phase 8.2–8.5 | Deployed staging validation and accountable staging acceptance | `IN PROGRESS / NEXT` |
 | Phase 9 | Independent external assurance | `NOT COMPLETE` |
 | Phase 10 | Formal production go/no-go | `NOT STARTED` |
 
@@ -27,29 +28,17 @@ DTMO is **not production ready**.
 
 ### Phase 8.1 — environment and immutable deployment identity
 
-**Objective:** establish one approved production-equivalent staging environment and bind all evidence to one immutable deployment identity.
+**Status:** `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE`
 
-Required outputs:
+The accountable project owner has checked and verified the real staging deployment identity and the required environment evidence. Environment-specific identifiers and sensitive infrastructure values remain governed by their approved external evidence location and are not reconstructed from repository placeholders.
 
-- approved environment identifier;
-- accountable staging owner;
-- approved endpoint/access path;
-- exact deployed release and Git commit;
-- immutable application/supporting image digests;
-- infrastructure/runtime inventory;
-- configuration parity and approved deviations;
-- separate least-privilege application/service identities;
-- secret-management references;
-- TLS/network restrictions;
-- controlled data/sanitization evidence;
-- no-production-credential confirmation;
-- deployment/change record;
-- rollback target/procedure;
-- deployment-time CVE/vendor-advisory/security review.
+The accepted evidence scope covers environment identity/ownership, approved access path, exact deployed release/commit, immutable image identities, runtime inventory, configuration parity/deviations, least-privilege identities and secret handling, TLS/network/data controls, no-production-credential reuse, change/rollback records and deployment-time security review.
 
 ### Phase 8.2 — platform and identity validation
 
-Validate against the immutable staging identity:
+**Status:** `NEXT ACTIVE OBJECTIVE`
+
+Validate against the same verified immutable staging identity:
 
 - application health/readiness;
 - database migrations/connectivity;
@@ -62,7 +51,7 @@ Validate against the immutable staging identity:
 
 ### Phase 8.3 — source-to-intelligence validation
 
-Validate:
+Validate against the same staging identity:
 
 - source catalog/bootstrap;
 - source activation/execution;
@@ -88,7 +77,7 @@ Validate:
 
 ### Phase 8.5 — accountable staging acceptance
 
-Phase 8 is complete only after the full evidence package is reviewable and an accountable staging/project acceptance decision is recorded.
+Phase 8 is complete only after the full deployed-environment evidence package is reviewable and an accountable staging/project acceptance decision is recorded.
 
 ## Phase 9 — independent external assurance
 
@@ -119,121 +108,29 @@ Required decision inputs:
 
 # Track B — Product evolution
 
-GitHub issue #171 is the umbrella backlog for the owner-approved post-RC13 enhancements.
+The accepted post-RC13 enhancement baseline now includes:
 
-## E1 — shared severity semantics and filters
+- shared accessible severity semantics and filters across Overview and Intelligence;
+- governed manual source onboarding;
+- configurable analytics trends and richer native analytics;
+- versioned framework governance and explicit provenance-backed DTMO control crosswalks;
+- deeper Administration/RBAC management;
+- deeper Governance framework/control evidence and drill-down;
+- accepted contrast/usability repairs for recent intelligence and Governance mapping visibility.
 
-**Priority:** 1  
-**Scope:** Overview + Intelligence
-
-Deliver:
-
-- a single shared severity taxonomy/filter contract;
-- informational/low/medium/high filtering;
-- accessible semantic presentation (e.g. low/green, medium/amber, high/red) with labels/icons/non-colour cues;
-- consistent filtered totals and graphics;
-- truthful empty filtered states;
-- browser/keyboard/WCAG coverage.
-
-This is the next product-development slice.
-
-## E2 — governed manual source onboarding
-
-**Priority:** 2
-
-Deliver a controlled Sources & Catalog flow for manually registering sources with:
-
-- source identity/type;
-- endpoint;
-- schedule/freshness expectation;
-- authentication mode/logical secret reference;
-- ownership;
-- default-disabled state;
-- validation/test-run before activation;
-- audit/RBAC controls.
-
-Source creation/execution must not grant publication authority.
-
-## E3 — richer Visual Analytics and trend analysis
-
-**Priority:** 2
-
-Deliver:
-
-- consistent severity semantics with E1;
-- configurable time windows (at minimum 24h/7d/30d when data supports them);
-- distinction between volume trend and severity/risk trend;
-- richer native visualizations;
-- framework aggregation only when backed by explicit first-class mappings.
-
-## E4 — first-class framework mapping model
-
-**Priority:** 3
-
-Create a canonical mapping data/API model supporting explicit, reviewable mappings for agreed frameworks, initially considering:
-
-- Normenkader IBP;
-- MITRE ATT&CK;
-- CVSS fields/context.
-
-Every mapping should record:
-
-- framework/version;
-- control/technique/identifier;
-- mapping type/relationship;
-- evidence/provenance source;
-- confidence/status;
-- review state and reviewer context;
-- timestamps/versioning.
-
-Missing mappings remain `UNMAPPED`; no automatic semantic equivalence is accepted.
-
-## E5 — richer Administration RBAC
-
-**Priority:** 3
-
-Deliver:
-
-- role-to-permission matrix visibility;
-- governed role assignment workflows;
-- policy-bounded custom role/assignment capability where approved;
-- self-lockout and final-admin protections;
-- strict service-account/human separation;
-- auditable actor/reason/correlation/before-after state;
-- explicit separation from review/share approval authority.
-
-## E6 — deeper Governance framework surface
-
-**Priority:** 3
-
-Build on E4 rather than creating a parallel mapping truth model.
-
-Deliver:
-
-- framework/version inventory;
-- mapping coverage and mapped/unmapped counts;
-- evidence provenance/review state;
-- drill-down from framework control/technique to DTMO mapping/control/intelligence evidence;
-- explicit distinction between normative requirement, internal control implementation, intelligence relationship and evidence;
-- truthful `UNMAPPED`/`CONTEXT_ONLY` states.
+Further product evolution may continue as a separate bounded backlog, but it no longer replaces the active Phase 8 production-readiness work.
 
 # Delivery discipline
 
-Each product enhancement is implemented as a bounded PR with:
-
-- explicit acceptance criteria;
-- focused unit/contract/browser tests;
-- preservation of accepted RC13 behavior;
-- preservation of RBAC, privacy, provenance and publication boundaries;
-- complete exact-head CI before merge;
-- staging validation when the enhancement is part of a Phase 8 candidate deployment.
+Each further change is implemented as a bounded PR with explicit acceptance criteria, focused tests, preservation of accepted behavior and governance boundaries, complete exact-head CI before merge, and staging validation when the change affects the deployed Phase 8 candidate.
 
 ## Documentation discipline
 
-Professional product, architecture, security, governance and readiness documents describe stable capabilities and controlled current state. Operational PR/incident chronology belongs in `docs/development/runs/`, issues and CI evidence and must not replace the professional documentation layers.
+Professional product, architecture, security, governance and readiness documents describe stable capabilities and controlled current state. Operational PR/incident chronology belongs in development run records, issues and CI evidence.
 
 ## Immediate next steps
 
-1. Complete the professional documentation restoration/reconciliation.
-2. Start product enhancement **E1 — shared severity semantics and filters for Overview + Intelligence**.
-3. Continue Phase 8.1 real staging identity work as the active production-readiness track.
+1. Execute **Phase 8.2 platform and identity validation** against the same owner-verified staging deployment identity.
+2. Preserve evidence binding to that identity; do not mix later redeployments without a new identity/evidence record.
+3. Continue to Phase 8.3 and Phase 8.4 only after the Phase 8.2 evidence is coherent.
+4. Record accountable Phase 8.5 staging acceptance before entering Phase 9 independent assurance.
