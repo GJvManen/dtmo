@@ -1,0 +1,43 @@
+name: E8 AIL Read Enrichment Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ail-read-enrichment:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Verify exact-head checkout
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - run: python -m pip install -e '.[test]'
+      - name: AIL read/enrichment contract tests
+        run: pytest -q backend/tests/test_e8_8_ail_read_enrichment.py
+      - name: Ruff
+        run: python -m ruff check backend/dtmo/connectors/ail.py backend/dtmo/config.py backend/dtmo/main.py backend/tests/test_e8_8_ail_read_enrichment.py
+      - name: Mypy
+        run: python -m mypy backend/dtmo/connectors/ail.py backend/dtmo/config.py
+      - name: Compile
+        run: python -m compileall -q backend/dtmo
+
+  ail-read-enrichment-gate:
+    if: always()
+    needs: [ail-read-enrichment]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed evidence
+        env:
+          RESULT: ${{ needs.ail-read-enrichment.result }}
+        run: test "$RESULT" = "success"
