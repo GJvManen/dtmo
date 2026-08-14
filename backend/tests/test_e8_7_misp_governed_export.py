@@ -63,6 +63,12 @@ def _publisher() -> Principal:
     return Principal("publisher@example.test", frozenset({Role.PUBLISHER}))
 
 
+def test_export_feature_flag_is_separate_and_disabled_by_default() -> None:
+    settings = Settings(environment="test", feature_misp_connector=True)
+    assert settings.feature_misp_connector is True
+    assert settings.feature_misp_export is False
+
+
 def test_export_requires_existing_review_and_share_approval() -> None:
     session = _session()
     item = _item(session, reviewed=False, share_approved=False)
@@ -73,6 +79,23 @@ def test_export_requires_existing_review_and_share_approval() -> None:
             item_id=item.id,
             principal=_publisher(),
             request_id="e8-export-unapproved",
+            distribution=0,
+            sharing_group_id=None,
+            tlp="tlp:amber",
+        )
+
+
+def test_service_account_cannot_export_even_if_item_is_approved() -> None:
+    session = _session()
+    item = _item(session)
+    service = Principal("connector:misp", frozenset({Role.SERVICE_ACCOUNT}))
+
+    with pytest.raises(MispExportError, match="service accounts cannot export"):
+        prepare_misp_export(
+            session,
+            item_id=item.id,
+            principal=service,
+            request_id="e8-export-service",
             distribution=0,
             sharing_group_id=None,
             tlp="tlp:amber",
@@ -133,7 +156,7 @@ def test_authoritative_restrictions_cannot_be_relaxed() -> None:
         )
 
 
-def test_prepare_finalize_and_replay_block_are_auditable() -> None:
+def test_prepare_finalize_and_revision_replay_block_are_auditable() -> None:
     session = _session()
     item = _item(session)
     publisher = _publisher()
@@ -168,13 +191,13 @@ def test_prepare_finalize_and_replay_block_are_auditable() -> None:
             item_id=item.id,
             principal=publisher,
             request_id="e8-export-replay",
-            distribution=0,
+            distribution=1,
             sharing_group_id=None,
-            tlp="tlp:amber",
+            tlp="tlp:red",
         )
 
 
-def test_uncertain_delivery_blocks_automatic_replay() -> None:
+def test_uncertain_delivery_blocks_changed_parameter_replay() -> None:
     session = _session()
     item = _item(session)
     publisher = _publisher()
@@ -201,9 +224,9 @@ def test_uncertain_delivery_blocks_automatic_replay() -> None:
             item_id=item.id,
             principal=publisher,
             request_id="e8-export-retry",
-            distribution=0,
+            distribution=2,
             sharing_group_id=None,
-            tlp="tlp:amber",
+            tlp="tlp:red",
         )
 
 
