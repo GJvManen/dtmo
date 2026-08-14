@@ -26,6 +26,7 @@ from dtmo.framework_experience import router as framework_experience_router
 from dtmo.framework_governance import router as framework_governance_router
 from dtmo.frontend import router as frontend_router
 from dtmo.governance_crosswalk import router as governance_crosswalk_router
+from dtmo.governance_crosswalk_experience import router as governance_crosswalk_experience_router
 from dtmo.governance_knowledge import router as governance_knowledge_router
 from dtmo.logging import bind_request_context, clear_request_context, configure_logging, correlation_id, get_logger, resolve_correlation_id
 from dtmo.operations_metrics import router as operations_metrics_router
@@ -92,6 +93,9 @@ app.include_router(rbac_management_experience_router)
 # canonical Sources & Catalog product surface. It intentionally wins before
 # the lower E5/E7, E4 and E1/E2 composition layers.
 app.include_router(source_onboarding_experience_router)
+# Post-E7 governance completion composes the explicit repository-backed control
+# crosswalk over the first-class framework inventory in the canonical console.
+app.include_router(governance_crosswalk_experience_router)
 # E5/E7 composes first-class versioned framework inventory and explicit mapping
 # governance over E4. These canonical roots intentionally win before lower UI layers.
 app.include_router(framework_experience_router)
