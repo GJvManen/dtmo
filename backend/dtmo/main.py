@@ -20,6 +20,7 @@ from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal
 from dtmo.ciso_ui import router as ciso_ui_router
 from dtmo.config import get_settings
+from dtmo.connectors.ail import AilReadConnector
 from dtmo.connectors.cisa_kev import CisaKevConnector
 from dtmo.connectors.misp import MispReadConnector
 from dtmo.connectors.opencve import OpenCVEConnector
@@ -68,7 +69,7 @@ def _route_template(request: Request) -> str:
 
 
 async def _persist_connector_result(
-    connector: CisaKevConnector | OpenCVEConnector | VulnerabilityLookupConnector | MispReadConnector,
+    connector: CisaKevConnector | OpenCVEConnector | VulnerabilityLookupConnector | MispReadConnector | AilReadConnector,
 ) -> dict[str, object]:
     result = await connector.run()
     inserted = 0
@@ -99,6 +100,10 @@ async def run_misp() -> dict[str, object]:
     return await _persist_connector_result(MispReadConnector(settings))
 
 
+async def run_ail() -> dict[str, object]:
+    return await _persist_connector_result(AilReadConnector(settings))
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if settings.feature_live_connectors:
@@ -109,6 +114,8 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
             scheduler.register(ScheduledJob(id="vulnerability-lookup", interval_seconds=settings.connector_poll_seconds, handler=run_vulnerability_lookup))
         if settings.feature_misp_connector:
             scheduler.register(ScheduledJob(id="misp", interval_seconds=settings.connector_poll_seconds, handler=run_misp))
+        if settings.feature_ail_connector:
+            scheduler.register(ScheduledJob(id="ail", interval_seconds=settings.connector_poll_seconds, handler=run_ail))
         scheduler.start()
     yield
     scheduler.shutdown()
@@ -203,6 +210,7 @@ def connectors() -> list[dict[str, object]]:
         {"id": "opencve", "enabled": settings.feature_live_connectors and settings.feature_opencve_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_opencve_connector, "api_version": "v2"},
         {"id": "vulnerability-lookup", "enabled": settings.feature_live_connectors and settings.feature_vulnerability_lookup_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_vulnerability_lookup_connector, "api_version": "public API"},
         {"id": "misp", "enabled": settings.feature_live_connectors and settings.feature_misp_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_misp_connector, "mode": "read-only", "export_enabled": settings.feature_misp_export},
+        {"id": "ail", "enabled": settings.feature_live_connectors and settings.feature_ail_connector, "reliability": "trusted", "schedule_seconds": settings.connector_poll_seconds, "manual_run_available": settings.feature_ail_connector, "mode": "read-only-explicit-objects", "autonomous_crawling": False},
     ]
 
 
@@ -236,6 +244,14 @@ async def run_misp_connector(principal: Annotated[Principal, Depends(require_per
     if not settings.feature_misp_connector:
         return {"status": "disabled", "reason": "MISP connector feature flag is off"}
     return await run_misp()
+
+
+@app.post("/connectors/ail/run")
+async def run_ail_connector(principal: Annotated[Principal, Depends(require_permission(Permission.MANAGE_CONNECTORS))]) -> dict[str, object]:
+    del principal
+    if not settings.feature_ail_connector:
+        return {"status": "disabled", "reason": "AIL connector feature flag is off"}
+    return await run_ail()
 
 
 @app.get("/metrics")
