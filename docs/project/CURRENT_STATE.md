@@ -1,85 +1,75 @@
 # DTMO Current Project State
 
-Last reconciled: **2026-08-12**  
-Release baseline: **16.0.0rc12**
+Last reconciled: **2026-08-14**  
+Release baseline: **16.0.0rc12 + accepted post-RC13 enhancements**
 
 ## Executive summary
 
-DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted the current functional product.
+DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted the current functional product, including the targeted post-RC13 owner retest.
 
-The project is therefore ready to enter **Phase 8 real production-equivalent staging validation**, but it is **not production ready**. Independent external assurance and formal production go/no-go remain outstanding.
+The project is ready to execute **Phase 8 real production-equivalent staging validation**, but it is **not production ready**. A real immutable staging deployment identity, environment-specific acceptance, independent external assurance and formal production go/no-go remain outstanding.
 
 ## Current phase position
 
 | Stage | Scope | Status |
 |---|---|---|
 | Phases 1–7 | Engineering, security, integrity/recovery, connectors, performance, accessibility/UX, observability/operations | `PASS` |
-| RC13 | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
+| RC13 + targeted post-RC13 owner retest | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
 | Phase 8 | Real staging acceptance | `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
 | Phase 9 | Independent external assurance | `NOT COMPLETE` |
 | Phase 10 | Production go/no-go | `NOT STARTED` |
 
-## Product capabilities available in the accepted baseline
+## Accepted product capabilities
 
-### Overview
+### Overview and Intelligence
 
-- intelligence KPIs;
-- source/runtime status;
-- recent intelligence;
-- native analytical summaries and trend representation;
-- truthful no-data/empty-state behavior;
-- unified refresh behavior.
-
-### Intelligence
-
-- canonical recent intelligence from PostgreSQL application state;
-- provenance/source context;
+- canonical intelligence KPIs and recent intelligence;
+- shared accessible severity semantics and filtering;
+- accepted high-contrast recent-intelligence presentation;
+- source/provenance context;
+- configurable analytical trends and truthful empty states;
 - OpenSearch-backed investigation/search support;
-- normalized supported source types and references;
 - durable commit-before-success ingestion behavior.
 
 ### Sources & Catalog
 
-- curated/built-in source catalog;
-- catalog bootstrap and idempotent registration;
-- source enable/disable operations;
-- supported source execution;
+- curated/built-in source catalog and idempotent bootstrap;
+- source enable/disable and supported execution;
 - credentialed source support through logical secret references;
+- governed manual source onboarding with validation/pretest and disabled-first activation;
 - connector state/freshness/runtime evidence.
-
-Manual source onboarding through the product UI/API is a planned post-RC13 enhancement.
 
 ### Visual Analytics
 
 - native severity/source/connector/review analytical views;
-- zero-data truthful empty states;
+- configurable trend analysis;
 - canonical application analytics without requiring Grafana authentication for normal users;
 - separately secured Grafana operations/advanced dashboards.
 
-Richer severity colours, shared filtering and configurable trend analysis are planned enhancements.
-
 ### Administration
 
-- managed principals and role assignments;
-- human/service-account role separation;
-- administrator self-management protection;
-- final-active-admin protection;
+- managed principals and governed role assignments;
+- role-to-permission visibility/management;
+- human/service-account separation;
+- administrator self-management and final-active-admin protections;
 - auditable privileged changes with request correlation.
-
-A richer role-to-permission administration model is planned.
 
 ### Governance
 
 - authenticated repository-backed governance knowledge surface;
-- explicit framework coverage states;
-- repository provenance for internal mappings;
-- publication/share authority boundaries.
+- versioned framework registry and explicit coverage/review states;
+- visible provenance-backed DTMO control crosswalks;
+- Normenkader IBP control relationships;
+- MITRE ATT&CK threat/detection/classification context;
+- NIST CSF relationships;
+- CVSS context with explicit claim boundaries;
+- implementation-evidence references and publication/share authority boundaries.
 
-First-class external framework crosswalks remain deliberately incomplete until explicit provenance-backed mapping datasets are implemented.
+The targeted owner retest explicitly accepted the Governance framework/control mapping surface.
 
 ## Canonical data and persistence state
 
-DTMO's application truth is intentionally layered:
+DTMO's application truth is layered:
 
 - **PostgreSQL:** canonical intelligence/application/RBAC state;
 - **OpenSearch:** search/index representation;
@@ -87,79 +77,50 @@ DTMO's application truth is intentionally layered:
 - **Redis:** queue/cache/runtime coordination;
 - **Prometheus/Grafana:** operational observability.
 
-A connector result is not considered durably successful until canonical PostgreSQL persistence completes. Search-index or raw-object success alone does not substitute for canonical application truth.
+A connector result is not durably successful until canonical PostgreSQL persistence completes.
 
 ## Security and governance state
 
-The accepted baseline preserves:
+The accepted baseline preserves server-side RBAC and least privilege, externally issued bearer-token trust validation, human/service-account separation, separation of duties, auditable privileged transitions, provenance/confidence preservation, privacy/data minimization, logical secret references, explicit human review and separate external-share approval.
 
-- server-side RBAC and least privilege;
-- externally issued bearer-token trust validation;
-- human/service-account separation;
-- separation of duties;
-- tamper-evident/auditable privileged state transitions;
-- provenance and confidence preservation;
-- privacy/data minimization;
-- logical secret references instead of raw credential values;
-- explicit human review and separate external-share approval;
-- no automatic publication authority from connectors, CI, analytics, Administration, Governance or staging access.
+No connector, CI job, analytics view, Administration capability, Governance mapping or staging access grants automatic publication authority.
 
-## Framework mapping state
+## Framework mapping truth
 
-The current governance truth model is intentionally conservative:
+Framework mapping is explicit and provenance-backed. The project does not infer mappings from free text, tags or semantic similarity. Individual mappings carry their own relation/coverage semantics and evidence; presence of a mapping does not imply complete framework compliance.
 
-| Framework | Current state | Meaning |
-|---|---|---|
-| Normenkader IBP | `UNMAPPED` | no complete first-class control crosswalk yet |
-| MITRE ATT&CK | `UNMAPPED` | no complete first-class technique crosswalk yet |
-| CVSS | `CONTEXT_ONLY` | severity context exists, but first-class score/vector mapping is not yet implemented |
-| DTMO internal governance | `MAPPED_INTERNAL` | repository-backed mappings to explicit project evidence |
-
-The next mapping architecture must record framework/version, control/technique identifier, provenance, confidence/status and review state. Missing mappings must remain visible and must never be inferred from free text or tags.
+CVSS remains a vulnerability-scoring context rather than a DTMO compliance-control framework. MITRE ATT&CK mappings are threat/detection/classification relationships rather than compliance claims.
 
 ## Active production-readiness workstream
 
 **Phase 8.1** is the single active production-readiness gate.
 
-It requires a real approved production-equivalent staging environment and an immutable deployment identity tied to:
+It requires one real approved production-equivalent staging environment and immutable deployment identity tied to:
 
-- environment and accountable owner;
-- approved reachable access path;
+- environment identifier and accountable owner;
+- approved HTTPS access path;
 - exact deployed commit/release;
 - immutable application/supporting image digests;
 - infrastructure/runtime inventory;
-- configuration parity;
-- separate least-privilege application identities;
+- configuration parity and approved deviations;
+- separate least-privilege application/service identities and secret-manager references;
 - TLS/network controls;
 - controlled staging data and no-production-credential confirmation;
 - deployment/change and rollback records;
 - deployment-time security/CVE/vendor-advisory review.
 
-## Active product-enhancement workstream
+Repository CI, local Docker Compose and staging emulators remain supporting engineering evidence only.
 
-GitHub issue #171 tracks the post-RC13 product roadmap. Delivery order:
+## Remaining production-readiness limitations
 
-1. shared accessible severity semantics and filters for Overview + Intelligence;
-2. governed manual source onboarding;
-3. richer Visual Analytics and trend analysis;
-4. first-class framework mapping data/API model;
-5. deeper Administration role/permission management;
-6. deeper framework-oriented Governance evidence surface.
-
-These enhancements do not reopen RC13 and do not themselves satisfy Phase 8 evidence requirements.
-
-## Known limitations
-
-- DTMO has not yet completed real production-equivalent staging acceptance.
-- Independent penetration testing/external assurance is not yet complete.
-- Formal production go/no-go has not started.
-- First-class Normenkader IBP and MITRE ATT&CK crosswalks are not implemented.
-- CVSS is not yet a complete first-class structured mapping model.
-- Manual arbitrary source onboarding is not yet available through the canonical Sources & Catalog UI.
-- Administration does not yet expose the planned full role/permission management matrix.
+- no real production-equivalent staging deployment identity has yet been recorded;
+- Phase 8 deployed-environment validation is not complete;
+- Phase 9 independent penetration/security assurance is not complete;
+- representative environment-level load/stress, recovery and hardening acceptance remain outstanding where required by the Phase 9 gate;
+- Phase 10 formal production go/no-go has not started.
 
 ## Documentation and evidence boundary
 
-Stable professional documents describe the platform and controlled current state. Operational chronology belongs under `docs/development/runs/`, GitHub issues/PRs and CI evidence.
+Detailed acceptance chronology and immutable technical identifiers are retained under `docs/development/runs/` and the repository's CI/evidence records rather than duplicated into this stable current-state document.
 
-Historical run records remain immutable point-in-time evidence, but they must not replace architecture, security, product or governance documentation.
+Stable professional documents describe the controlled current state. Operational chronology belongs under `docs/development/runs/`, GitHub issues/PRs and CI evidence. Environment and independent-assurance claims require evidence attributable to the relevant deployment/assessment identity.
