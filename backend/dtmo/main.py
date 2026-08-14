@@ -25,6 +25,7 @@ from dtmo.dashboards import router as dashboards_router
 from dtmo.framework_experience import router as framework_experience_router
 from dtmo.framework_governance import router as framework_governance_router
 from dtmo.frontend import router as frontend_router
+from dtmo.governance_crosswalk import router as governance_crosswalk_router
 from dtmo.governance_knowledge import router as governance_knowledge_router
 from dtmo.logging import bind_request_context, clear_request_context, configure_logging, correlation_id, get_logger, resolve_correlation_id
 from dtmo.operations_metrics import router as operations_metrics_router
@@ -120,6 +121,7 @@ app.include_router(intelligence_router)
 app.include_router(admin_sources_router)
 app.include_router(rbac_admin_router)
 app.include_router(governance_knowledge_router)
+app.include_router(governance_crosswalk_router)
 app.include_router(framework_governance_router)
 app.include_router(admin_ui_router)
 app.include_router(ui_router)
