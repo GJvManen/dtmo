@@ -73,7 +73,11 @@ def main() -> int:
     if not docker:
         return fail("Docker CLI not found. Install/start Docker Desktop, then retry.")
 
-    probe = subprocess.run(
+    # `docker` is resolved exclusively via shutil.which("docker") above and no
+    # command arguments in this helper are sourced from user input. Keep shell=False
+    # (the subprocess default) so neither the executable nor arguments pass through
+    # a shell. The narrow S603 suppression documents that trusted executable boundary.
+    probe = subprocess.run(  # noqa: S603
         [docker, "info"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
     )
     if probe.returncode != 0:
@@ -135,7 +139,11 @@ def main() -> int:
 
     env = os.environ.copy()
     env.update(values)
-    config = subprocess.run([docker, "compose", "config", "--quiet"], cwd=ROOT, env=env)
+    # Same trusted executable boundary as the daemon probe; arguments are fixed and
+    # shell=False remains in force.
+    config = subprocess.run(  # noqa: S603
+        [docker, "compose", "config", "--quiet"], cwd=ROOT, env=env
+    )
     if config.returncode != 0:
         return fail("docker compose config validation failed; resolve the message above before startup.")
 
