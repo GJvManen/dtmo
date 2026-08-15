@@ -21,6 +21,7 @@ PUBLISHED_SCREENSHOTS = (
     "visual-analytics.png",
     "governance-frameworks.png",
     "administration-rbac.png",
+    "audit-correlation.png",
 )
 
 
@@ -58,10 +59,9 @@ def test_documentation_portal_exposes_audience_guides() -> None:
 
 def test_screenshot_catalogue_tracks_published_and_pending_surfaces() -> None:
     text = SCREENSHOTS.read_text(encoding="utf-8")
-    assert "base runtime capture validated" in text
+    assert "UI-01–10 published / governed" in text
     assert "UI-05" in text and "published / governed" in text
-    assert "UI-10" in text and "quality recapture pending exact-head validation" in text
-    assert "not approved for repository promotion" in text
+    assert "UI-10" in text and "published / governed" in text
     assert "loading, empty or transient states are not promoted" in text
     assert "A diagram or API contract must never be promoted as a product screenshot" in text
 
