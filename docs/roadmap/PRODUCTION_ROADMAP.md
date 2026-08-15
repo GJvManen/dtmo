@@ -63,26 +63,26 @@ The fixed priority order is:
 
 ## Phase 11.1 — Taranis AI architecture and gap assessment
 
-**Status:** `IN PROGRESS / ACTIVE`
+**Status:** `PASS / REPOSITORY COMPLETE`
 
-The initial assessment concludes that DTMO should retain education-sector CTI, vulnerability context, governance and governed sharing authority while Taranis provides generic OSINT collection, analyst assessment and structured reporting through a service-to-service integration.
+The accepted Phase 11.1 assessment and service-to-service contract define the read-only API surface, source/news/story/CTI mappings, stable identity, authentication/service-account boundary, provenance/TLP transformation, polling/reconciliation behavior, licensing boundary and abuse cases. Taranis source code is not vendored into DTMO.
 
-Required completion items:
+See:
 
-- exact REST/OpenAPI endpoint inventory;
-- source/news/story/report schema mapping;
-- stable IDs, replay and deduplication rules;
-- authentication/service-account model;
-- provenance/TLP/classification transformation rules;
-- polling/SSE integration decision;
-- deprecation map for duplicated DTMO generic collection functions;
-- trust-boundary abuse cases;
-- licensing review for service integration and redistribution documentation;
-- Phase 11.2 adapter contracts and rollback criteria.
+- `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`;
+- `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`.
 
-See `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`.
+## Phase 11.2 — Taranis → DTMO canonical adapter
 
-## Phase 11.2–11.11
+**Status:** `IN PROGRESS / FINAL REPOSITORY SLICE IN EXACT-HEAD VALIDATION`
+
+Repository implementation now covers read-only collection, deterministic canonical IDs, fail-closed handling, durable checkpointing, bounded pagination/reconciliation, bounded detail/CTI retrieval, canonical persistence/indexing, connector alerting and governed scheduler/manual execution using the existing `MANAGE_CONNECTORS` permission. No Taranis publisher/share capability becomes DTMO external-sharing authority.
+
+The authoritative implementation guide is `docs/integrations/TARANIS_ADAPTER.md`.
+
+After this final bounded exact-head gate is accepted and merged, Phase 11.2 becomes repository-complete and Phase 11.3 IntelOwl becomes the sole next engineering priority. Live composed-platform validation remains a Phase 11.10 evidence class and is not inferred from repository CI.
+
+## Phase 11.3–11.11
 
 Subsequent phases execute one bounded objective at a time in the priority order defined above. No later phase may silently bypass red exact-head CI, unresolved licensing/security blockers or a required external evidence gate.
 
@@ -117,13 +117,3 @@ Generic collection, IOC enrichment, CTI graph, case management and report-publis
 # Delivery and documentation discipline
 
 Each material change requires one bounded pull request with a primary objective, explicit acceptance criteria, exact-head CI where applicable, architecture/security/evidence boundaries and professional documentation updates.
-
-Historical evidence remains immutable. The current documentation layer must consistently show Phase 10 `NO-GO`, Phase 11 `IN PROGRESS / ACTIVE` and Phase 12 `NOT STARTED` until later accountable decisions change that state.
-
-## Immediate next steps
-
-1. Complete Phase 11.1 Taranis API/data-model/identity/licensing assessment.
-2. Define and test the Phase 11.2 canonical adapter contract.
-3. Implement the Taranis → DTMO adapter only after 11.1 exits green.
-4. Continue in the fixed integration priority order through Phase 11.11.
-5. Enter Phase 12 only after the new integrated evidence package is accepted.
