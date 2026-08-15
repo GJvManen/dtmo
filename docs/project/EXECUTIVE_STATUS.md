@@ -1,82 +1,54 @@
 # DTMO Executive Status
 
-Date: **2026-08-12**  
-Release baseline: **16.0.0rc12**
+Date: **2026-08-15**  
+Software baseline: **16.0.0rc12 plus accepted post-RC13/E8 repository enhancements**
 
 ## Management summary
 
-DTMO has completed its repository-controlled engineering baseline and functional unified-console acceptance. The accountable project owner has explicitly accepted the current product experience.
+DTMO has an accepted repository-controlled engineering baseline, an owner-accepted functional product and a repository-complete E8 vulnerability/CTI capability line. The post-E8 candidate has also been externally deployed and extensively tested by the accountable owner in an approved production-equivalent staging environment.
 
-The project is now positioned to start **Phase 8 real production-equivalent staging validation**. DTMO is not yet production ready because real staging acceptance, independent external assurance and formal production go/no-go remain incomplete.
+The repository-side Phase 8.2–8.5 validation and acceptance contracts are now complete. **DTMO is not yet production ready** because the external Phase 8 evidence package still requires final immutable deployment binding and accountable acceptance, after which Phase 9 independent external assurance and Phase 10 formal production go/no-go remain mandatory.
 
-## Current decision
+## Current decision position
 
-| Decision area | Status |
-|---|---|
-| Engineering baseline (Phases 1–7) | `PASS` |
-| Functional product acceptance (RC13) | `PASS / OWNER_ACCEPTED` |
-| Real production-equivalent staging (Phase 8) | `READY / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY` |
-| Independent external assurance (Phase 9) | `NOT COMPLETE` |
-| Formal production go/no-go (Phase 10) | `NOT STARTED` |
-| Production deployment | **NO — not yet approved** |
+| Decision area | Status | Consequence |
+|---|---|---|
+| Engineering baseline | `PASS` | Repository foundation accepted |
+| Functional product | `PASS / OWNER_ACCEPTED` | Canonical console journey accepted |
+| E8 product evolution | `PASS / REPOSITORY_COMPLETE` | Vulnerability/CTI capabilities repository-complete |
+| External post-E8 staging deployment | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` | Real staging exists and was owner-tested |
+| Phase 8.2–8.4 | `CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` | External evidence must be consolidated against one identity |
+| Phase 8.5 | `CONTRACT COMPLETE / EXTERNAL OWNER DECISION REQUIRED` | Phase 8 is not yet formally closed |
+| Phase 9 | `NOT COMPLETE` | Independent assurance remains mandatory |
+| Phase 10 | `NOT STARTED` | No production authorization exists |
+| Production deployment | **NO — not approved** | Formal go/no-go has not occurred |
 
-## What is now demonstrably available
+## Demonstrated product scope
 
-DTMO provides one governed security-console experience covering:
+DTMO provides a governed unified console for threat/vulnerability intelligence, source operations, canonical intelligence, provenance, severity/classification, native analytics, Administration/RBAC and Governance. The E8 line adds OpenCVE, Vulnerability-Lookup, MISP, AIL, vulnerability prioritization, vulnerability analytics and explicit vulnerability-management governance evidence mapping.
 
-- threat-intelligence overview and KPIs;
-- normalized intelligence records with source/provenance context;
-- governed source catalog and source execution;
-- native visual analytics;
-- principal/role administration with safety controls;
-- governance/framework knowledge with explicit mapping truth states;
-- separately authenticated operational telemetry and Grafana dashboards.
+## Key control boundaries
 
-The accepted baseline also includes repository-controlled evidence for security, persistence/recovery, connector reliability, performance, browser/accessibility and observability/operations controls.
+The platform retains server-side RBAC, least privilege, human/service-account separation, privileged-action safeguards, validated bearer-token trust, provenance/confidence preservation, data minimization, auditable request/correlation context and separate human review/external-share authority.
 
-## Key risk controls
+Technical execution does not grant publication authority. Framework mappings do not imply full compliance, maturity or certification. Repository CI does not equal external staging acceptance or independent assurance.
 
-DTMO retains strong authority boundaries:
+## Remaining release work
 
-- server-side RBAC and least privilege;
-- human and service-account role separation;
-- administrator self-management/final-admin protection;
-- externally issued production bearer tokens;
-- provenance and raw evidence retention;
-- privacy/data minimization;
-- explicit human review and separate external-share approval;
-- no publication authority from technical execution, analytics, CI, Administration, Governance or staging access;
-- no inferred framework mappings.
+### Phase 8 — accountable staging closure
 
-## What remains before production
+Complete the external evidence package against one immutable post-E8 staging identity. The package must bind exact deployed release/commit, image digests, runtime/configuration evidence and the accepted results for platform/identity, source-to-intelligence and operations/recovery validation. Record approved deviations/residual risks and an explicit accountable Phase 8.5 decision.
 
-### Phase 8 — real staging
+### Phase 9 — independent external assurance
 
-A production-equivalent staging environment must be provisioned and bound to an immutable deployment identity. Evidence must cover the exact deployed release, image digests, infrastructure/runtime inventory, configuration parity, least-privilege identities, TLS/network restrictions, controlled data handling, change/rollback records and deployment-time security review.
+After Phase 8 acceptance, execute the agreed independent assurance scope, including penetration testing, hardening/configuration, IAM/secrets, load/stress, resilience/recovery, monitoring/incident-response and relevant privacy/legal/governance review. Release-blocking findings require remediation and retest or accountable formal disposition.
 
-### Phase 9 — independent assurance
+### Phase 10 — production decision
 
-Independent external assurance must include the agreed security, resilience and operational validation classes, including penetration testing and representative production-equivalent validation.
-
-### Phase 10 — formal go/no-go
-
-A formal production decision can occur only after Phase 8 and Phase 9 evidence is complete, reviewable and accepted by the accountable stakeholders.
-
-## Product-development track
-
-The product can continue to mature while the production-readiness gates progress. The accepted post-RC13 enhancement sequence is:
-
-1. shared severity colour/filter semantics across Overview and Intelligence;
-2. governed manual source onboarding;
-3. richer trend analysis and Visual Analytics;
-4. first-class provenance-backed framework mappings;
-5. richer role/permission Administration;
-6. deeper framework-oriented Governance evidence views.
-
-These are product improvements and must not be confused with external staging or assurance evidence.
+Production may be authorized only after accepted Phase 8 and Phase 9 evidence and formal approval of the production environment, ownership/support, IAM/secrets/network, recovery/rollback, monitoring/escalation, data/privacy/legal and release/change position.
 
 ## Executive recommendation
 
-Proceed with **Phase 8.1 real staging environment and immutable deployment identity** while developing the approved product enhancements in bounded, independently tested increments.
+Prioritize **completion and accountable acceptance of the existing Phase 8 external evidence package**. Do not introduce unnecessary product change into the candidate while evidence is being bound and assessed. After Phase 8 is formally accepted, proceed directly to independent Phase 9 assurance.
 
-Do not authorize production use until Phase 8, Phase 9 and Phase 10 are complete.
+Do not authorize production use until Phase 10 records an explicit go decision.
