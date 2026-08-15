@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     taranis_api_base: str = ""
     taranis_api_token: SecretStr = SecretStr("")
     taranis_page_size: int = Field(default=100, ge=1, le=400)
+    taranis_max_pages: int = Field(default=10, ge=1, le=100)
+    taranis_reconcile_pages: int = Field(default=1, ge=0, le=20)
+    taranis_checkpoint_path: str = "/var/lib/dtmo/checkpoints/taranis.json"
     publish_requires_human_approval: bool = True
     feature_live_connectors: bool = False
     feature_opencve_connector: bool = False
@@ -111,6 +114,8 @@ class Settings(BaseSettings):
                 raise ValueError("production Taranis integration requires an HTTPS API base")
             if not self.taranis_api_token.get_secret_value().strip():
                 raise ValueError("production Taranis integration requires a runtime API token")
+            if not self.taranis_checkpoint_path.startswith("/"):
+                raise ValueError("production Taranis integration requires an absolute durable checkpoint path")
         return self
 
 
