@@ -23,7 +23,9 @@ DTMO already has strong canonical intelligence, provenance, vulnerability analyt
 
 The integration therefore reduces duplicate engineering while retaining DTMO's differentiating governance and education focus.
 
-## Recommended responsibility boundary
+## Keep / Integrate / Replace / Deprecate / Migrate
+
+The matrix below records the explicit disposition and authoritative responsibility for each major platform capability. It is the controlling Phase 11.1 decision matrix for avoiding duplicate implementation and preserving DTMO's governance boundaries during industrialisation.
 
 | Capability | Decision | Authoritative component | Rationale |
 |---|---|---|---|
