@@ -1,6 +1,6 @@
 # DTMO Product Screenshot Catalogue
 
-**Status:** governed screenshot promotion in progress; UI-06 published  
+**Status:** base runtime capture validated; governed screenshot promotion in progress; UI-06 published  
 **Screenshot type:** actual DTMO runtime UI with sanitized deterministic fixtures unless a record explicitly states otherwise  
 **Evidence classification:** documentation illustration only — not staging acceptance, independent assurance or production evidence
 
