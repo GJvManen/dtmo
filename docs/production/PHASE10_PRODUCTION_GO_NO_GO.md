@@ -27,6 +27,8 @@ The current product is not authorized for production. The decision is not a reje
 
 The successor programme is **Phase 11 — Platform Industrialisation**, followed by a new **Phase 12 — Production GO/NO-GO** decision for the materially changed integrated platform.
 
+**Current successor state:** Phase 11 is `IN PROGRESS / ACTIVE`; Phase 12 is `NOT STARTED`.
+
 Primary reasons for the no-go:
 
 1. generic OSINT collection and analyst workflow should be integrated with Taranis AI instead of duplicated further in DTMO;
