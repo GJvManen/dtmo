@@ -1,0 +1,32 @@
+{
+  "environment_id": "NOT_PROVIDED",
+  "phase8_2_deployment_identity_fingerprint": "NOT_PROVIDED",
+  "deployed_commit": "NOT_PROVIDED",
+  "application_image_digest": "NOT_PROVIDED",
+  "selected_source_id": "NOT_PROVIDED",
+  "selected_source_type": "NOT_PROVIDED",
+  "source_approval_reference": "NOT_PROVIDED",
+  "retrieval_timestamp": "NOT_PROVIDED",
+  "canonical_record_id": "NOT_PROVIDED",
+  "audit_correlation_id": "NOT_PROVIDED",
+  "evidence_location_reference": "NOT_PROVIDED",
+  "validated_by": "NOT_PROVIDED",
+  "validated_at": "NOT_PROVIDED",
+  "checks": {
+    "approved_source": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "real_retrieval": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "raw_evidence_provenance": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "canonical_normalization": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "deduplication_idempotency": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "canonical_persistence_search": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "enrichment_correlation": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "vulnerability_cti_derivation": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "api_ui_presentation": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "governance_classification": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "end_to_end_traceability": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "degraded_upstream_behavior": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
+    "no_production_credentials": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"}
+  },
+  "phase8_3_pass": false,
+  "phase8_pass": false
+}
