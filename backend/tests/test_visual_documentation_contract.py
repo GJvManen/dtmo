@@ -6,6 +6,7 @@ STANDARD = ROOT / "docs/visual/DOCUMENTATION_VISUAL_STANDARD.md"
 WORKFLOWS = ROOT / "docs/architecture/SYSTEM_WORKFLOWS.md"
 SCREENSHOTS = ROOT / "docs/visual/screenshots/README.md"
 CAPTURE = ROOT / "tools/capture_documentation_screenshots.py"
+INVESTIGATION_CAPTURE = ROOT / "tools/capture_documentation_investigation_screenshots.py"
 CI = ROOT / ".github/workflows/documentation-screenshots.yml"
 
 
@@ -92,6 +93,16 @@ def test_capture_runner_uses_only_documentation_classification_and_sanitized_tar
     ).lower()
 
 
+def test_investigation_capture_includes_misp_without_outbound_share() -> None:
+    text = INVESTIGATION_CAPTURE.read_text(encoding="utf-8")
+    assert "/ui/misp-workspace" in text
+    assert "misp-governed-workflow.png" in text
+    assert "misp-read-and-governed-export-workspace" in text
+    assert '"misp_export_executed": False' in text
+    assert '"misp_live_connectivity_proven": False' in text
+    assert "docs-publisher@example.test" in text
+
+
 def test_screenshot_ci_is_artifact_only_and_fail_closed() -> None:
     text = CI.read_text(encoding="utf-8")
     assert "workflow_dispatch" in text
@@ -102,6 +113,9 @@ def test_screenshot_ci_is_artifact_only_and_fail_closed() -> None:
     assert "actions/upload-artifact@v7" in text
     assert "dtmo-documentation-screenshots" in text
     assert "documentation-illustration-only" in text
+    assert "misp-governed-workflow.png" in text
+    assert "misp_export_executed" in text
+    assert "misp_live_connectivity_proven" in text
     assert "contents: write" not in text
     assert "git push" not in text
     assert "Fail closed on missing or failed screenshot artifacts" in text
