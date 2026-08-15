@@ -1,0 +1,30 @@
+{
+  "environment_id": "",
+  "accountable_owner": "",
+  "deployed_release": "",
+  "deployed_commit": "",
+  "application_image_digest": "",
+  "supporting_images_runtime_fingerprint": "",
+  "phase8_deployment_identity_fingerprint": "",
+  "phase8_2_acceptance_reference": "",
+  "phase8_3_acceptance_reference": "",
+  "phase8_4_acceptance_reference": "",
+  "approved_deviations_reference": "",
+  "residual_risks_reference": "",
+  "rollback_change_reference": "",
+  "evidence_package_reference": "",
+  "validated_by": "",
+  "validated_at": "",
+  "prerequisites": {
+    "phase8_2_external_accepted": false,
+    "phase8_3_external_accepted": false,
+    "phase8_4_external_accepted": false,
+    "same_immutable_identity_confirmed": false,
+    "no_release_blocking_findings": false
+  },
+  "production_credentials_reused": false,
+  "unsanitized_production_data_used": false,
+  "decision": "BLOCKED",
+  "phase8_5_pass": false,
+  "phase8_pass": false
+}
