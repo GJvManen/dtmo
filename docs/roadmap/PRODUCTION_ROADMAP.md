@@ -1,10 +1,10 @@
-# DTMO Roadmap — Production Readiness and Product Evolution
+# DTMO Roadmap — Production Readiness and Platform Industrialisation
 
 Last updated: **2026-08-15**
 
 ## Purpose
 
-This roadmap separates production authorization from product evolution. Repository engineering, external staging acceptance, independent assurance and the final production decision are distinct evidence classes and must not be conflated.
+This roadmap separates production authorization from product evolution and platform industrialisation. Repository engineering, external staging acceptance, independent assurance and final production authorization are distinct evidence classes and must not be conflated.
 
 ## Current position
 
@@ -13,75 +13,106 @@ This roadmap separates production authorization from product evolution. Reposito
 | Phases 1–7 | Repository-controlled engineering baseline | `PASS` |
 | RC13 + owner retest | Unified-console functional acceptance | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | Vulnerability & CTI ecosystem integrations | `PASS / REPOSITORY_COMPLETE` |
-| Phase 8.2–8.4 | Platform/identity, source-to-intelligence, operations/recovery | `PASS` |
-| Phase 8.5 | Accountable production-equivalent staging acceptance | `PASS / OWNER_ACCEPTED` |
+| Phase 8 | Production-equivalent staging validation | `PASS / OWNER_ACCEPTED` |
 | Phase 9 | Independent external assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
-| Phase 10 | Formal production go/no-go | `IN PROGRESS / DECISION REQUIRED` |
+| Phase 10 | Formal production go/no-go | `NO-GO / INDUSTRIALISATION REQUIRED` |
+| Phase 11 | Platform industrialisation | `ACTIVE / HIGHEST PRIORITY` |
+| Phase 12 | Formal production go/no-go after industrialisation | `PLANNED` |
 
-DTMO has completed the staging and independent-assurance prerequisites. It is **not production authorized until Phase 10 records an accountable GO decision**.
+DTMO is **not production authorized**. Phase 10 has resulted in NO-GO for the current architecture. The active project priority is Phase 11 platform industrialisation; all unrelated product evolution is paused.
 
-# Track A — Production readiness
+# Track A — Accepted prior evidence
 
 ## Phase 8 — production-equivalent staging acceptance
 
 **Status:** `PASS / OWNER_ACCEPTED`
 
-Phase 8.2 through Phase 8.5 are reported complete and accepted by the accountable owner. The accepted evidence remains external/restricted evidence where applicable; repository CI is supporting engineering evidence and is not retrospectively promoted to external staging evidence.
+Phase 8 remains accepted historical evidence for the candidate architecture that was assessed. It must not automatically be reused for a materially changed integrated Phase 11 architecture.
 
 ## Phase 9 — independent external assurance
 
 **Status:** `PASS / EXTERNAL_ASSURANCE_ACCEPTED`
 
-Independent external assurance is reported complete, including disposition/retest of release-blocking findings as required for acceptance. Historical Phase 9 preparation contracts remain useful evidence structure, but the accepted external assurance decision is the authoritative prerequisite for Phase 10.
+Phase 9 remains accepted independent assurance for the candidate architecture that was assessed. Material architectural changes introduced by Phase 11 require new impact assessment and, before production authorization, independent assurance of the integrated candidate.
 
 ## Phase 10 — formal production go/no-go
 
-**Status:** `IN PROGRESS / ACCOUNTABLE PRODUCTION DECISION REQUIRED`
+**Status:** `NO-GO / INDUSTRIALISATION REQUIRED`
 
-Phase 10 is the active gate. Required decision inputs are:
+The current project does not receive production authorization. The NO-GO is not treated as a request for incremental documentation changes. It starts a deliberate industrialisation programme intended to replace bespoke commodity capabilities with mature platform integrations and harden the combined runtime.
 
-1. accepted Phase 8 staging evidence and accountable acceptance;
-2. accepted Phase 9 independent assurance;
-3. approved production environment, accountable service owner and support model;
-4. immutable production release identity and image digests;
-5. approved IAM, service identities, secrets management and network controls;
-6. approved backup, restore, recovery and rollback arrangements;
-7. approved monitoring, alerting, on-call and escalation model;
-8. incident-response/security-operations handover;
-9. privacy, data-handling, legal and governance approval;
-10. open-finding statement and accountable residual-risk disposition;
-11. formal production release/change authorization;
-12. recorded go-live window and rollback authority.
+# Track B — Phase 11 platform industrialisation
 
-### Decision rule
+**Status:** `ACTIVE / HIGHEST PRIORITY`
 
-Phase 10 is fail-closed. Any missing required approval, unresolved release-blocking finding, unaccepted residual risk, or material mismatch between the approved and intended production release identity results in `NO-GO / BLOCKED` until corrected and, where necessary, revalidated.
+Authoritative detailed roadmap: `docs/roadmap/PHASE11_PLATFORM_INDUSTRIALISATION.md`.
 
-A `GO` applies only to the recorded immutable production release identity. A material candidate change after accepted Phase 8/9 evidence requires an explicit impact assessment and appropriate revalidation before production authorization.
+Priority sequence:
 
-See `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md` for the formal decision record requirements.
+1. **11.1 Taranis AI architecture & gap assessment** — ACTIVE;
+2. **11.2 Taranis -> DTMO canonical adapter**;
+3. **11.3 IntelOwl enrichment subsystem**;
+4. **11.4 OpenCTI knowledge graph integration**;
+5. **11.5 MISP consolidation**;
+6. **11.6 TheHive incident/case handoff**;
+7. **11.7 production platform hardening**;
+8. **11.8 migration and compatibility**;
+9. **11.9 production-equivalent integrated validation**;
+10. **11.10 independent external assurance**;
+11. **Phase 12 formal production go/no-go**.
 
-### Post-GO
+Cortex is optional and may only be introduced after IntelOwl if a concrete enrichment gap justifies the additional operational platform.
 
-A production `GO` is followed by controlled deployment, release-identity verification, health/readiness verification, monitoring/alert confirmation, change closure and confirmation that rollback and incident escalation remain available. Production authorization does not grant autonomous publication or external-sharing authority.
+## Platform responsibility target
 
-# Track B — Product evolution
+| Platform | Primary responsibility |
+|---|---|
+| Taranis AI | OSINT collection, worker orchestration, analyst assessment, report/publisher workflow |
+| IntelOwl | generic IOC enrichment and analyzer orchestration |
+| DTMO | education-sector CTI, vulnerability prioritisation, provenance policy, governance, assurance and accountable sharing |
+| OpenCTI | STIX-oriented CTI knowledge graph and entity relationships |
+| MISP | community CTI exchange under DTMO-governed outbound policy |
+| TheHive | incident/case-management handoff |
 
-The accepted repository baseline includes the unified console, governed source operations, severity/classification semantics, vulnerability analytics, explicit governance mappings, Administration/RBAC, OpenCVE and CIRCL Vulnerability-Lookup, governed MISP read/export, governed AIL read/enrichment/correlation and the published governed UI-01–UI-10 documentation baseline.
+## Work freeze
 
-Further product evolution must not silently change the candidate under Phase 10. Material release changes require explicit impact assessment and may trigger staging or assurance revalidation.
+Until Phase 11 is complete or explicitly reprioritized, the following are paused:
 
-# Delivery and documentation discipline
+- unrelated UI/product feature expansion;
+- bespoke generic collectors;
+- new provider-specific enrichment engines inside DTMO;
+- custom STIX graph functionality;
+- general case/ticketing development;
+- custom generic publishing/report generation;
+- non-essential features that materially change the integrated candidate.
 
-Professional documentation records stable product, architecture, security, governance and current readiness state. Historical run records remain immutable and scoped to the state they covered. External/restricted evidence is referenced rather than copied when it contains sensitive operational information.
+Allowed exceptions are security fixes, dependency/CVE remediation, defects blocking Phase 11, and documentation/tests required by the active Phase 11 increment.
 
-Every material release change requires bounded scope, acceptance criteria, applicable exact-head CI and an explicit decision on whether existing staging/assurance evidence remains applicable.
+# Phase 12 — production authorization
+
+**Status:** `PLANNED`.
+
+Phase 12 is the next production go/no-go attempt after Phase 11. A GO may only be considered against one immutable integrated candidate after production-equivalent validation and independent external assurance of the material Phase 11 architecture.
+
+# Delivery discipline
+
+Every Phase 11 increment requires:
+
+- bounded scope and acceptance criteria;
+- architecture/security/licensing impact assessment where applicable;
+- explicit source-of-truth and authority boundaries;
+- regression protection for retained DTMO capability;
+- exact-head CI before merge;
+- professional current-state documentation update;
+- explicit decision whether previous external evidence remains applicable.
+
+Historical evidence remains immutable and scoped to the candidate it covered.
 
 ## Immediate next steps
 
-1. Complete the Phase 10 production decision package.
-2. Record production environment/owner/support approval and immutable production release identity.
-3. Confirm IAM/secrets/network, recovery/rollback, monitoring/on-call/escalation, incident-response and privacy/legal approvals.
-4. Confirm no unresolved release blocker remains and record residual-risk disposition.
-5. Record the accountable Phase 10 `GO` or `NO-GO / BLOCKED` decision.
-6. On `GO`, execute controlled production deployment and post-deployment verification.
+1. Complete and accept Phase 11.1 Taranis/DTMO architecture and gap assessment.
+2. Bound the Phase 11.2 read-only Taranis -> DTMO adapter PoC.
+3. Implement the adapter through documented APIs, preserving provenance, TLP/classification, idempotency and authorization boundaries.
+4. Proceed in order through IntelOwl, OpenCTI, MISP consolidation and TheHive before integrated platform hardening.
+5. Revalidate the integrated architecture under Phase 11.9 and 11.10.
+6. Conduct Phase 12 formal production go/no-go.
