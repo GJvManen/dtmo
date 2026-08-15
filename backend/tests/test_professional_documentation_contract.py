@@ -10,6 +10,7 @@ STABLE_DOCUMENTS = (
     "README.md",
     "docs/README.md",
     "docs/architecture/SYSTEM_ARCHITECTURE.md",
+    "docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md",
     "docs/ux/FRONTEND_UX.md",
     "docs/security/SECURITY_OVERVIEW.md",
     "docs/governance/GOVERNANCE_MAPPING_REGISTRY.md",
@@ -25,6 +26,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md",
     "docs/qa/PHASE8_STAGING_READINESS_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
+    "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
     "docs/releases/16.0.0rc12.md",
 )
@@ -59,6 +61,8 @@ OBSOLETE_CURRENT_STATE_MARKERS = (
     "E8.9–E8.10 not yet accepted",
     "Phase 9 `NOT COMPLETE`",
     "Phase 10 `NOT STARTED`",
+    "Phase 10 `IN PROGRESS / DECISION REQUIRED`",
+    "IN PROGRESS / ACCOUNTABLE PRODUCTION DECISION REQUIRED",
     "REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED",
     "REPOSITORY CONTRACT COMPLETE / EXTERNAL OWNER DECISION REQUIRED",
 )
@@ -102,6 +106,12 @@ def test_project_readme_retains_professional_product_structure() -> None:
         "E8.1–E8.10",
         "Phase 9",
         "Phase 10",
+        "Phase 11",
+        "Phase 12",
+        "Taranis AI",
+        "IntelOwl",
+        "OpenCTI",
+        "TheHive",
     ):
         assert marker in readme
 
@@ -123,6 +133,21 @@ def test_architecture_retains_required_layers_and_trust_boundaries() -> None:
     ):
         assert marker in architecture
 
+    taranis = _read("docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md")
+    for marker in (
+        "Keep / Integrate / Replace / Deprecate / Migrate",
+        "service-to-service",
+        "Taranis AI",
+        "IntelOwl",
+        "OpenCTI",
+        "MISP",
+        "TheHive",
+        "EUPL-1.2",
+        "Apache-2.0",
+        "Trust boundaries introduced by integration",
+    ):
+        assert marker in taranis
+
 
 def test_current_professional_lifecycle_is_consistent() -> None:
     for path in CURRENT_STATE_DOCUMENTS:
@@ -130,8 +155,9 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         assert "PASS / OWNER_ACCEPTED" in text, f"accountable acceptance state missing from {path}"
         assert "E8" in text and "REPOSITORY_COMPLETE" in text, f"E8 repository completion missing from {path}"
         assert "Phase 9" in text and "EXTERNAL_ASSURANCE_ACCEPTED" in text, f"Phase 9 acceptance missing from {path}"
-        assert "Phase 10" in text, f"Phase 10 marker missing from {path}"
-        assert "IN PROGRESS" in text or "DECISION REQUIRED" in text, f"active Phase 10 state missing from {path}"
+        assert "Phase 10" in text and "NO-GO / BLOCKED" in text, f"Phase 10 no-go missing from {path}"
+        assert "Phase 11" in text and "IN PROGRESS" in text, f"active Phase 11 state missing from {path}"
+        assert "Phase 12" in text and "NOT STARTED" in text, f"Phase 12 state missing from {path}"
         assert "production" in text.lower()
         for obsolete in OBSOLETE_CURRENT_STATE_MARKERS:
             assert obsolete not in text, f"obsolete lifecycle marker {obsolete!r} remains in {path}"
@@ -139,16 +165,28 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     current_state = _read("docs/project/CURRENT_STATE.md")
     assert "Phase 8" in current_state and "PASS / OWNER_ACCEPTED" in current_state
     assert "Phase 9" in current_state and "PASS / EXTERNAL_ASSURANCE_ACCEPTED" in current_state
-    assert "Phase 10" in current_state and "IN PROGRESS / DECISION REQUIRED" in current_state
+    assert "Phase 10" in current_state and "NO-GO / BLOCKED" in current_state
+    assert "Phase 11" in current_state and "IN PROGRESS / ACTIVE" in current_state
+    assert "Phase 12" in current_state and "NOT STARTED" in current_state
 
     roadmap = _read("docs/roadmap/PRODUCTION_ROADMAP.md")
-    assert "Phase 8" in roadmap and "PASS / OWNER_ACCEPTED" in roadmap
-    assert "Phase 9" in roadmap and "PASS / EXTERNAL_ASSURANCE_ACCEPTED" in roadmap
-    assert "Phase 10" in roadmap and "IN PROGRESS / ACCOUNTABLE PRODUCTION DECISION REQUIRED" in roadmap
+    assert "Phase 10" in roadmap and "NO-GO / BLOCKED" in roadmap
+    assert "Phase 11" in roadmap and "IN PROGRESS / ACTIVE" in roadmap
+    assert "Phase 12" in roadmap and "NOT STARTED" in roadmap
+
+    industrialisation = _read("docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md")
+    assert "11.1 Taranis AI architecture and gap assessment" in industrialisation
+    assert "11.2 Taranis → DTMO canonical adapter" in industrialisation
+    assert "11.3 IntelOwl enrichment integration" in industrialisation
+    assert "11.4 OpenCTI knowledge-graph integration" in industrialisation
+    assert "11.5 MISP consolidation" in industrialisation
+    assert "11.6 TheHive incident/case handoff" in industrialisation
+    assert "11.7 Cortex decision gate" in industrialisation
+    assert "Phase 12 — Production GO/NO-GO" in industrialisation
 
     phase10 = _read("docs/production/PHASE10_PRODUCTION_GO_NO_GO.md")
-    assert "IN PROGRESS / ACCOUNTABLE PRODUCTION DECISION REQUIRED" in phase10
-    assert "GO" in phase10 and "NO-GO / BLOCKED" in phase10
+    assert "NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED" in phase10
+    assert "Phase 11" in phase10 and "Phase 12" in phase10
     assert "Repository CI must not be represented as the source" in phase10
 
     phase8_gate = _read("docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md")
