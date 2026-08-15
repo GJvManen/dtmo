@@ -3,80 +3,136 @@
 Last reconciled: **2026-08-15**  
 Software baseline: **16.0.0rc12 plus accepted post-RC13/E8 repository enhancements**
 
-This checklist is the high-level decision control for progressing DTMO through the final Phase 10 production authorization gate.
+This checklist is the high-level control for the post-Phase-10 industrialisation programme and the future Phase 12 production authorization decision.
 
 ## Evidence rules
 
-A checklist item is complete only when its required evidence exists, is attributable and is reviewable. Repository CI, staging acceptance, independent assurance and production authorization are separate evidence classes. Historical evidence remains immutable and scoped to the state/deployment it actually covered.
+A checklist item is complete only when its required evidence exists, is attributable and is reviewable. Repository CI, accountable acceptance, production-equivalent validation, independent assurance and production authorization are separate evidence classes. Historical evidence remains immutable and scoped to the state/deployment it actually covered.
 
-## 1. Repository-controlled engineering baseline
+## 1. Accepted historical baseline
 
-- [x] CI/workflow integrity and exact-head protected merge discipline.
-- [x] Application security, identity and authorization controls.
-- [x] Data integrity, migrations and repository recovery contracts.
-- [x] Connector reliability, provenance, retry/replay/timeout/failure handling.
-- [x] Performance/scalability engineering gates.
-- [x] Browser/accessibility/UX gates.
-- [x] Observability, alerting and operational runbook gates.
-- [x] Open-source governance controls.
+- [x] Phases 1–7 repository engineering baseline.
+- [x] RC13 functional owner acceptance.
+- [x] E8.1–E8.10 repository-complete product evolution.
+- [x] Phase 8 production-equivalent validation and accountable acceptance.
+- [x] Phase 9 independent external assurance.
 
-**Decision:** Phases 1–7 `PASS`.
+**Decision:** historical prerequisites remain accepted for the candidate they covered.
 
-## 2. Functional product and E8 baseline
+## 2. Phase 10 production decision
 
-- [x] Unified operator shell accepted.
-- [x] Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance accepted functionally.
-- [x] Accountable RC13 owner acceptance recorded.
-- [x] E8.1–E8.10 vulnerability/CTI product scope accepted in repository.
+- [x] Accountable production decision recorded.
+- [x] Production authorization denied for the current candidate.
+- [x] Successor programme identified.
 
-**Decision:** RC13 `PASS / OWNER_ACCEPTED`; E8.1–E8.10 `PASS / REPOSITORY_COMPLETE`.
+**Decision:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`.
 
-## 3. Phase 8 — production-equivalent staging acceptance
+## 3. Phase 11.1 — Taranis AI architecture and gap assessment
 
-- [x] Phase 8.2 platform and identity validation accepted.
-- [x] Phase 8.3 source-to-intelligence validation accepted.
-- [x] Phase 8.4 operations, recovery and rollback validation accepted.
-- [x] Phase 8.5 accountable staging acceptance completed.
-- [x] Required staging deviations/residual risk disposition completed for acceptance.
-- [x] No unresolved release-blocking staging finding remained at acceptance.
+- [x] Initial responsibility-boundary assessment created.
+- [x] Keep / Integrate / Replace / Deprecate / Migrate capability matrix created.
+- [x] Service-to-service integration is the default architecture.
+- [x] Licensing boundary recorded: no Taranis source vendoring before review.
+- [ ] Exact Taranis REST/OpenAPI endpoint inventory completed.
+- [ ] Source/news/story/report schema mapping completed.
+- [ ] Stable identifiers, replay and deduplication rules completed.
+- [ ] Authentication/service-account/least-privilege model completed.
+- [ ] Provenance, TLP and classification transformation rules completed.
+- [ ] Polling versus SSE/event boundary decided.
+- [ ] Duplicated DTMO generic collection functions identified for deprecation.
+- [ ] Integration threat-model abuse cases completed.
+- [ ] Licensing guidance for service integration/redistribution accepted.
+- [ ] Phase 11.2 adapter contracts and rollback criteria accepted.
 
-**Decision:** Phase 8 `PASS / OWNER_ACCEPTED`.
+**Decision:** Phase 11.1 `IN PROGRESS / ACTIVE`.
 
-## 4. Phase 9 — independent external assurance
+## 4. Phase 11.2 — Taranis → DTMO canonical adapter
 
-- [x] Phase 8 formally accepted.
-- [x] Independent assurance scope completed against the accepted candidate.
-- [x] Release-blocking findings remediated/retested or formally dispositioned as required for acceptance.
-- [x] Residual-risk disposition completed.
-- [x] Final independent assurance acceptance recorded.
+- [ ] API client/service identity implemented.
+- [ ] News/source/story/report mapping implemented.
+- [ ] Idempotency/replay/deduplication tested.
+- [ ] Provenance and evidence retention tested.
+- [ ] TLP/classification fail-closed handling tested.
+- [ ] Degraded/partial failure behavior tested.
+- [ ] Publishing authority remains separate from ingestion.
+- [ ] Migration/rollback path tested.
 
-**Decision:** Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED`.
+## 5. Phase 11.3 — IntelOwl
 
-Detailed external assurance evidence remains subject to its approved handling restrictions and is not reproduced in public repository documentation where sensitive.
+- [ ] Dedicated service identity/token and TLS policy approved.
+- [ ] CVE/IP/domain/URL/hash enrichment integrated.
+- [ ] Email enrichment disabled unless privacy scope is explicitly approved.
+- [ ] Analyzer identity/raw-result provenance retained.
+- [ ] Rate-limit/quota/timeout/failure handling tested.
+- [ ] Enrichment cannot be misrepresented as local exposure or compromise.
 
-## 5. Phase 10 — formal production go/no-go
+## 6. Phase 11.4 — OpenCTI
 
-- [x] Phase 8 evidence complete and accepted.
-- [x] Phase 9 evidence complete and accepted.
-- [ ] Production environment, accountable service owner and support model approved.
-- [ ] Immutable production release identity and image digests recorded.
-- [ ] Production IAM, service identities, secrets-management and network controls approved.
-- [ ] Backup, restore, recovery and rollback arrangements approved.
-- [ ] Monitoring, alerting, on-call and escalation model approved.
-- [ ] Incident-response/security-operations handover approved.
-- [ ] Privacy, data-handling, legal and governance requirements approved.
-- [ ] Open critical/high release-blocking finding statement confirmed.
-- [ ] Residual production risk formally accepted by accountable authority.
-- [ ] Production release/change authorization approved.
-- [ ] Go-live window and rollback authority recorded.
+- [ ] STIX 2.x import/export boundary implemented.
+- [ ] Entity identity/deduplication policy accepted.
+- [ ] ATT&CK and CTI relationship mapping tested.
+- [ ] Provenance/confidence/marking preserved.
+- [ ] DTMO does not duplicate a separate graph engine.
+
+## 7. Phase 11.5 — MISP consolidation
+
+- [ ] One authoritative inbound synchronization model accepted.
+- [ ] Conflict/replay handling tested.
+- [ ] DTMO governed outbound approval remains authoritative.
+- [ ] Distribution/TLP/sharing-group handling remains fail-closed.
+- [ ] Automated collectors/publishers cannot gain implicit external-share authority.
+
+## 8. Phase 11.6 / 11.7 — TheHive and conditional Cortex
+
+- [ ] TheHive intelligence-to-case handoff implemented and audited.
+- [ ] Canonical CTI and case-state semantics remain separate.
+- [ ] Cortex need explicitly assessed.
+- [ ] Cortex remains absent unless a validated IntelOwl gap justifies it.
+
+## 9. Phase 11.8 — Integrated runtime industrialisation
+
+- [ ] Kubernetes deployment model accepted.
+- [ ] Helm/value-driven configuration accepted.
+- [ ] GitOps promotion model accepted.
+- [ ] Immutable images/digests enforced.
+- [ ] External secrets/rotation and workload identity implemented.
+- [ ] Network policies/TLS ingress implemented.
+- [ ] PostgreSQL HA/recovery objectives tested.
+- [ ] Redis durability/HA appropriate to queue semantics tested.
+- [ ] Durable evidence/object storage tested.
+- [ ] Central logging/audit/metrics/alerting tested.
+- [ ] SBOM/scanning/signing/attestation gates accepted.
+- [ ] Capacity, upgrade and rollback procedures tested.
+
+## 10. Phase 11.9 — Migration and compatibility
+
+- [ ] Canonical intelligence migration tested.
+- [ ] Source/catalog migration tested.
+- [ ] Provenance/confidence/classification migration tested.
+- [ ] Governance mappings preserved.
+- [ ] MISP/AIL/OpenCVE/Vulnerability-Lookup compatibility dispositioned.
+- [ ] User/role mapping dispositioned.
+- [ ] Every deprecation has a replacement and rollback path.
+
+## 11. Phase 11.10–11.11 — new validation and assurance
+
+- [ ] Integrated candidate bound to one immutable deployment identity.
+- [ ] New production-equivalent validation complete.
+- [ ] New independent external assurance complete.
+- [ ] Release-blocking findings remediated/retested or formally dispositioned.
+- [ ] Residual risk accepted.
+
+## 12. Phase 12 — formal production GO/NO-GO
+
+- [ ] Phase 11 validation and external assurance accepted.
+- [ ] Production environment/owner/support approved.
+- [ ] Production IAM/secrets/network approved.
+- [ ] Backup/recovery/rollback approved.
+- [ ] Monitoring/on-call/incident-response handover approved.
+- [ ] Privacy/data/legal/governance approval recorded.
+- [ ] Change/release authorization and immutable production identity recorded.
 - [ ] Formal accountable `GO` or `NO-GO / BLOCKED` decision recorded.
-
-## Phase 10 fail-closed rule
-
-Any missing mandatory approval, unresolved release blocker, unaccepted residual risk or material mismatch between the approved and intended immutable production release identity results in `NO-GO / BLOCKED` until corrected and, where necessary, revalidated.
-
-A Phase 10 `GO` authorizes only the recorded release identity and does not grant autonomous publication or external-sharing authority.
 
 ## Current release decision
 
-**Phase 10 is `IN PROGRESS / DECISION REQUIRED`. DTMO is not production authorized until an explicit accountable `GO` is recorded.**
+**Phase 10 is `NO-GO / BLOCKED`. Phase 11 is `IN PROGRESS / ACTIVE`. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**
