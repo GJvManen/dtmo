@@ -25,6 +25,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md",
     "docs/qa/PHASE8_STAGING_READINESS_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
+    "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
     "docs/releases/16.0.0rc12.md",
 )
 
@@ -40,6 +41,7 @@ CURRENT_STATE_DOCUMENTS = (
     "docs/evidence/EVIDENCE_INDEX.md",
     "docs/qa/QA_AND_RELEASE_GATES.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
+    "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
 )
 
 OPERATIONAL_MARKERS = (
@@ -55,6 +57,10 @@ OBSOLETE_CURRENT_STATE_MARKERS = (
     "Real staging is next",
     "E8.8 — governed AIL Project read/enrichment is the active",
     "E8.9–E8.10 not yet accepted",
+    "Phase 9 `NOT COMPLETE`",
+    "Phase 10 `NOT STARTED`",
+    "REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED",
+    "REPOSITORY CONTRACT COMPLETE / EXTERNAL OWNER DECISION REQUIRED",
 )
 
 
@@ -95,6 +101,7 @@ def test_project_readme_retains_professional_product_structure() -> None:
         "Governance",
         "E8.1–E8.10",
         "Phase 9",
+        "Phase 10",
     ):
         assert marker in readme
 
@@ -120,30 +127,31 @@ def test_architecture_retains_required_layers_and_trust_boundaries() -> None:
 def test_current_professional_lifecycle_is_consistent() -> None:
     for path in CURRENT_STATE_DOCUMENTS:
         text = _read(path)
-        assert "PASS / OWNER_ACCEPTED" in text, f"RC13 accepted state missing from {path}"
+        assert "PASS / OWNER_ACCEPTED" in text, f"accountable acceptance state missing from {path}"
         assert "E8" in text and "REPOSITORY_COMPLETE" in text, f"E8 repository completion missing from {path}"
-        assert "Phase 9" in text, f"Phase 9 marker missing from {path}"
-        assert "not production ready" in text.lower() or "production readiness" in text.lower()
+        assert "Phase 9" in text and "EXTERNAL_ASSURANCE_ACCEPTED" in text, f"Phase 9 acceptance missing from {path}"
+        assert "Phase 10" in text, f"Phase 10 marker missing from {path}"
+        assert "IN PROGRESS" in text or "DECISION REQUIRED" in text, f"active Phase 10 state missing from {path}"
+        assert "production" in text.lower()
         for obsolete in OBSOLETE_CURRENT_STATE_MARKERS:
             assert obsolete not in text, f"obsolete lifecycle marker {obsolete!r} remains in {path}"
 
-    for path in (
-        "docs/project/CURRENT_STATE.md",
-        "docs/roadmap/PRODUCTION_ROADMAP.md",
-    ):
-        text = _read(path)
-        assert "PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE" in text
-        assert "REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED" in text
-        assert "Phase 8.5" in text
-
     current_state = _read("docs/project/CURRENT_STATE.md")
-    assert "IN PROGRESS / NEXT" in current_state
-    assert "Phase 10" in current_state and "NOT STARTED" in current_state
+    assert "Phase 8" in current_state and "PASS / OWNER_ACCEPTED" in current_state
+    assert "Phase 9" in current_state and "PASS / EXTERNAL_ASSURANCE_ACCEPTED" in current_state
+    assert "Phase 10" in current_state and "IN PROGRESS / DECISION REQUIRED" in current_state
+
+    roadmap = _read("docs/roadmap/PRODUCTION_ROADMAP.md")
+    assert "Phase 8" in roadmap and "PASS / OWNER_ACCEPTED" in roadmap
+    assert "Phase 9" in roadmap and "PASS / EXTERNAL_ASSURANCE_ACCEPTED" in roadmap
+    assert "Phase 10" in roadmap and "IN PROGRESS / ACCOUNTABLE PRODUCTION DECISION REQUIRED" in roadmap
+
+    phase10 = _read("docs/production/PHASE10_PRODUCTION_GO_NO_GO.md")
+    assert "IN PROGRESS / ACCOUNTABLE PRODUCTION DECISION REQUIRED" in phase10
+    assert "GO" in phase10 and "NO-GO / BLOCKED" in phase10
+    assert "Repository CI must not be represented as the source" in phase10
 
     phase8_gate = _read("docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md")
-    assert "ACTIVE_EXTERNAL_VALIDATION / OWNER_APPROVED_STAGING / IMMUTABLE_EVIDENCE_BINDING_INCOMPLETE" in phase8_gate
-    assert "Formal Phase 8 closure still requires that the accepted deployment be bound to one immutable technical identity" in phase8_gate
-    assert "Phase 8 is complete only when the immutable staging identity is complete and approved" in phase8_gate
     assert "Repository CI, local Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this gate by themselves" in phase8_gate
 
 
