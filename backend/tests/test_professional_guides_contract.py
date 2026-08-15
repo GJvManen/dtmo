@@ -58,9 +58,9 @@ def test_documentation_portal_exposes_audience_guides() -> None:
 def test_screenshot_catalogue_tracks_published_and_pending_surfaces() -> None:
     text = SCREENSHOTS.read_text(encoding="utf-8")
     assert "base runtime capture validated" in text
-    assert "UI-05" in text and "dedicated runtime screenshot pending" in text
-    assert "UI-10" in text and "dedicated runtime screenshot pending" in text
-    assert "must never be promoted as a product screenshot" in text
+    assert "UI-05" in text and "capture contract added / CI validation pending" in text
+    assert "UI-10" in text and "capture validated; repository promotion pending" in text
+    assert "A diagram or API contract must never be promoted as a product screenshot" in text
 
     for name in PUBLISHED_SCREENSHOTS:
         assert name in text
