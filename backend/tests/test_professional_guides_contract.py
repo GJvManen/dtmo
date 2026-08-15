@@ -44,6 +44,8 @@ def test_professional_guides_exist_and_preserve_claim_boundaries() -> None:
     admin = ADMIN.read_text(encoding="utf-8")
     assert "UI visibility is never the final authorization decision" in admin
     assert "Production credentials must not be reused" in admin
+    assert "audit-correlation.png" in admin
+    assert "does not prove that the shown events occurred in staging or production" in admin
 
 
 def test_documentation_portal_exposes_audience_guides() -> None:
@@ -57,12 +59,14 @@ def test_documentation_portal_exposes_audience_guides() -> None:
     assert "base screenshot capture has been exercised successfully in CI" in text
 
 
-def test_screenshot_catalogue_tracks_published_and_pending_surfaces() -> None:
+def test_screenshot_catalogue_tracks_published_surfaces() -> None:
     text = SCREENSHOTS.read_text(encoding="utf-8")
+    assert "base runtime capture validated" in text
     assert "UI-01–10 published / governed" in text
     assert "UI-05" in text and "published / governed" in text
     assert "UI-10" in text and "published / governed" in text
     assert "loading, empty or transient states are not promoted" in text
+    assert "audit_fixture_rendered = true" in text
     assert "A diagram or API contract must never be promoted as a product screenshot" in text
 
     for name in PUBLISHED_SCREENSHOTS:
