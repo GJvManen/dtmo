@@ -50,11 +50,18 @@ def test_rc13_5_historical_evidence_is_preserved_and_current_owner_acceptance_is
         encoding="utf-8"
     )
     assert "RC13 Full Functional Console Acceptance Gate" in workflow
+    # The workflow payload is immutable historical RC13 evidence and therefore
+    # retains the Phase 8 state that was true when that evidence was created.
     assert '"phase8_status": "PAUSED_PENDING_RC13_OWNER_RETEST"' in workflow
     assert "PASS / OWNER_ACCEPTED" in gate
     assert "2026-08-12" in gate
     assert "Accepted canonical journey" in gate
     assert "historical evidence must remain immutable" in gate
-    assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in phase8
+    # The live Phase 8 gate has advanced beyond the historical RC13 payload:
+    # staging is owner-approved, while immutable technical evidence binding is
+    # still required before Phase 8 can close.
+    assert "ACTIVE_EXTERNAL_VALIDATION / OWNER_APPROVED_STAGING / IMMUTABLE_EVIDENCE_BINDING_INCOMPLETE" in phase8
+    assert "PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE" in phase8
+    assert "APPROVED / OWNER_VERIFIED_EXTERNAL_EVIDENCE" in phase8
     assert "Issue #158" in phase8
-    assert "Phase 8 may be marked `PASS` only when" in phase8
+    assert "Phase 8 is complete only when the immutable staging identity is complete and approved" in phase8
