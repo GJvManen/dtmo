@@ -7,15 +7,17 @@ PHASE8_GATE = ROOT / "docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md"
 RC13_GATE = ROOT / "docs/qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md"
 
 
-def test_accountable_owner_acceptance_closes_rc13_without_claiming_external_acceptance() -> None:
+def test_accountable_owner_acceptance_preserves_rc13_history_without_reasserting_obsolete_phase8_state() -> None:
     text = RC13_GATE.read_text(encoding="utf-8")
     assert "PASS / OWNER_ACCEPTED" in text
     assert "2026-08-12" in text
     assert "Accepted canonical journey" in text
     assert "Accountable owner acceptance" in text
     assert "historical evidence must remain immutable" in text
-    assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in text
-    assert "CI/browser fixtures cannot create external staging or production acceptance" in text
+    assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" not in text
+    assert "post-E8 candidate has been externally deployed/tested" in text
+    assert "formal Phase 8 closure now depends on external evidence consolidation" in text
+    assert "CI/browser fixtures could not create staging, independent-assurance or production acceptance" in text
 
 
 def test_phase8_owner_approved_staging_still_requires_immutable_identity_binding() -> None:
