@@ -7,7 +7,7 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8 repository enhancemen
 
 DTMO has an accepted repository-controlled engineering baseline, an owner-accepted functional product and a repository-complete E8 vulnerability/CTI capability line. The post-E8 candidate has also been externally deployed and extensively tested by the accountable owner in an approved production-equivalent staging environment.
 
-The repository-side Phase 8.2–8.5 validation and acceptance contracts are now complete. **DTMO is not yet production ready** because the external Phase 8 evidence package still requires final immutable deployment binding and accountable acceptance, after which Phase 9 independent external assurance and Phase 10 formal production go/no-go remain mandatory.
+The repository-side Phase 8.2–8.5 validation and acceptance contracts are now complete. **DTMO is not production ready.** The external Phase 8 evidence package still requires final immutable deployment binding and accountable acceptance, after which Phase 9 independent external assurance and Phase 10 formal production go/no-go remain mandatory.
 
 ## Current decision position
 
