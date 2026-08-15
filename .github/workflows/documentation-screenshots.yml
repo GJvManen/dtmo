@@ -17,9 +17,11 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       DTMO_ENVIRONMENT: development
-      DTMO_DATABASE_URL: sqlite+pysqlite:///./artifacts/documentation-screenshots.db
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:dtmo@127.0.0.1:5432/dtmo
+      DTMO_REDIS_URL: redis://127.0.0.1:6379/0
+      DTMO_OPENSEARCH_URL: http://127.0.0.1:9200
+      DTMO_MINIO_ENDPOINT: 127.0.0.1:9000
       DTMO_FEATURE_LIVE_CONNECTORS: "false"
-      DTMO_DEBUG_IDENTITY_ENABLED: "true"
       DTMO_E2E_BASE_URL: http://127.0.0.1:8765
     steps:
       - uses: actions/checkout@v6
