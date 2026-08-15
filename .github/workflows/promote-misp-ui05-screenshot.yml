@@ -1,4 +1,4 @@
-name: Promote governed MISP UI-05 screenshot
+name: Finalize governed MISP UI-05 screenshot
 
 on:
   push:
@@ -11,35 +11,57 @@ permissions:
   contents: write
 
 jobs:
-  promote:
+  finalize:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
         with:
           ref: docs/misp-ui05-publish
-      - name: Download exact reviewed screenshot artifact
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Verify promoted image and finalize documentation
         run: |
           set -euo pipefail
-          curl -L --fail \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${GH_TOKEN}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/9247749318/zip" \
-            -o /tmp/dtmo-docs.zip
-          rm -rf /tmp/dtmo-docs
-          mkdir -p /tmp/dtmo-docs
-          unzip -q /tmp/dtmo-docs.zip -d /tmp/dtmo-docs
-          test -f /tmp/dtmo-docs/generated/misp-governed-workflow.png
-          echo 'f10518d60c225d7278ab804e6a6a2290a4410550fc811ea94850bb138c11cdbd  /tmp/dtmo-docs/generated/misp-governed-workflow.png' | sha256sum -c -
-          mkdir -p docs/visual/screenshots
-          cp /tmp/dtmo-docs/generated/misp-governed-workflow.png docs/visual/screenshots/misp-governed-workflow.png
-      - name: Commit exact reviewed PNG
+          echo 'f10518d60c225d7278ab804e6a6a2290a4410550fc811ea94850bb138c11cdbd  docs/visual/screenshots/misp-governed-workflow.png' | sha256sum -c -
+          python - <<'PY'
+          from pathlib import Path
+
+          product = Path('docs/product/PRODUCT_GUIDE.md')
+          text = product.read_text(encoding='utf-8')
+          needle = 'MISP is treated as governed CTI input/output with separate human approval for external sharing. AIL is treated as read/enrichment/correlation context with explicit boundaries around raw-content exposure and analytical inference.\n\n![DTMO AIL correlation workspace'
+          replacement = 'MISP is treated as governed CTI input/output with separate human approval for external sharing. AIL is treated as read/enrichment/correlation context with explicit boundaries around raw-content exposure and analytical inference.\n\n![DTMO MISP governed workflow — runtime UI with sanitized synthetic fixture data](../visual/screenshots/misp-governed-workflow.png)\n\n**UI-05 boundary:** the rendered export controls do not prove live MISP connectivity or sharing authority; the documented export path creates an unpublished event and remains subject to server-side approval checks.\n\n![DTMO AIL correlation workspace'
+          if needle not in text:
+              raise SystemExit('PRODUCT_GUIDE MISP insertion point not found')
+          product.write_text(text.replace(needle, replacement, 1), encoding='utf-8')
+
+          user = Path('docs/user/USER_GUIDE.md')
+          text = user.read_text(encoding='utf-8')
+          needle = 'MISP read data may enrich an investigation. Outbound MISP export is a separate governed action and requires the configured authorization and human approval path. Never infer approval merely because an export function exists.\n\nRelevant workflow: **WF-03**.'
+          replacement = 'MISP read data may enrich an investigation. Outbound MISP export is a separate governed action and requires the configured authorization and human approval path. Never infer approval merely because an export function exists.\n\n![DTMO MISP governed workflow — runtime UI with sanitized synthetic fixture data](../visual/screenshots/misp-governed-workflow.png)\n\n*Figure UI-05 — Actual DTMO MISP workspace with synthetic fixture data. The image demonstrates the read and governed-export interaction surface only; no outbound export was executed and live MISP connectivity is not proven.*\n\nRelevant workflow: **WF-03**.'
+          if needle not in text:
+              raise SystemExit('USER_GUIDE MISP insertion point not found')
+          user.write_text(text.replace(needle, replacement, 1), encoding='utf-8')
+
+          catalogue = Path('docs/visual/screenshots/README.md')
+          text = catalogue.read_text(encoding='utf-8')
+          text = text.replace('**Status:** base runtime capture validated; UI-01–04 and UI-06–09 published / governed; UI-05 capture contract added / CI validation pending  ', '**Status:** base runtime capture validated; UI-01–09 published / governed; UI-10 capture validated / repository promotion pending  ', 1)
+          text = text.replace('| UI-05 | MISP governed workflow | `misp-governed-workflow.png` | **capture contract added / CI validation pending** | runtime UI with synthetic fixture data |', '| UI-05 | MISP governed workflow | `misp-governed-workflow.png` | **published / governed** | runtime UI with synthetic fixture data |', 1)
+          old = 'UI-05 now has an actual DTMO `/ui/misp-workspace` runtime surface and a deterministic capture contract. The capture renders canonical MISP-origin intelligence and the governed export controls, but it does not execute outbound export and does not prove live MISP connectivity. Publication of `misp-governed-workflow.png` remains blocked until the new exact-head Documentation Screenshot Artifact Gate succeeds and the generated artifact is reviewed.\n\nUI-10 uses the existing read-only auditor surface.'
+          new = '''UI-05 is published from the reviewed exact-head capture.\n\n![DTMO MISP governed workflow — runtime UI with sanitized synthetic fixture data](misp-governed-workflow.png)\n\n**Review record for UI-05**\n\n- source capture: Documentation Screenshot Artifact Gate run #11, exact head `0bfc126d60225cd669b2aa4a4204243ecd7a5914`;\n- source artifact: `9247749318`, `dtmo-documentation-screenshots`;\n- source artifact digest: `sha256:2982c4bd8c13d65d2a2ee385883f8e33a73ef8f17408286ba39e247de3976808`;\n- image SHA-256: `f10518d60c225d7278ab804e6a6a2290a4410550fc811ea94850bb138c11cdbd`;\n- dimensions: 1440 × 1000; browser: Chromium/Playwright;\n- capture mode: actual runtime UI with sanitized synthetic fixture data;\n- reviewer check: governed read/export controls and claim boundaries are legible; no production credentials, secrets or unnecessary personal data are visible;\n- execution boundary: the capture does not execute outbound MISP export and does not prove live MISP connectivity;\n- evidence boundary: documentation illustration only.\n\nUI-10 uses the existing read-only auditor surface.'''
+          if old not in text:
+              raise SystemExit('screenshot catalogue MISP lifecycle paragraph not found')
+          catalogue.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          test = Path('backend/tests/test_professional_guides_contract.py')
+          text = test.read_text(encoding='utf-8')
+          text = text.replace('    "vulnerability-analytics.png",\n    "ail-correlation-workspace.png",', '    "vulnerability-analytics.png",\n    "misp-governed-workflow.png",\n    "ail-correlation-workspace.png",', 1)
+          text = text.replace('assert "UI-05" in text and "capture contract added / CI validation pending" in text', 'assert "UI-05" in text and "published / governed" in text', 1)
+          test.write_text(text, encoding='utf-8')
+          PY
+          rm .github/workflows/promote-misp-ui05-screenshot.yml
+      - name: Commit final governed documentation state
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/visual/screenshots/misp-governed-workflow.png
-          git commit -m 'docs: publish reviewed MISP UI-05 screenshot'
+          git add -A
+          git commit -m 'docs: embed governed MISP UI-05 visual'
           git push origin HEAD:docs/misp-ui05-publish
