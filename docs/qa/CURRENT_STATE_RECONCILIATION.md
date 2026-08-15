@@ -22,7 +22,7 @@ When lifecycle status or material architecture/product/security/governance state
 - `docs/roadmap/PRODUCTION_ROADMAP.md`;
 - `docs/evidence/EVIDENCE_INDEX.md`;
 - `docs/qa/QA_AND_RELEASE_GATES.md`;
-- active Phase 8/9/10 gate documents;
+- `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md` while Phase 10 is active;
 - architecture/security/governance documents when their substantive boundaries change.
 
 ## Current reconciled lifecycle
@@ -32,12 +32,12 @@ Professional current-state documentation must consistently state:
 - Phases 1–7: `PASS`;
 - RC13: `PASS / OWNER_ACCEPTED`;
 - E8.1–E8.10: `PASS / REPOSITORY_COMPLETE`;
-- post-E8 external deployment/staging: `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE`;
-- Phase 8.2–8.4: repository contracts complete, external acceptance required;
-- Phase 8.5: repository contract complete, accountable external owner decision required;
-- Phase 9: `NOT COMPLETE`;
-- Phase 10: `NOT STARTED`;
-- DTMO: **not production ready**.
+- Phase 8: `PASS / OWNER_ACCEPTED`;
+- Phase 9: `PASS / EXTERNAL_ASSURANCE_ACCEPTED`;
+- Phase 10: `IN PROGRESS / DECISION REQUIRED`;
+- DTMO: **not production authorized until an accountable Phase 10 `GO` is recorded**.
+
+The accepted Phase 8 and Phase 9 states are accountable/external evidence classes. Documentation reconciliation records those accepted facts but does not manufacture them from repository CI.
 
 ## Professional versus operational documentation
 
@@ -57,15 +57,16 @@ A reconciliation is acceptable only when:
 
 1. lifecycle statements agree across the professional current-state set;
 2. product, architecture, security and governance claims match the implemented/accepted evidence boundary;
-3. obsolete roadmap or framework statements are removed from current-state documents;
+3. obsolete roadmap or lifecycle statements are removed from current-state documents;
 4. historical immutable evidence has not been rewritten;
 5. operational chronology remains outside stable professional documents;
 6. framework mappings remain explicit, versioned/provenance-backed and non-inferred;
 7. security/privacy/publication authority boundaries are preserved;
 8. links/paths referenced by the professional documentation exist;
 9. documentation authority/currency is clear through `docs/project/DOCUMENTATION_STATUS.md`;
-10. the documentation PR completes required exact-head CI before protected merge.
+10. Phase 10 remains fail-closed until an explicit accountable `GO` or `NO-GO / BLOCKED` decision exists;
+11. the documentation PR completes required exact-head CI before protected merge.
 
 ## Evidence rule
 
-Documentation reconciliation does not manufacture engineering, staging, assurance or production acceptance. It may record only evidence classes that already exist and must preserve the distinction between repository CI, owner acceptance, real-environment evidence, independent assurance and formal production authorization.
+Documentation reconciliation does not manufacture engineering, staging, assurance or production acceptance. It may record only evidence classes that already exist and must preserve the distinction between repository CI, owner acceptance, real-environment evidence, independent assurance and formal production authorization. A Phase 10 `GO` may never be inferred from accepted Phase 8/9 evidence alone.
