@@ -1,169 +1,157 @@
 # DTMO Production Readiness Checklist
 
-Release baseline: **16.0.0rc12**  
-Current state: **RC13 accepted; Phase 8 ready to begin**
+Last reconciled: **2026-08-15**  
+Software baseline: **16.0.0rc12 plus accepted post-RC13/E8 repository enhancements**
 
-This checklist is the formal high-level control list for progressing DTMO from the accepted engineering/product baseline to production approval.
+This checklist is the high-level decision control for progressing DTMO from accepted engineering/product maturity through external staging evidence, independent assurance and formal production authorization.
 
 ## Evidence rules
 
-A checklist item is complete only when its required evidence exists and is reviewable. The following never count as `PASS`:
+A checklist item is complete only when its required evidence exists, is attributable and is reviewable. Configured-but-unexecuted tests, queued/in-progress/skipped/cancelled/failed workflows, stale exact-head evidence, inaccessible evidence, inferred evidence, or synthetic/local evidence presented as external staging/assurance evidence do not count as `PASS`.
 
-- configured but unexecuted tests;
-- queued/in-progress workflows;
-- skipped/cancelled/failed workflows;
-- stale evidence from a previous exact PR head;
-- inaccessible or inferred evidence;
-- synthetic/local evidence presented as real staging/external evidence.
-
-Historical evidence remains immutable. New evidence may supersede the current decision without rewriting history.
+Historical evidence remains immutable and scoped to the state/deployment it actually covered.
 
 ## 1. Repository-controlled engineering baseline
 
-- [x] CI/workflow integrity controls accepted.
-- [x] Application security and identity controls accepted.
-- [x] Data integrity, migration and recovery controls accepted.
-- [x] Connector reliability, provenance and failure handling accepted.
-- [x] Performance/scalability engineering gates accepted.
-- [x] Browser/accessibility/operational UX gates accepted.
-- [x] Observability, alerting and operational runbook gates accepted.
-- [x] Open-source governance gate accepted.
-- [x] Exact-head protected merge discipline established.
+- [x] CI/workflow integrity and exact-head protected merge discipline.
+- [x] Application security, identity and authorization controls.
+- [x] Data integrity, migrations and repository recovery contracts.
+- [x] Connector reliability, provenance, retry/replay/timeout/failure handling.
+- [x] Performance/scalability engineering gates.
+- [x] Browser/accessibility/UX gates.
+- [x] Observability, alerting and operational runbook gates.
+- [x] Open-source governance controls.
 
 **Decision:** Phases 1–7 `PASS`.
 
-## 2. Functional product acceptance
+## 2. Functional product and E8 baseline
 
-- [x] Unified Overview functions as a usable operator surface.
-- [x] Intelligence reads durable canonical application state.
-- [x] Sources & Catalog operations function through the canonical console.
-- [x] Supported source execution reaches raw evidence, canonical persistence and search/index representation.
-- [x] Native Visual Analytics renders canonical analytical state.
-- [x] Administration supports governed principal/role assignment operations and safety controls.
-- [x] Governance knowledge surface presents truthful framework/mapping state.
-- [x] Chrome/browser interaction and truthful empty-data behavior accepted.
-- [x] Accountable project-owner functional acceptance recorded.
+- [x] Unified operator shell accepted.
+- [x] Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance accepted functionally.
+- [x] Accountable RC13 owner acceptance recorded.
+- [x] Shared severity/classification semantics and filters.
+- [x] Governed manual source onboarding.
+- [x] Native trend/vulnerability analytics.
+- [x] Versioned governance/framework mappings.
+- [x] Deeper Administration/RBAC management.
+- [x] OpenCVE and Vulnerability-Lookup integrations.
+- [x] Vulnerability prioritization and vendor/product relevance.
+- [x] Governed MISP read and outbound-sharing boundaries.
+- [x] Governed AIL read/enrichment/correlation.
+- [x] Vulnerability-management evidence mapping with explicit semantic boundaries.
 
-**Decision:** RC13 `PASS / OWNER_ACCEPTED`.
+**Decision:** RC13 `PASS / OWNER_ACCEPTED`; E8.1–E8.10 `PASS / REPOSITORY_COMPLETE`.
 
-## 3. Phase 8 — production-equivalent staging identity
+## 3. Post-E8 staging deployment
 
-### 3.1 Environment identity
+- [x] Production-equivalent staging environment exists and is owner-approved.
+- [x] Post-E8 deployment was externally and successfully owner-tested.
+- [ ] Exact deployed release/commit is bound into the final evidence package.
+- [ ] Immutable application and supporting image digests are bound into the final evidence package.
+- [ ] Runtime/infrastructure identity and inventory are complete.
+- [ ] Configuration parity and approved deviations are complete.
+- [ ] Least-privilege IAM/service identities and secret-management references are complete.
+- [ ] TLS/network/access-control evidence is complete.
+- [ ] Staging data/sanitization and no-production-credential confirmation are complete.
+- [ ] Deployment/change, rollback and deployment-time security/CVE review are complete.
 
-- [ ] Approved staging environment identifier.
-- [ ] Accountable staging owner.
-- [ ] Approved reachable access path / endpoint.
-- [ ] Environment purpose/classification documented.
+## 4. Phase 8.2 — platform and identity validation
 
-### 3.2 Immutable deployment identity
+Repository contract: **complete**. External acceptance remains required against the same immutable staging identity.
 
-- [ ] Exact deployed DTMO release recorded.
-- [ ] Exact Git commit recorded.
-- [ ] Application image digest recorded.
-- [ ] Supporting service image digests recorded.
-- [ ] Deployment/change record linked to the immutable identity.
-- [ ] Rollback target/procedure linked to the same release.
+- [ ] Application health/readiness accepted externally.
+- [ ] PostgreSQL connectivity/migrations accepted externally.
+- [ ] OpenSearch health/search accepted externally.
+- [ ] Redis coordination accepted externally.
+- [ ] Object-storage read/write/integrity accepted externally.
+- [ ] Bearer-token trust boundary accepted externally.
+- [ ] RBAC enforcement accepted externally.
+- [ ] Human/service-account separation accepted externally.
+- [ ] Privileged Administration controls accepted externally.
+- [ ] Audit/correlation accepted externally.
+- [ ] Prometheus metrics accepted externally.
+- [ ] Grafana dashboards/authentication accepted externally.
+- [ ] Complete Phase 8.2 evidence package bound to one deployment identity and accepted.
 
-### 3.3 Infrastructure and configuration parity
+## 5. Phase 8.3 — source-to-intelligence validation
 
-- [ ] Infrastructure/runtime inventory captured.
-- [ ] Database/search/cache/object-storage versions recorded.
-- [ ] Configuration parity against approved target documented.
-- [ ] Required deviations explicitly risk-assessed and approved.
-- [ ] Persistence/backup/restore configuration documented.
+Repository contract: **complete**. External acceptance remains required.
 
-### 3.4 Identity, secrets and least privilege
+- [ ] Approved real staging source selected and authorized.
+- [ ] Real source retrieval observed with provenance/timestamp.
+- [ ] Raw evidence retention/reference validated.
+- [ ] Canonical normalization and PostgreSQL persistence validated.
+- [ ] Deduplication/idempotency validated.
+- [ ] OpenSearch visibility validated where applicable.
+- [ ] Enrichment/correlation and vulnerability/CTI derivation validated within semantic boundaries.
+- [ ] Intended API and canonical UI presentation validated.
+- [ ] Severity/classification and governance mappings validated.
+- [ ] Audit/correlation traceability validated end-to-end.
+- [ ] Degraded upstream behavior is observable and does not fabricate intelligence.
+- [ ] Evidence accepted against the same immutable staging identity.
 
-- [ ] Staging application identity is distinct from infrastructure/root identities.
-- [ ] Service identities use least-privilege permissions.
-- [ ] Human/admin and service-account roles remain separated.
-- [ ] Secrets are sourced from approved secret-management mechanisms.
-- [ ] No raw secret values are committed to repository evidence.
-- [ ] Local-development AIStor root/bootstrap credential exception is not used in staging.
-- [ ] No production credentials are present in staging.
+## 6. Phase 8.4 — operations, recovery and rollback
 
-### 3.5 Network and transport security
+Repository contract: **complete**. External acceptance remains required.
 
-- [ ] TLS endpoint/certificate/termination evidence recorded.
-- [ ] Approved ingress/access restrictions recorded.
-- [ ] Required egress/source connectivity documented.
-- [ ] Administrative/operational access path documented.
-- [ ] Grafana remains separately authenticated and not anonymously exposed.
+- [ ] Service restart/recovery behavior accepted.
+- [ ] PostgreSQL backup/restore and integrity accepted.
+- [ ] Object-storage recovery/reconstruction accepted where applicable.
+- [ ] OpenSearch recovery/rebuild accepted where applicable.
+- [ ] Redis/cache/coordination recovery accepted.
+- [ ] Application rollback to an approved prior immutable release demonstrated.
+- [ ] Migration recovery/forward-recovery boundaries demonstrated.
+- [ ] IAM/secrets continuity after recovery validated.
+- [ ] Metrics/logs/audit/correlation continuity validated.
+- [ ] Degraded dependency operator visibility validated.
+- [ ] RTO/RPO observations and deviations recorded.
+- [ ] Change/incident/rollback references recorded and accepted.
 
-### 3.6 Data handling and privacy
+## 7. Phase 8.5 — accountable staging acceptance
 
-- [ ] Staging data classification documented.
-- [ ] Test/sanitized data approach approved.
-- [ ] Production personal data is not introduced without explicit approval.
-- [ ] Retention/deletion expectations documented.
-- [ ] Evidence exports exclude unnecessary personal data and secrets.
+Repository acceptance contract: **complete**. External accountable decision remains required.
 
-### 3.7 Deployment-time security review
+- [ ] One immutable staging deployment identity binds all accepted Phase 8 evidence.
+- [ ] Phase 8.2 external evidence acceptance reference recorded.
+- [ ] Phase 8.3 external evidence acceptance reference recorded.
+- [ ] Phase 8.4 external evidence acceptance reference recorded.
+- [ ] Approved deviations and residual staging risks recorded.
+- [ ] No unresolved release-blocking staging finding remains.
+- [ ] Rollback/change evidence recorded.
+- [ ] Accountable owner/reviewer and decision timestamp recorded.
+- [ ] Explicit `PASS / OWNER_ACCEPTED` or `BLOCKED` decision recorded.
 
-- [ ] Application dependency/security review completed for the deployed identity.
-- [ ] Container/base-image review completed.
-- [ ] Relevant CVE/vendor advisory review completed.
-- [ ] Outstanding findings have accountable disposition.
+**Phase 8 is not complete until all items above are satisfied.**
 
-## 4. Phase 8 — deployed functional validation
+## 8. Phase 9 — independent external assurance
 
-All checks below must execute against the **same immutable staging deployment identity**.
-
-- [ ] Health/readiness endpoints accepted.
-- [ ] Authentication and authorization validated with approved staging identity provider/configuration.
-- [ ] Source catalog/bootstrap validated.
-- [ ] Supported source execution validated.
-- [ ] Raw evidence persistence validated.
-- [ ] Canonical PostgreSQL intelligence persistence validated.
-- [ ] OpenSearch indexing/search validated.
-- [ ] Overview/Intelligence/Visual Analytics validated.
-- [ ] Administration/RBAC boundaries validated.
-- [ ] Governance/read-only knowledge boundary validated.
-- [ ] Review/external-share separation validated.
-- [ ] Operational metrics/alerts/dashboard access validated.
-- [ ] Backup/restore or agreed staging recovery evidence completed.
-- [ ] Accountable staging acceptance recorded.
-
-**Phase 8 may be marked `PASS` only after this evidence is complete and consistent.**
-
-## 5. Phase 9 — independent external assurance
-
-- [ ] Independent penetration test completed.
-- [ ] Findings triaged and remediated/accepted by accountable owners.
+- [ ] Phase 8 is formally `PASS / OWNER_ACCEPTED`.
+- [ ] Independent penetration test completed against the accepted candidate.
+- [ ] Hardening/configuration review completed.
+- [ ] IAM/secrets-management review completed.
 - [ ] Representative production-equivalent load/stress validation completed.
-- [ ] Recovery/restore validation independently reviewed where required.
-- [ ] Platform/container/runtime hardening independently reviewed.
-- [ ] Secrets-management/IAM model independently reviewed.
-- [ ] Operational monitoring/incident-response readiness reviewed.
-- [ ] Legal/privacy/governance requirements independently reviewed where required.
-- [ ] Residual-risk statement approved.
+- [ ] Resilience/recovery review completed.
+- [ ] Monitoring/incident-response readiness reviewed.
+- [ ] Privacy/legal/governance reviewed where required.
+- [ ] Assurance-time dependency/CVE review completed.
+- [ ] Findings triaged with severity, owner and due date.
+- [ ] Release-blocking findings remediated and independently retested where required.
+- [ ] Residual-risk disposition approved.
+- [ ] Final `PASS / EXTERNAL_ASSURANCE_ACCEPTED` record completed.
 
-## 6. Phase 10 — formal production go/no-go
+## 9. Phase 10 — formal production go/no-go
 
 - [ ] Phase 8 evidence complete and accepted.
 - [ ] Phase 9 evidence complete and accepted.
-- [ ] Open critical/high production-blocking findings resolved or formally dispositioned.
+- [ ] Open critical/high release-blocking findings resolved or formally dispositioned.
 - [ ] Production environment/ownership/support model approved.
 - [ ] Production IAM/secrets/network architecture approved.
-- [ ] Backup/recovery and rollback plan approved.
+- [ ] Backup/recovery/rollback plan approved.
 - [ ] Monitoring/on-call/escalation model approved.
 - [ ] Data/privacy/legal requirements approved.
 - [ ] Release/change window approved.
-- [ ] Formal accountable stakeholder go/no-go decision recorded.
-
-## 7. Post-RC13 product enhancements
-
-These improvements are planned but are **not prerequisites for preserving the accepted RC13 baseline unless a later change introduces a regression**:
-
-- [ ] shared severity semantics and informational/low/medium/high filters;
-- [ ] manual governed source onboarding;
-- [ ] richer trend analysis;
-- [ ] first-class framework mapping model;
-- [ ] richer role/permission Administration;
-- [ ] deeper Governance framework/evidence views.
-
-Any enhancement included in a future production candidate must itself satisfy the applicable exact-head, staging and assurance gates.
+- [ ] Formal accountable production go/no-go decision recorded.
 
 ## Current release decision
 
-**Proceed to Phase 8.1 staging identity/evidence. Do not approve production deployment yet.**
+**Complete and accept Phase 8 external evidence. Do not approve production deployment. Phase 9 independent assurance follows only after Phase 8 formal acceptance.**
