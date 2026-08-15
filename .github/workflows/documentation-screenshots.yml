@@ -73,6 +73,7 @@ jobs:
               "sources-catalogue.png",
               "vulnerability-analytics.png",
               "ail-correlation-workspace.png",
+              "audit-correlation.png",
               "visual-analytics.png",
               "governance-frameworks.png",
               "administration-rbac.png",
@@ -87,9 +88,7 @@ jobs:
                   raise SystemExit(f"screenshot artifact unexpectedly small: {filename} ({size} bytes)")
 
           base_metadata = json.loads((root / "capture-metadata.json").read_text(encoding="utf-8"))
-          investigation_metadata = json.loads(
-              (root / "investigation-capture-metadata.json").read_text(encoding="utf-8")
-          )
+          investigation_metadata = json.loads((root / "investigation-capture-metadata.json").read_text(encoding="utf-8"))
           for metadata in (base_metadata, investigation_metadata):
               if metadata.get("capture_mode") != "actual-runtime-ui-with-synthetic-fixture-data":
                   raise SystemExit("unexpected screenshot capture mode")
@@ -97,6 +96,8 @@ jobs:
                   raise SystemExit("unexpected screenshot evidence classification")
           if investigation_metadata.get("raw_content_exposed") is not False:
               raise SystemExit("AIL documentation capture must not expose raw content")
+          if investigation_metadata.get("audit_read_only") is not True:
+              raise SystemExit("audit documentation capture must remain read-only")
           print("PASS: documentation screenshot artifacts are complete and correctly classified")
           PY
       - name: Stop documentation target
