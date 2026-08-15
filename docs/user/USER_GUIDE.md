@@ -27,13 +27,17 @@ flowchart LR
 
 Use Overview to understand volume, severity mix, confidence, connector health, recent intelligence and vulnerability posture. Dashboard figures are orientation signals; investigate the underlying records before drawing operational conclusions.
 
-**Screenshot reference:** `overview-dashboard.png` in the governed screenshot catalogue; binary promotion remains pending.
+![DTMO Overview dashboard — runtime UI with sanitized synthetic fixture data](../visual/screenshots/overview-dashboard.png)
+
+*Figure UI-01 — Actual DTMO runtime Overview surface. Synthetic fixture data is used; documentation illustration only.*
 
 ### Step 2 — Open Intelligence
 
 The Intelligence view presents recent records and search/filter functions. Severity filters are evidence-view filters; changing a filter does not change the source classification of the underlying record.
 
-**Screenshot reference:** `intelligence-workspace.png`; binary promotion remains pending.
+![DTMO Intelligence workspace — runtime UI with sanitized synthetic fixture data](../visual/screenshots/intelligence-workspace.png)
+
+*Figure UI-02 — Actual DTMO runtime Intelligence surface. Synthetic fixture data is used; documentation illustration only.*
 
 ### Step 3 — Search and inspect a record
 
@@ -58,7 +62,9 @@ flowchart TD
     G --> H[Analyst decision]
 ```
 
-**Screenshot references:** `vulnerability-analytics.png` and `visual-analytics.png`; binary promotion remains pending.
+![DTMO Vulnerability Analytics — runtime UI with sanitized synthetic fixture data](../visual/screenshots/vulnerability-analytics.png)
+
+*Figure UI-04 — Vulnerability prioritization and analytics in the actual DTMO runtime UI; not proof of local exploitability or exposure.*
 
 ### Step 5 — Use AIL correlation carefully
 
@@ -80,7 +86,9 @@ Relevant workflow: **WF-03**.
 
 The source catalogue explains which sources are defined and which execution profiles are supported. Runtime source status indicates registration/health information. A source shown as supported or registered is not evidence that the current staging or production environment successfully reached it. Likewise, a fixture-backed or repository-generated view does not prove live source connectivity.
 
-**Screenshot reference:** `sources-catalogue.png`; binary promotion remains pending.
+![DTMO Sources and Catalogue — runtime UI with sanitized synthetic fixture data](../visual/screenshots/sources-catalogue.png)
+
+*Figure UI-03 — Actual DTMO runtime source/catalogue surface. A displayed source does not prove current external connectivity.*
 
 ## 4. Severity and classification
 
@@ -90,13 +98,17 @@ DTMO uses the product severity classes **Informational, Low, Medium, High and Cr
 
 Use Governance to understand controlled relationships between DTMO evidence and frameworks such as Normenkader IBP, MITRE ATT&CK and NIST CSF. Framework mappings explain evidence relationships; they do not automatically establish compliance, maturity or certification.
 
-**Screenshot reference:** `governance-frameworks.png`; binary promotion remains pending.
+![DTMO Governance frameworks — runtime UI with sanitized synthetic fixture data](../visual/screenshots/governance-frameworks.png)
+
+*Figure UI-08 — Actual DTMO Governance surface. Framework relationships are contextual mappings, not blanket compliance claims.*
 
 ## 6. Visual Analytics
 
 Visual Analytics provides trends and aggregated operational views. When Grafana is used, its separate authentication and datasource controls remain in force. A chart should be traceable back to governed DTMO data rather than treated as an independent evidence source.
 
-**Screenshot reference:** `visual-analytics.png`; binary promotion remains pending.
+![DTMO Visual Analytics — runtime UI with sanitized synthetic fixture data](../visual/screenshots/visual-analytics.png)
+
+*Figure UI-07 — Actual DTMO runtime analytics surface with sanitized fixture data.*
 
 ## 7. Failure and degraded states
 

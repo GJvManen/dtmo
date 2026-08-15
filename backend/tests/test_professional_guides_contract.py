@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -8,7 +9,18 @@ USER = ROOT / "docs/user/USER_GUIDE.md"
 ADMIN = ROOT / "docs/administration/ADMINISTRATOR_GUIDE.md"
 PORTAL = ROOT / "docs/README.md"
 SCREENSHOTS = ROOT / "docs/visual/screenshots/README.md"
-AIL_SCREENSHOT = ROOT / "docs/visual/screenshots/ail-correlation-workspace.png"
+SCREENSHOT_ROOT = ROOT / "docs/visual/screenshots"
+
+PUBLISHED_SCREENSHOTS = (
+    "overview-dashboard.png",
+    "intelligence-workspace.png",
+    "sources-catalogue.png",
+    "vulnerability-analytics.png",
+    "ail-correlation-workspace.png",
+    "visual-analytics.png",
+    "governance-frameworks.png",
+    "administration-rbac.png",
+)
 
 
 def test_professional_guides_exist_and_preserve_claim_boundaries() -> None:
@@ -45,16 +57,27 @@ def test_documentation_portal_exposes_audience_guides() -> None:
 
 def test_screenshot_catalogue_tracks_published_and_pending_surfaces() -> None:
     text = SCREENSHOTS.read_text(encoding="utf-8")
-    user = USER.read_text(encoding="utf-8")
-
     assert "base runtime capture validated" in text
-    assert "binary promotion pending" in text
-
     assert "UI-05" in text and "dedicated runtime screenshot pending" in text
     assert "UI-10" in text and "dedicated runtime screenshot pending" in text
-
-    assert "UI-06" in text and "published / governed" in text
-    assert AIL_SCREENSHOT.is_file()
-    assert "../visual/screenshots/ail-correlation-workspace.png" in user
-
     assert "must never be promoted as a product screenshot" in text
+
+    for name in PUBLISHED_SCREENSHOTS:
+        assert name in text
+        path = SCREENSHOT_ROOT / name
+        assert path.is_file(), name
+        data = path.read_bytes()
+        assert data.startswith(b"\x89PNG\r\n\x1a\n"), name
+        assert len(data) > 10_000, name
+
+
+def test_markdown_screenshot_references_resolve_to_repository_files() -> None:
+    for document in (PRODUCT, USER, ADMIN, SCREENSHOTS):
+        text = document.read_text(encoding="utf-8")
+        image_targets = re.findall(r"!\[[^\]]*\]\(([^)]+\.png)\)", text)
+        assert image_targets, document
+        for target in image_targets:
+            resolved = (document.parent / target).resolve()
+            assert resolved.is_relative_to(ROOT), (document, target)
+            assert resolved.is_file(), (document, target)
+            assert resolved.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"), (document, target)
