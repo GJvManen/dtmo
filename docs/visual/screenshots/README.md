@@ -18,7 +18,8 @@ Synthetic API fixtures do **not** turn a screenshot into a mock-up: the HTML/CSS
 - Credentials: no production credentials; documentation-only test identity
 - External network calls: blocked or intercepted where practical
 - Output: PNG
-- Capture command: `python3 tools/capture_documentation_screenshots.py --base-url <running-dtmo-url> --output docs/visual/screenshots/generated`
+- Base capture command: `python3 tools/capture_documentation_screenshots.py --base-url <running-dtmo-url> --output docs/visual/screenshots/generated`
+- Investigation capture command: `python3 tools/capture_documentation_investigation_screenshots.py --base-url <running-dtmo-url> --output docs/visual/screenshots/generated`
 
 The output directory is intentionally separate from the governed catalogue until a capture has been reviewed for secrets, personal data, visual correctness and lifecycle labelling.
 
@@ -33,7 +34,7 @@ The base screenshot pipeline was exercised successfully in the **Documentation S
 | UI-03 | Sources & Catalogue | `sources-catalogue.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
 | UI-04 | Vulnerability analytics | `vulnerability-analytics.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
 | UI-05 | MISP governed workflow | `misp-governed-workflow.png` | dedicated runtime screenshot pending | runtime UI with synthetic fixture data |
-| UI-06 | AIL correlation workspace | `ail-correlation-workspace.png` | dedicated runtime screenshot pending | runtime UI with synthetic fixture data |
+| UI-06 | AIL correlation workspace | `ail-correlation-workspace.png` | capture contract added; exact-head CI validation pending | runtime UI with synthetic fixture data |
 | UI-07 | Visual Analytics | `visual-analytics.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
 | UI-08 | Governance frameworks | `governance-frameworks.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
 | UI-09 | Administration / RBAC | `administration-rbac.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
@@ -41,9 +42,9 @@ The base screenshot pipeline was exercised successfully in the **Documentation S
 
 ## Dedicated MISP, AIL and audit captures
 
-A diagram or API contract must never be promoted as a product screenshot. UI-05, UI-06 and UI-10 remain pending until the documentation capture can render the corresponding actual DTMO interaction surface with deterministic sanitized fixtures.
+A diagram or API contract must never be promoted as a product screenshot. AIL has a dedicated runtime correlation panel in the Intelligence Workspace; this branch adds a deterministic capture for that actual surface and keeps its status pending until exact-head CI succeeds. MISP and audit/correlation remain pending until the capture implementation identifies the actual rendered governed surface rather than manufacturing a conceptual screen.
 
-AIL already has a dedicated runtime correlation panel in the Intelligence Workspace and is the next capture target. MISP and audit/correlation require the capture implementation to identify the actual rendered governed surface rather than manufacturing a conceptual screen.
+The AIL capture follows the same user journey as the dedicated E8 browser test: query an indicator, open the governed intelligence record and render `#ail-correlation-panel`. Its synthetic fixture explicitly records `raw_content_exposed = false` and includes MISP/vulnerability correlations only as analytical context.
 
 ## Review record required before publication
 
