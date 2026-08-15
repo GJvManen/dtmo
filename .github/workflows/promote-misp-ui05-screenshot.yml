@@ -1,0 +1,45 @@
+name: Promote governed MISP UI-05 screenshot
+
+on:
+  push:
+    branches:
+      - docs/misp-ui05-publish
+    paths:
+      - '.github/workflows/promote-misp-ui05-screenshot.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: docs/misp-ui05-publish
+      - name: Download exact reviewed screenshot artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl -L --fail \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/9247749318/zip" \
+            -o /tmp/dtmo-docs.zip
+          rm -rf /tmp/dtmo-docs
+          mkdir -p /tmp/dtmo-docs
+          unzip -q /tmp/dtmo-docs.zip -d /tmp/dtmo-docs
+          test -f /tmp/dtmo-docs/generated/misp-governed-workflow.png
+          echo 'f10518d60c225d7278ab804e6a6a2290a4410550fc811ea94850bb138c11cdbd  /tmp/dtmo-docs/generated/misp-governed-workflow.png' | sha256sum -c -
+          mkdir -p docs/visual/screenshots
+          cp /tmp/dtmo-docs/generated/misp-governed-workflow.png docs/visual/screenshots/misp-governed-workflow.png
+      - name: Commit exact reviewed PNG
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/visual/screenshots/misp-governed-workflow.png
+          git commit -m 'docs: publish reviewed MISP UI-05 screenshot'
+          git push origin HEAD:docs/misp-ui05-publish
