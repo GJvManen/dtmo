@@ -53,7 +53,7 @@ Relevant workflow: **WF-01** and source-governance controls in the Administrator
 
 ### Vulnerability intelligence
 
-DTMO combines vulnerability evidence and prioritization context such as CVSS, EPSS, KEV, vendor/product relevance and sightings where available. These signals support triage; they do not independently prove exploitability, deployment or remediation state.
+DTMO combines vulnerability evidence and prioritization context such as CVSS, EPSS, KEV, vendor/product relevance and sightings where available. A prioritization signal does not independently prove exploitability, local deployment, compromise or remediation state; these signals support triage and must remain separate from asset-specific evidence.
 
 Relevant workflow: **WF-02 Vulnerability prioritization**.
 
