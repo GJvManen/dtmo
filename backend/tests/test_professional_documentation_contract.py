@@ -103,17 +103,16 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         text = _read(path)
         assert "PASS / OWNER_ACCEPTED" in text, f"RC13 accepted state missing from {path}"
 
-    # Phase 8.1 has moved from a pending-identity entry condition to an
-    # accountable owner-verified external-evidence state. Stable transition
-    # documents must reflect that new state while Phase 8 as a whole remains
-    # incomplete and proceeds through Phase 8.2-8.5.
+    # Phase 8 has moved beyond the old pending-deployment entry condition.
+    # Stable transition documents must record owner-verified staging evidence
+    # while preserving fail-closed immutable identity binding before Phase 8 PASS.
     for path in (
         "docs/project/CURRENT_STATE.md",
         "docs/roadmap/PRODUCTION_ROADMAP.md",
     ):
         text = _read(path)
         assert "PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE" in text, (
-            f"Phase 8.1 owner-verified state missing from {path}"
+            f"Phase 8 owner-verified state missing from {path}"
         )
         assert "Phase 8.2" in text, f"Phase 8.2 next-state marker missing from {path}"
 
@@ -122,10 +121,11 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "Phase 9" in current_state and "NOT COMPLETE" in current_state
     assert "Phase 10" in current_state and "NOT STARTED" in current_state
 
-    # Older entry/readiness documents may retain the historical pending marker
-    # until their dedicated reconciliation, but they must not be used to
-    # override the current owner-verified Phase 8.1 state above.
-    assert "PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in _read("docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md")
+    phase8_gate = _read("docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md")
+    assert "ACTIVE_EXTERNAL_VALIDATION / OWNER_APPROVED_STAGING / IMMUTABLE_EVIDENCE_BINDING_INCOMPLETE" in phase8_gate
+    assert "Formal Phase 8 closure still requires that the accepted deployment be bound to one immutable technical identity" in phase8_gate
+    assert "Phase 8 is complete only when the immutable staging identity is complete and approved" in phase8_gate
+    assert "Repository CI, local Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this gate by themselves" in phase8_gate
 
 
 def test_stable_professional_documents_do_not_become_operational_run_logs() -> None:
