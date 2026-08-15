@@ -65,7 +65,7 @@ Genuine product screenshots should be stored under `docs/visual/screenshots/` us
 
 ## 5. Screenshot evidence rules
 
-A screenshot may be labelled **product screenshot** only when it is captured from an actual DTMO runtime. Synthetic mock-ups, design concepts and generated illustrations must be labelled as conceptual and must never be presented as runtime evidence.
+A screenshot labelled **product screenshot** must come from an actual DTMO runtime. Synthetic mock-ups, design concepts and generated illustrations must be labelled as conceptual and must never be presented as runtime evidence.
 
 For every maintained product screenshot:
 
