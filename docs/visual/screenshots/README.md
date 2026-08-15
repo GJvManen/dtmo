@@ -1,6 +1,6 @@
 # DTMO Product Screenshot Catalogue
 
-**Status:** base runtime capture validated; UI-01–04 and UI-06–09 published / governed  
+**Status:** base runtime capture validated; UI-01–04 and UI-06–09 published / governed; UI-05 capture contract added / CI validation pending  
 **Screenshot type:** actual DTMO runtime UI with sanitized deterministic fixtures unless a record explicitly states otherwise  
 **Evidence classification:** documentation illustration only — not staging acceptance, independent assurance or production evidence
 
@@ -29,12 +29,12 @@ Synthetic API fixtures do **not** turn a screenshot into a mock-up: the HTML/CSS
 | UI-02 | Intelligence workspace | `intelligence-workspace.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-03 | Sources & Catalogue | `sources-catalogue.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-04 | Vulnerability analytics | `vulnerability-analytics.png` | **published / governed** | runtime UI with synthetic fixture data |
-| UI-05 | MISP governed workflow | `misp-governed-workflow.png` | dedicated runtime screenshot pending | runtime UI with synthetic fixture data |
+| UI-05 | MISP governed workflow | `misp-governed-workflow.png` | **capture contract added / CI validation pending** | runtime UI with synthetic fixture data |
 | UI-06 | AIL correlation workspace | `ail-correlation-workspace.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-07 | Visual Analytics | `visual-analytics.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-08 | Governance frameworks | `governance-frameworks.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-09 | Administration / RBAC | `administration-rbac.png` | **published / governed** | runtime UI with synthetic fixture data |
-| UI-10 | Audit / correlation surface | `audit-correlation.png` | dedicated runtime screenshot pending | runtime UI with synthetic fixture data |
+| UI-10 | Audit / correlation surface | `audit-correlation.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
 
 ## Published base runtime screenshots
 
@@ -77,7 +77,11 @@ Synthetic API fixtures do **not** turn a screenshot into a mock-up: the HTML/CSS
 
 ## Dedicated MISP and audit captures
 
-A diagram or API contract must never be promoted as a product screenshot. MISP and audit/correlation remain pending until the capture implementation identifies an actual rendered governed surface rather than manufacturing a conceptual screen.
+UI-05 now has an actual DTMO `/ui/misp-workspace` runtime surface and a deterministic capture contract. The capture renders canonical MISP-origin intelligence and the governed export controls, but it does not execute outbound export and does not prove live MISP connectivity. Publication of `misp-governed-workflow.png` remains blocked until the new exact-head Documentation Screenshot Artifact Gate succeeds and the generated artifact is reviewed.
+
+UI-10 uses the existing read-only auditor surface. Its deterministic runtime capture is validated; repository image promotion remains a separate governed step.
+
+A diagram or API contract must never be promoted as a product screenshot.
 
 ## Review record required before publication
 

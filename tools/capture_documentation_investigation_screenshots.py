@@ -10,6 +10,7 @@ from playwright.async_api import Page, Route, async_playwright
 
 VIEWPORT = {"width": 1440, "height": 1000}
 RECORD_ID = "11111111-1111-4111-8111-111111111111"
+MISP_RECORD_ID = "55555555-5555-4555-8555-555555555555"
 
 
 async def _json(route: Route, payload: object) -> None:
@@ -20,24 +21,36 @@ def search_fixture() -> dict[str, object]:
     return {
         "query": "login.example",
         "count": 1,
-        "results": [{"id": RECORD_ID,"title": "AIL domain indicator","summary": "AIL extracted domain indicator: login.example","source_id": "ail","severity": "informational","education_relevance": 80,"confidence_score": 75}],
+        "results": [{"id": RECORD_ID, "title": "AIL domain indicator", "summary": "AIL extracted domain indicator: login.example", "source_id": "ail", "severity": "informational", "education_relevance": 80, "confidence_score": 75}],
+    }
+
+
+def misp_search_fixture() -> dict[str, object]:
+    return {
+        "query": "misp",
+        "count": 1,
+        "results": [{"id": MISP_RECORD_ID, "title": "MISP phishing campaign — documentation fixture", "summary": "Sanitized MISP-origin CTI retained as canonical DTMO intelligence with provenance and distribution restrictions.", "source_id": "misp", "severity": "high", "education_relevance": 92, "confidence_score": 88}],
     }
 
 
 def workspace_fixture() -> dict[str, object]:
-    return {"id": RECORD_ID,"source_id": "ail","external_id": "domain:None:login.example","item_type": "indicator","title": "AIL domain indicator","summary": "AIL extracted domain indicator: login.example","canonical_url": "https://ail.example.test/api/v1/object?gid=domain%3ANone%3Alogin.example","severity": "informational","confidence_score": 75,"confidence_level": "high","education_relevance": 80,"review_status": "candidate","share_approved": False,"tags": ["documentation-fixture"],"context": {"cve_ids": [], "known_exploited": False, "vendor": None, "product": None},"metadata": {},"provenance": [],"published_at": None,"discovered_at": "2026-08-15T10:00:00+00:00","confidence_rationale": ["Synthetic fixture for visual documentation"]}
+    return {"id": RECORD_ID, "source_id": "ail", "external_id": "domain:None:login.example", "item_type": "indicator", "title": "AIL domain indicator", "summary": "AIL extracted domain indicator: login.example", "canonical_url": "https://ail.example.test/api/v1/object?gid=domain%3ANone%3Alogin.example", "severity": "informational", "confidence_score": 75, "confidence_level": "high", "education_relevance": 80, "review_status": "candidate", "share_approved": False, "tags": ["documentation-fixture"], "context": {"cve_ids": [], "known_exploited": False, "vendor": None, "product": None}, "metadata": {}, "provenance": [], "published_at": None, "discovered_at": "2026-08-15T10:00:00+00:00", "confidence_rationale": ["Synthetic fixture for visual documentation"]}
 
 
 def correlation_fixture() -> dict[str, object]:
-    return {"status": "ok","indicator": {"type": "domain", "value": "login.example"},"investigation_references": [{"id": "case-docs-42"}],"raw_content_exposed": False,"analysis_only": True,"degraded_reasons": [],"claim_boundary": "Exact correlation is analytical context only; it does not prove exposure, compromise, attribution or share authority.","correlations": [{"source_id": "misp","external_id": "event-docs-1","item_type": "cti_event","title": "MISP phishing event — documentation fixture","relation": "misp_object_attribute","matched_value": "login.example","context": {"object_name": "domain-ip", "type": "domain"}},{"source_id": "opencve","external_id": "CVE-2026-DOCS","item_type": "vulnerability","title": "Synthetic affected product context","relation": "canonical_exact_match","matched_value": "login.example","context": {"vendor": "Example", "product": "Education Portal"}}]}
+    return {"status": "ok", "indicator": {"type": "domain", "value": "login.example"}, "investigation_references": [{"id": "case-docs-42"}], "raw_content_exposed": False, "analysis_only": True, "degraded_reasons": [], "claim_boundary": "Exact correlation is analytical context only; it does not prove exposure, compromise, attribution or share authority.", "correlations": [{"source_id": "misp", "external_id": "event-docs-1", "item_type": "cti_event", "title": "MISP phishing event — documentation fixture", "relation": "misp_object_attribute", "matched_value": "login.example", "context": {"object_name": "domain-ip", "type": "domain"}}, {"source_id": "opencve", "external_id": "CVE-2026-DOCS", "item_type": "vulnerability", "title": "Synthetic affected product context", "relation": "canonical_exact_match", "matched_value": "login.example", "context": {"vendor": "Example", "product": "Education Portal"}}]}
 
 
 def audit_fixture() -> dict[str, object]:
-    return {"count": 3,"read_only": True,"events": [{"event_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa","action": "share.review","principal": "reviewer@example.test","decision": "permit","resource": "intelligence:11111111-1111-4111-8111-111111111111","event_hash": "7c6fe84f5db9d8f11b8ea52d0edb8a0f"},{"event_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb","action": "misp.export.prepare","principal": "publisher@example.test","decision": "permit","resource": "misp:event-docs-1","event_hash": "0ab9e671fc78ef38aa9b9d33727f1728"},{"event_id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc","action": "rbac.role.update","principal": "admin@example.test","decision": "permit","resource": "role:analyst","event_hash": "9c047193ae63ef01d955de5af6c5cc41"}]}
+    return {"count": 3, "read_only": True, "events": [{"event_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "action": "share.review", "principal": "reviewer@example.test", "decision": "permit", "resource": "intelligence:11111111-1111-4111-8111-111111111111", "event_hash": "7c6fe84f5db9d8f11b8ea52d0edb8a0f"}, {"event_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", "action": "misp.export.prepare", "principal": "publisher@example.test", "decision": "permit", "resource": "misp:event-docs-1", "event_hash": "0ab9e671fc78ef38aa9b9d33727f1728"}, {"event_id": "cccccccc-cccc-4ccc-8ccc-cccccccccccc", "action": "rbac.role.update", "principal": "admin@example.test", "decision": "permit", "resource": "role:analyst", "event_hash": "9c047193ae63ef01d955de5af6c5cc41"}]}
 
 
 def auditor_session_fixture() -> dict[str, object]:
     return {"subject": "docs-auditor@example.test", "roles": ["auditor"], "permissions": ["read:audit"]}
+
+
+def publisher_session_fixture() -> dict[str, object]:
+    return {"subject": "docs-publisher@example.test", "roles": ["publisher"], "permissions": ["read:intelligence", "approve:share", "export:reports"], "service_account": False, "publication_requires_separate_human_approval": True}
 
 
 async def install_routes(page: Page) -> None:
@@ -74,7 +87,18 @@ async def run(base_url: str, output: Path) -> None:
         await audit_page.screenshot(path=str(output / "audit-correlation.png"), full_page=True)
         await auditor.close()
 
-        metadata = {"generated_at": datetime.now(UTC).isoformat(),"base_url": base_url,"browser": "chromium/playwright","viewport": VIEWPORT,"capture_mode": "actual-runtime-ui-with-synthetic-fixture-data","evidence_classification": "documentation-illustration-only","journeys": ["ail-indicator-to-correlation-workspace", "auditor-read-only-evidence-viewer"],"raw_content_exposed": False,"audit_read_only": True,"files": ["ail-correlation-workspace.png", "audit-correlation.png"]}
+        publisher = await browser.new_context(viewport=VIEWPORT, extra_http_headers={"X-DTMO-Subject": "docs-publisher@example.test", "X-DTMO-Roles": "publisher"})
+        misp_page = await publisher.new_page()
+        await misp_page.route("**/api/v1/ui/session", lambda route: _json(route, publisher_session_fixture()))
+        await misp_page.route("**/api/v1/intelligence/search?*", lambda route: _json(route, misp_search_fixture()))
+        await misp_page.goto(base_url.rstrip("/") + "/ui/misp-workspace", wait_until="networkidle")
+        await misp_page.locator("#search-form").wait_for(state="visible")
+        await misp_page.get_by_role("button", name="Zoeken").click()
+        await misp_page.locator("#results .result").first.wait_for(state="visible")
+        await misp_page.screenshot(path=str(output / "misp-governed-workflow.png"), full_page=True)
+        await publisher.close()
+
+        metadata = {"generated_at": datetime.now(UTC).isoformat(), "base_url": base_url, "browser": "chromium/playwright", "viewport": VIEWPORT, "capture_mode": "actual-runtime-ui-with-synthetic-fixture-data", "evidence_classification": "documentation-illustration-only", "journeys": ["ail-indicator-to-correlation-workspace", "auditor-read-only-evidence-viewer", "misp-read-and-governed-export-workspace"], "raw_content_exposed": False, "audit_read_only": True, "misp_export_executed": False, "misp_live_connectivity_proven": False, "files": ["ail-correlation-workspace.png", "audit-correlation.png", "misp-governed-workflow.png"]}
         (output / "investigation-capture-metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
         await browser.close()
 
