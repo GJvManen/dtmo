@@ -20,7 +20,7 @@
     "privileged_administration_controls": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
     "audit_correlation": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
     "prometheus_metrics": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"},
-    "grafana_separate_authentication": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"}
+    "grafana_dashboards": {"result": "NOT_RUN", "evidence_reference": "NOT_PROVIDED"}
   },
   "phase8_2_pass": false,
   "phase8_pass": false
