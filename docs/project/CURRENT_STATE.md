@@ -1,135 +1,104 @@
 # DTMO Current Project State
 
-Last reconciled: **2026-08-14**  
-Release baseline: **16.0.0rc12 + accepted post-RC13 enhancements + E8 workstream**
+Last reconciled: **2026-08-15**  
+Software baseline: **16.0.0rc12 plus accepted post-RC13 and E8 repository enhancements**
 
 ## Executive summary
 
-DTMO has completed its repository-controlled engineering baseline through Phase 7 and its functional unified-console acceptance gate (RC13). The accountable project owner has explicitly accepted that functional baseline and the targeted post-RC13 retest.
+DTMO has completed the repository-controlled engineering baseline through Phase 7, the RC13 functional unified-console acceptance gate and the E8.1–E8.10 vulnerability/CTI product-evolution line. RC13 is explicitly `PASS / OWNER_ACCEPTED`; E8.1–E8.10 are `PASS / REPOSITORY_COMPLETE`.
 
-Phase 8.1 real-staging deployment identity/environment evidence was previously owner-verified for the deployment identity it covered. Phase 8.2–8.5 remain the **IN PROGRESS / NEXT** production-readiness lifecycle. External execution is intentionally paused while E8 materially changes the intended production candidate; historical staging evidence is not relabelled as evidence for a newer candidate.
+The post-E8 candidate has been externally deployed and extensively tested by the accountable owner in an approved production-equivalent staging environment. This is `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` for the deployment/staging fact itself.
 
-The active repository product line is **E8 — Vulnerability & CTI ecosystem integrations**. E8.1 through E8.7 are merged at repository level. E8.8 governed AIL Project read/enrichment is the active slice. DTMO is **not production ready**: the materially updated candidate must later be rebound to an immutable staging deployment identity and complete remaining Phase 8 external acceptance, Phase 9 independent assurance and Phase 10 production go/no-go.
+The repository-side validation contracts for Phase 8.2 platform/identity, Phase 8.3 source-to-intelligence, Phase 8.4 operations/recovery and Phase 8.5 accountable staging acceptance are complete. Formal Phase 8 closure still requires the external evidence from those contracts to be completed and accepted against one immutable staging deployment identity, including exact deployed release/commit, image digests and runtime identity.
 
-## Current phase position
+DTMO is therefore **not production ready**. The current progression is **Phase 8 external evidence completion and accountable acceptance → Phase 9 independent external assurance → Phase 10 formal production go/no-go**.
 
-| Stage | Scope | Status |
-|---|---|---|
-| Phases 1–7 | Engineering, security, integrity/recovery, connectors, performance, accessibility/UX, observability/operations | `PASS` |
-| RC13 + targeted post-RC13 owner retest | Functional unified-console acceptance | `PASS / OWNER_ACCEPTED` |
-| E8.1–E8.7 | Vulnerability/CTI integrations, analytics, unified-console UX and governed MISP read/export | `MERGED / REPOSITORY PASS` |
-| E8.8 | Governed AIL Project read/enrichment | `ACTIVE` |
-| Phase 8.1 historical deployment identity | Real staging environment + immutable deployment identity for the candidate then deployed | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
-| Phase 8.2–8.5 external execution | Deployed staging validation and accountable staging acceptance | `IN PROGRESS / NEXT — execution paused while E8 changes candidate` |
-| Phase 9 | Independent external assurance | `NOT COMPLETE` |
-| Phase 10 | Production go/no-go | `NOT STARTED` |
+## Lifecycle position
+
+| Stage | Status |
+|---|---|
+| Phases 1–7 | `PASS` |
+| RC13 + owner retest | `PASS / OWNER_ACCEPTED` |
+| E8.1–E8.10 | `PASS / REPOSITORY_COMPLETE` |
+| Historical Phase 8.1 staging identity | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE — HISTORICAL IDENTITY ONLY` |
+| Post-E8 external deployment + approved staging | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
+| Phase 8.2 | `REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` |
+| Phase 8.3 | `REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` |
+| Phase 8.4 | `REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` |
+| Phase 8.5 | `REPOSITORY CONTRACT COMPLETE / EXTERNAL OWNER DECISION REQUIRED` |
+| Phase 9 | `NOT COMPLETE / NEXT ASSURANCE TRACK AFTER PHASE 8 PASS` |
+| Phase 10 | `NOT STARTED` |
 
 ## Accepted product capabilities
 
-### Overview and Intelligence
+### Unified operator experience
 
-- canonical intelligence KPIs, recent intelligence and investigation/search support;
-- shared accessible severity semantics and filtering;
-- source/provenance context and durable commit-before-success ingestion;
-- vulnerability analytics based on governed OpenCVE and Vulnerability-Lookup evidence;
-- CVSS/EPSS/KEV/vendor/product/CWE/sighting filters and configurable time windows;
-- explicit `ok`, `empty` and `degraded` evidence states.
+DTMO provides one canonical application shell across Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The accepted product supports severity/classification semantics and filters, source/provenance context, governed source operations, native analytics, managed principals/roles/permissions and repository-backed governance knowledge.
 
-### Sources & Catalog
+### Vulnerability and CTI capabilities
 
-- curated source catalog and idempotent bootstrap;
-- source enable/disable, supported execution and runtime-secret references;
-- governed manual onboarding with validation/pretest and disabled-first activation;
-- optional OpenCVE, Vulnerability-Lookup and MISP read integrations;
-- governed MISP outbound export under a separate feature flag, with human review/share approval and replay protection;
-- AIL Project read/enrichment is active as a separate disabled-by-default, explicit-object integration and does not enable autonomous crawling.
+The E8 baseline includes:
 
-### Visual Analytics
+- OpenCVE vulnerability intelligence;
+- CIRCL Vulnerability-Lookup and sightings;
+- explainable vulnerability prioritization;
+- governed vendor/product/CPE relevance;
+- vulnerability analytics across Overview, Intelligence and Visual Analytics;
+- governed read-only MISP integration;
+- separately governed MISP outbound export with human review/share approval boundaries;
+- governed AIL read/enrichment and correlation workspace;
+- repository-backed vulnerability-management evidence mapping with explicit semantic boundaries for CVSS, EPSS, KEV, MITRE ATT&CK, MISP and AIL.
 
-- native severity/source/connector/review analytical views;
-- configurable trend analysis;
-- vulnerability CVSS/EPSS/KEV/sighting/vendor/product/CWE facets and trends;
-- canonical application analytics without requiring Grafana authentication for normal users;
-- separately secured Grafana operations/advanced dashboards.
+Repository completion proves the implementation and its controlled tests; it does not by itself prove live external-source completeness, production deployment, legal sharing authority, independent assurance or production approval.
 
-### Administration
+## Data and persistence model
 
-- managed principals and governed role assignments;
-- role-to-permission visibility/management;
-- human/service-account separation;
-- administrator self-management and final-active-admin protections;
-- auditable privileged changes with request correlation.
+- **PostgreSQL** — canonical application, intelligence and RBAC state;
+- **OpenSearch** — search/index representation;
+- **S3-compatible object storage** — raw source/evidence objects;
+- **Redis** — queue/cache/runtime coordination;
+- **Prometheus/Grafana** — operational observability.
 
-### Governance
+Durable source ingestion is not reported as successful before the canonical persistence boundary completes. Supporting stores and dashboards do not replace the canonical record or governance state.
 
-- authenticated repository-backed governance knowledge surface;
-- versioned framework registry and explicit coverage/review states;
-- provenance-backed DTMO control crosswalks;
-- Normenkader IBP, MITRE ATT&CK and NIST CSF relationships;
-- CVSS context with explicit claim boundaries;
-- implementation-evidence and publication/share authority boundaries.
+## Security and authority model
 
-The targeted owner retest explicitly accepted the Governance framework/control mapping surface. Later E8 repository changes do not create new owner acceptance by implication.
+The accepted baseline preserves server-side RBAC, least privilege, bearer-token trust validation, human/service-account separation, privileged Administration safeguards, request correlation, auditable security-relevant actions, provenance/confidence preservation, data minimization and explicit review/share approval boundaries.
 
-## E8 delivery state
+No connector, successful import, CI result, analytics view, Administration privilege, Governance mapping or staging access automatically grants external publication authority. MISP and AIL behavior remains constrained by the documented source and sharing semantics.
 
-- **E8.1** OpenCVE vulnerability intelligence — merged.
-- **E8.2** CIRCL Vulnerability-Lookup and sightings — merged.
-- **E8.3** explainable vulnerability prioritization — merged.
-- **E8.4** governed vendor/product/CPE relevance — merged.
-- **E8.5.1** governed vulnerability analytics contract — merged.
-- **E8.5.2** server-side evidence projection plus Overview, Intelligence and Visual Analytics UX — merged after repository-controlled acceptance gates.
-- **E8.6** governed read-only MISP integration — merged after exact-head repository CI.
-- **E8.7** governed MISP sharing/export — merged after exact-head repository CI.
-- **E8.8** governed AIL Project read/enrichment — active.
-- **E8.9–E8.10** not yet accepted.
+## Governance and framework model
 
-Repository tests and synthetic browser/HTTP fixtures for E8 are repository evidence only. They do not prove live-feed completeness, deployment, exploitability, compromise, owner acceptance, pentest acceptance, successful external delivery or external-share authorization.
+Framework relationships are explicit, versioned and provenance-backed. DTMO includes relationships to Normenkader IBP, MITRE ATT&CK and NIST CSF and uses CVSS as vulnerability-scoring context. E8.10 adds vulnerability-management evidence mapping, including Normenkader IBP SM.07 and supporting context.
 
-## Canonical data and persistence state
+A recorded mapping does not imply complete framework compliance, maturity, certification, local exploitability, compromise or remediation completion. Missing evidence is not inferred.
 
-DTMO's application truth is layered:
+## Phase 8 current requirement
 
-- **PostgreSQL:** canonical intelligence/application/RBAC state;
-- **OpenSearch:** search/index representation;
-- **S3-compatible object storage:** raw source/evidence objects;
-- **Redis:** queue/cache/runtime coordination;
-- **Prometheus/Grafana:** operational observability.
+The repository-side contracts for Phases 8.2–8.5 are complete. The remaining work is external evidence completion and accountable acceptance against one immutable staging deployment identity.
 
-A connector result is not durably successful until canonical PostgreSQL persistence completes. External platform state never replaces DTMO review, audit or authorization state.
+The evidence package must bind, as applicable:
 
-## Security and governance state
+- approved environment and accountable owner;
+- exact deployed release/commit and immutable image digests;
+- runtime/infrastructure identity and configuration parity/deviations;
+- IAM, service-account, secret-management, TLS/network and data-sanitization evidence;
+- platform health, persistence, search/cache/storage and authorization validation;
+- source-to-intelligence traceability and degraded behavior;
+- operations, recovery, rollback and RTO/RPO observations;
+- approved residual risk/deviations and absence of unresolved release-blocking staging findings;
+- explicit accountable `PASS / OWNER_ACCEPTED` or `BLOCKED` Phase 8.5 decision.
 
-The accepted baseline preserves server-side RBAC and least privilege, externally issued bearer-token trust validation, human/service-account separation, separation of duties, auditable privileged transitions, provenance/confidence preservation, privacy/data minimization, runtime secret handling, explicit human review and separate external-share approval.
+This is the current **IN PROGRESS / NEXT** release-readiness objective.
 
-No connector, successful import, CI job, analytics view, Administration capability, Governance mapping or staging access grants automatic publication authority. Incoming MISP restrictions remain authoritative. MISP export creates unpublished events only. The AIL integration is read-only and deliberately excludes crawler control, general paste-body import and autonomous investigation mutation.
+## Phase 9 and Phase 10
 
-## Framework mapping truth
+Phase 9 requires independent external assurance against the accepted candidate. The expected scope includes penetration testing, hardening/configuration, IAM/secrets, representative load/stress, resilience/recovery, monitoring/incident-response readiness, relevant privacy/legal/governance review, finding remediation/retest and residual-risk disposition.
 
-Framework mapping is explicit and provenance-backed. The project does not infer mappings from free text, tags or semantic similarity. Individual mappings carry their own relation/coverage semantics and evidence; presence of a mapping does not imply complete framework compliance.
-
-CVSS remains a vulnerability-scoring context rather than a DTMO compliance-control framework. MITRE ATT&CK mappings are threat/detection/classification relationships rather than compliance claims.
-
-## Active workstream
-
-**E8.8 — governed AIL Project read/enrichment** is the active repository objective under issue #193.
-
-The bounded slice reads only explicitly configured AIL object global IDs through the authenticated object API. Supported extracted security indicators are projected into canonical DTMO indicators with source provenance. Returned raw AIL content, investigation titles and notes are not copied; only bounded investigation identifiers may be retained as context. Crawler creation, scheduling, execution, AIL imports and object/investigation mutation are outside the slice.
-
-## Remaining production-readiness limitations
-
-- E8.8–E8.10 are not yet fully accepted;
-- the production candidate is still changing and must later be rebound to an updated immutable staging deployment identity;
-- Phase 8.2 platform/identity validation remains IN PROGRESS / NEXT but execution is paused until the updated candidate is immutable;
-- Phase 8.3 source-to-intelligence validation is not yet accepted for the final candidate;
-- Phase 8.4 operational/recovery validation is not yet accepted for the final candidate;
-- Phase 8.5 accountable staging acceptance is not yet recorded for the final candidate;
-- Phase 9 independent penetration/security assurance is not complete;
-- representative production-equivalent load/stress, hardening and residual-risk acceptance remain outstanding where required by the Phase 9 gate;
-- Phase 10 formal production go/no-go has not started.
+Phase 10 is the formal production go/no-go and has not started. It requires accepted Phase 8 and Phase 9 evidence plus accountable production-environment, operations, security, privacy/data, recovery/rollback and release/change approvals.
 
 ## Documentation and evidence boundary
 
-Historical Phase 8.1 owner verification remains immutable evidence for the deployment identity it covered. It is not rewritten to cover later E8 commits. Environment-specific values remain governed by their approved evidence location and are not reconstructed from repository placeholders.
+Professional current-state documents describe the present controlled state. Immutable historical run records remain under `docs/development/` and may correctly contain older lifecycle terminology because they record what was true at that point in time.
 
-Stable professional documents describe the controlled current state. Operational chronology belongs under `docs/development/runs/`, GitHub issues/pull requests and CI evidence. Environment and independent-assurance claims require evidence attributable to the relevant deployment/assessment identity.
+Repository CI, local Docker Compose, staging emulators, synthetic fixtures and self-attestation remain supporting evidence only and cannot substitute for the external evidence classes explicitly required by Phase 8, Phase 9 or Phase 10.
