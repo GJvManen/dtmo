@@ -128,6 +128,15 @@ The local Compose topology is a development/reference environment only. Developm
 
 ## Open source and responsible use
 
-DTMO is licensed under the **Apache License, Version 2.0**. See [`LICENSE`](LICENSE), [`NOTICE`](NOTICE), [`SECURITY.md`](SECURITY.md), [`CONTRIBUTING.md`](CONTRIBUTING.md), [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) and [`SUPPORTED_VERSIONS.md`](SUPPORTED_VERSIONS.md).
+DTMO is licensed under the **Apache License, Version 2.0**. The canonical open-source governance and legal entry points are:
+
+- [`LICENSE`](LICENSE)
+- [`NOTICE`](NOTICE)
+- [`SECURITY.md`](SECURITY.md)
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)
+- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
+- [`SUPPORTED_VERSIONS.md`](SUPPORTED_VERSIONS.md)
+- [`docs/legal/LICENSING.md`](docs/legal/LICENSING.md)
+- [`docs/legal/THIRD_PARTY.md`](docs/legal/THIRD_PARTY.md)
 
 Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, publish or redistribute third-party material.
