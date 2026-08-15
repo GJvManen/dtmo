@@ -9,7 +9,7 @@ Phase 10 is the final accountable production-authorization gate for DTMO. It doe
 
 ## Accepted prerequisites
 
-The accountable owner has reported the following prerequisites complete:
+The accepted release line includes E8.1–E8.10 `PASS / REPOSITORY_COMPLETE`. The accountable owner has reported the following production-readiness prerequisites complete:
 
 - Phase 8.2 platform and identity validation — `PASS`;
 - Phase 8.3 source-to-intelligence validation — `PASS`;
