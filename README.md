@@ -8,8 +8,10 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Product evolution:** E8.1–E8.10 `PASS / REPOSITORY_COMPLETE`  
 > **Production-equivalent staging:** Phase 8 `PASS / OWNER_ACCEPTED`  
 > **Independent assurance:** Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED`  
-> **Production authorization:** Phase 10 `IN PROGRESS / GO-NO-GO DECISION REQUIRED`  
-> **Production status:** **not production authorized until Phase 10 GO**
+> **Production authorization:** Phase 10 `NO-GO / INDUSTRIALISATION REQUIRED`  
+> **Active programme:** Phase 11 `ACTIVE / HIGHEST PRIORITY`  
+> **Next production decision:** Phase 12 `PLANNED`  
+> **Production status:** **not production authorized**
 
 ## Why DTMO
 
@@ -65,9 +67,11 @@ The governance model includes explicit versioned relationships to Normenkader IB
 
 ## Architecture
 
-The reference platform consists of Python 3.12+, FastAPI/Uvicorn, SQLAlchemy/Alembic, PostgreSQL, Redis, OpenSearch, S3-compatible object storage, Prometheus, separately authenticated Grafana, Nginx and a Docker Compose reference topology.
+The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, SQLAlchemy/Alembic, PostgreSQL, Redis, OpenSearch, S3-compatible object storage, Prometheus, separately authenticated Grafana, Nginx and a Docker Compose reference topology.
 
-See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) and [Security Overview](docs/security/SECURITY_OVERVIEW.md) for component responsibilities, trust boundaries and deployment/security assumptions.
+Phase 11 intentionally industrialises this architecture through service integration with mature open-source platforms rather than expanding DTMO into a monolith. The target responsibility split is Taranis AI for OSINT collection/analyst workflow, IntelOwl for generic IOC enrichment, OpenCTI for STIX knowledge-graph functions, MISP for governed CTI exchange and TheHive for incident/case handoff. DTMO remains the education-sector CTI, vulnerability, governance, provenance-policy and assurance layer.
+
+See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md), [Taranis/DTMO Gap Assessment](docs/architecture/TARANIS_DTMO_GAP_ASSESSMENT.md) and [Security Overview](docs/security/SECURITY_OVERVIEW.md).
 
 ## Current maturity and release position
 
@@ -78,24 +82,29 @@ See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) and [Securit
 | E8.1–E8.10 | Vulnerability & CTI product evolution | `PASS / REPOSITORY_COMPLETE` |
 | Phase 8 | Production-equivalent staging validation and accountable acceptance | `PASS / OWNER_ACCEPTED` |
 | Phase 9 | Independent external assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
-| Phase 10 | Formal production go/no-go | `IN PROGRESS / DECISION REQUIRED` |
+| Phase 10 | Formal production go/no-go | `NO-GO / INDUSTRIALISATION REQUIRED` |
+| Phase 11 | Platform industrialisation | `ACTIVE / HIGHEST PRIORITY` |
+| Phase 12 | Production go/no-go after industrialisation | `PLANNED` |
 
-Phase 8 and Phase 9 are accepted prerequisites. The active production-readiness gate is Phase 10: accountable authorization of the production environment and ownership model, immutable production release identity, IAM/secrets/network controls, backup/recovery/rollback, monitoring/on-call/escalation, incident-response handover, privacy/data/legal requirements, open findings/residual risk and the formal release/change decision.
+The current architecture has not received production authorization. Phase 11 is now the sole active strategic product programme. Previous Phase 8/9 evidence remains historical evidence for the candidate that was assessed and must not be silently reused for the materially changed integrated architecture.
 
-Repository CI, Docker Compose, staging emulators and synthetic fixtures remain supporting engineering evidence. They are not represented as the source of external Phase 8 acceptance, independent Phase 9 assurance or production authorization.
+## Phase 11 priority sequence
 
-## Product roadmap
+1. Taranis AI architecture/gap assessment and adapter;
+2. IntelOwl enrichment subsystem;
+3. OpenCTI knowledge graph integration;
+4. MISP consolidation;
+5. TheHive incident/case handoff;
+6. Cortex only if IntelOwl leaves a demonstrated gap;
+7. integrated platform hardening;
+8. migration/compatibility;
+9. production-equivalent integrated validation;
+10. independent external assurance;
+11. Phase 12 formal production go/no-go.
 
-The current priority sequence is:
+All unrelated product expansion is paused. Exceptions are security/CVE fixes, defects blocking Phase 11 and documentation/tests required for the active Phase 11 increment.
 
-1. assemble the Phase 10 production decision package from accepted Phase 8 and Phase 9 evidence;
-2. approve the production environment, ownership/support model and immutable release identity;
-3. confirm IAM/secrets/network, recovery/rollback, monitoring/on-call/escalation, incident-response and privacy/legal readiness;
-4. disposition open findings and residual risk;
-5. record the accountable Phase 10 `GO` or `NO-GO / BLOCKED` decision;
-6. on `GO`, perform controlled deployment and post-deployment verification against the approved release identity.
-
-See the [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md), [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md) and [Phase 10 Production Go/No-Go](docs/production/PHASE10_PRODUCTION_GO_NO_GO.md).
+See the [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md) and [Phase 11 Platform Industrialisation Roadmap](docs/roadmap/PHASE11_PLATFORM_INDUSTRIALISATION.md).
 
 ## Documentation
 
@@ -105,6 +114,7 @@ The authoritative professional documentation portal is [docs/README.md](docs/REA
 - [Executive Status](docs/project/EXECUTIVE_STATUS.md)
 - [Executive Decision View](docs/project/EXECUTIVE_DECISION_VIEW.md)
 - [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
+- [Taranis/DTMO Gap Assessment](docs/architecture/TARANIS_DTMO_GAP_ASSESSMENT.md)
 - [Security Overview](docs/security/SECURITY_OVERVIEW.md)
 - [Governance Mapping Registry](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md)
 - [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md)
@@ -112,7 +122,7 @@ The authoritative professional documentation portal is [docs/README.md](docs/REA
 - [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md)
 - [Evidence Index](docs/evidence/EVIDENCE_INDEX.md)
 - [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md)
-- [Phase 10 Production Go/No-Go](docs/production/PHASE10_PRODUCTION_GO_NO_GO.md)
+- [Phase 11 Platform Industrialisation](docs/roadmap/PHASE11_PLATFORM_INDUSTRIALISATION.md)
 
 Point-in-time PR/CI/run chronology remains under `docs/development/`, GitHub issues/pull requests and CI artifacts. Historical evidence is retained rather than rewritten to match later decisions.
 
@@ -139,5 +149,7 @@ DTMO is licensed under the **Apache License, Version 2.0**. The canonical open-s
 - [`SUPPORTED_VERSIONS.md`](SUPPORTED_VERSIONS.md)
 - [`docs/legal/LICENSING.md`](docs/legal/LICENSING.md)
 - [`docs/legal/THIRD_PARTY.md`](docs/legal/THIRD_PARTY.md)
+
+Taranis AI is evaluated as an independently deployed EUPL-1.2 service. No Taranis source should be copied or vendored into DTMO before explicit licensing review. Service/API separation is the default integration model.
 
 Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, publish or redistribute third-party material.
