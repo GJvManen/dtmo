@@ -1,6 +1,6 @@
 # DTMO Product Screenshot Catalogue
 
-**Status:** base runtime capture validated; governed screenshot promotion in progress; UI-06 published  
+**Status:** base runtime capture validated; UI-01–04 and UI-06–09 published / governed  
 **Screenshot type:** actual DTMO runtime UI with sanitized deterministic fixtures unless a record explicitly states otherwise  
 **Evidence classification:** documentation illustration only — not staging acceptance, independent assurance or production evidence
 
@@ -21,22 +21,46 @@ Synthetic API fixtures do **not** turn a screenshot into a mock-up: the HTML/CSS
 - Base capture command: `python3 tools/capture_documentation_screenshots.py --base-url <running-dtmo-url> --output docs/visual/screenshots/generated`
 - Investigation capture command: `python3 tools/capture_documentation_investigation_screenshots.py --base-url <running-dtmo-url> --output docs/visual/screenshots/generated`
 
-The generated output remains separate from the governed catalogue until review for secrets, personal data, visual correctness and lifecycle labelling is complete.
-
 ## Screenshot register
 
 | ID | Product surface | Target image | Current state | Required label |
 |---|---|---|---|---|
-| UI-01 | Overview / executive dashboard | `overview-dashboard.png` | capture validated; binary promotion pending | runtime UI with synthetic fixture data |
-| UI-02 | Intelligence workspace | `intelligence-workspace.png` | capture validated; binary promotion pending | runtime UI with synthetic fixture data |
-| UI-03 | Sources & Catalogue | `sources-catalogue.png` | capture validated; binary promotion pending | runtime UI with synthetic fixture data |
-| UI-04 | Vulnerability analytics | `vulnerability-analytics.png` | capture validated; binary promotion pending | runtime UI with synthetic fixture data |
+| UI-01 | Overview / executive dashboard | `overview-dashboard.png` | **published / governed** | runtime UI with synthetic fixture data |
+| UI-02 | Intelligence workspace | `intelligence-workspace.png` | **published / governed** | runtime UI with synthetic fixture data |
+| UI-03 | Sources & Catalogue | `sources-catalogue.png` | **published / governed** | runtime UI with synthetic fixture data |
+| UI-04 | Vulnerability analytics | `vulnerability-analytics.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-05 | MISP governed workflow | `misp-governed-workflow.png` | dedicated runtime screenshot pending | runtime UI with synthetic fixture data |
 | UI-06 | AIL correlation workspace | `ail-correlation-workspace.png` | **published / governed** | runtime UI with synthetic fixture data |
-| UI-07 | Visual Analytics | `visual-analytics.png` | capture validated; binary promotion pending | runtime UI with synthetic fixture data |
-| UI-08 | Governance frameworks | `governance-frameworks.png` | capture validated; binary promotion pending | runtime UI with synthetic fixture data |
-| UI-09 | Administration / RBAC | `administration-rbac.png` | capture validated; binary promotion pending | runtime UI with synthetic fixture data |
+| UI-07 | Visual Analytics | `visual-analytics.png` | **published / governed** | runtime UI with synthetic fixture data |
+| UI-08 | Governance frameworks | `governance-frameworks.png` | **published / governed** | runtime UI with synthetic fixture data |
+| UI-09 | Administration / RBAC | `administration-rbac.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-10 | Audit / correlation surface | `audit-correlation.png` | dedicated runtime screenshot pending | runtime UI with synthetic fixture data |
+
+## Published base runtime screenshots
+
+![DTMO Overview dashboard](overview-dashboard.png)
+
+![DTMO Intelligence workspace](intelligence-workspace.png)
+
+![DTMO Sources and Catalogue](sources-catalogue.png)
+
+![DTMO Vulnerability Analytics](vulnerability-analytics.png)
+
+![DTMO Visual Analytics](visual-analytics.png)
+
+![DTMO Governance frameworks](governance-frameworks.png)
+
+![DTMO Administration and RBAC](administration-rbac.png)
+
+**Review record for UI-01–04 and UI-07–09**
+
+- source capture: Documentation Screenshot Artifact Gate run #8, exact head `5563e3cbfaa46df6749420347f05315b4295e7dd`;
+- source artifact: `9247117828`, `dtmo-documentation-screenshots`;
+- source artifact digest: `sha256:e423efe5e1309993b267247aecbc0cec88bce9d8a4f84e0e1d60cc8e79f2f51a`;
+- promotion workflow copied only the seven reviewed PNGs from that exact artifact;
+- capture mode: `synthetic-fixture`;
+- reviewer check: navigation/context legible; no production credentials, raw secrets or unnecessary personal data visible;
+- evidence boundary: documentation illustration only.
 
 ## Published screenshot: UI-06 AIL correlation
 
@@ -49,7 +73,6 @@ The generated output remains separate from the governed catalogue until review f
 - capture mode: `synthetic-fixture`;
 - product surface: actual DTMO Intelligence Workspace / AIL correlation panel;
 - raw-content fixture boundary: `raw_content_exposed = false`;
-- publication: optimized documentation copy; source artifact remains the capture-of-record;
 - evidence boundary: documentation illustration only.
 
 ## Dedicated MISP and audit captures
@@ -58,7 +81,7 @@ A diagram or API contract must never be promoted as a product screenshot. MISP a
 
 ## Review record required before publication
 
-For each image promoted from `generated/` into this governed catalogue, record image ID/filename, captured commit/release, capture date, browser/viewport, capture mode, reviewer, confirmation that no secret/personal/restricted operational data is visible, any redaction, and whether the image remains representative of the current navigation and interaction model.
+For each future image promoted from `generated/` into this governed catalogue, record image ID/filename, captured commit/release, capture date, browser/viewport, capture mode, reviewer, confirmation that no secret/personal/restricted operational data is visible, any redaction, and whether the image remains representative of the current navigation and interaction model.
 
 ## Claim boundary
 
