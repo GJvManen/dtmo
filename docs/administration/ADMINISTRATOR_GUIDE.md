@@ -25,7 +25,9 @@ Administrators should manage principals according to business role rather than c
 
 Typical product roles include analyst, reviewer, publisher and administrator roles where configured. Exact permissions remain defined by the server-side authorization model.
 
-**Screenshot reference:** `administration-rbac.png` in the governed screenshot catalogue.
+![DTMO Administration and RBAC — runtime UI with sanitized synthetic fixture data](../visual/screenshots/administration-rbac.png)
+
+*Figure UI-09 — Actual DTMO Administration surface. Visible controls do not override server-side authorization.*
 
 ## 3. Privileged Administration workflow
 
@@ -44,18 +46,11 @@ A successful UI action is not sufficient administrative evidence unless the resu
 
 ## 4. Source governance
 
-The **Sources & Catalogue** surface separates source definitions, runtime registration and operational status. Administrators should verify:
+The **Sources & Catalogue** surface separates source definitions, runtime registration and operational status. Administrators should verify source identity/endpoint purpose, execution profile, secret references, enablement, health, provenance expectations, manual-execution rules and external-sharing approval boundaries.
 
-- source identity and endpoint purpose;
-- execution profile and supported connector type;
-- secret references rather than raw credentials;
-- enablement and interval settings;
-- health/failure state;
-- provenance expectations;
-- whether manual execution is permitted;
-- whether external sharing requires additional human approval.
+![DTMO Sources and Catalogue — runtime UI with sanitized synthetic fixture data](../visual/screenshots/sources-catalogue.png)
 
-**Screenshot reference:** `sources-catalogue.png`.
+*Figure UI-03 — Actual DTMO source-administration surface. Registration or display does not prove external-source reachability.*
 
 ## 5. Secrets and credentials
 
