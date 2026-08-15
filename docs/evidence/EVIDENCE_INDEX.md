@@ -1,6 +1,6 @@
 # DTMO Evidence Index
 
-Last updated: **2026-08-12**
+Last updated: **2026-08-15**
 
 ## Purpose
 
@@ -39,16 +39,7 @@ These layers are additive and non-interchangeable.
 
 **Status:** `PASS`.
 
-Evidence classes include:
-
-- exact-head workflow/release integrity;
-- authentication/authorization/RBAC and approval boundaries;
-- migrations, persistence, integrity and recovery;
-- connector contracts, provenance, retry, timeout, replay, freshness and failure isolation;
-- ingestion/read/concurrency/degraded-dependency performance;
-- browser/accessibility/UX evidence;
-- request/trace observability, alerting, dashboards, runbooks and exercises;
-- open-source governance.
+Evidence classes include exact-head workflow/release integrity; authentication/authorization/RBAC and approval boundaries; migrations, persistence, integrity and recovery; connector contracts and provenance; performance; browser/accessibility/UX evidence; observability, alerting, dashboards, runbooks and exercises; and open-source governance.
 
 ### RC13 — functional unified-console acceptance
 
@@ -60,27 +51,20 @@ Primary documentation:
 - `docs/project/CURRENT_STATE.md`
 - immutable acceptance record in `docs/development/runs/`
 
-Evidence classes:
-
-- one canonical unified-console journey;
-- source-to-intelligence persistence/visibility;
-- native analytics;
-- Administration/RBAC;
-- Governance knowledge;
-- browser interaction/truthful state;
-- explicit accountable owner acceptance.
-
 ### Phase 8 — real staging acceptance
 
-**Status:** `READY / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`.
+**Status:** `ACTIVE / OWNER_VERIFIED_EXTERNAL_DEPLOYMENT_AND_APPROVED_STAGING / IMMUTABLE_EVIDENCE_BINDING_INCOMPLETE`.
 
 Primary documentation:
 
 - `docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md`
 - `docs/staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md`
+- `docs/staging/PHASE8_2_PLATFORM_IDENTITY_VALIDATION.md`
 - GitHub issue #158
 
-Repository staging-emulator/readiness workflows are supporting preparation only.
+On 2026-08-15 the accountable owner confirmed that the post-E8 external deployment had been extensively and successfully tested and that the production-equivalent staging environment is approved. This satisfies the external-deployment/staging-approval prerequisite for beginning Phase 8.2.
+
+Formal Phase 8 closure still requires evidence to bind the accepted deployment to its exact deployed release/commit, immutable application/supporting image digests, runtime/infrastructure identity and the remaining parity/security/change references. Repository staging-emulator/readiness workflows remain supporting preparation only and cannot substitute for those external facts.
 
 Required real evidence includes:
 
@@ -101,49 +85,23 @@ Required real evidence includes:
 
 Primary contract: `docs/qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md`.
 
-Required evidence classes include:
-
-- independent penetration testing;
-- representative production-equivalent load/stress;
-- resilience/recovery review where applicable;
-- platform/configuration hardening;
-- IAM/secrets-management review;
-- operational/security monitoring readiness;
-- privacy/legal/governance assurance where required;
-- findings disposition/residual-risk acceptance.
+Required evidence classes include independent penetration testing; representative production-equivalent load/stress; resilience/recovery review where applicable; platform/configuration hardening; IAM/secrets-management review; monitoring readiness; privacy/legal/governance assurance where required; and residual-risk disposition.
 
 ### Phase 10 — production go/no-go
 
 **Status:** `NOT STARTED`.
 
-Required inputs:
-
-- accepted Phase 8;
-- accepted Phase 9;
-- approved production identity/environment/ownership;
-- release/change/rollback evidence;
-- monitoring/on-call/escalation acceptance;
-- privacy/data/security governance approval;
-- formal accountable production decision.
+Required inputs include accepted Phase 8 and Phase 9 evidence, approved production identity/environment/ownership, release/change/rollback evidence, monitoring/on-call/escalation acceptance, privacy/data/security governance approval and a formal accountable production decision.
 
 ## Framework/governance evidence
 
-Framework mapping claims are governed by `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`.
-
-Current external coverage remains:
-
-- Normenkader IBP: `UNMAPPED`;
-- MITRE ATT&CK: `UNMAPPED`;
-- CVSS: `CONTEXT_ONLY`;
-- DTMO internal governance: repository-backed internal mappings.
-
-No mapping evidence is inferred.
+Framework mapping claims are governed by `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`. E8.10 added repository-backed vulnerability/CTI evidence mappings and explicit semantic boundaries, including Normenkader IBP SM.07 and related vulnerability-management context. External framework claims remain limited to the mappings and provenance explicitly recorded by the governance registry; no broader compliance claim is inferred.
 
 ## Evidence handling rules
 
 - Evidence must be attributable, scoped and reviewable.
 - Automated acceptance evidence must match the exact state being accepted.
-- A new commit invalidates earlier PR-head CI evidence.
+- A new material deployment invalidates earlier deployment-bound acceptance evidence unless explicitly rebound.
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
 - Evidence must not contain raw credentials, tokens, secret values or unnecessary personal data.
 - Threat/CVE/vendor-advisory evidence must retain provenance, review time, applicability and confidence.
@@ -152,11 +110,4 @@ No mapping evidence is inferred.
 
 ## Operational evidence location
 
-Detailed implementation chronology, workflow identifiers, root-cause findings and point-in-time blockers are intentionally retained under:
-
-- `docs/development/RUN_LOG.md`;
-- `docs/development/runs/`;
-- GitHub issues and pull requests;
-- CI artifacts.
-
-Those records support auditability but do not replace professional project/architecture documentation.
+Detailed implementation chronology, workflow identifiers, root-cause findings and point-in-time blockers are intentionally retained under `docs/development/RUN_LOG.md`, `docs/development/runs/`, GitHub issues/pull requests and CI artifacts. Those records support auditability but do not replace professional project/architecture documentation.

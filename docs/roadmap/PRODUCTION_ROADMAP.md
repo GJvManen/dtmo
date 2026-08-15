@@ -1,6 +1,6 @@
 # DTMO Roadmap — Production Readiness and Product Evolution
 
-Last updated: **2026-08-14**
+Last updated: **2026-08-15**
 
 ## Purpose
 
@@ -17,8 +17,10 @@ This roadmap separates two complementary tracks:
 | RC13 + post-RC13 functional owner retest | Unified-console/product acceptance | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | Vulnerability & CTI ecosystem integrations | `PASS / REPOSITORY_COMPLETE` |
 | Phase 8.1 historical identity | Earlier real staging environment + immutable deployment identity | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE — HISTORICAL IDENTITY ONLY` |
-| Post-E8 candidate rebind | Deploy and bind the final E8 candidate to a new immutable staging identity | `NEXT ACTIVE OBJECTIVE / EXTERNAL EVIDENCE REQUIRED` |
-| Phase 8.2–8.5 | Deployed staging validation and accountable staging acceptance against the new identity | `IN PROGRESS / NEXT` |
+| Post-E8 external deployment + staging environment | Final E8 candidate externally deployed, extensively owner-tested, and staging environment approved | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
+| Post-E8 immutable evidence binding | Bind the accepted deployment to exact deployed release/commit, image digests and runtime identity | `EVIDENCE BINDING REQUIRED FOR FORMAL PHASE 8 CLOSURE` |
+| Phase 8.2 | Production-equivalent platform and identity validation | `IN PROGRESS / ACTIVE` |
+| Phase 8.3–8.5 | Source-to-intelligence, operations/recovery and accountable staging acceptance | `PLANNED / NEXT` |
 | Phase 9 | Independent external assurance | `NOT COMPLETE` |
 | Phase 10 | Formal production go/no-go | `NOT STARTED` |
 
@@ -34,11 +36,15 @@ DTMO is **not production ready**.
 
 The earlier Phase 8.1 evidence remains valid for the immutable staging deployment identity it originally covered. E8 materially changed the intended production candidate after that evidence was accepted. Historical evidence is therefore not relabelled as evidence for the post-E8 candidate.
 
-### Post-E8 candidate rebind — next active objective
+### Post-E8 external deployment and staging acceptance
 
-The repository candidate after E8.10 is the current accepted `main` baseline recorded in the corresponding development run record. The stable roadmap deliberately does not duplicate an exact commit SHA; repository identity alone does not prove a staging deployment.
+**Status:** `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE`
 
-Before Phase 8.2 resumes, the post-E8 candidate must be deployed to the approved production-equivalent staging environment and bound to a new immutable identity containing:
+On 2026-08-15 the accountable owner confirmed that the post-E8 deployment had been extensively and successfully tested externally and that the production-equivalent staging environment is approved. This removes the prior blocker requiring a real external deployment and an approved staging environment before Phase 8.2 can begin.
+
+This owner-provided acceptance is deployment/staging evidence, not a substitute for immutable technical identity evidence. Formal Phase 8 closure still requires the accepted deployment to be bound to the exact deployed release/commit, immutable application/supporting image digests and runtime/infrastructure identity. Where already captured by the deployment platform, those values should be added to the evidence package without redeploying or changing the accepted candidate.
+
+The evidence package for the accepted staging deployment should contain or reference:
 
 - approved staging environment identity and accountable owner;
 - approved reachable staging access path;
@@ -52,13 +58,15 @@ Before Phase 8.2 resumes, the post-E8 candidate must be deployed to the approved
 - deployment/change and rollback records;
 - deployment-time security/CVE review.
 
-Repository CI, Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this evidence requirement.
+Repository CI, Docker Compose, staging emulators and synthetic browser fixtures cannot substitute for the externally accepted staging evidence.
 
 ### Phase 8.2 — platform and identity validation
 
-**Status:** `IN PROGRESS / NEXT — blocked pending post-E8 immutable deployment identity`
+**Status:** `IN PROGRESS / ACTIVE`
 
-After the new identity is externally verified, validate against that same immutable staging identity:
+Execute the production-equivalent staging validation against the accepted post-E8 deployment. Formal closure of Phase 8.2 remains conditional on binding the resulting evidence to the same immutable deployment identity.
+
+Validate:
 
 - application health/readiness;
 - database migrations/connectivity;
@@ -71,7 +79,7 @@ After the new identity is externally verified, validate against that same immuta
 
 ### Phase 8.3 — source-to-intelligence validation
 
-Validate against the same new staging identity:
+Validate against the same accepted staging deployment and immutable identity:
 
 - source catalog/bootstrap and activation/execution;
 - OpenCVE and Vulnerability-Lookup ingestion;
@@ -153,7 +161,9 @@ Professional product, architecture, security, governance and readiness documents
 
 ## Immediate next steps
 
-1. Deploy and externally verify the **post-E8 immutable staging deployment identity** for the final candidate.
-2. Execute **Phase 8.2 platform and identity validation** against that exact identity.
-3. Continue to Phase 8.3 and Phase 8.4 only while evidence remains bound to the same immutable deployment identity.
-4. Record accountable Phase 8.5 staging acceptance before entering Phase 9 independent assurance.
+1. Execute **Phase 8.2 platform and identity validation** against the owner-accepted production-equivalent staging deployment.
+2. Capture/bind the exact deployed release/commit, immutable image digests and runtime identity to the same evidence set; this is evidence completion, not a requirement to redeploy an already accepted candidate.
+3. Execute **Phase 8.3 source-to-intelligence validation** against the same immutable deployment identity.
+4. Execute **Phase 8.4 operational and recovery validation** against that identity.
+5. Record accountable **Phase 8.5 staging acceptance** before entering Phase 9 independent assurance.
+6. Complete Phase 9 assurance and residual-risk disposition before Phase 10 production go/no-go.
