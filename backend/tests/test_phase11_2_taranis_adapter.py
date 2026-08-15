@@ -19,6 +19,7 @@ def _settings(**overrides: object) -> Settings:
         "taranis_page_size": 50,
         "taranis_max_pages": 10,
         "taranis_reconcile_pages": 1,
+        "taranis_detail_cti_limit": 0,
         "connector_max_attempts": 1,
     }
     values.update(overrides)
@@ -45,20 +46,37 @@ async def test_fetch_is_read_only_and_uses_bearer_token(tmp_path: Path) -> None:
 
     def handler(request: httpx.Request) -> httpx.Response:
         requests.append(request)
-        if request.url.path.endswith("news-items"):
+        path = request.url.path
+        if path == "/api/assess/news-items":
             return httpx.Response(200, json=[{"id": "n1", "title": "News", "tlp": "amber"}])
-        return httpx.Response(200, json=[{"id": "s1", "title": "Story", "tlp": "red"}])
+        if path == "/api/assess/stories":
+            return httpx.Response(200, json=[{"id": "s1", "title": "Story", "tlp": "red"}])
+        if path == "/api/assess/news-items/n1":
+            return httpx.Response(200, json={"id": "n1", "title": "News detail", "tlp": "amber"})
+        if path == "/api/assess/news-items/n1/cti":
+            return httpx.Response(200, json={"indicators": []})
+        if path == "/api/assess/stories/s1":
+            return httpx.Response(200, json={"id": "s1", "title": "Story detail", "tlp": "red"})
+        if path == "/api/assess/stories/s1/cti":
+            return httpx.Response(200, json={"indicators": []})
+        return httpx.Response(404)
 
-    connector = TaranisReadConnector(_settings(taranis_checkpoint_path=str(tmp_path / "checkpoint.json")))
+    connector = TaranisReadConnector(
+        _settings(
+            taranis_checkpoint_path=str(tmp_path / "checkpoint.json"),
+            taranis_detail_cti_limit=2,
+        )
+    )
     async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
         payload = await connector.fetch(client)
     records = connector.parse(payload)
 
-    assert [request.method for request in requests] == ["GET", "GET"]
+    assert [request.method for request in requests] == ["GET"] * 6
     assert all(request.headers["Authorization"] == "Bearer read-token" for request in requests)
     assert not any(any(term in request.url.path for term in ("publish", "share", "delete", "update")) for request in requests)
     assert {record.external_id for record in records} == {"taranis:news-item:n1", "taranis:story:s1"}
     assert all(record.raw["_dtmo_taranis"]["external_share_authorized"] is False for record in records)
+    assert all(record.raw["_dtmo_taranis_context"]["status"] == "complete" for record in records)
 
 
 @pytest.mark.asyncio
