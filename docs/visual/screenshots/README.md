@@ -1,6 +1,6 @@
 # DTMO Product Screenshot Catalogue
 
-**Status:** capture pipeline in preparation  
+**Status:** base runtime capture validated; governed image promotion in progress  
 **Screenshot type:** actual DTMO runtime UI with sanitized deterministic fixtures unless a record explicitly states otherwise  
 **Evidence classification:** documentation illustration only — not staging acceptance, independent assurance or production evidence
 
@@ -22,20 +22,28 @@ Synthetic API fixtures do **not** turn a screenshot into a mock-up: the HTML/CSS
 
 The output directory is intentionally separate from the governed catalogue until a capture has been reviewed for secrets, personal data, visual correctness and lifecycle labelling.
 
-## Catalogue
+## Validated base capture
+
+The base screenshot pipeline was exercised successfully in the **Documentation Screenshot Artifact Gate** for the visual-documentation baseline merged through PR #250. The generated artifact contained the seven currently renderable base product views listed below. The capture proves that these DTMO UI surfaces can be rendered deterministically with the documentation fixtures; it does not establish staging or production behavior.
 
 | ID | Product surface | Target image | Current state | Required label |
 |---|---|---|---|---|
-| UI-01 | Overview / executive dashboard | `overview-dashboard.png` | capture pending | runtime UI with synthetic fixture data |
-| UI-02 | Intelligence workspace | `intelligence-workspace.png` | capture pending | runtime UI with synthetic fixture data |
-| UI-03 | Sources & Catalogue | `sources-catalogue.png` | capture pending | runtime UI with synthetic fixture data |
-| UI-04 | Vulnerability analytics | `vulnerability-analytics.png` | capture pending | runtime UI with synthetic fixture data |
-| UI-05 | MISP governed workflow | `misp-governed-workflow.png` | capture pending | runtime UI with synthetic fixture data |
-| UI-06 | AIL correlation workspace | `ail-correlation-workspace.png` | capture pending | runtime UI with synthetic fixture data |
-| UI-07 | Visual Analytics | `visual-analytics.png` | capture pending | runtime UI with synthetic fixture data |
-| UI-08 | Governance frameworks | `governance-frameworks.png` | capture pending | runtime UI with synthetic fixture data |
-| UI-09 | Administration / RBAC | `administration-rbac.png` | capture pending | runtime UI with synthetic fixture data |
-| UI-10 | Audit / correlation surface | `audit-correlation.png` | capture pending | runtime UI with synthetic fixture data |
+| UI-01 | Overview / executive dashboard | `overview-dashboard.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
+| UI-02 | Intelligence workspace | `intelligence-workspace.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
+| UI-03 | Sources & Catalogue | `sources-catalogue.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
+| UI-04 | Vulnerability analytics | `vulnerability-analytics.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
+| UI-05 | MISP governed workflow | `misp-governed-workflow.png` | dedicated runtime screenshot pending | runtime UI with synthetic fixture data |
+| UI-06 | AIL correlation workspace | `ail-correlation-workspace.png` | dedicated runtime screenshot pending | runtime UI with synthetic fixture data |
+| UI-07 | Visual Analytics | `visual-analytics.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
+| UI-08 | Governance frameworks | `governance-frameworks.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
+| UI-09 | Administration / RBAC | `administration-rbac.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
+| UI-10 | Audit / correlation surface | `audit-correlation.png` | dedicated runtime screenshot pending | runtime UI with synthetic fixture data |
+
+## Dedicated MISP, AIL and audit captures
+
+A diagram or API contract must never be promoted as a product screenshot. UI-05, UI-06 and UI-10 remain pending until the documentation capture can render the corresponding actual DTMO interaction surface with deterministic sanitized fixtures.
+
+AIL already has a dedicated runtime correlation panel in the Intelligence Workspace and is the next capture target. MISP and audit/correlation require the capture implementation to identify the actual rendered governed surface rather than manufacturing a conceptual screen.
 
 ## Review record required before publication
 
@@ -51,8 +59,12 @@ For each image promoted from `generated/` into this governed catalogue, record:
 - any redaction performed;
 - whether the image remains representative of the current navigation and interaction model.
 
+## Review quality criteria
+
+A promoted image should be legible at normal documentation zoom, show the relevant navigation context, avoid accidental empty/error states unless that state is the subject of the image, and contain no secret, token or unnecessary personal data. Full-page captures may be resized or losslessly/visually optimized for repository delivery as long as the UI content is not altered.
+
 ## Claim boundary
 
 A screenshot can demonstrate what a rendered DTMO product surface looks like. It does not establish that an external feed was reachable, that a vulnerability applies to a local asset, that an outbound share was authorized, that a deployment passed staging, that a penetration test was accepted or that production deployment is approved.
 
-See also `docs/visual/DOCUMENTATION_VISUAL_STANDARD.md` and `docs/architecture/SYSTEM_WORKFLOWS.md`.
+See also `docs/visual/DOCUMENTATION_VISUAL_STANDARD.md`, `docs/architecture/SYSTEM_WORKFLOWS.md`, `docs/product/PRODUCT_GUIDE.md`, `docs/user/USER_GUIDE.md` and `docs/administration/ADMINISTRATOR_GUIDE.md`.
