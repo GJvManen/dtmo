@@ -72,6 +72,7 @@ jobs:
               "intelligence-workspace.png",
               "sources-catalogue.png",
               "vulnerability-analytics.png",
+              "misp-governed-workflow.png",
               "ail-correlation-workspace.png",
               "audit-correlation.png",
               "visual-analytics.png",
@@ -98,6 +99,10 @@ jobs:
               raise SystemExit("AIL documentation capture must not expose raw content")
           if investigation_metadata.get("audit_read_only") is not True:
               raise SystemExit("audit documentation capture must remain read-only")
+          if investigation_metadata.get("misp_export_executed") is not False:
+              raise SystemExit("MISP documentation capture must not execute outbound export")
+          if investigation_metadata.get("misp_live_connectivity_proven") is not False:
+              raise SystemExit("fixture-backed MISP capture must not claim live connectivity")
           print("PASS: documentation screenshot artifacts are complete and correctly classified")
           PY
       - name: Stop documentation target
