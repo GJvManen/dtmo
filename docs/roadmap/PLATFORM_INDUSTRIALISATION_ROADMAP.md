@@ -47,11 +47,11 @@ The development order is fixed unless a higher-severity security, licensing or a
 
 ### 11.1 Taranis AI architecture and gap assessment
 
-**Status:** `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION`
+**Status:** `PASS / REPOSITORY COMPLETE`
 
-**Current bounded objective:** accept `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md` as the testable implementation boundary for 11.2. The contract fixes the read-only API surface, identity/idempotency rules, provenance, fail-closed TLP/classification handling, authentication/least privilege, polling/reconciliation, failure isolation, licensing boundary and Phase 11.2 acceptance criteria. It does not claim live Taranis connectivity or deployment evidence.
+The architecture assessment and accepted integration contract establish the service-to-service boundary for Taranis. DTMO retains education-sector CTI, vulnerability context, governance, provenance and governed publication/share authority. Taranis remains an upstream collection/assessment/reporting service; its implementation source is not vendored into DTMO.
 
-Deliverables:
+Accepted outcomes:
 
 - DTMO/Taranis responsibility boundary;
 - Keep / Integrate / Replace / Deprecate / Migrate capability matrix;
@@ -61,21 +61,24 @@ Deliverables:
 - deployment/runtime mapping;
 - licensing and redistribution boundary;
 - threat-model and trust-boundary impact;
-- migration risks and acceptance criteria for 11.2.
-
-Exit criteria:
-
-- no generic capability is duplicated without an explicit reason;
-- no Taranis source code is copied into DTMO before licensing review;
-- the service-to-service boundary is documented and testable;
-- canonical DTMO governance/provenance semantics have an explicit preservation path;
-- the Taranis → DTMO contract passes its dedicated exact-head gate before 11.2 implementation begins.
+- implementation contract for 11.2.
 
 ### 11.2 Taranis → DTMO canonical adapter
 
-**Status:** `PLANNED / NEXT AFTER 11.1 CONTRACT ACCEPTANCE`
+**Status:** `IN PROGRESS / FINAL REPOSITORY SLICE IN EXACT-HEAD VALIDATION`
 
-Build a bounded API integration instead of a code fork. Required mappings include Taranis source/news/story/report concepts to DTMO source, canonical intelligence, evidence, provenance, classification and review semantics.
+The accepted implementation is a bounded API integration rather than a code fork. Completed repository slices now include:
+
+- read-only Taranis news-item/story collection;
+- stable namespaced upstream identity and deterministic replay;
+- fail-closed TLP/classification handling and explicit no-share authority;
+- durable atomic checkpointing, bounded pagination and reconciliation overlap;
+- bounded news-item/story detail and CTI retrieval with explicit enrichment status;
+- `404` reconciliation-race handling without invented deletion semantics;
+- canonical persistence/indexing through the existing governed connector execution path;
+- scheduler registration behind `feature_live_connectors` + `feature_taranis_connector`;
+- manual execution through the existing `MANAGE_CONNECTORS` permission;
+- connector alerting/observability and professional integration documentation.
 
 Acceptance criteria:
 
@@ -85,11 +88,15 @@ Acceptance criteria:
 - canonical persistence remains durable;
 - replay and duplicate handling are deterministic;
 - no Taranis publishing permission becomes DTMO external-share authority;
-- contract and integration tests cover degraded and partial failure states.
+- contract and integration tests cover degraded, restart, reconciliation, malformed and partial-failure states;
+- detail/CTI request volume is explicitly bounded;
+- exact-head CI and professional documentation gates are fully green.
+
+After this final repository slice is accepted and merged, **Phase 11.2 is repository-complete and the sole next priority becomes Phase 11.3 IntelOwl**. Live composed-platform evidence is intentionally deferred to Phase 11.10 and must not be inferred from CI or historical Phase 8/9 evidence.
 
 ### 11.3 IntelOwl enrichment integration
 
-**Status:** `PLANNED`
+**Status:** `PLANNED / NEXT AFTER 11.2 EXACT-HEAD ACCEPTANCE`
 
 Use IntelOwl as the preferred generic IOC enrichment subsystem. Start from the existing Taranis IntelOwl bot path and normalize selected results into DTMO with analyzer identity, timestamps, confidence/context and raw-result provenance.
 
@@ -239,14 +246,13 @@ While Phase 11 is active, do not spend development capacity on unrelated UI poli
 
 ## Immediate sequence
 
-1. Accept the **11.1 Taranis → DTMO integration contract** on exact-head CI.
-2. Implement **11.2 Taranis → DTMO canonical adapter**.
-3. Integrate **11.3 IntelOwl**.
-4. Integrate **11.4 OpenCTI**.
-5. Consolidate **11.5 MISP**.
-6. Add **11.6 TheHive** handoff.
-7. Decide **11.7 Cortex** only from evidence.
-8. Industrialise the composed runtime in **11.8**.
-9. Complete migration/compatibility in **11.9**.
-10. Execute **11.10** and **11.11**.
-11. Enter **Phase 12** only after all Phase 11 release blockers are closed.
+1. Complete the final **11.2 Taranis detail/CTI + governed execution** exact-head gate.
+2. Integrate **11.3 IntelOwl**.
+3. Integrate **11.4 OpenCTI**.
+4. Consolidate **11.5 MISP**.
+5. Add **11.6 TheHive** handoff.
+6. Decide **11.7 Cortex** only from evidence.
+7. Industrialise the composed runtime in **11.8**.
+8. Complete migration/compatibility in **11.9**.
+9. Execute **11.10** and **11.11**.
+10. Enter **Phase 12** only after all Phase 11 release blockers are closed.
