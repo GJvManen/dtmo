@@ -83,7 +83,12 @@ async def run(base_url: str, output: Path) -> None:
         await audit_page.goto(base_url.rstrip("/") + "/ui/auditor", wait_until="networkidle")
         await audit_page.locator("#audit-panel").wait_for(state="visible")
         await audit_page.get_by_role("button", name="Evidence laden").click()
-        await audit_page.locator("#audit-events tr").first.wait_for(state="visible")
+        # A generic table row exists during the loading state. Wait for deterministic
+        # fixture content instead so governed documentation never publishes a spinner.
+        await audit_page.get_by_text("share.review", exact=True).wait_for(state="visible")
+        await audit_page.get_by_text("misp.export.prepare", exact=True).wait_for(state="visible")
+        await audit_page.get_by_text("rbac.role.update", exact=True).wait_for(state="visible")
+        await audit_page.get_by_text("7c6fe84f5db9d8f11b8ea52d0edb8a0f", exact=True).wait_for(state="visible")
         await audit_page.screenshot(path=str(output / "audit-correlation.png"), full_page=True)
         await auditor.close()
 
@@ -98,7 +103,7 @@ async def run(base_url: str, output: Path) -> None:
         await misp_page.screenshot(path=str(output / "misp-governed-workflow.png"), full_page=True)
         await publisher.close()
 
-        metadata = {"generated_at": datetime.now(UTC).isoformat(), "base_url": base_url, "browser": "chromium/playwright", "viewport": VIEWPORT, "capture_mode": "actual-runtime-ui-with-synthetic-fixture-data", "evidence_classification": "documentation-illustration-only", "journeys": ["ail-indicator-to-correlation-workspace", "auditor-read-only-evidence-viewer", "misp-read-and-governed-export-workspace"], "raw_content_exposed": False, "audit_read_only": True, "misp_export_executed": False, "misp_live_connectivity_proven": False, "files": ["ail-correlation-workspace.png", "audit-correlation.png", "misp-governed-workflow.png"]}
+        metadata = {"generated_at": datetime.now(UTC).isoformat(), "base_url": base_url, "browser": "chromium/playwright", "viewport": VIEWPORT, "capture_mode": "actual-runtime-ui-with-synthetic-fixture-data", "evidence_classification": "documentation-illustration-only", "journeys": ["ail-indicator-to-correlation-workspace", "auditor-read-only-evidence-viewer", "misp-read-and-governed-export-workspace"], "raw_content_exposed": False, "audit_read_only": True, "audit_fixture_rendered": True, "misp_export_executed": False, "misp_live_connectivity_proven": False, "files": ["ail-correlation-workspace.png", "audit-correlation.png", "misp-governed-workflow.png"]}
         (output / "investigation-capture-metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
         await browser.close()
 
