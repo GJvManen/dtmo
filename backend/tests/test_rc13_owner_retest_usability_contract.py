@@ -59,10 +59,12 @@ def test_administration_copy_no_longer_claims_future_rc13_work() -> None:
     assert "Zelfbeheer is server-side geblokkeerd" in admin
 
 
-def test_phase8_resumes_only_at_external_identity_gate_after_owner_acceptance() -> None:
+def test_phase8_proceeds_with_owner_approved_staging_without_weakening_identity_gate() -> None:
     text = PHASE8.read_text(encoding="utf-8")
-    assert "READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY" in text
+    assert "ACTIVE_EXTERNAL_VALIDATION / OWNER_APPROVED_STAGING / IMMUTABLE_EVIDENCE_BINDING_INCOMPLETE" in text
     assert "RC13 functional console: `PASS / OWNER_ACCEPTED`" in text
-    assert "accountable owner acceptance recorded" in text
-    assert "Phase 8 may be marked `PASS` only when" in text
-    assert "Repository CI, local Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this gate" in text
+    assert "post-E8 external deployment: `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE`" in text
+    assert "production-equivalent staging environment: `APPROVED / OWNER_VERIFIED_EXTERNAL_EVIDENCE`" in text
+    assert "Formal Phase 8 closure still requires that the accepted deployment be bound to one immutable technical identity" in text
+    assert "Phase 8 is complete only when the immutable staging identity is complete and approved" in text
+    assert "Repository CI, local Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this gate by themselves" in text
