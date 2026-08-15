@@ -5,6 +5,19 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8 repository enhancemen
 
 This checklist is the high-level control for the post-Phase-10 industrialisation programme and the future Phase 12 production authorization decision.
 
+## Current lifecycle status
+
+| Stage | Status | Evidence class |
+|---|---|---|
+| E8.1–E8.10 | `PASS / REPOSITORY_COMPLETE` | Repository-controlled product evolution |
+| Phase 8 | `PASS / OWNER_ACCEPTED` | Accountable production-equivalent staging acceptance |
+| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Independent external assurance |
+| Phase 10 | `NO-GO / BLOCKED` | Accountable production decision |
+| Phase 11 | `IN PROGRESS / ACTIVE` | Platform industrialisation |
+| Phase 12 | `NOT STARTED` | Future production authorization |
+
+The accepted Phase 8 and Phase 9 evidence remains scoped to the candidate it originally covered. It is historical prerequisite evidence for the industrialisation decision and must not be reused as production-equivalent validation or independent assurance for the materially changed Phase 11 integrated candidate.
+
 ## Evidence rules
 
 A checklist item is complete only when its required evidence exists, is attributable and is reviewable. Repository CI, accountable acceptance, production-equivalent validation, independent assurance and production authorization are separate evidence classes. Historical evidence remains immutable and scoped to the state/deployment it actually covered.
