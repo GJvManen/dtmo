@@ -6,9 +6,10 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Engineering baseline:** Phases 1–7 `PASS`  
 > **Functional acceptance:** RC13 `PASS / OWNER_ACCEPTED`  
 > **Product evolution:** E8.1–E8.10 `PASS / REPOSITORY_COMPLETE`  
-> **Production-readiness position:** Phase 8 repository contracts complete; accountable external Phase 8 acceptance still required  
-> **Independent assurance:** Phase 9 `NOT COMPLETE`  
-> **Production status:** **not production ready**
+> **Production-equivalent staging:** Phase 8 `PASS / OWNER_ACCEPTED`  
+> **Independent assurance:** Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED`  
+> **Production authorization:** Phase 10 `IN PROGRESS / GO-NO-GO DECISION REQUIRED`  
+> **Production status:** **not production authorized until Phase 10 GO**
 
 ## Why DTMO
 
@@ -75,27 +76,26 @@ See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) and [Securit
 | Phases 1–7 | Repository-controlled engineering baseline | `PASS` |
 | RC13 | Unified-console functional acceptance | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | Vulnerability & CTI product evolution | `PASS / REPOSITORY_COMPLETE` |
-| Post-E8 staging deployment | Externally deployed/tested production-equivalent staging environment | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
-| Phase 8.2–8.4 | Platform/identity, source-to-intelligence and operations/recovery contracts | `REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` |
-| Phase 8.5 | Accountable staging acceptance contract | `REPOSITORY CONTRACT COMPLETE / EXTERNAL OWNER DECISION REQUIRED` |
-| Phase 9 | Independent external assurance | `NOT COMPLETE` |
-| Phase 10 | Formal production go/no-go | `NOT STARTED` |
+| Phase 8 | Production-equivalent staging validation and accountable acceptance | `PASS / OWNER_ACCEPTED` |
+| Phase 9 | Independent external assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
+| Phase 10 | Formal production go/no-go | `IN PROGRESS / DECISION REQUIRED` |
 
-The remaining Phase 8 requirement is not more repository feature development. It is completion and accountable acceptance of the external evidence package against one immutable staging deployment identity, including exact deployed commit/release, image digests, runtime identity, configuration/security evidence and the external validation results covered by the 8.2–8.4 contracts.
+Phase 8 and Phase 9 are accepted prerequisites. The active production-readiness gate is Phase 10: accountable authorization of the production environment and ownership model, immutable production release identity, IAM/secrets/network controls, backup/recovery/rollback, monitoring/on-call/escalation, incident-response handover, privacy/data/legal requirements, open findings/residual risk and the formal release/change decision.
 
-Repository CI, Docker Compose, staging emulators and synthetic browser fixtures are supporting engineering evidence only. They cannot substitute for accountable external Phase 8 acceptance or independent Phase 9 assurance.
+Repository CI, Docker Compose, staging emulators and synthetic fixtures remain supporting engineering evidence. They are not represented as the source of external Phase 8 acceptance, independent Phase 9 assurance or production authorization.
 
 ## Product roadmap
 
 The current priority sequence is:
 
-1. complete and accept the Phase 8 external evidence package against one immutable staging identity;
-2. record Phase 8.5 accountable staging acceptance;
-3. execute Phase 9 independent external assurance, including penetration testing and agreed hardening/resilience/IAM reviews;
-4. remediate/retest release-blocking findings and disposition residual risk;
-5. conduct the formal Phase 10 production go/no-go decision.
+1. assemble the Phase 10 production decision package from accepted Phase 8 and Phase 9 evidence;
+2. approve the production environment, ownership/support model and immutable release identity;
+3. confirm IAM/secrets/network, recovery/rollback, monitoring/on-call/escalation, incident-response and privacy/legal readiness;
+4. disposition open findings and residual risk;
+5. record the accountable Phase 10 `GO` or `NO-GO / BLOCKED` decision;
+6. on `GO`, perform controlled deployment and post-deployment verification against the approved release identity.
 
-See the [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md) and [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md).
+See the [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md), [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md) and [Phase 10 Production Go/No-Go](docs/production/PHASE10_PRODUCTION_GO_NO_GO.md).
 
 ## Documentation
 
@@ -112,6 +112,7 @@ The authoritative professional documentation portal is [docs/README.md](docs/REA
 - [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md)
 - [Evidence Index](docs/evidence/EVIDENCE_INDEX.md)
 - [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md)
+- [Phase 10 Production Go/No-Go](docs/production/PHASE10_PRODUCTION_GO_NO_GO.md)
 
 Point-in-time PR/CI/run chronology remains under `docs/development/`, GitHub issues/pull requests and CI artifacts. Historical evidence is retained rather than rewritten to match later decisions.
 

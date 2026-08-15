@@ -5,9 +5,9 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8 repository enhancemen
 
 ## Management summary
 
-DTMO has an accepted repository-controlled engineering baseline, an owner-accepted functional product and a repository-complete E8 vulnerability/CTI capability line. The post-E8 candidate has also been externally deployed and extensively tested by the accountable owner in an approved production-equivalent staging environment.
+DTMO has an accepted repository-controlled engineering baseline, an owner-accepted functional product and an E8.1–E8.10 `PASS / REPOSITORY_COMPLETE` vulnerability/CTI baseline. Phase 8 production-equivalent staging validation and accountable acceptance are complete as `PASS / OWNER_ACCEPTED`. Phase 9 independent external assurance is complete as `PASS / EXTERNAL_ASSURANCE_ACCEPTED`.
 
-The repository-side Phase 8.2–8.5 validation and acceptance contracts are now complete. **DTMO is not production ready.** The external Phase 8 evidence package still requires final immutable deployment binding and accountable acceptance, after which Phase 9 independent external assurance and Phase 10 formal production go/no-go remain mandatory.
+The active release gate is **Phase 10 formal production go/no-go**. DTMO is not yet production authorized; production authorization requires an explicit accountable `GO` decision.
 
 ## Current decision position
 
@@ -15,13 +15,11 @@ The repository-side Phase 8.2–8.5 validation and acceptance contracts are now 
 |---|---|---|
 | Engineering baseline | `PASS` | Repository foundation accepted |
 | Functional product | `PASS / OWNER_ACCEPTED` | Canonical console journey accepted |
-| E8 product evolution | `PASS / REPOSITORY_COMPLETE` | Vulnerability/CTI capabilities repository-complete |
-| External post-E8 staging deployment | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` | Real staging exists and was owner-tested |
-| Phase 8.2–8.4 | `CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` | External evidence must be consolidated against one identity |
-| Phase 8.5 | `CONTRACT COMPLETE / EXTERNAL OWNER DECISION REQUIRED` | Phase 8 is not yet formally closed |
-| Phase 9 | `NOT COMPLETE` | Independent assurance remains mandatory |
-| Phase 10 | `NOT STARTED` | No production authorization exists |
-| Production deployment | **NO — not approved** | Formal go/no-go has not occurred |
+| E8 product evolution | `PASS / REPOSITORY_COMPLETE` | Vulnerability/CTI scope accepted in repository |
+| Phase 8 | `PASS / OWNER_ACCEPTED` | Production-equivalent staging acceptance complete |
+| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Independent assurance prerequisite complete |
+| Phase 10 | `IN PROGRESS / DECISION REQUIRED` | Accountable production decision is active |
+| Production deployment | **NO — not yet authorized** | Requires Phase 10 `GO` |
 
 ## Demonstrated product scope
 
@@ -31,24 +29,14 @@ DTMO provides a governed unified console for threat/vulnerability intelligence, 
 
 The platform retains server-side RBAC, least privilege, human/service-account separation, privileged-action safeguards, validated bearer-token trust, provenance/confidence preservation, data minimization, auditable request/correlation context and separate human review/external-share authority.
 
-Technical execution does not grant publication authority. Framework mappings do not imply full compliance, maturity or certification. Repository CI does not equal external staging acceptance or independent assurance.
+Repository CI is engineering evidence, not the source of Phase 8 external acceptance or Phase 9 independent assurance. Technical execution does not grant publication authority. Framework mappings do not imply blanket compliance, maturity or certification.
 
-## Remaining release work
+## Phase 10 decision package
 
-### Phase 8 — accountable staging closure
+The accountable decision must confirm the production environment/owner/support model, immutable production release identity, IAM/secrets/network approval, backup/recovery/rollback, monitoring/on-call/escalation, incident-response handover, privacy/data/legal approval, open-finding/residual-risk disposition, release/change authorization and go-live/rollback authority.
 
-Complete the external evidence package against one immutable post-E8 staging identity. The package must bind exact deployed release/commit, image digests, runtime/configuration evidence and the accepted results for platform/identity, source-to-intelligence and operations/recovery validation. Record approved deviations/residual risks and an explicit accountable Phase 8.5 decision.
-
-### Phase 9 — independent external assurance
-
-After Phase 8 acceptance, execute the agreed independent assurance scope, including penetration testing, hardening/configuration, IAM/secrets, load/stress, resilience/recovery, monitoring/incident-response and relevant privacy/legal/governance review. Release-blocking findings require remediation and retest or accountable formal disposition.
-
-### Phase 10 — production decision
-
-Production may be authorized only after accepted Phase 8 and Phase 9 evidence and formal approval of the production environment, ownership/support, IAM/secrets/network, recovery/rollback, monitoring/escalation, data/privacy/legal and release/change position.
+Any unresolved release blocker or missing mandatory approval is a `NO-GO / BLOCKED` condition.
 
 ## Executive recommendation
 
-Prioritize **completion and accountable acceptance of the existing Phase 8 external evidence package**. Do not introduce unnecessary product change into the candidate while evidence is being bound and assessed. After Phase 8 is formally accepted, proceed directly to independent Phase 9 assurance.
-
-Do not authorize production use until Phase 10 records an explicit go decision.
+Freeze unnecessary release-candidate scope, complete the Phase 10 decision package and record an explicit accountable `GO` or `NO-GO / BLOCKED`. On `GO`, execute controlled production deployment and post-deployment verification against the approved immutable release identity.

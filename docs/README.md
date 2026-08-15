@@ -10,51 +10,43 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phases 1–7 | `PASS` |
 | RC13 functional product acceptance | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | `PASS / REPOSITORY_COMPLETE` |
-| Post-E8 external deployment and staging approval | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
-| Phase 8.2–8.4 | `REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` |
-| Phase 8.5 | `REPOSITORY CONTRACT COMPLETE / EXTERNAL OWNER DECISION REQUIRED` |
-| Phase 9 independent assurance | `NOT COMPLETE` |
-| Phase 10 production go/no-go | `NOT STARTED` |
-| Production readiness | **Not complete** |
+| Phase 8 production-equivalent staging | `PASS / OWNER_ACCEPTED` |
+| Phase 9 independent assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
+| Phase 10 production go/no-go | `IN PROGRESS / DECISION REQUIRED` |
+| Production readiness | **Not production authorized until Phase 10 GO** |
 
-DTMO is not production ready. The next formal release objective is completion and accountable acceptance of the Phase 8 external evidence package against one immutable staging deployment identity, followed by independent Phase 9 assurance.
+The active release objective is the formal Phase 10 production decision. Completion of Phase 8 and Phase 9 satisfies staging and independent-assurance prerequisites but does not itself authorize production.
 
 ## Start here
 
 | Audience | Primary documents |
 |---|---|
-| Executive / sponsor | [Executive Status](project/EXECUTIVE_STATUS.md), [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
+| Executive / sponsor | [Executive Status](project/EXECUTIVE_STATUS.md), [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md), [Phase 10 Go/No-Go](production/PHASE10_PRODUCTION_GO_NO_GO.md) |
 | Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Current State](project/CURRENT_STATE.md), [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) |
 | Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
 | Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Security Overview](security/SECURITY_OVERVIEW.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md) |
 | Architecture / engineering | [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Identity/RBAC workflows](architecture/SYSTEM_WORKFLOWS.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md), [Governance evidence workflow](architecture/SYSTEM_WORKFLOWS.md) |
-| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
+| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md), [Phase 10 Go/No-Go](production/PHASE10_PRODUCTION_GO_NO_GO.md) |
 | Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [Recovery workflow](architecture/SYSTEM_WORKFLOWS.md) |
-| External assessor | [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md), [Phase 9 External Assurance Gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
+| External assessor | [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md), [Phase 9 External Assurance Gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
 
 ## Professional product manuals
-
-The professional documentation layer now has three audience-oriented manuals in addition to the decision-grade project and assurance documentation:
 
 - [Product Guide](product/PRODUCT_GUIDE.md) — product purpose, surfaces, major workflows, vulnerability semantics and authority boundaries;
 - [User Guide](user/USER_GUIDE.md) — analyst/reviewer navigation, search, filtering, vulnerability triage, AIL/MISP context and degraded-state behavior;
 - [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md) — identities, RBAC, privileged Administration, source governance, secrets, MISP sharing boundaries and audit/correlation.
 
-These guides are deliberately linked to the canonical system workflows rather than duplicating incompatible process descriptions.
+These guides are linked to canonical system workflows rather than duplicating incompatible process descriptions.
 
 ## Visual system documentation
 
-The professional documentation layer includes repository-native system workflows and a governed product-screenshot programme.
+- [System Workflows](architecture/SYSTEM_WORKFLOWS.md) contains maintained source-to-intelligence, vulnerability, identity/RBAC, Administration, MISP, AIL, audit, governance, observability, recovery, deployment-identity and production-readiness workflows.
+- [Visual Documentation Standard](visual/DOCUMENTATION_VISUAL_STANDARD.md) defines how diagrams and screenshots are structured, labelled, reviewed and kept current.
+- [Product Screenshot Catalogue](visual/screenshots/README.md) defines the governed screenshot set.
 
-- [System Workflows](architecture/SYSTEM_WORKFLOWS.md) contains the maintained source-to-intelligence, vulnerability, identity/RBAC, Administration, MISP, AIL, audit, governance, observability, recovery, deployment-identity and production-readiness workflows.
-- [Visual Documentation Standard](visual/DOCUMENTATION_VISUAL_STANDARD.md) defines how diagrams and screenshots must be structured, labelled, reviewed and kept current.
-- [Product Screenshot Catalogue](visual/screenshots/README.md) defines the controlled screenshot set and distinguishes actual DTMO runtime UI with sanitized fixtures from staging or assurance evidence.
-
-Mermaid diagrams are preferred for system behavior because they remain reviewable as source text and render directly in GitHub. Product screenshots must originate from the actual DTMO web application. Fixture-backed captures are permitted for deterministic documentation, but are explicitly classified as documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
-
-The governed screenshot catalogue now contains UI-01 through UI-10: Overview, Intelligence, Sources & Catalogue, Vulnerability Analytics, MISP governed workflow, AIL correlation, Visual Analytics, Governance, Administration/RBAC and the read-only audit/correlation surface. Each published PNG is tied to a reviewed runtime capture and retains an explicit documentation-only evidence boundary. Fixture-backed screenshots do not prove live-source connectivity, staging activity, independent assurance or production readiness.
+The governed screenshot catalogue now contains UI-01 through UI-10. Each published PNG is tied to a reviewed DTMO runtime capture using sanitized fixtures where applicable. They are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. They also do not independently prove external assurance or production authorization.
 
 ## Documentation model
 
@@ -68,10 +60,11 @@ The following documents form the current decision-grade set and must remain mutu
 - `docs/project/EXECUTIVE_DECISION_VIEW.md`;
 - `docs/project/PRODUCTION_READINESS_REPORT.md`;
 - `docs/project/PRODUCTION_CHECKLIST.md`;
+- `docs/project/DOCUMENTATION_STATUS.md`;
 - `docs/roadmap/PRODUCTION_ROADMAP.md`;
 - `docs/evidence/EVIDENCE_INDEX.md`;
 - `docs/qa/QA_AND_RELEASE_GATES.md`;
-- architecture/security/governance documents when their substantive boundaries change.
+- `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`.
 
 See [Documentation Status and Authority](project/DOCUMENTATION_STATUS.md) for the authority and currency model.
 
@@ -85,8 +78,6 @@ The repository-complete product baseline provides one governed console across Ov
 
 PostgreSQL remains canonical application state; OpenSearch is the search/index representation; S3-compatible object storage retains raw evidence; Redis provides coordination; Prometheus and separately authenticated Grafana provide operational observability.
 
-For an end-to-end visual explanation, start with [System Workflows](architecture/SYSTEM_WORKFLOWS.md) and the [Product Guide](product/PRODUCT_GUIDE.md).
-
 ## Security and authority invariants
 
 Across all documentation the following remain authoritative:
@@ -96,7 +87,7 @@ Across all documentation the following remain authoritative:
 - privileged Administration safeguards and auditable actions;
 - provenance/confidence preservation and data minimization;
 - separate human review and external-share approval;
-- no publication authority from connectors, CI, analytics, Administration, Governance or staging access;
+- no publication authority from connectors, CI, analytics, Administration, Governance, staging acceptance or production authorization;
 - no inferred framework mappings or broad compliance claims from contextual relationships;
 - no raw credentials/tokens in repository evidence;
 - open findings, deviations and residual risks remain explicit.
@@ -107,9 +98,9 @@ The governance model is explicit and provenance-backed. It includes versioned DT
 
 ## Production-readiness evidence boundary
 
-Phase 8 repository contracts now cover platform/identity validation, source-to-intelligence validation, operations/recovery and accountable staging acceptance. Formal Phase 8 closure still requires the real external evidence package to be complete, reviewable and bound to one immutable staging deployment identity with an explicit accountable owner decision.
+Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`. These are distinct accountable/external evidence classes. Repository CI, Docker Compose, staging emulators, synthetic fixtures and internal self-attestation are not represented as substitutes for them.
 
-Phase 9 requires independent assurance. Repository CI, Docker Compose, staging emulators, synthetic fixtures and internal self-attestation cannot substitute for independent penetration testing or other agreed external-assurance classes.
+Phase 10 is a separate accountable authorization decision. DTMO remains not production authorized until all required production decision inputs are accepted and an explicit `GO` is recorded.
 
 ## Maintenance rule
 
