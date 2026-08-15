@@ -38,6 +38,8 @@ The RC13 workflow portfolio covered the functional console, browser journeys, vi
 
 After final product retesting, the accountable project owner explicitly accepted the functional product. That decision is preserved as the RC13 `PASS / OWNER_ACCEPTED` evidence class.
 
+**Historical evidence must remain immutable.** Later lifecycle decisions may supersede the current project position, but they do not rewrite the original RC13 workflow payload, acceptance context or point-in-time evidence.
+
 ## Accepted security and governance boundaries
 
 RC13 acceptance did not alter the authority model:
