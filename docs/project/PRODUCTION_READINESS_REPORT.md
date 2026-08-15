@@ -1,167 +1,143 @@
 # DTMO Production Readiness Report
 
-Assessment date: **2026-08-12**  
-Release baseline: **16.0.0rc12**
+Assessment date: **2026-08-15**  
+Software baseline: **16.0.0rc12 plus accepted post-RC13 and E8 repository enhancements**
 
 ## 1. Assessment conclusion
 
-DTMO has completed its repository-controlled engineering baseline and its accountable functional unified-console acceptance gate. The project is ready to begin real production-equivalent staging validation.
+DTMO has completed its repository-controlled engineering baseline, accountable functional unified-console acceptance and the E8.1–E8.10 vulnerability/CTI repository workstream. The post-E8 candidate has also been externally deployed and extensively tested by the accountable owner in an approved production-equivalent staging environment.
+
+The repository-side Phase 8.2–8.5 validation/acceptance contracts are complete. The project is now in external evidence completion and accountable Phase 8 acceptance.
 
 **Current decision: NOT PRODUCTION READY.**
 
-The remaining mandatory progression is:
+Mandatory progression remains:
 
-1. Phase 8 — real staging acceptance;
-2. Phase 9 — independent external assurance;
-3. Phase 10 — formal production go/no-go.
+1. complete and accept Phase 8 external evidence against one immutable staging identity;
+2. complete Phase 9 independent external assurance;
+3. complete Phase 10 formal production go/no-go.
 
 ## 2. Readiness summary
 
 | Readiness dimension | Current position | Decision |
 |---|---|---|
-| Engineering / CI | Accepted exact-head engineering baseline | `PASS` |
-| Security / identity | Repository-controlled security model and tests accepted | `PASS` within repository boundary |
-| Data integrity / recovery | Persistence, migrations and recovery engineering evidence accepted | `PASS` within repository boundary |
-| Connectors / provenance | Reliability and provenance engineering gates accepted | `PASS` |
-| Performance | Repository-controlled performance gates accepted | `PASS` within tested bounds |
-| Accessibility / browser UX | Repository gates and accountable functional acceptance complete | `PASS` |
-| Observability / operations | Metrics, alerts, runbooks and operational gates accepted | `PASS` within repository boundary |
-| Functional product | Unified console explicitly accepted by accountable owner | `PASS / OWNER_ACCEPTED` |
-| Real staging | Environment/deployment identity not yet evidenced | `PENDING` |
-| Independent assurance | Not yet complete | `PENDING` |
+| Engineering / CI | Exact-head engineering baseline accepted | `PASS` |
+| Functional product | Unified console owner-accepted | `PASS / OWNER_ACCEPTED` |
+| E8 vulnerability/CTI scope | Repository-complete | `PASS / REPOSITORY_COMPLETE` |
+| External staging deployment | Owner-verified and approved | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
+| Platform/identity validation contract | Repository-complete | `EXTERNAL ACCEPTANCE REQUIRED` |
+| Source-to-intelligence contract | Repository-complete | `EXTERNAL ACCEPTANCE REQUIRED` |
+| Operations/recovery contract | Repository-complete | `EXTERNAL ACCEPTANCE REQUIRED` |
+| Accountable staging acceptance contract | Repository-complete | `EXTERNAL OWNER DECISION REQUIRED` |
+| Independent assurance | Not complete | `PENDING` |
 | Production approval | Not started | `BLOCKED_BY_PHASES_8_9` |
 
-## 3. Accepted product baseline
+## 3. Product baseline
 
-The accepted functional baseline includes:
+The accepted repository/product baseline includes:
 
-- unified Overview with truthful refresh/no-data state;
-- durable canonical Intelligence state;
-- governed Sources & Catalog operations;
-- supported source execution through raw evidence, canonical persistence and search/index support;
-- native Visual Analytics;
-- governed Administration/RBAC operations;
-- Governance framework/evidence knowledge surface;
-- Chrome/browser usability and interaction acceptance.
-
-Post-acceptance enhancements are planned separately and do not invalidate this baseline.
+- one canonical operator shell across Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance;
+- durable canonical intelligence and provenance;
+- governed source registration/activation/execution;
+- severity/classification semantics and filtering;
+- native trend and vulnerability analytics;
+- governed Administration/RBAC and privileged-action safeguards;
+- versioned Governance framework knowledge and explicit evidence mappings;
+- OpenCVE and CIRCL Vulnerability-Lookup;
+- explainable vulnerability prioritization and vendor/product relevance;
+- governed MISP read and separately approved outbound sharing;
+- governed AIL read/enrichment/correlation;
+- Normenkader IBP SM.07-oriented vulnerability-management evidence mapping with explicit semantic boundaries.
 
 ## 4. Security posture
 
-### 4.1 Identity and access
+### Identity and access
 
-DTMO validates externally issued production bearer tokens and enforces server-side RBAC. Managed assignment state does not silently mutate active externally issued token claims.
+DTMO enforces server-side RBAC and least privilege, validates bearer-token trust, separates human and service principals, protects privileged Administration operations and maintains attributable audit/correlation evidence.
 
-Key controls include:
+### Secrets and environment boundaries
 
-- least privilege;
-- human/service-account role separation;
-- known role/permission boundaries;
-- administrator self-management protection;
-- final-active-admin protection;
-- auditable privileged mutations;
-- request correlation;
-- separate review and external-share authority.
+Credentialed integrations use logical secret references and approved runtime resolution. Repository evidence must not contain raw secrets. Development/bootstrap identities and compatibility exceptions are not valid staging/production identity patterns.
 
-### 4.2 Secrets
+### Publication and sharing authority
 
-Credentialed source configuration stores logical secret references rather than raw credentials. Repository evidence must not contain secret values.
-
-The local reference environment has a development-only object-storage compatibility exception. It is explicitly prohibited from becoming the staging/production identity pattern.
-
-### 4.3 Publication authority
-
-No connector, CI job, dashboard, source executor, Administration function, Governance view or staging identity automatically grants publication/share authority. External sharing remains separately governed and human-approved.
+No connector, import, CI result, dashboard, Administration action, Governance mapping or staging access grants automatic publication authority. External sharing remains separately governed and human-approved.
 
 ## 5. Data architecture and integrity
 
-DTMO maintains clear data responsibilities:
+- PostgreSQL: canonical application/intelligence/RBAC state;
+- OpenSearch: search/index representation;
+- S3-compatible object storage: raw evidence;
+- Redis: coordination/cache/queue state;
+- Prometheus/Grafana: operational observability.
 
-- PostgreSQL is the canonical application store;
-- OpenSearch is a search/index representation;
-- S3-compatible object storage retains raw evidence;
-- Redis provides coordination/cache/queue state;
-- Prometheus/Grafana provide operational observability.
-
-The connector persistence path requires the canonical database commit boundary before successful durable ingestion is reported.
+Canonical persistence is the durable application boundary. Supporting stores and analytics do not replace the canonical record.
 
 ## 6. Governance and framework coverage
 
-Current external framework mapping is intentionally conservative:
+DTMO uses explicit, versioned and provenance-backed relationships. The current product includes governed relationships to Normenkader IBP, MITRE ATT&CK and NIST CSF and uses CVSS as vulnerability-scoring context. E8.10 adds repository-backed vulnerability/CTI evidence mapping, including Normenkader IBP SM.07 and supporting context.
 
-- Normenkader IBP: `UNMAPPED` first-class control crosswalk;
-- MITRE ATT&CK: `UNMAPPED` first-class technique crosswalk;
-- CVSS: `CONTEXT_ONLY`;
-- DTMO internal security/release governance: repository-backed internal mapping evidence.
+These relationships do not imply full framework compliance, maturity, certification, local exposure, exploitability, compromise or completed remediation. Claims remain limited to the recorded mapping and evidence semantics.
 
-The planned framework mapping model must add explicit provenance, versioning, identifiers and review state. No automatic inferred equivalence is accepted.
+## 7. Phase 8 assessment
 
-## 7. Phase 8 entry assessment
+### What is complete
 
-### Entry condition
+- repository validation contracts for Phase 8.2 platform/identity;
+- repository validation contract for Phase 8.3 source-to-intelligence;
+- repository validation contract for Phase 8.4 operations/recovery/rollback;
+- repository acceptance contract for Phase 8.5 accountable staging acceptance;
+- owner-verified existence and successful testing of the post-E8 production-equivalent staging deployment.
 
-RC13 functional acceptance is complete; Phase 8 may begin.
+### What remains
 
-### Required Phase 8 outputs
+Formal Phase 8 closure requires a single reviewable external evidence package bound to one immutable staging deployment identity. It must include or reference:
 
-A real approved production-equivalent staging environment must produce one immutable deployment identity containing:
-
-- environment identifier and accountable owner;
-- approved endpoint/access path;
-- exact release and commit;
-- immutable image digests;
-- infrastructure/runtime inventory;
-- configuration parity/deviation evidence;
-- least-privilege application/service identities;
-- secrets-management references;
-- TLS/network restrictions;
-- controlled/sanitized staging data statement;
-- no-production-credential confirmation;
-- deployment/change record;
-- rollback procedure/target;
-- deployment-time security/CVE review.
-
-All functional and operational Phase 8 tests must bind to that same immutable identity.
+- approved environment ID/owner/access path;
+- exact deployed release/commit;
+- immutable application/supporting image digests;
+- runtime/infrastructure and configuration parity/deviation evidence;
+- least-privilege IAM, service identities and secret-management references;
+- TLS/network and controlled data/sanitization evidence;
+- platform health, persistence, search/cache/storage and authorization validation;
+- source retrieval through canonical intelligence presentation and traceability;
+- operations, recovery, rollback and RTO/RPO observations;
+- deployment/change/security/CVE review;
+- approved residual risk/deviations;
+- confirmation that no unresolved release-blocking staging finding remains;
+- accountable Phase 8.5 `PASS / OWNER_ACCEPTED` or `BLOCKED` decision.
 
 ## 8. Phase 9 requirements
 
-Independent external assurance must establish evidence beyond repository-controlled engineering and owner-local functional testing. Expected classes include:
+Independent external assurance is the next assurance stage after Phase 8 acceptance. Expected evidence classes include:
 
 - independent penetration testing;
-- representative production-equivalent performance/load validation;
-- hardening and configuration review;
+- hardening/configuration review;
 - IAM/secrets-management review;
-- resilience/recovery review where required;
-- operational/security monitoring readiness review;
-- privacy/legal/governance review where required;
-- residual-risk acceptance.
+- representative production-equivalent load/stress validation;
+- resilience/recovery review;
+- monitoring/incident-response readiness review;
+- relevant privacy/legal/governance review;
+- assurance-time dependency/CVE review;
+- severity-based finding triage, remediation and retest;
+- residual-risk disposition and final independent assurance acceptance.
+
+Internal CI or owner self-attestation cannot substitute for independent assurance.
 
 ## 9. Phase 10 decision requirements
 
-Production go/no-go requires complete, accepted Phase 8 and Phase 9 evidence plus accountable approval of the production environment, ownership/support model, IAM/secrets/network controls, recovery/rollback, monitoring/escalation, privacy/data controls and release/change decision.
+Production go/no-go requires accepted Phase 8 and Phase 9 evidence plus accountable approval of production ownership/support, IAM/secrets/network controls, backup/recovery/rollback, monitoring/on-call/escalation, privacy/data/legal requirements, open findings/residual risk and the formal release/change decision.
 
-## 10. Product enhancement track
+## 10. Evidence boundaries
 
-The following improvements are approved for iterative development:
+- Repository CI proves only repository-controlled engineering claims within test scope.
+- Owner functional acceptance is an accountable product evidence class.
+- Owner-verified staging deployment confirms the external environment/deployment fact but does not replace complete immutable evidence binding.
+- Phase 8 external validation evidence must be attributable to the accepted staging candidate.
+- Phase 9 must be independent.
+- Phase 10 is a separate accountable production authorization.
+- Historical run evidence is immutable and remains scoped to the state it actually covered.
 
-1. accessible severity colours and filtering;
-2. manual governed source onboarding;
-3. trend and richer analytical views;
-4. first-class framework mapping;
-5. deeper RBAC Administration;
-6. deeper Governance coverage/evidence navigation.
+## 11. Recommendation
 
-These changes must preserve the accepted security/governance invariants and must pass applicable exact-head/release evidence before merge.
-
-## 11. Evidence boundaries
-
-- Repository CI is repository-controlled engineering evidence.
-- Owner functional acceptance is separate accountable evidence.
-- Docker Compose and staging emulators are not real staging.
-- Real Phase 8 evidence must be tied to one immutable external deployment identity.
-- Independent assurance cannot be manufactured from internal CI.
-- Historical run records remain immutable and belong in the operational evidence layer, not as replacements for architecture/readiness documentation.
-
-## 12. Recommendation
-
-Proceed with Phase 8.1 while maintaining the accepted RC13 product baseline. Continue product enhancements in bounded PRs, but do not declare production readiness until Phase 8, Phase 9 and Phase 10 are complete.
+Do not add unnecessary product scope to the current release candidate. Complete Phase 8 external evidence binding and accountable acceptance, then proceed to independent Phase 9 assurance. Do not designate DTMO production ready until Phase 10 records an explicit go decision.
