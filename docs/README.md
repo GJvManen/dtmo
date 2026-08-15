@@ -25,12 +25,22 @@ DTMO is not production ready. The next formal release objective is completion an
 |---|---|
 | Executive / sponsor | [Executive Status](project/EXECUTIVE_STATUS.md), [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
 | Product / delivery | [Current State](project/CURRENT_STATE.md), [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) |
-| Architecture / engineering | [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
-| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md) |
-| Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
+| Architecture / engineering | [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md) |
+| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Identity/RBAC workflow](architecture/SYSTEM_WORKFLOWS.md#wf-03--identity-bearer-trust-and-rbac) |
+| Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md), [Governance evidence workflow](architecture/SYSTEM_WORKFLOWS.md#wf-08--governance-mapping-and-evidence) |
 | QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
-| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
-| External assessor | [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md), [Phase 9 External Assurance Gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
+| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [Recovery workflow](architecture/SYSTEM_WORKFLOWS.md#wf-10--backup-recovery-and-rollback) |
+| External assessor | [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md), [Phase 9 External Assurance Gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
+
+## Visual system documentation
+
+The professional documentation layer now includes repository-native system workflows and a governed product-screenshot programme.
+
+- [System Workflows](architecture/SYSTEM_WORKFLOWS.md) contains the maintained source-to-intelligence, vulnerability, identity/RBAC, Administration, MISP, AIL, audit, governance, observability, recovery, deployment-identity and production-readiness workflows.
+- [Visual Documentation Standard](visual/DOCUMENTATION_VISUAL_STANDARD.md) defines how diagrams and screenshots must be structured, labelled, reviewed and kept current.
+- [Product Screenshot Catalogue](visual/screenshots/README.md) defines the controlled screenshot set and distinguishes actual DTMO runtime UI with sanitized fixtures from staging or assurance evidence.
+
+Mermaid diagrams are preferred for system behavior because they remain reviewable as source text and render directly in GitHub. Product screenshots must originate from the actual DTMO web application. Fixture-backed captures are permitted for deterministic documentation, but are explicitly classified as documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
 
 ## Documentation model
 
@@ -61,6 +71,8 @@ The repository-complete product baseline provides one governed console across Ov
 
 PostgreSQL remains canonical application state; OpenSearch is the search/index representation; S3-compatible object storage retains raw evidence; Redis provides coordination; Prometheus and separately authenticated Grafana provide operational observability.
 
+For an end-to-end visual explanation, start with [WF-01 Source-to-intelligence](architecture/SYSTEM_WORKFLOWS.md#wf-01--source-to-intelligence) and [WF-11 Deployment and immutable staging identity](architecture/SYSTEM_WORKFLOWS.md#wf-11--deployment-and-immutable-staging-identity).
+
 ## Security and authority invariants
 
 Across all documentation the following remain authoritative:
@@ -87,4 +99,4 @@ Phase 9 requires independent assurance. Repository CI, Docker Compose, staging e
 
 ## Maintenance rule
 
-Whenever lifecycle status, architecture, security boundaries, product scope or governance claims materially change, the professional current-state set must be reconciled together before merge. See [Current-State Documentation Reconciliation Gate](qa/CURRENT_STATE_RECONCILIATION.md) and [Documentation Standard](project/DOCUMENTATION_STANDARD.md).
+Whenever lifecycle status, architecture, security boundaries, product scope or governance claims materially change, the professional current-state set must be reconciled together before merge. Visuals that explain a materially changed workflow must be updated in the same change. See [Current-State Documentation Reconciliation Gate](qa/CURRENT_STATE_RECONCILIATION.md), [Documentation Standard](project/DOCUMENTATION_STANDARD.md) and [Visual Documentation Standard](visual/DOCUMENTATION_VISUAL_STANDARD.md).
