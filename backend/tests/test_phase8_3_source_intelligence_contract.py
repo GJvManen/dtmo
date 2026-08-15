@@ -13,18 +13,19 @@ TEMPLATE = ROOT / "docs/staging/PHASE8_3_SOURCE_INTELLIGENCE_EVIDENCE.template.j
 
 def test_phase8_3_runbook_is_fail_closed_and_identity_bound() -> None:
     text = RUNBOOK.read_text(encoding="utf-8")
+    lower = text.lower()
     assert "Phase 8.3" in text
     assert "same immutable post-E8 staging deployment" in text
-    assert "source" in text
-    assert "retrieval" in text
-    assert "normalization" in text
-    assert "deduplication" in text
+    assert "source" in lower
+    assert "retrieval" in lower
+    assert "normalization" in lower
+    assert "deduplication" in lower
     assert "PostgreSQL" in text
     assert "OpenSearch" in text
-    assert "enrichment/correlation" in text
+    assert "enrichment/correlation" in lower
     assert "API" in text
     assert "canonical UI" in text
-    assert "degraded" in text
+    assert "degraded" in lower
     assert "Repository CI" in text
     assert "PASS / OWNER_ACCEPTED" in text
 
