@@ -13,6 +13,8 @@ This index maps DTMO lifecycle stages to their evidence classes and authoritativ
 - `docs/project/CURRENT_STATE.md`
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`
 - `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`
+- `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`
+- `docs/integrations/TARANIS_ADAPTER.md`
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
 - `docs/project/PRODUCTION_READINESS_REPORT.md`
 - `docs/project/PRODUCTION_CHECKLIST.md`
@@ -71,11 +73,14 @@ Production authorization was not granted. The accountable decision is recorded i
 
 **Status:** `IN PROGRESS / ACTIVE`.
 
+Phase 11.1 Taranis architecture/contract work is repository-complete. Phase 11.2 now has repository evidence for the read-only canonical adapter, fail-closed handling, stable identity, deterministic replay, durable atomic checkpointing, bounded pagination/reconciliation, bounded detail/CTI retrieval and governed connector execution. This evidence is repository-controlled only and does not prove live Taranis permissions, persistent-volume deployment or production-equivalent behavior.
+
 Required evidence classes progressively include:
 
 - Taranis API/data-model/identity/licensing assessment;
 - service-to-service adapter contracts and interoperability tests;
 - provenance/classification/replay/deduplication evidence;
+- Taranis detail/CTI and governed scheduler/manual execution evidence;
 - IntelOwl enrichment contract/runtime evidence;
 - OpenCTI STIX/entity/relationship interoperability evidence;
 - consolidated MISP authority/synchronization evidence;
@@ -88,7 +93,9 @@ Required evidence classes progressively include:
 Primary Phase 11 documents:
 
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
-- `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`.
+- `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`;
+- `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`;
+- `docs/integrations/TARANIS_ADAPTER.md`.
 
 ### Phase 12 — production go/no-go
 
