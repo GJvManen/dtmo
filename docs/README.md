@@ -12,23 +12,25 @@ This directory contains the authoritative professional documentation for Dutch T
 | E8.1–E8.10 | `PASS / REPOSITORY_COMPLETE` |
 | Phase 8 production-equivalent staging | `PASS / OWNER_ACCEPTED` |
 | Phase 9 independent assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
-| Phase 10 production go/no-go | `IN PROGRESS / DECISION REQUIRED` |
-| Production readiness | **Not production authorized until Phase 10 GO** |
+| Phase 10 production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
+| Phase 11 platform industrialisation | `IN PROGRESS / ACTIVE` |
+| Phase 12 production go/no-go | `NOT STARTED` |
+| Production readiness | **Not production authorized** |
 
-The active release objective is the formal Phase 10 production decision. Completion of Phase 8 and Phase 9 satisfies staging and independent-assurance prerequisites but does not itself authorize production.
+The active programme is Phase 11. Phase 10 did not grant production authorization. Phase 12 is the next production authorization decision after the materially changed integrated platform completes fresh production-equivalent validation and independent external assurance.
 
 ## Start here
 
 | Audience | Primary documents |
 |---|---|
 | Executive / sponsor | [Executive Status](project/EXECUTIVE_STATUS.md), [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md), [Phase 10 Go/No-Go](production/PHASE10_PRODUCTION_GO_NO_GO.md) |
-| Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Current State](project/CURRENT_STATE.md), [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) |
+| Product / delivery | [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current State](project/CURRENT_STATE.md), [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) |
 | Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
 | Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Security Overview](security/SECURITY_OVERVIEW.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md) |
-| Architecture / engineering | [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md) |
-| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Identity/RBAC workflows](architecture/SYSTEM_WORKFLOWS.md) |
+| Architecture / engineering | [Taranis Platform Integration Assessment](architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md), [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md) |
+| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Taranis Platform Integration Assessment](architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md), [Governance evidence workflow](architecture/SYSTEM_WORKFLOWS.md) |
-| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md), [Phase 10 Go/No-Go](production/PHASE10_PRODUCTION_GO_NO_GO.md) |
+| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) |
 | Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [Recovery workflow](architecture/SYSTEM_WORKFLOWS.md) |
 | External assessor | [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md), [Phase 9 External Assurance Gate](qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
 
@@ -39,6 +41,12 @@ The active release objective is the formal Phase 10 production decision. Complet
 - [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md) — identities, RBAC, privileged Administration, source governance, secrets, MISP sharing boundaries and audit/correlation.
 
 These guides are linked to canonical system workflows rather than duplicating incompatible process descriptions.
+
+## Phase 11 programme documentation
+
+- [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) defines the fixed Taranis → IntelOwl → OpenCTI → MISP → TheHive → conditional Cortex → runtime industrialisation sequence.
+- [Taranis Platform Integration Assessment](architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md) defines the Phase 11.1 responsibility boundary, Keep/Integrate/Replace/Deprecate/Migrate matrix, trust boundaries and licensing rule.
+- [Phase 10 Production Go/No-Go](production/PHASE10_PRODUCTION_GO_NO_GO.md) records the completed `NO-GO / BLOCKED` decision and why the integrated successor candidate requires fresh evidence.
 
 ## Visual system documentation
 
@@ -62,6 +70,8 @@ The following documents form the current decision-grade set and must remain mutu
 - `docs/project/PRODUCTION_CHECKLIST.md`;
 - `docs/project/DOCUMENTATION_STATUS.md`;
 - `docs/roadmap/PRODUCTION_ROADMAP.md`;
+- `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
+- `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`;
 - `docs/evidence/EVIDENCE_INDEX.md`;
 - `docs/qa/QA_AND_RELEASE_GATES.md`;
 - `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`.
@@ -74,9 +84,11 @@ PR chronology, workflow/run identifiers, point-in-time blockers and immutable ev
 
 ## Product and architecture scope
 
-The repository-complete product baseline provides one governed console across Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The E8 line adds OpenCVE, Vulnerability-Lookup, governed MISP read/export, governed AIL read/enrichment/correlation, explainable vulnerability prioritization, vulnerability analytics and provenance-backed vulnerability-management framework mappings.
+The repository-complete DTMO baseline provides one governed console across Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The E8 line adds OpenCVE, Vulnerability-Lookup, governed MISP read/export, governed AIL read/enrichment/correlation, explainable vulnerability prioritization, vulnerability analytics and provenance-backed vulnerability-management framework mappings.
 
-PostgreSQL remains canonical application state; OpenSearch is the search/index representation; S3-compatible object storage retains raw evidence; Redis provides coordination; Prometheus and separately authenticated Grafana provide operational observability.
+Phase 11 changes the platform composition, not DTMO's differentiating mission. DTMO remains the education-sector CTI, vulnerability-context, governance and governed-sharing layer. Generic OSINT collection, generic IOC enrichment, CTI graph and incident/case workflow are integrated from mature open-source projects where practical.
+
+PostgreSQL remains canonical DTMO application state until an explicit Phase 11 migration decision changes that boundary. OpenSearch remains the search/index representation; S3-compatible object storage retains raw evidence; Redis provides coordination; Prometheus and separately authenticated Grafana provide operational observability.
 
 ## Security and authority invariants
 
@@ -87,9 +99,10 @@ Across all documentation the following remain authoritative:
 - privileged Administration safeguards and auditable actions;
 - provenance/confidence preservation and data minimization;
 - separate human review and external-share approval;
-- no publication authority from connectors, CI, analytics, Administration, Governance, staging acceptance or production authorization;
+- no publication authority from connectors, CI, analytics, Administration, Governance, Taranis publishers, enrichment engines, staging acceptance or production authorization;
 - no inferred framework mappings or broad compliance claims from contextual relationships;
 - no raw credentials/tokens in repository evidence;
+- dedicated bounded service identities across integrations;
 - open findings, deviations and residual risks remain explicit.
 
 ## Governance and framework semantics
@@ -98,9 +111,11 @@ The governance model is explicit and provenance-backed. It includes versioned DT
 
 ## Production-readiness evidence boundary
 
-Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`. These are distinct accountable/external evidence classes. Repository CI, Docker Compose, staging emulators, synthetic fixtures and internal self-attestation are not represented as substitutes for them.
+Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the prior candidate. Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` and Phase 11 is `IN PROGRESS / ACTIVE`.
 
-Phase 10 is a separate accountable authorization decision. DTMO remains not production authorized until all required production decision inputs are accepted and an explicit `GO` is recorded.
+Repository CI, Docker Compose, staging emulators, synthetic fixtures and internal self-attestation are not represented as substitutes for external acceptance or independent assurance. Prior Phase 8/9 evidence cannot automatically satisfy the future integrated candidate because Phase 11 materially changes the platform.
+
+DTMO remains not production authorized. Phase 12 is the next production authorization gate after fresh integrated validation and assurance.
 
 ## Maintenance rule
 
