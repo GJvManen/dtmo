@@ -1,6 +1,6 @@
 # DTMO Product Screenshot Catalogue
 
-**Status:** base runtime capture validated; UI-01–04 and UI-06–09 published / governed; UI-05 capture contract added / CI validation pending  
+**Status:** base runtime capture validated; UI-01–09 published / governed; UI-10 capture validated / repository promotion pending  
 **Screenshot type:** actual DTMO runtime UI with sanitized deterministic fixtures unless a record explicitly states otherwise  
 **Evidence classification:** documentation illustration only — not staging acceptance, independent assurance or production evidence
 
@@ -29,7 +29,7 @@ Synthetic API fixtures do **not** turn a screenshot into a mock-up: the HTML/CSS
 | UI-02 | Intelligence workspace | `intelligence-workspace.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-03 | Sources & Catalogue | `sources-catalogue.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-04 | Vulnerability analytics | `vulnerability-analytics.png` | **published / governed** | runtime UI with synthetic fixture data |
-| UI-05 | MISP governed workflow | `misp-governed-workflow.png` | **capture contract added / CI validation pending** | runtime UI with synthetic fixture data |
+| UI-05 | MISP governed workflow | `misp-governed-workflow.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-06 | AIL correlation workspace | `ail-correlation-workspace.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-07 | Visual Analytics | `visual-analytics.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-08 | Governance frameworks | `governance-frameworks.png` | **published / governed** | runtime UI with synthetic fixture data |
@@ -77,7 +77,21 @@ Synthetic API fixtures do **not** turn a screenshot into a mock-up: the HTML/CSS
 
 ## Dedicated MISP and audit captures
 
-UI-05 now has an actual DTMO `/ui/misp-workspace` runtime surface and a deterministic capture contract. The capture renders canonical MISP-origin intelligence and the governed export controls, but it does not execute outbound export and does not prove live MISP connectivity. Publication of `misp-governed-workflow.png` remains blocked until the new exact-head Documentation Screenshot Artifact Gate succeeds and the generated artifact is reviewed.
+UI-05 is published from the reviewed exact-head capture.
+
+![DTMO MISP governed workflow — runtime UI with sanitized synthetic fixture data](misp-governed-workflow.png)
+
+**Review record for UI-05**
+
+- source capture: Documentation Screenshot Artifact Gate run #11, exact head `0bfc126d60225cd669b2aa4a4204243ecd7a5914`;
+- source artifact: `9247749318`, `dtmo-documentation-screenshots`;
+- source artifact digest: `sha256:2982c4bd8c13d65d2a2ee385883f8e33a73ef8f17408286ba39e247de3976808`;
+- image SHA-256: `f10518d60c225d7278ab804e6a6a2290a4410550fc811ea94850bb138c11cdbd`;
+- dimensions: 1440 × 1000; browser: Chromium/Playwright;
+- capture mode: actual runtime UI with sanitized synthetic fixture data;
+- reviewer check: governed read/export controls and claim boundaries are legible; no production credentials, secrets or unnecessary personal data are visible;
+- execution boundary: the capture does not execute outbound MISP export and does not prove live MISP connectivity;
+- evidence boundary: documentation illustration only.
 
 UI-10 uses the existing read-only auditor surface. Its deterministic runtime capture is validated; repository image promotion remains a separate governed step.
 

@@ -68,6 +68,10 @@ Relevant workflow: **WF-02 Vulnerability prioritization**.
 
 MISP is treated as governed CTI input/output with separate human approval for external sharing. AIL is treated as read/enrichment/correlation context with explicit boundaries around raw-content exposure and analytical inference.
 
+![DTMO MISP governed workflow — runtime UI with sanitized synthetic fixture data](../visual/screenshots/misp-governed-workflow.png)
+
+**UI-05 boundary:** the rendered export controls do not prove live MISP connectivity or sharing authority; the documented export path creates an unpublished event and remains subject to server-side approval checks.
+
 ![DTMO AIL correlation workspace — runtime UI with sanitized synthetic fixture data](../visual/screenshots/ail-correlation-workspace.png)
 
 Relevant workflows: **WF-03 MISP read/governed export** and **WF-04 AIL enrichment/correlation**.

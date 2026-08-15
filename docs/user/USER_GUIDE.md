@@ -80,6 +80,10 @@ Relevant workflow: **WF-04** in [`SYSTEM_WORKFLOWS.md`](../architecture/SYSTEM_W
 
 MISP read data may enrich an investigation. Outbound MISP export is a separate governed action and requires the configured authorization and human approval path. Never infer approval merely because an export function exists.
 
+![DTMO MISP governed workflow — runtime UI with sanitized synthetic fixture data](../visual/screenshots/misp-governed-workflow.png)
+
+*Figure UI-05 — Actual DTMO MISP workspace with synthetic fixture data. The image demonstrates the read and governed-export interaction surface only; no outbound export was executed and live MISP connectivity is not proven.*
+
 Relevant workflow: **WF-03**.
 
 ## 3. Sources & Catalogue
