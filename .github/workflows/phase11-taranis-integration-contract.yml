@@ -1,0 +1,79 @@
+name: Phase 11 Taranis Integration Contract Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md"
+      - "docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md"
+      - "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md"
+      - "backend/tests/test_taranis_integration_contract.py"
+      - ".github/workflows/phase11-taranis-integration-contract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  taranis-integration-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Validate Taranis integration contract
+        run: pytest -q backend/tests/test_taranis_integration_contract.py
+
+      - name: Record exact-head evidence
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p evidence
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = {
+              "workflow": "Phase 11 Taranis Integration Contract Gate",
+              "repository": os.environ.get("GITHUB_REPOSITORY"),
+              "sha": os.environ.get("GITHUB_SHA"),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "event": os.environ.get("GITHUB_EVENT_NAME"),
+              "claim_boundary": (
+                  "Repository-controlled exact-head validation of the Phase 11.1 Taranis-to-DTMO service contract. "
+                  "It does not establish live Taranis connectivity, deployment, staging, external assurance, "
+                  "external-sharing authority or production authorization."
+              ),
+          }
+          Path("evidence/phase11-taranis-integration-contract.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload exact-head evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: phase11-taranis-integration-contract-${{ github.event.pull_request.head.sha }}
+          path: evidence/phase11-taranis-integration-contract.json
