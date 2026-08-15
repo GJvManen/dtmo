@@ -1,0 +1,39 @@
+name: Promote Audit UI-10 Screenshot
+
+on:
+  push:
+    branches:
+      - docs/audit-ui10-publish
+    paths:
+      - .github/workflows/promote-audit-ui10.yml
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/audit-ui10-publish
+      - name: Download exact reviewed artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/ui10 && mkdir -p /tmp/ui10
+          gh run download 31889983077 --repo "$GITHUB_REPOSITORY" --name dtmo-documentation-screenshots --dir /tmp/ui10
+          test -f /tmp/ui10/generated/audit-correlation.png
+          actual="$(sha256sum /tmp/ui10/generated/audit-correlation.png | awk '{print $1}')"
+          test "$actual" = "cf68587ec3a5831e31f6e222b9301fb1b1a69556fe75f96a1b702fa701f6a1e5"
+          cp /tmp/ui10/generated/audit-correlation.png docs/visual/screenshots/audit-correlation.png
+      - name: Commit reviewed binary only
+        run: |
+          set -euo pipefail
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add docs/visual/screenshots/audit-correlation.png
+          git commit -m "docs: promote governed audit UI-10 screenshot"
+          git push origin HEAD:docs/audit-ui10-publish
