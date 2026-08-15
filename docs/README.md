@@ -46,7 +46,7 @@ These guides are linked to canonical system workflows rather than duplicating in
 - [Visual Documentation Standard](visual/DOCUMENTATION_VISUAL_STANDARD.md) defines how diagrams and screenshots are structured, labelled, reviewed and kept current.
 - [Product Screenshot Catalogue](visual/screenshots/README.md) defines the governed screenshot set.
 
-The governed screenshot catalogue now contains UI-01 through UI-10. Each published PNG is tied to a reviewed DTMO runtime capture using sanitized fixtures where applicable. These visuals are documentation illustrations: they do not prove live-source connectivity, external staging activity, independent assurance or production authorization.
+The governed screenshot catalogue now contains UI-01 through UI-10. Each published PNG is tied to a reviewed DTMO runtime capture using sanitized fixtures where applicable. They are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. They also do not independently prove external assurance or production authorization.
 
 ## Documentation model
 
