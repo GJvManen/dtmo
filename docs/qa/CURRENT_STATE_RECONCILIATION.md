@@ -1,87 +1,71 @@
 # Current-State Documentation Reconciliation Gate
 
-**Status:** `PASS` as a documentation-control contract
+**Status:** `PASS` as a documentation-control contract  
+Last reconciled: **2026-08-15**
 
 ## Control objective
 
-Ensure authoritative professional DTMO documentation reflects the implemented product, accepted lifecycle and evidence boundaries without turning project-facing documentation into an operational incident or PR diary.
+Ensure authoritative professional DTMO documentation reflects the implemented product, accepted lifecycle and evidence boundaries without becoming a PR/incident/workflow diary.
 
-## Documents in the reconciliation set
+## Reconciliation set
 
-When a lifecycle or material architecture/product decision changes, the following current-state set must be reviewed together:
+When lifecycle status or material architecture/product/security/governance state changes, review these documents together:
 
 - root `README.md`;
 - `docs/README.md`;
 - `docs/project/CURRENT_STATE.md`;
 - `docs/project/EXECUTIVE_STATUS.md`;
+- `docs/project/EXECUTIVE_DECISION_VIEW.md`;
 - `docs/project/PRODUCTION_READINESS_REPORT.md`;
 - `docs/project/PRODUCTION_CHECKLIST.md`;
-- `docs/architecture/SYSTEM_ARCHITECTURE.md` when architecture/trust boundaries change;
-- `docs/security/SECURITY_OVERVIEW.md` when security boundaries change;
-- `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md` when mapping claims change;
-- `docs/qa/QA_AND_RELEASE_GATES.md`;
-- the active phase/acceptance gate;
+- `docs/project/DOCUMENTATION_STATUS.md`;
 - `docs/roadmap/PRODUCTION_ROADMAP.md`;
-- the current release notes;
-- traceability/evidence index where stage status changes.
+- `docs/evidence/EVIDENCE_INDEX.md`;
+- `docs/qa/QA_AND_RELEASE_GATES.md`;
+- active Phase 8/9/10 gate documents;
+- architecture/security/governance documents when their substantive boundaries change.
 
 ## Current reconciled lifecycle
 
-The professional documentation must consistently state:
+Professional current-state documentation must consistently state:
 
 - Phases 1–7: `PASS`;
-- RC13 functional unified-console acceptance: `PASS / OWNER_ACCEPTED`;
-- Phase 8: `READY_FOR_EXTERNAL_VALIDATION / PENDING_EXTERNAL_DEPLOYMENT_IDENTITY`;
+- RC13: `PASS / OWNER_ACCEPTED`;
+- E8.1–E8.10: `PASS / REPOSITORY_COMPLETE`;
+- post-E8 external deployment/staging: `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE`;
+- Phase 8.2–8.4: repository contracts complete, external acceptance required;
+- Phase 8.5: repository contract complete, accountable external owner decision required;
 - Phase 9: `NOT COMPLETE`;
 - Phase 10: `NOT STARTED`;
 - DTMO: **not production ready**.
 
 ## Professional versus operational documentation
 
-The reconciliation gate applies the rules in `docs/project/DOCUMENTATION_STANDARD.md`.
-
 ### Professional layer
 
-Architecture, product, security, governance, QA and readiness documents describe:
-
-- stable platform purpose/capabilities;
-- controlled current state;
-- trust and authority boundaries;
-- known limitations;
-- formal next-stage requirements;
-- durable evidence links.
+Architecture, product, security, governance, QA and readiness documents describe stable platform purpose/capabilities, current controlled state, trust/authority boundaries, known limitations, formal next-stage requirements and durable evidence locations.
 
 ### Operational evidence layer
 
-Exact workflow IDs, PR chronology, investigation notes, incident timelines and point-in-time blocker details belong in:
+Exact workflow IDs, PR chronology, incident timelines, transient blockers and point-in-time decisions belong in `docs/development/`, GitHub issues/pull requests and CI artifacts.
 
-- `docs/development/RUN_LOG.md`;
-- `docs/development/runs/`;
-- GitHub issues/PRs;
-- CI artifacts.
-
-Operational evidence must remain available for auditability but must not replace the professional layer.
+Historical operational evidence remains immutable and may contain lifecycle terminology that is no longer current. That does not make it an authoritative current-state source.
 
 ## Validation requirements
 
-A documentation reconciliation is acceptable only when:
+A reconciliation is acceptable only when:
 
-1. formal lifecycle statements agree across the reconciliation set;
-2. current architecture/security/governance claims match the implementation and accepted evidence;
-3. historical immutable run records have not been rewritten;
-4. operational detail is confined to the appropriate evidence layer;
-5. framework mapping claims remain explicit and non-inferred;
-6. security/privacy/publication authority boundaries are preserved;
-7. open-source governance entry points remain available;
-8. all links/paths referenced by the professional documentation exist;
-9. the documentation PR completes the required exact-head CI matrix before protected merge.
+1. lifecycle statements agree across the professional current-state set;
+2. product, architecture, security and governance claims match the implemented/accepted evidence boundary;
+3. obsolete roadmap or framework statements are removed from current-state documents;
+4. historical immutable evidence has not been rewritten;
+5. operational chronology remains outside stable professional documents;
+6. framework mappings remain explicit, versioned/provenance-backed and non-inferred;
+7. security/privacy/publication authority boundaries are preserved;
+8. links/paths referenced by the professional documentation exist;
+9. documentation authority/currency is clear through `docs/project/DOCUMENTATION_STATUS.md`;
+10. the documentation PR completes required exact-head CI before protected merge.
 
 ## Evidence rule
 
-A successful documentation reconciliation does not manufacture product, staging, assurance or production acceptance. It records those decisions only when the corresponding evidence class already exists.
-
-## Current use
-
-The current restoration applies this gate after repeated status reconciliations had shortened multiple professional documents and mixed temporary operational details into project-facing documentation.
-
-The restoration re-establishes the complete product/architecture/security/governance/readiness building blocks while preserving operational history under the dedicated evidence layer.
+Documentation reconciliation does not manufacture engineering, staging, assurance or production acceptance. It may record only evidence classes that already exist and must preserve the distinction between repository CI, owner acceptance, real-environment evidence, independent assurance and formal production authorization.

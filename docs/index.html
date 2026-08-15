@@ -3,52 +3,38 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="DTMO — Dutch Threat Monitoring for Education documentation portal">
+  <meta name="description" content="DTMO — Dutch Threat Monitoring for Education professional documentation portal">
   <title>DTMO Documentation</title>
   <style>
     :root{--bg:#f3f6f8;--surface:#fff;--text:#142739;--muted:#607285;--brand:#0a6578;--brand2:#128c85;--border:#d8e2e8;--good:#237a56;--warn:#9a6518;--shadow:0 12px 30px rgba(20,39,57,.08)}
     *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
-    header{background:linear-gradient(125deg,#073b51,#0b7080 58%,#139388);color:#fff;padding:58px 6vw 76px}
-    .wrap{max-width:1180px;margin:auto}.top{display:flex;justify-content:space-between;gap:20px;align-items:center}.brand{font-size:22px;font-weight:850;letter-spacing:.02em}.badge{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:7px 12px;background:rgba(255,255,255,.1);font-size:13px}
-    h1{font-size:clamp(38px,6vw,66px);line-height:1.03;margin:54px 0 18px;max-width:900px}.lead{max-width:850px;color:#e7f3f5;font-size:19px}
-    main{max-width:1180px;margin:-36px auto 0;padding:0 22px 60px}.status,.grid{display:grid;gap:16px}.status{grid-template-columns:repeat(4,1fr)}.grid{grid-template-columns:repeat(3,1fr);margin-top:18px}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}.card h2,.card h3{margin:0 0 9px}.card p{margin:0;color:var(--muted)}.metric strong{font-size:24px;display:block;color:var(--brand);margin-bottom:5px}.metric small{color:var(--muted)}
-    .links a{display:block;color:var(--brand);text-decoration:none;font-weight:650;margin:9px 0}.links a:hover{text-decoration:underline}.decision{border-left:5px solid var(--good)}.warning{border-left:5px solid var(--warn)}
-    footer{max-width:1180px;margin:auto;padding:22px;color:var(--muted);font-size:13px}
-    @media(max-width:900px){.status,.grid{grid-template-columns:1fr 1fr}}@media(max-width:620px){.status,.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}header{padding:38px 22px 68px}}
+    header{background:linear-gradient(125deg,#073b51,#0b7080 58%,#139388);color:#fff;padding:58px 6vw 76px}.wrap{max-width:1180px;margin:auto}.top{display:flex;justify-content:space-between;gap:20px;align-items:center}.brand{font-size:22px;font-weight:850}.badge{border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:7px 12px;background:rgba(255,255,255,.1);font-size:13px}
+    h1{font-size:clamp(38px,6vw,66px);line-height:1.03;margin:54px 0 18px;max-width:900px}.lead{max-width:850px;color:#e7f3f5;font-size:19px}main{max-width:1180px;margin:-36px auto 0;padding:0 22px 60px}.status,.grid{display:grid;gap:16px}.status{grid-template-columns:repeat(4,1fr)}.grid{grid-template-columns:repeat(3,1fr);margin-top:18px}.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow)}.card h2,.card h3{margin:0 0 9px}.card p{margin:0;color:var(--muted)}.metric strong{font-size:22px;display:block;color:var(--brand);margin-bottom:5px}.metric small{color:var(--muted)}.links a{display:block;color:var(--brand);text-decoration:none;font-weight:650;margin:9px 0}.links a:hover{text-decoration:underline}.decision{border-left:5px solid var(--good)}.warning{border-left:5px solid var(--warn)}footer{max-width:1180px;margin:auto;padding:22px;color:var(--muted);font-size:13px}@media(max-width:900px){.status,.grid{grid-template-columns:1fr 1fr}}@media(max-width:620px){.status,.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}header{padding:38px 22px 68px}}
   </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="top"><div class="brand">DTMO · Documentation</div><div class="badge">16.0.0rc12</div></div>
-    <h1>Dutch Threat Monitoring for Education</h1>
-    <p class="lead">Professional architecture, security, governance, intelligence, QA, operations and production-readiness documentation for the DTMO education-sector Cyber Threat Intelligence platform.</p>
-  </div>
-</header>
+<header><div class="wrap"><div class="top"><div class="brand">DTMO · Professional Documentation</div><div class="badge">16.0.0rc12 + accepted enhancements</div></div><h1>Dutch Threat Monitoring for Education</h1><p class="lead">Decision-grade product, architecture, security, governance, operations and production-readiness documentation for the DTMO Cyber Threat Intelligence platform.</p></div></header>
 <main>
   <section class="status">
     <article class="card metric"><strong>PASS</strong><small>Phases 1–7 engineering</small></article>
-    <article class="card metric"><strong>PASS</strong><small>RC13 owner-accepted product</small></article>
-    <article class="card metric"><strong>Phase 8</strong><small>Real staging is next</small></article>
-    <article class="card metric"><strong>Not yet</strong><small>Production approval</small></article>
+    <article class="card metric"><strong>OWNER ACCEPTED</strong><small>RC13 functional product</small></article>
+    <article class="card metric"><strong>E8 COMPLETE</strong><small>Vulnerability & CTI repository scope</small></article>
+    <article class="card metric"><strong>NOT READY</strong><small>Production authorization remains outstanding</small></article>
   </section>
-
   <section class="grid">
-    <article class="card links"><h2>Architecture</h2><p>System boundaries, data flow, identities, persistence and deployment.</p><a href="architecture/SYSTEM_ARCHITECTURE.md">System Architecture</a><a href="ux/FRONTEND_UX.md">Frontend UX Architecture</a><a href="traceability/TRACEABILITY_MATRIX.md">Traceability Matrix</a></article>
-    <article class="card links"><h2>Security & Governance</h2><p>Least privilege, approval boundaries, mapping truth and security controls.</p><a href="security/SECURITY_OVERVIEW.md">Security Overview</a><a href="governance/GOVERNANCE_MAPPING_REGISTRY.md">Governance Mapping Registry</a><a href="project/ADR/ADR-001-EVIDENCE-CLAIM-BOUNDARIES.md">Evidence & Claim ADR</a></article>
-    <article class="card links"><h2>Product & Project</h2><p>Current state, executive decision and controlled roadmap.</p><a href="project/CURRENT_STATE.md">Current State</a><a href="project/EXECUTIVE_STATUS.md">Executive Status</a><a href="roadmap/PRODUCTION_ROADMAP.md">Roadmap</a></article>
-    <article class="card links"><h2>Intelligence</h2><p>Source inventory, safe execution and canonical pipeline controls.</p><a href="intelligence/SOURCE_CATALOG.md">Source Catalog</a><a href="qa/SOURCE_CONNECTION_MATRIX.md">Source Connection Matrix</a><a href="qa/INTELLIGENCE_PIPELINE_RELEASE_GATE.md">Pipeline Release Gate</a></article>
-    <article class="card links"><h2>QA & Release</h2><p>Exact-head evidence discipline and formal acceptance boundaries.</p><a href="qa/QA_AND_RELEASE_GATES.md">QA & Release Gates</a><a href="qa/RC13_FUNCTIONAL_CONSOLE_ACCEPTANCE_GATE.md">RC13 Acceptance</a><a href="qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md">Phase 8 Staging Gate</a></article>
-    <article class="card links"><h2>Operations</h2><p>Operational procedures, evidence and staging identity records.</p><a href="operations/OPERATIONS_MANUAL.md">Operations Manual</a><a href="staging/PHASE8_DEPLOYMENT_IDENTITY_RECORD.md">Deployment Identity Record</a><a href="development/RUN_LOG.md">Run Evidence</a></article>
+    <article class="card links"><h2>Decision & Readiness</h2><p>Current controlled state, executive decision and evidence progression.</p><a href="project/CURRENT_STATE.md">Current State</a><a href="project/EXECUTIVE_STATUS.md">Executive Status</a><a href="project/PRODUCTION_READINESS_REPORT.md">Production Readiness Report</a><a href="project/PRODUCTION_CHECKLIST.md">Production Checklist</a></article>
+    <article class="card links"><h2>Architecture & Security</h2><p>System boundaries, trust, data flow, identity and security controls.</p><a href="architecture/SYSTEM_ARCHITECTURE.md">System Architecture</a><a href="security/SECURITY_OVERVIEW.md">Security Overview</a><a href="security/THREAT_MODEL.md">Threat Model</a></article>
+    <article class="card links"><h2>Governance & Evidence</h2><p>Framework semantics, evidence hierarchy and documentation authority.</p><a href="governance/GOVERNANCE_MAPPING_REGISTRY.md">Governance Mapping Registry</a><a href="evidence/EVIDENCE_INDEX.md">Evidence Index</a><a href="project/DOCUMENTATION_STATUS.md">Documentation Status & Authority</a></article>
+    <article class="card links"><h2>Intelligence & Integrations</h2><p>Source governance, canonical pipeline and CTI/vulnerability integrations.</p><a href="intelligence/SOURCE_CATALOG.md">Source Catalog</a><a href="qa/SOURCE_CONNECTION_MATRIX.md">Source Connection Matrix</a><a href="integrations/">Integration Documentation</a></article>
+    <article class="card links"><h2>QA & Release</h2><p>Exact-head evidence discipline and Phase 8/9 acceptance boundaries.</p><a href="qa/QA_AND_RELEASE_GATES.md">QA & Release Gates</a><a href="roadmap/PRODUCTION_ROADMAP.md">Production Roadmap</a><a href="qa/PHASE9_EXTERNAL_ASSURANCE_GATE.md">Phase 9 Assurance Gate</a></article>
+    <article class="card links"><h2>Operations</h2><p>Operating model, runtime procedures, recovery and evidence handling.</p><a href="operations/OPERATING_MODEL.md">Operating Model</a><a href="operations/OPERATIONS_MANUAL.md">Operations Manual</a><a href="development/RUN_LOG.md">Historical Run Evidence</a></article>
   </section>
-
   <section class="grid">
-    <article class="card decision"><h3>Current product decision</h3><p>The unified DTMO console is functionally accepted. Product enhancements continue in bounded increments without reopening RC13 unless a regression is demonstrated.</p></article>
-    <article class="card warning"><h3>Production boundary</h3><p>Real Phase 8 staging, Phase 9 independent assurance and Phase 10 formal go/no-go remain mandatory before production approval.</p></article>
-    <article class="card links"><h3>Documentation discipline</h3><p>Stable professional documents are separated from operational run/incident history.</p><a href="project/DOCUMENTATION_STANDARD.md">Documentation Standard</a><a href="README.md">Full Documentation Index</a></article>
+    <article class="card decision"><h3>Current release objective</h3><p>Complete and accept the Phase 8 external evidence package against one immutable staging identity. The repository contracts for Phase 8.2–8.5 are complete.</p></article>
+    <article class="card warning"><h3>Independent assurance boundary</h3><p>Phase 9 penetration testing and agreed independent assurance follow only after formal Phase 8 acceptance. Internal CI cannot substitute for this evidence.</p></article>
+    <article class="card warning"><h3>Production boundary</h3><p>Phase 10 formal go/no-go has not started. DTMO must not be represented as production ready.</p></article>
   </section>
 </main>
-<footer>DTMO — Dutch Threat Monitoring for Education · Open development under Apache License, Version 2.0</footer>
+<footer>DTMO — Dutch Threat Monitoring for Education · Apache License, Version 2.0 · Professional documentation reconciled 2026-08-15</footer>
 </body>
 </html>
