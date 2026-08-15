@@ -36,12 +36,15 @@ A source item is useful only when provenance survives the path from retrieval to
 
 The Overview surface provides an operational picture: current intelligence volume, new records, average confidence, severity distribution, connector health, recent intelligence and vulnerability posture. It is intended for orientation and prioritization rather than final assurance decisions.
 
-**Governed screenshot:** `docs/visual/screenshots/overview-dashboard.png` once promoted from the reviewed capture set.  
-**Capture class:** actual DTMO runtime UI with sanitized synthetic fixture data.
+![DTMO Overview dashboard — runtime UI with sanitized synthetic fixture data](../visual/screenshots/overview-dashboard.png)
+
+**Capture class:** actual DTMO runtime UI with sanitized synthetic fixture data; documentation illustration only.
 
 ### Intelligence
 
 The Intelligence workspace combines recent canonical records, search, severity filtering, vulnerability prioritization and vulnerability analytics. Analysts can move from a summarized record toward deeper evidence and correlation without losing source identity.
+
+![DTMO Intelligence workspace — runtime UI with sanitized synthetic fixture data](../visual/screenshots/intelligence-workspace.png)
 
 Relevant workflows: **WF-01 Source-to-intelligence**, **WF-02 Vulnerability prioritization**, **WF-04 AIL enrichment/correlation**.
 
@@ -49,11 +52,15 @@ Relevant workflows: **WF-01 Source-to-intelligence**, **WF-02 Vulnerability prio
 
 This surface separates curated source definitions from runtime registration and health. A source being listed does not mean that live retrieval has been proven in the current deployment.
 
+![DTMO Sources and Catalogue — runtime UI with sanitized synthetic fixture data](../visual/screenshots/sources-catalogue.png)
+
 Relevant workflow: **WF-01** and source-governance controls in the Administrator Guide.
 
 ### Vulnerability intelligence
 
 DTMO combines vulnerability evidence and prioritization context such as CVSS, EPSS, KEV, vendor/product relevance and sightings where available. A prioritization signal does not independently prove exploitability, local deployment, compromise or remediation state; these signals support triage and must remain separate from asset-specific evidence.
+
+![DTMO Vulnerability Analytics — runtime UI with sanitized synthetic fixture data](../visual/screenshots/vulnerability-analytics.png)
 
 Relevant workflow: **WF-02 Vulnerability prioritization**.
 
@@ -61,11 +68,15 @@ Relevant workflow: **WF-02 Vulnerability prioritization**.
 
 MISP is treated as governed CTI input/output with separate human approval for external sharing. AIL is treated as read/enrichment/correlation context with explicit boundaries around raw-content exposure and analytical inference.
 
+![DTMO AIL correlation workspace — runtime UI with sanitized synthetic fixture data](../visual/screenshots/ail-correlation-workspace.png)
+
 Relevant workflows: **WF-03 MISP read/governed export** and **WF-04 AIL enrichment/correlation**.
 
 ### Visual Analytics
 
 Visual Analytics presents trends and operational views using the same governed product data. Grafana remains separately authenticated where configured and does not become an alternative authorization authority for DTMO.
+
+![DTMO Visual Analytics — runtime UI with sanitized synthetic fixture data](../visual/screenshots/visual-analytics.png)
 
 Relevant workflow: **WF-09 Observability**.
 
@@ -73,11 +84,15 @@ Relevant workflow: **WF-09 Observability**.
 
 Governance exposes controlled framework relationships and evidence semantics. Mappings to Normenkader IBP, MITRE ATT&CK, NIST CSF, CVSS and related concepts are contextual relationships, not blanket compliance or certification claims.
 
+![DTMO Governance frameworks — runtime UI with sanitized synthetic fixture data](../visual/screenshots/governance-frameworks.png)
+
 Relevant workflow: **WF-08 Governance mapping and evidence**.
 
 ### Administration
 
 Administration governs users/principals, roles, connector administration and privileged actions. Server-side authorization remains authoritative; UI visibility is not authorization.
+
+![DTMO Administration and RBAC — runtime UI with sanitized synthetic fixture data](../visual/screenshots/administration-rbac.png)
 
 Relevant workflows: **WF-05 Authentication/bearer trust** and **WF-06 RBAC/privileged Administration**.
 
