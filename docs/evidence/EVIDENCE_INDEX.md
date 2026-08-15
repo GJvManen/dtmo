@@ -8,6 +8,8 @@ This index maps DTMO lifecycle stages to their evidence classes and authoritativ
 
 Exact workflow/job/commit history remains under `docs/development/`, GitHub issues/pull requests and CI artifacts.
 
+**Production readiness:** DTMO is **not production ready**. Phase 8 accountable external acceptance, Phase 9 independent external assurance and Phase 10 formal production authorization remain required.
+
 ## Authoritative current-state sources
 
 - `docs/project/CURRENT_STATE.md`
