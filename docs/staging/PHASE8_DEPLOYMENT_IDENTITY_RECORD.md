@@ -93,6 +93,8 @@ Without changing the already accepted deployment unless technically required, ca
 11. deployment/change and rollback records;
 12. deployment-time security review.
 
+The controlled collection procedure is [`PHASE8_IMMUTABLE_IDENTITY_INTAKE.md`](PHASE8_IMMUTABLE_IDENTITY_INTAKE.md). Its `tools/phase8_identity_manifest.py` collector is intentionally fail-closed: it validates manifest completeness and immutable identifier formats but does not manufacture or infer external staging facts.
+
 Phase 8.2 platform/identity evidence may be collected in parallel, but it cannot receive formal `PASS` until it is bound coherently to this same immutable deployment identity.
 
 ## Phase 8 acceptance suites
