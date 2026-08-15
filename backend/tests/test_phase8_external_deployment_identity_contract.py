@@ -24,7 +24,8 @@ def test_phase8_owner_approved_staging_still_requires_immutable_identity_binding
     assert "PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE" in text
     assert "APPROVED / OWNER_VERIFIED_EXTERNAL_EVIDENCE" in text
     assert "Issue #158" in text
-    assert "one immutable deployment identity" in text
+    assert "evidence tied to a single immutable deployment identity" in text
+    assert "bound to one immutable technical identity" in text
     assert "Phase 8 is complete only when the immutable staging identity is complete and approved" in text
     assert "Repository CI, local Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this gate by themselves" in text
 
