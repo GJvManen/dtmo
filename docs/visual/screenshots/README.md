@@ -1,6 +1,6 @@
 # DTMO Product Screenshot Catalogue
 
-**Status:** base runtime capture validated; UI-01–09 published / governed; UI-10 capture validated / repository promotion pending  
+**Status:** base runtime capture validated; UI-01–09 published / governed; UI-10 quality recapture pending exact-head validation  
 **Screenshot type:** actual DTMO runtime UI with sanitized deterministic fixtures unless a record explicitly states otherwise  
 **Evidence classification:** documentation illustration only — not staging acceptance, independent assurance or production evidence
 
@@ -9,6 +9,8 @@
 Screenshots in this directory must come from the real DTMO web application rendered in a supported browser. The documentation capture runner may intercept API calls with synthetic fixtures so that images are deterministic, free from production data and safe to publish in repository documentation.
 
 Synthetic API fixtures do **not** turn a screenshot into a mock-up: the HTML/CSS/JavaScript and interaction surface are the actual DTMO application. Fixture-backed screenshots must always be described as **runtime UI with synthetic fixture data** and must never be presented as proof of live-source connectivity or production-equivalent deployment behavior.
+
+A technically successful capture is not automatically publishable. Review must also confirm that the intended evidence is fully rendered and that loading, empty or transient states are not promoted as representative product visuals.
 
 ## Standard capture context
 
@@ -34,7 +36,7 @@ Synthetic API fixtures do **not** turn a screenshot into a mock-up: the HTML/CSS
 | UI-07 | Visual Analytics | `visual-analytics.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-08 | Governance frameworks | `governance-frameworks.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-09 | Administration / RBAC | `administration-rbac.png` | **published / governed** | runtime UI with synthetic fixture data |
-| UI-10 | Audit / correlation surface | `audit-correlation.png` | capture validated; repository promotion pending | runtime UI with synthetic fixture data |
+| UI-10 | Audit / correlation surface | `audit-correlation.png` | **quality recapture pending exact-head validation** | runtime UI with synthetic fixture data |
 
 ## Published base runtime screenshots
 
@@ -93,7 +95,7 @@ UI-05 is published from the reviewed exact-head capture.
 - execution boundary: the capture does not execute outbound MISP export and does not prove live MISP connectivity;
 - evidence boundary: documentation illustration only.
 
-UI-10 uses the existing read-only auditor surface. Its deterministic runtime capture is validated; repository image promotion remains a separate governed step.
+UI-10 uses the existing read-only auditor surface. Documentation Screenshot Artifact Gate run #10 technically generated the image, but manual review found that the captured frame still showed the transient `Audit evidence laden...` state rather than the three deterministic audit events. That artifact is therefore **not approved for repository promotion**. The capture contract now waits explicitly for the `share.review`, `misp.export.prepare` and `rbac.role.update` fixture events plus an event hash before taking the screenshot. Promotion remains blocked until a new exact-head gate proves and produces that populated state.
 
 A diagram or API contract must never be promoted as a product screenshot.
 
