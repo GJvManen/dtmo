@@ -47,7 +47,9 @@ The development order is fixed unless a higher-severity security, licensing or a
 
 ### 11.1 Taranis AI architecture and gap assessment
 
-**Status:** `IN PROGRESS / ACTIVE`
+**Status:** `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION`
+
+**Current bounded objective:** accept `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md` as the testable implementation boundary for 11.2. The contract fixes the read-only API surface, identity/idempotency rules, provenance, fail-closed TLP/classification handling, authentication/least privilege, polling/reconciliation, failure isolation, licensing boundary and Phase 11.2 acceptance criteria. It does not claim live Taranis connectivity or deployment evidence.
 
 Deliverables:
 
@@ -66,11 +68,12 @@ Exit criteria:
 - no generic capability is duplicated without an explicit reason;
 - no Taranis source code is copied into DTMO before licensing review;
 - the service-to-service boundary is documented and testable;
-- canonical DTMO governance/provenance semantics have an explicit preservation path.
+- canonical DTMO governance/provenance semantics have an explicit preservation path;
+- the Taranis → DTMO contract passes its dedicated exact-head gate before 11.2 implementation begins.
 
 ### 11.2 Taranis → DTMO canonical adapter
 
-**Status:** `PLANNED`
+**Status:** `PLANNED / NEXT AFTER 11.1 CONTRACT ACCEPTANCE`
 
 Build a bounded API integration instead of a code fork. Required mappings include Taranis source/news/story/report concepts to DTMO source, canonical intelligence, evidence, provenance, classification and review semantics.
 
@@ -236,7 +239,7 @@ While Phase 11 is active, do not spend development capacity on unrelated UI poli
 
 ## Immediate sequence
 
-1. Complete **11.1 Taranis AI architecture and gap assessment**.
+1. Accept the **11.1 Taranis → DTMO integration contract** on exact-head CI.
 2. Implement **11.2 Taranis → DTMO canonical adapter**.
 3. Integrate **11.3 IntelOwl**.
 4. Integrate **11.4 OpenCTI**.
