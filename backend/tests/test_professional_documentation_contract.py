@@ -121,7 +121,7 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     for path in CURRENT_STATE_DOCUMENTS:
         text = _read(path)
         assert "PASS / OWNER_ACCEPTED" in text, f"RC13 accepted state missing from {path}"
-        assert "E8.1–E8.10" in text, f"E8 completion marker missing from {path}"
+        assert "E8" in text and "REPOSITORY_COMPLETE" in text, f"E8 repository completion missing from {path}"
         assert "Phase 9" in text, f"Phase 9 marker missing from {path}"
         assert "not production ready" in text.lower() or "production readiness" in text.lower()
         for obsolete in OBSOLETE_CURRENT_STATE_MARKERS:
