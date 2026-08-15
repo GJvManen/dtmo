@@ -6,7 +6,7 @@
 
 Validate the deployed DTMO platform and identity/security controls against the **same owner-approved post-E8 staging deployment** and bind the resulting evidence to one immutable deployment identity.
 
-Phase 8.2 does not create a new deployment identity and does not permit evidence to be mixed across deployments.
+All accepted Phase 8.2 results must ultimately bind to the **same immutable staging deployment identity**. Phase 8.2 does not create a new deployment identity and does not permit evidence to be mixed across deployments.
 
 ## Preconditions
 
