@@ -96,6 +96,10 @@ sequenceDiagram
     API-->>U: Governed response
 ```
 
+![DTMO read-only audit evidence viewer — runtime UI with sanitized synthetic fixture data](../visual/screenshots/audit-correlation.png)
+
+*Figure UI-10 — Actual DTMO read-only audit evidence surface with sanitized deterministic events and event hashes. This figure demonstrates rendered auditability controls; it does not prove that the shown events occurred in staging or production.*
+
 ## 9. Operational administration
 
 Administrative changes that affect deployment, data stores, IAM, recovery or monitoring should follow the formal change/rollback process. Repository CI and local Docker behavior can support validation but do not substitute for accepted production-equivalent staging evidence.
