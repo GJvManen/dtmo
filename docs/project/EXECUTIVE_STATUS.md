@@ -5,9 +5,11 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8 repository enhancemen
 
 ## Management summary
 
-DTMO has an accepted repository-controlled engineering baseline, an owner-accepted functional product and an E8.1–E8.10 `PASS / REPOSITORY_COMPLETE` vulnerability/CTI baseline. Phase 8 production-equivalent staging validation and accountable acceptance are complete as `PASS / OWNER_ACCEPTED`. Phase 9 independent external assurance is complete as `PASS / EXTERNAL_ASSURANCE_ACCEPTED`.
+DTMO has an accepted repository-controlled engineering baseline, an owner-accepted functional product and an E8.1–E8.10 `PASS / REPOSITORY_COMPLETE` vulnerability/CTI baseline. Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`.
 
-The active release gate is **Phase 10 formal production go/no-go**. DTMO is not yet production authorized; production authorization requires an explicit accountable `GO` decision.
+The Phase 10 production decision is **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is not production authorized.
+
+The active and highest-priority programme is **Phase 11 Platform Industrialisation**. It moves generic OSINT collection, enrichment, CTI graph and case-management responsibilities to mature open-source subsystems while retaining DTMO as the education-sector CTI, vulnerability-context, governance and governed-sharing layer. A new Phase 12 production GO/NO-GO will occur only after the integrated platform has new production-equivalent validation and independent external assurance.
 
 ## Current decision position
 
@@ -16,27 +18,34 @@ The active release gate is **Phase 10 formal production go/no-go**. DTMO is not 
 | Engineering baseline | `PASS` | Repository foundation accepted |
 | Functional product | `PASS / OWNER_ACCEPTED` | Canonical console journey accepted |
 | E8 product evolution | `PASS / REPOSITORY_COMPLETE` | Vulnerability/CTI scope accepted in repository |
-| Phase 8 | `PASS / OWNER_ACCEPTED` | Production-equivalent staging acceptance complete |
-| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Independent assurance prerequisite complete |
-| Phase 10 | `IN PROGRESS / DECISION REQUIRED` | Accountable production decision is active |
-| Production deployment | **NO — not yet authorized** | Requires Phase 10 `GO` |
+| Phase 8 | `PASS / OWNER_ACCEPTED` | Historical staging acceptance remains valid for prior candidate |
+| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Historical independent assurance remains valid for prior candidate |
+| Phase 10 | `NO-GO / BLOCKED` | Production authorization not granted |
+| Phase 11 | `IN PROGRESS / ACTIVE` | Platform industrialisation is the only active development priority |
+| Phase 12 | `NOT STARTED` | New production decision after integrated validation/assurance |
 
-## Demonstrated product scope
+## Phase 11 strategic architecture
 
-DTMO provides a governed unified console for threat/vulnerability intelligence, source operations, canonical intelligence, provenance, severity/classification, native analytics, Administration/RBAC and Governance. The E8 line adds OpenCVE, Vulnerability-Lookup, MISP, AIL, vulnerability prioritization, vulnerability analytics and explicit vulnerability-management governance evidence mapping.
+Priority order:
+
+1. Taranis AI — generic OSINT collection, analyst assessment and structured reporting;
+2. IntelOwl — IOC enrichment;
+3. OpenCTI — STIX knowledge graph;
+4. MISP — consolidated governed exchange;
+5. TheHive — incident/case handoff;
+6. Cortex only if IntelOwl cannot satisfy a validated need;
+7. Kubernetes/Helm/GitOps, HA, secrets, observability, recovery and supply-chain hardening;
+8. migration/compatibility;
+9. new production-equivalent validation and external assurance.
+
+The current bounded objective is Phase 11.1 Taranis architecture and gap assessment.
 
 ## Key control boundaries
 
-The platform retains server-side RBAC, least privilege, human/service-account separation, privileged-action safeguards, validated bearer-token trust, provenance/confidence preservation, data minimization, auditable request/correlation context and separate human review/external-share authority.
+The platform retains server-side RBAC, least privilege, human/service-account separation, privileged-action safeguards, validated trust, provenance/confidence preservation, data minimization, audit/correlation and separate human review/external-share authority.
 
-Repository CI is engineering evidence, not the source of Phase 8 external acceptance or Phase 9 independent assurance. Technical execution does not grant publication authority. Framework mappings do not imply blanket compliance, maturity or certification.
-
-## Phase 10 decision package
-
-The accountable decision must confirm the production environment/owner/support model, immutable production release identity, IAM/secrets/network approval, backup/recovery/rollback, monitoring/on-call/escalation, incident-response handover, privacy/data/legal approval, open-finding/residual-risk disposition, release/change authorization and go-live/rollback authority.
-
-Any unresolved release blocker or missing mandatory approval is a `NO-GO / BLOCKED` condition.
+Repository CI remains engineering evidence. Prior Phase 8/9 acceptance is not automatically transferable to the materially changed Phase 11 platform. Technical integration does not grant publication authority. Framework mappings do not imply blanket compliance, maturity or certification.
 
 ## Executive recommendation
 
-Freeze unnecessary release-candidate scope, complete the Phase 10 decision package and record an explicit accountable `GO` or `NO-GO / BLOCKED`. On `GO`, execute controlled production deployment and post-deployment verification against the approved immutable release identity.
+Proceed with Phase 11 in the fixed priority order, one bounded green pull request at a time. Do not expand unrelated UI or generic collector/enrichment features while Phase 11 is active. Do not enter Phase 12 until the integrated platform has completed new production-equivalent validation and independent external assurance.
