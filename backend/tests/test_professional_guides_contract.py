@@ -56,7 +56,8 @@ def test_documentation_portal_exposes_audience_guides() -> None:
         "administration/ADMINISTRATOR_GUIDE.md",
     ):
         assert link in text
-    assert "base screenshot capture has been exercised successfully in CI" in text
+    assert "The governed screenshot catalogue now contains UI-01 through UI-10" in text
+    assert "documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness" in text
 
 
 def test_screenshot_catalogue_tracks_published_surfaces() -> None:
