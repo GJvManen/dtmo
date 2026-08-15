@@ -1,0 +1,29 @@
+{
+  "environment_id": "",
+  "phase8_2_deployment_identity_fingerprint": "",
+  "phase8_3_evidence_fingerprint": "",
+  "deployed_commit": "",
+  "application_image_digest": "",
+  "recovery_window_reference": "",
+  "evidence_location_reference": "",
+  "validated_by": "",
+  "validated_at": "",
+  "checks": {
+    "service_recovery": {"result": "PENDING", "evidence_reference": ""},
+    "postgres_backup_restore": {"result": "PENDING", "evidence_reference": ""},
+    "object_storage_recovery": {"result": "PENDING", "evidence_reference": ""},
+    "opensearch_recovery": {"result": "PENDING", "evidence_reference": ""},
+    "cache_queue_recovery": {"result": "PENDING", "evidence_reference": ""},
+    "application_rollback": {"result": "PENDING", "evidence_reference": ""},
+    "migration_recovery": {"result": "PENDING", "evidence_reference": ""},
+    "iam_secrets_continuity": {"result": "PENDING", "evidence_reference": ""},
+    "observability_continuity": {"result": "PENDING", "evidence_reference": ""},
+    "degraded_dependencies": {"result": "PENDING", "evidence_reference": ""},
+    "rto_rpo_observations": {"result": "PENDING", "evidence_reference": ""},
+    "change_rollback_evidence": {"result": "PENDING", "evidence_reference": ""}
+  },
+  "production_credentials_reused": false,
+  "unsanitized_production_data_used": false,
+  "phase8_4_pass": false,
+  "phase8_pass": false
+}
