@@ -6,11 +6,13 @@ Last updated: **2026-08-15**
 
 This index maps DTMO lifecycle stages to their evidence classes and authoritative professional documentation. It is not a CI chronology or incident log. Exact workflow/job/commit history remains under `docs/development/`, GitHub issues/pull requests and CI artifacts.
 
-**Production readiness:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `IN PROGRESS / DECISION REQUIRED`. DTMO is not production authorized until an accountable Phase 10 `GO` is recorded.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is `IN PROGRESS / ACTIVE`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
 
 ## Authoritative current-state sources
 
 - `docs/project/CURRENT_STATE.md`
+- `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`
+- `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
 - `docs/project/PRODUCTION_READINESS_REPORT.md`
 - `docs/project/PRODUCTION_CHECKLIST.md`
@@ -22,13 +24,14 @@ This index maps DTMO lifecycle stages to their evidence classes and authoritativ
 
 ## Evidence hierarchy
 
-DTMO distinguishes five non-interchangeable evidence classes:
+DTMO distinguishes six non-interchangeable evidence classes:
 
 1. **Repository-controlled engineering evidence** — exact-head CI, contracts, browser tests and repository recovery/performance/observability evidence.
 2. **Accountable functional evidence** — explicit project-owner acceptance of product behavior.
 3. **Real-environment evidence** — production-equivalent staging deployment/validation tied to its accepted identity.
 4. **Independent assurance evidence** — external security/resilience/operational assessment independent from repository CI or project self-attestation.
-5. **Formal production authorization** — accountable Phase 10 go/no-go decision.
+5. **Formal production authorization** — accountable go/no-go decision for a specific candidate.
+6. **Platform-integration evidence** — service contract, migration, trust-boundary, runtime and interoperability evidence for the Phase 11 composed platform; this does not become production authorization by itself.
 
 ## Lifecycle evidence map
 
@@ -50,35 +53,52 @@ Repository evidence covers OpenCVE, Vulnerability-Lookup, vulnerability prioriti
 
 **Status:** `PASS / OWNER_ACCEPTED`.
 
-The accountable owner reports Phase 8.2 platform/identity, Phase 8.3 source-to-intelligence, Phase 8.4 operations/recovery/rollback and Phase 8.5 accountable staging acceptance complete. Detailed sensitive staging evidence may remain in approved restricted evidence storage and be referenced rather than reproduced here.
-
-Repository CI, Docker Compose and staging emulators remain supporting engineering evidence and are not represented as the source of external Phase 8 acceptance.
+Accepted historical evidence remains attributable to the prior candidate. Repository CI, Docker Compose and staging emulators remain supporting engineering evidence and are not represented as the source of external Phase 8 acceptance.
 
 ### Phase 9 — independent external assurance
 
 **Status:** `PASS / EXTERNAL_ASSURANCE_ACCEPTED`.
 
-Independent assurance is reported complete and accepted. The detailed independent evidence package remains a distinct evidence class; repository CI or owner self-attestation cannot substitute for it. Relevant restricted penetration-test, hardening, IAM/secrets, resilience, load, monitoring/IR, privacy/legal and dependency/CVE details should remain under approved evidence handling.
+Accepted historical assurance remains a distinct evidence class for the prior candidate. Repository CI or owner self-attestation cannot substitute for it.
 
 ### Phase 10 — production go/no-go
 
-**Status:** `IN PROGRESS / DECISION REQUIRED`.
+**Status:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`.
 
-Required production decision evidence includes:
+Production authorization was not granted. The accountable decision is recorded in `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`.
 
-- accepted Phase 8 and Phase 9 evidence references;
-- production environment, accountable owner and support model approval;
-- immutable production release identity and image digests;
-- IAM/service identities, secrets-management and network approval;
-- backup/restore/recovery/rollback approval;
-- monitoring/alerting/on-call/escalation and incident-response handover;
-- privacy/data/legal/governance approval;
-- open-finding statement and accountable residual-risk disposition;
-- production release/change authorization;
-- go-live window and rollback authority;
-- final accountable `GO` or `NO-GO / BLOCKED` decision.
+### Phase 11 — platform industrialisation
 
-Primary decision record: `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`.
+**Status:** `IN PROGRESS / ACTIVE`.
+
+Required evidence classes progressively include:
+
+- Taranis API/data-model/identity/licensing assessment;
+- service-to-service adapter contracts and interoperability tests;
+- provenance/classification/replay/deduplication evidence;
+- IntelOwl enrichment contract/runtime evidence;
+- OpenCTI STIX/entity/relationship interoperability evidence;
+- consolidated MISP authority/synchronization evidence;
+- TheHive handoff evidence and conditional Cortex decision evidence;
+- Kubernetes/Helm/GitOps runtime, secrets, identity, network, HA/recovery, observability and supply-chain evidence;
+- migration/compatibility and rollback evidence;
+- a new production-equivalent validation package bound to one immutable integrated deployment identity;
+- a new independent external assurance package for that same integrated candidate.
+
+Primary Phase 11 documents:
+
+- `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
+- `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`.
+
+### Phase 12 — production go/no-go
+
+**Status:** `NOT STARTED`.
+
+Phase 12 can start only after Phase 11 production-equivalent validation and independent external assurance are accepted for the integrated candidate. A Phase 12 `GO` must be explicitly accountable and bound to one immutable production release identity.
+
+## Evidence transfer rule
+
+Historical Phase 8 and Phase 9 acceptance is not discarded. However, it is candidate-bound and cannot be automatically transferred to the materially changed Phase 11 integrated platform. Any material component, trust-boundary or deployment change requires explicit impact assessment and appropriate revalidation.
 
 ## Governance evidence
 

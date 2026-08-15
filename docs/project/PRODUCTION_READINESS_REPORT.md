@@ -5,13 +5,11 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13 and E8 repository enhanc
 
 ## 1. Executive conclusion
 
-DTMO has completed the repository-controlled engineering baseline, accountable functional acceptance and E8.1–E8.10 product evolution. The accountable owner reports Phase 8.2 through Phase 8.5 complete and accepted, and Phase 9 independent external assurance complete and accepted.
+DTMO completed the repository engineering baseline, accountable functional acceptance, E8.1–E8.10 product evolution, Phase 8 production-equivalent staging acceptance and Phase 9 independent external assurance.
 
-The project has therefore entered **Phase 10 — formal production go/no-go**.
+Phase 10 has concluded with **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-**Current decision: NOT YET PRODUCTION AUTHORIZED — PHASE 10 DECISION IN PROGRESS.**
-
-This wording is intentional. Completion of staging and independent assurance satisfies prerequisites for a production decision; it does not itself constitute production authorization.
+The project has entered **Phase 11 — Platform Industrialisation**. A new Phase 12 production GO/NO-GO will be considered only after the integrated platform completes new production-equivalent validation and independent external assurance.
 
 ## 2. Readiness summary
 
@@ -20,79 +18,67 @@ This wording is intentional. Completion of staging and independent assurance sat
 | Engineering / CI | Exact-head engineering baseline accepted | `PASS` |
 | Functional product | Unified console owner-accepted | `PASS / OWNER_ACCEPTED` |
 | E8 vulnerability/CTI scope | Repository-complete | `PASS / REPOSITORY_COMPLETE` |
-| Phase 8.2–8.4 external validation | Completed | `PASS` |
-| Phase 8.5 accountable staging acceptance | Completed | `PASS / OWNER_ACCEPTED` |
-| Phase 9 independent assurance | Completed | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
-| Phase 10 production authorization | Active decision gate | `IN PROGRESS / DECISION REQUIRED` |
+| Phase 8 | Production-equivalent validation accepted for prior candidate | `PASS / OWNER_ACCEPTED` |
+| Phase 9 | Independent assurance accepted for prior candidate | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
+| Phase 10 | Production authorization decision | `NO-GO / BLOCKED` |
+| Phase 11 | Integrated platform industrialisation | `IN PROGRESS / ACTIVE` |
+| Phase 12 | New production authorization decision | `NOT STARTED` |
 
-## 3. Accepted product baseline
+## 3. Accepted DTMO product baseline
 
-The release candidate includes one canonical operator shell across Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance; durable canonical intelligence/provenance; governed source operations; severity/classification and filtering; native trends/vulnerability analytics; governed Administration/RBAC; explicit versioned governance mappings; OpenCVE and CIRCL Vulnerability-Lookup; explainable vulnerability prioritization; governed MISP read and separately approved outbound sharing; governed AIL read/enrichment/correlation; and Normenkader IBP SM.07-oriented vulnerability-management evidence mapping with explicit semantic boundaries.
+The accepted baseline includes the canonical operator shell across Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance; durable canonical intelligence/provenance; severity/classification and filtering; vulnerability analytics and prioritization; managed RBAC; explicit governance mappings; OpenCVE and CIRCL Vulnerability-Lookup; governed MISP read/export; governed AIL read/enrichment/correlation; and Normenkader IBP SM.07-oriented evidence mapping with explicit semantic boundaries.
 
-The professional documentation baseline includes governed runtime illustrations UI-01 through UI-10. Those screenshots are product documentation illustrations and are not production-state evidence.
+The governed UI-01 through UI-10 screenshots remain product documentation illustrations rather than production-state evidence.
 
-## 4. Security and governance posture
+## 4. Phase 10 decision rationale
 
-DTMO preserves server-side RBAC and least privilege, bearer-token trust validation, human/service-principal separation, privileged Administration safeguards, request correlation, auditable security-relevant actions, provenance/confidence preservation, data minimization and distinct review/external-share authority.
+Production authorization was not granted because the next platform generation should reduce custom implementation of generic OSINT and operations capabilities and adopt mature open-source subsystems behind explicit service boundaries.
 
-No connector, import, CI result, dashboard, Administration action, Governance mapping, staging acceptance or production authorization automatically grants external publication/share authority. Those actions remain separately governed.
+The active architecture direction is:
 
-Framework mappings remain evidence relationships rather than claims of blanket compliance, certification, local exposure, exploitability, compromise or completed remediation.
+- **Taranis AI** — OSINT collection, analyst assessment and structured reporting;
+- **IntelOwl** — generic IOC enrichment;
+- **OpenCTI** — STIX knowledge graph;
+- **MISP** — consolidated governed exchange;
+- **TheHive** — incident/case handoff;
+- **Cortex** — conditional only where IntelOwl cannot satisfy a validated requirement;
+- **DTMO** — education-sector CTI context, vulnerability prioritization, governance, canonical evidence semantics and governed sharing authority.
 
-## 5. Data and operational architecture
+## 5. Security and governance posture
 
-- PostgreSQL — canonical application/intelligence/RBAC state;
-- OpenSearch — search/index representation;
-- S3-compatible object storage — raw evidence;
-- Redis — coordination/cache/queue state;
-- Prometheus/Grafana — operational observability.
+DTMO's established invariants remain mandatory through the integration programme: server-side RBAC and least privilege, human/service-principal separation, privileged Administration safeguards, correlation/audit, provenance/confidence preservation, data minimization and separate review/external-share authority.
 
-Canonical persistence remains the durable application boundary. Supporting stores and analytics do not replace the canonical record.
+No collector, publisher, enrichment engine, graph platform, case platform, CI result, staging acceptance or production authorization automatically grants external publication/share authority.
 
-## 6. Phase 8 acceptance
+## 6. Architecture and licensing impact
 
-**Status: `PASS / OWNER_ACCEPTED`.**
+The preferred pattern is service-to-service integration rather than source-code merger. DTMO is Apache-2.0 and Taranis AI is EUPL-1.2; no Taranis source code is to be copied into DTMO before an explicit licensing review.
 
-The accountable owner reports Phase 8.2 platform/identity validation, Phase 8.3 source-to-intelligence validation, Phase 8.4 operations/recovery/rollback validation and Phase 8.5 accountable staging acceptance complete. External/restricted evidence remains attributable to the accepted staging candidate and should be referenced rather than copied into public repository documentation where sensitive.
+The target runtime is a composed Kubernetes platform with Helm/value-driven configuration and GitOps promotion, hardened with immutable images, external secrets, workload identities, network policies, HA/recovery, observability and supply-chain controls.
 
-Repository CI and the repository-controlled staging emulator remain supporting engineering evidence only; they are not represented as the source of external staging acceptance.
+## 7. Historical evidence effect
 
-## 7. Phase 9 independent assurance
+Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the prior accepted candidate. Those decisions remain valid historical evidence.
 
-**Status: `PASS / EXTERNAL_ASSURANCE_ACCEPTED`.**
+Because Phase 11 materially changes the platform, that evidence cannot authorize or independently assure the future integrated candidate. New production-equivalent validation and new independent external assurance are required before Phase 12.
 
-Independent external assurance is reported complete and accepted. This status is an external assurance evidence class and is not derived from repository CI or project self-attestation. Any retained detailed penetration-test, hardening, IAM/secrets, resilience, load, monitoring/IR, privacy/legal or dependency/CVE evidence should remain under the applicable restricted evidence-handling rules.
+## 8. Phase 11 active scope
 
-## 8. Phase 10 production decision
+The detailed programme is defined in `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`.
 
-**Status: `IN PROGRESS / ACCOUNTABLE GO-NO-GO REQUIRED`.**
+The current bounded objective is **Phase 11.1 Taranis AI architecture and gap assessment**, covering API/data-model mapping, provenance, identities/RBAC, deployment boundaries, licensing, migration risks and acceptance criteria for the canonical adapter.
 
-The production decision package must confirm:
-
-1. accepted Phase 8 and Phase 9 evidence references;
-2. approved production environment, accountable owner and support model;
-3. immutable production release identity and image digests;
-4. IAM/service identities, secrets-management and network approval;
-5. backup, restore, recovery and rollback approval;
-6. monitoring, alerting, on-call and escalation approval;
-7. incident-response/security-operations handover;
-8. privacy, data-handling, legal and governance approval;
-9. open-finding statement and residual-risk acceptance;
-10. formal release/change authorization, go-live window and rollback authority.
-
-Any unresolved release-blocking finding or missing required approval is a `NO-GO / BLOCKED` condition.
+The detailed initial assessment is `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`.
 
 ## 9. Evidence boundaries
 
 - Repository CI proves repository-controlled engineering claims within test scope.
-- Owner acceptance is an accountable evidence class and is recorded as such.
-- Phase 9 independent assurance remains a distinct external evidence class.
+- Owner acceptance and external assurance remain separate evidence classes.
 - Historical run evidence remains immutable and scoped to the state it covered.
-- Restricted operational/security evidence should be referenced, not copied into the repository when doing so would expose sensitive details.
-- A Phase 10 `GO` applies only to the explicitly approved immutable production release identity.
+- A materially changed integrated platform requires fresh deployment-bound evidence.
+- Restricted security/operational evidence should be referenced rather than copied when sensitive.
+- Production authorization does not exist until a future Phase 12 `GO` is explicitly recorded.
 
 ## 10. Recommendation
 
-Freeze unnecessary product scope for the release candidate while Phase 10 is active. Assemble the production decision package, confirm all operational/security/privacy approvals, disposition residual risk and record an explicit accountable `GO` or `NO-GO / BLOCKED` decision.
-
-Do not label DTMO production authorized until Phase 10 records `GO`. On `GO`, perform controlled deployment and immediate post-deployment verification against the approved immutable release identity.
+Proceed only with Phase 11 priorities in the defined order. Freeze unrelated generic collector, enrichment, graph, SOAR/case-management and report-publishing development inside DTMO. Complete the Taranis architecture/API/data-model assessment first, then implement the adapter and continue through IntelOwl, OpenCTI, MISP, TheHive and integrated runtime industrialisation before new validation and assurance.
