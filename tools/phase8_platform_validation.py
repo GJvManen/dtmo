@@ -43,7 +43,7 @@ def _fingerprint(payload: dict[str, Any]) -> str:
     return hashlib.sha256(canonical).hexdigest()
 
 
-def validate(payload: dict[str, Any]) -> list[str]:
+def _validate_identity(payload: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     for field in (
         "environment_id",
@@ -59,12 +59,54 @@ def validate(payload: dict[str, Any]) -> list[str]:
             errors.append(f"missing required field: {field}")
 
     commit = payload.get("deployed_commit")
-    if isinstance(commit, str) and commit != "NOT_PROVIDED" and (len(commit) != 40 or any(c not in "0123456789abcdef" for c in commit)):
+    if isinstance(commit, str) and commit != "NOT_PROVIDED" and (
+        len(commit) != 40 or any(c not in "0123456789abcdef" for c in commit)
+    ):
         errors.append("deployed_commit must be a full lowercase 40-character Git SHA")
 
     digest = payload.get("application_image_digest")
-    if isinstance(digest, str) and digest != "NOT_PROVIDED" and not (digest.startswith("sha256:") and len(digest) == 71):
+    if isinstance(digest, str) and digest != "NOT_PROVIDED" and not (
+        digest.startswith("sha256:") and len(digest) == 71
+    ):
         errors.append("application_image_digest must be an immutable sha256 digest")
+
+    claimed = payload.get("deployment_identity_fingerprint")
+    calculated = _fingerprint(payload)
+    if claimed != calculated:
+        errors.append("deployment_identity_fingerprint does not match the evidence identity fields")
+    return errors
+
+
+def validate_check(payload: dict[str, Any], check_name: str) -> list[str]:
+    """Validate one Phase 8.2 check without claiming complete Phase 8.2 acceptance."""
+    errors = _validate_identity(payload)
+    if check_name not in REQUIRED_CHECKS:
+        errors.append(f"unknown Phase 8.2 check: {check_name}")
+        return errors
+
+    checks = payload.get("checks")
+    if not isinstance(checks, dict):
+        errors.append("checks must be an object")
+    else:
+        record = checks.get(check_name)
+        if not isinstance(record, dict):
+            errors.append(f"missing check record: {check_name}")
+        else:
+            if record.get("result") != "PASS":
+                errors.append(f"check not PASS: {check_name}")
+            evidence = record.get("evidence_reference")
+            if not isinstance(evidence, str) or not evidence.strip() or evidence == "NOT_PROVIDED":
+                errors.append(f"missing evidence reference: {check_name}")
+
+    if payload.get("phase8_2_pass") is not False:
+        errors.append("phase8_2_pass must remain false during step-scoped validation")
+    if payload.get("phase8_pass") is not False:
+        errors.append("phase8_pass must remain false during step-scoped validation")
+    return errors
+
+
+def validate(payload: dict[str, Any]) -> list[str]:
+    errors = _validate_identity(payload)
 
     checks = payload.get("checks")
     if not isinstance(checks, dict):
@@ -81,11 +123,6 @@ def validate(payload: dict[str, Any]) -> list[str]:
             if not isinstance(evidence, str) or not evidence.strip() or evidence == "NOT_PROVIDED":
                 errors.append(f"missing evidence reference: {name}")
 
-    claimed = payload.get("deployment_identity_fingerprint")
-    calculated = _fingerprint(payload)
-    if claimed != calculated:
-        errors.append("deployment_identity_fingerprint does not match the evidence identity fields")
-
     if payload.get("phase8_2_pass") is not True:
         errors.append("phase8_2_pass must be true only after all required checks have passed")
     if payload.get("phase8_pass") is True:
@@ -97,17 +134,23 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("evidence", type=Path)
     parser.add_argument("--print-fingerprint", action="store_true")
+    parser.add_argument("--check", choices=REQUIRED_CHECKS)
     args = parser.parse_args()
     payload = _load(args.evidence)
     if args.print_fingerprint:
         print(_fingerprint(payload))
         return 0
-    errors = validate(payload)
+
+    errors = validate_check(payload, args.check) if args.check else validate(payload)
     if errors:
         for error in errors:
             print(f"FAIL: {error}")
         return 1
-    print("Phase 8.2 platform and identity evidence: PASS")
+
+    if args.check:
+        print(f"Phase 8.2 step evidence: PASS ({args.check})")
+    else:
+        print("Phase 8.2 platform and identity evidence: PASS")
     print(f"deployment_identity_fingerprint={_fingerprint(payload)}")
     return 0
 

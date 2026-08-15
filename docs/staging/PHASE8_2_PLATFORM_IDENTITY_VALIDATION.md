@@ -49,13 +49,24 @@ Calculate the deployment fingerprint with:
 python3 tools/phase8_platform_validation.py <manifest.json> --print-fingerprint
 ```
 
-Place that fingerprint into `deployment_identity_fingerprint`, then validate:
+Place that fingerprint into `deployment_identity_fingerprint`.
+
+During sequential execution, validate the currently completed check only:
+
+```bash
+python3 tools/phase8_platform_validation.py <manifest.json> --check application_health_readiness
+python3 tools/phase8_platform_validation.py <manifest.json> --check postgres_connectivity_migrations
+```
+
+Step-scoped validation requires the immutable identity fields and evidence reference for the selected check, while later checks may remain `NOT_RUN`. It also requires `phase8_2_pass: false` and `phase8_pass: false`; a single completed step can never claim complete Phase 8.2 acceptance. See `PHASE8_2_STEP_SCOPED_VALIDATION.md`.
+
+After all required checks are complete, validate the complete Phase 8.2 manifest:
 
 ```bash
 python3 tools/phase8_platform_validation.py <manifest.json>
 ```
 
-A `PASS` from the validator means the Phase 8.2 evidence structure is complete and internally consistent. It does not independently prove that referenced external evidence is genuine; accountable review of the real environment remains required.
+A `PASS` from the complete validator means the Phase 8.2 evidence structure is complete and internally consistent. It does not independently prove that referenced external evidence is genuine; accountable review of the real environment remains required.
 
 ## Execution order
 
@@ -89,9 +100,9 @@ Phase 8.2 may be marked `PASS` only when all required platform and identity chec
 
 `phase8_pass` must remain `false`: **Phase 8.3** source-to-intelligence validation, Phase 8.4 operational/recovery validation and Phase 8.5 accountable staging acceptance remain required.
 
-## Current step
+## Current steps
 
-**8.2.1 — application health/readiness** is the active validation step.
+**8.2.1 — application health/readiness** remains externally open pending immutable evidence binding. **8.2.2 — PostgreSQL connectivity/migrations** may be prepared and executed in parallel against that exact same staging deployment identity; neither step is formally accepted until its external evidence is identity-bound.
 
 ## Next step after acceptance
 
