@@ -19,8 +19,10 @@ This roadmap separates two complementary tracks:
 | Phase 8.1 historical identity | Earlier real staging environment + immutable deployment identity | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE — HISTORICAL IDENTITY ONLY` |
 | Post-E8 external deployment + staging environment | Final E8 candidate externally deployed, extensively owner-tested, and staging environment approved | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
 | Post-E8 immutable evidence binding | Bind the accepted deployment to exact deployed release/commit, image digests and runtime identity | `EVIDENCE BINDING REQUIRED FOR FORMAL PHASE 8 CLOSURE` |
-| Phase 8.2 | Production-equivalent platform and identity validation | `IN PROGRESS / ACTIVE` |
-| Phase 8.3–8.5 | Source-to-intelligence, operations/recovery and accountable staging acceptance | `PLANNED / NEXT` |
+| Phase 8.2 | Production-equivalent platform and identity validation | `REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` |
+| Phase 8.3 | Source-to-intelligence validation | `REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` |
+| Phase 8.4 | Operations/recovery and rollback validation | `REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` |
+| Phase 8.5 | Accountable staging acceptance | `IN PROGRESS / ACTIVE` |
 | Phase 9 | Independent external assurance | `NOT COMPLETE` |
 | Phase 10 | Formal production go/no-go | `NOT STARTED` |
 
@@ -62,11 +64,11 @@ Repository CI, Docker Compose, staging emulators and synthetic browser fixtures 
 
 ### Phase 8.2 — platform and identity validation
 
-**Status:** `IN PROGRESS / ACTIVE`
+**Repository status:** `CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED`
 
-Execute the production-equivalent staging validation against the accepted post-E8 deployment. Formal closure of Phase 8.2 remains conditional on binding the resulting evidence to the same immutable deployment identity.
+The step-scoped platform/identity validation contracts are repository-complete. Formal closure still requires external evidence against the accepted production-equivalent staging deployment and binding to the same immutable deployment identity.
 
-Validate:
+Validate externally:
 
 - application health/readiness;
 - database migrations/connectivity;
@@ -79,7 +81,9 @@ Validate:
 
 ### Phase 8.3 — source-to-intelligence validation
 
-Validate against the same accepted staging deployment and immutable identity:
+**Repository status:** `CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED`
+
+The fail-closed source-to-intelligence validation contract is repository-complete. External acceptance must still demonstrate, against the same immutable staging deployment:
 
 - source catalog/bootstrap and activation/execution;
 - OpenCVE and Vulnerability-Lookup ingestion;
@@ -93,18 +97,25 @@ Validate against the same accepted staging deployment and immutable identity:
 
 ### Phase 8.4 — operational and recovery validation
 
-Validate:
+**Repository status:** `CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED`
 
-- operational metrics/alerts;
-- logging/correlation;
+The fail-closed operations/recovery contract is repository-complete. External acceptance must still demonstrate:
+
+- operational metrics/alerts and observability continuity;
+- logging/correlation through failure and recovery;
 - runbook applicability;
-- agreed backup/restore/recovery scenarios;
-- rollback readiness;
-- change/deployment traceability.
+- agreed PostgreSQL/object-storage/search/cache recovery scenarios;
+- application rollback and migration recovery boundaries;
+- RTO/RPO observations and deviations;
+- change/deployment/rollback traceability.
 
 ### Phase 8.5 — accountable staging acceptance
 
-Phase 8 is complete only after the full deployed-environment evidence package is reviewable, bound to the final immutable staging identity and an accountable staging/project acceptance decision is recorded.
+**Status:** `IN PROGRESS / ACTIVE`
+
+Phase 8 is complete only after the full deployed-environment evidence package is reviewable, bound to one final immutable staging identity and an accountable owner acceptance decision is recorded.
+
+Phase 8.5 must consolidate accepted external evidence from Phases 8.2, 8.3 and 8.4, record approved deviations and residual risks, confirm no unresolved release-blocking staging finding remains, and record an explicit `PASS / OWNER_ACCEPTED` or `BLOCKED` decision. Repository CI alone cannot satisfy this gate.
 
 ## Phase 9 — independent external assurance
 
@@ -161,9 +172,9 @@ Professional product, architecture, security, governance and readiness documents
 
 ## Immediate next steps
 
-1. Execute **Phase 8.2 platform and identity validation** against the owner-accepted production-equivalent staging deployment.
-2. Capture/bind the exact deployed release/commit, immutable image digests and runtime identity to the same evidence set; this is evidence completion, not a requirement to redeploy an already accepted candidate.
-3. Execute **Phase 8.3 source-to-intelligence validation** against the same immutable deployment identity.
-4. Execute **Phase 8.4 operational and recovery validation** against that identity.
-5. Record accountable **Phase 8.5 staging acceptance** before entering Phase 9 independent assurance.
+1. Complete and accept the external **Phase 8.2** evidence package against one immutable staging deployment identity.
+2. Complete and accept **Phase 8.3 source-to-intelligence** evidence against that same identity.
+3. Complete and accept **Phase 8.4 operations/recovery** evidence against that same identity.
+4. Record accountable **Phase 8.5 staging acceptance** with explicit owner decision and residual-risk/deviation disposition.
+5. Enter **Phase 9 independent external assurance** only after Phase 8 is formally `PASS / OWNER_ACCEPTED`.
 6. Complete Phase 9 assurance and residual-risk disposition before Phase 10 production go/no-go.
