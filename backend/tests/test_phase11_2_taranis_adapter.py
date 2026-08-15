@@ -70,19 +70,20 @@ def test_replay_is_deterministic_and_malformed_payload_fails_closed() -> None:
 
 
 @pytest.mark.asyncio
-async def test_missing_token_and_upstream_outage_are_isolated() -> None:
+async def test_missing_token_and_upstream_outage_are_isolated(monkeypatch: pytest.MonkeyPatch) -> None:
     missing = TaranisReadConnector(_settings(taranis_api_token=SecretStr("")))
     async with httpx.AsyncClient(transport=httpx.MockTransport(lambda request: httpx.Response(200, json=[]))) as client:
         with pytest.raises(ValueError, match="token"):
             await missing.fetch(client)
 
-    connector = TaranisReadConnector(_settings())
-    async def broken(_: httpx.Request) -> httpx.Response:
+    async def fail_fetch(self: TaranisReadConnector, client: httpx.AsyncClient) -> object:
         raise httpx.ConnectError("upstream unavailable")
-    # Connector.run owns the bounded retry/failure isolation path; use a malformed base to force a safe failed result.
-    result = await TaranisReadConnector(_settings(taranis_api_base="http://127.0.0.1:1")).run()
+
+    monkeypatch.setattr(TaranisReadConnector, "fetch", fail_fetch)
+    result = await TaranisReadConnector(_settings()).run()
     assert result.status == "failed"
     assert result.records == []
+    assert "upstream unavailable" in (result.error or "")
 
 
 def test_production_requires_https_and_runtime_token() -> None:
