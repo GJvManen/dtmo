@@ -48,6 +48,9 @@ class Settings(BaseSettings):
     ail_api_key: SecretStr = SecretStr("")
     ail_object_global_ids: str = ""
     ail_object_limit: int = Field(default=50, ge=1, le=500)
+    taranis_api_base: str = ""
+    taranis_api_token: SecretStr = SecretStr("")
+    taranis_page_size: int = Field(default=100, ge=1, le=400)
     publish_requires_human_approval: bool = True
     feature_live_connectors: bool = False
     feature_opencve_connector: bool = False
@@ -55,6 +58,7 @@ class Settings(BaseSettings):
     feature_misp_connector: bool = False
     feature_misp_export: bool = False
     feature_ail_connector: bool = False
+    feature_taranis_connector: bool = False
     feature_ai_analyst: bool = False
 
     @property
@@ -102,6 +106,11 @@ class Settings(BaseSettings):
                 raise ValueError("production AIL integration requires a runtime API key")
             if not self.ail_object_global_ids.strip():
                 raise ValueError("production AIL integration requires explicit object global ids")
+        if self.feature_taranis_connector:
+            if not self.taranis_api_base.startswith("https://"):
+                raise ValueError("production Taranis integration requires an HTTPS API base")
+            if not self.taranis_api_token.get_secret_value().strip():
+                raise ValueError("production Taranis integration requires a runtime API token")
         return self
 
 
