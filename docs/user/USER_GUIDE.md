@@ -74,7 +74,7 @@ Relevant workflow: **WF-03**.
 
 ## 3. Sources & Catalogue
 
-The source catalogue explains which sources are defined and which execution profiles are supported. Runtime source status indicates registration/health information. A source shown as supported or registered is not evidence that the current staging or production environment successfully reached it.
+The source catalogue explains which sources are defined and which execution profiles are supported. Runtime source status indicates registration/health information. A source shown as supported or registered is not evidence that the current staging or production environment successfully reached it. Likewise, a fixture-backed or repository-generated view does not prove live source connectivity.
 
 **Screenshot reference:** `sources-catalogue.png`.
 
