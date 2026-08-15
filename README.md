@@ -6,9 +6,10 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Engineering baseline:** Phases 1–7 `PASS`  
 > **Functional acceptance:** RC13 `PASS / OWNER_ACCEPTED`  
 > **Product evolution:** E8.1–E8.10 `PASS / REPOSITORY_COMPLETE`  
-> **Production-readiness position:** Phase 8 repository contracts complete; accountable external Phase 8 acceptance still required  
-> **Independent assurance:** Phase 9 `NOT COMPLETE`  
-> **Production status:** **not production ready**
+> **Production-equivalent staging:** Phase 8 `PASS / OWNER_ACCEPTED`  
+> **Independent assurance:** Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED`  
+> **Production authorization:** Phase 10 `IN PROGRESS / GO-NO-GO DECISION REQUIRED`  
+> **Production status:** **not production authorized until Phase 10 GO**
 
 ## Why DTMO
 
@@ -75,68 +76,27 @@ See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md) and [Securit
 | Phases 1–7 | Repository-controlled engineering baseline | `PASS` |
 | RC13 | Unified-console functional acceptance | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | Vulnerability & CTI product evolution | `PASS / REPOSITORY_COMPLETE` |
-| Post-E8 staging deployment | Externally deployed/tested production-equivalent staging environment | `PASS / OWNER_VERIFIED_EXTERNAL_EVIDENCE` |
-| Phase 8.2–8.4 | Platform/identity, source-to-intelligence and operations/recovery contracts | `REPOSITORY CONTRACT COMPLETE / EXTERNAL ACCEPTANCE REQUIRED` |
-| Phase 8.5 | Accountable staging acceptance contract | `REPOSITORY CONTRACT COMPLETE / EXTERNAL OWNER DECISION REQUIRED` |
-| Phase 9 | Independent external assurance | `NOT COMPLETE` |
-| Phase 10 | Formal production go/no-go | `NOT STARTED` |
+| Phase 8 | Production-equivalent staging validation and accountable acceptance | `PASS / OWNER_ACCEPTED` |
+| Phase 9 | Independent external assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
+| Phase 10 | Formal production go/no-go | `IN PROGRESS / DECISION REQUIRED` |
 
-The remaining Phase 8 requirement is not more repository feature development. It is completion and accountable acceptance of the external evidence package against one immutable staging deployment identity, including exact deployed commit/release, image digests, runtime identity, configuration/security evidence and the external validation results covered by the 8.2–8.4 contracts.
+Phase 8 and Phase 9 are now accepted prerequisites. The active release gate is Phase 10: accountable production authorization covering the production environment/owner, immutable production release identity, IAM/secrets/network controls, backup/recovery/rollback, monitoring/on-call/escalation, incident-response handover, privacy/data/legal requirements, open findings/residual risk and the formal change/release decision.
 
-Repository CI, Docker Compose, staging emulators and synthetic browser fixtures are supporting engineering evidence only. They cannot substitute for accountable external Phase 8 acceptance or independent Phase 9 assurance.
+Repository CI remains engineering evidence and is not represented as the source of the completed external Phase 8 or independent Phase 9 decisions.
 
 ## Product roadmap
 
 The current priority sequence is:
 
-1. complete and accept the Phase 8 external evidence package against one immutable staging identity;
-2. record Phase 8.5 accountable staging acceptance;
-3. execute Phase 9 independent external assurance, including penetration testing and agreed hardening/resilience/IAM reviews;
-4. remediate/retest release-blocking findings and disposition residual risk;
-5. conduct the formal Phase 10 production go/no-go decision.
+1. assemble the Phase 10 production decision package from accepted Phase 8 and Phase 9 evidence;
+2. approve the production environment, ownership/support and immutable release identity;
+3. confirm IAM/secrets/network, recovery/rollback, monitoring/on-call, incident-response and privacy/legal readiness;
+4. disposition open findings and residual risk;
+5. record the accountable Phase 10 `GO` or `NO-GO / BLOCKED` decision;
+6. on `GO`, perform controlled deployment and post-deployment verification against the approved release identity.
 
-See the [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md) and [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md).
+See the [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md), [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md) and [Phase 10 Production Go/No-Go](docs/production/PHASE10_PRODUCTION_GO_NO_GO.md).
 
 ## Documentation
 
-The authoritative professional documentation portal is [docs/README.md](docs/README.md). Key documents are:
-
-- [Current Project State](docs/project/CURRENT_STATE.md)
-- [Executive Status](docs/project/EXECUTIVE_STATUS.md)
-- [Executive Decision View](docs/project/EXECUTIVE_DECISION_VIEW.md)
-- [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md)
-- [Security Overview](docs/security/SECURITY_OVERVIEW.md)
-- [Governance Mapping Registry](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md)
-- [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md)
-- [Production Checklist](docs/project/PRODUCTION_CHECKLIST.md)
-- [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md)
-- [Evidence Index](docs/evidence/EVIDENCE_INDEX.md)
-- [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md)
-
-Point-in-time PR/CI/run chronology remains under `docs/development/`, GitHub issues/pull requests and CI artifacts. Historical evidence is retained rather than rewritten to match later decisions.
-
-## Local reference environment
-
-```bash
-git clone https://github.com/GJvManen/dtmo.git
-cd dtmo
-python3 tools/bootstrap_local.py
-docker compose up --build
-```
-
-The local Compose topology is a development/reference environment only. Development credentials, compatibility exceptions and bootstrap identities must not be propagated into staging or production.
-
-## Open source and responsible use
-
-DTMO is licensed under the **Apache License, Version 2.0**. The canonical open-source governance and legal entry points are:
-
-- [`LICENSE`](LICENSE)
-- [`NOTICE`](NOTICE)
-- [`SECURITY.md`](SECURITY.md)
-- [`CONTRIBUTING.md`](CONTRIBUTING.md)
-- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
-- [`SUPPORTED_VERSIONS.md`](SUPPORTED_VERSIONS.md)
-- [`docs/legal/LICENSING.md`](docs/legal/LICENSING.md)
-- [`docs/legal/THIRD_PARTY.md`](docs/legal/THIRD_PARTY.md)
-
-Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, publish or redistribute third-party material.
+Professional product, user, administrator, architecture, security, governance and visual documentation is maintained under `docs/`. Runtime screenshots are governed, provenance-backed documentation illustrations and do not independently prove live production state. Historical development/run records remain scoped to the candidate and evidence state they originally covered.
