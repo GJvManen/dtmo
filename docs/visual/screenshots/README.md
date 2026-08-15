@@ -1,6 +1,6 @@
 # DTMO Product Screenshot Catalogue
 
-**Status:** base runtime capture validated; UI-01–09 published / governed; UI-10 quality recapture pending exact-head validation  
+**Status:** base runtime capture validated; UI-01–10 published / governed  
 **Screenshot type:** actual DTMO runtime UI with sanitized deterministic fixtures unless a record explicitly states otherwise  
 **Evidence classification:** documentation illustration only — not staging acceptance, independent assurance or production evidence
 
@@ -36,7 +36,7 @@ A technically successful capture is not automatically publishable. Review must a
 | UI-07 | Visual Analytics | `visual-analytics.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-08 | Governance frameworks | `governance-frameworks.png` | **published / governed** | runtime UI with synthetic fixture data |
 | UI-09 | Administration / RBAC | `administration-rbac.png` | **published / governed** | runtime UI with synthetic fixture data |
-| UI-10 | Audit / correlation surface | `audit-correlation.png` | **quality recapture pending exact-head validation** | runtime UI with synthetic fixture data |
+| UI-10 | Audit / correlation surface | `audit-correlation.png` | **published / governed** | runtime UI with synthetic fixture data |
 
 ## Published base runtime screenshots
 
@@ -77,9 +77,7 @@ A technically successful capture is not automatically publishable. Review must a
 - raw-content fixture boundary: `raw_content_exposed = false`;
 - evidence boundary: documentation illustration only.
 
-## Dedicated MISP and audit captures
-
-UI-05 is published from the reviewed exact-head capture.
+## Published screenshot: UI-05 MISP governed workflow
 
 ![DTMO MISP governed workflow — runtime UI with sanitized synthetic fixture data](misp-governed-workflow.png)
 
@@ -95,7 +93,21 @@ UI-05 is published from the reviewed exact-head capture.
 - execution boundary: the capture does not execute outbound MISP export and does not prove live MISP connectivity;
 - evidence boundary: documentation illustration only.
 
-UI-10 uses the existing read-only auditor surface. Documentation Screenshot Artifact Gate run #10 technically generated the image, but manual review found that the captured frame still showed the transient `Audit evidence laden...` state rather than the three deterministic audit events. That artifact is therefore **not approved for repository promotion**. The capture contract now waits explicitly for the `share.review`, `misp.export.prepare` and `rbac.role.update` fixture events plus an event hash before taking the screenshot. Promotion remains blocked until a new exact-head gate proves and produces that populated state.
+## Published screenshot: UI-10 audit / correlation
+
+![DTMO read-only audit evidence viewer — runtime UI with sanitized synthetic fixture data](audit-correlation.png)
+
+**Review record for UI-10**
+
+- source capture: Documentation Screenshot Artifact Gate run #14, exact head `231c922debff0b021d82b7e2c2aa04ef78b9279f`;
+- source artifact: `9248312929`, `dtmo-documentation-screenshots`;
+- source artifact digest: `sha256:ab832dadd4585176c20459bb1e47fea426df3ea5f9025743dc456937d6a169d3`;
+- image SHA-256: `cf68587ec3a5831e31f6e222b9301fb1b1a69556fe75f96a1b702fa701f6a1e5`;
+- dimensions: 1440 × 1000; browser: Chromium/Playwright;
+- capture mode: actual runtime UI with sanitized synthetic fixture data;
+- reviewer check: all three deterministic audit events (`share.review`, `misp.export.prepare`, `rbac.role.update`) and event hashes are rendered; the transient loading state is absent;
+- authorization boundary: the surface is read-only and the fixture metadata records `audit_read_only = true` and `audit_fixture_rendered = true`;
+- evidence boundary: documentation illustration only; this does not establish staging acceptance, production activity or independent assurance.
 
 A diagram or API contract must never be promoted as a product screenshot.
 

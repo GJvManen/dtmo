@@ -21,6 +21,7 @@ PUBLISHED_SCREENSHOTS = (
     "visual-analytics.png",
     "governance-frameworks.png",
     "administration-rbac.png",
+    "audit-correlation.png",
 )
 
 
@@ -43,6 +44,8 @@ def test_professional_guides_exist_and_preserve_claim_boundaries() -> None:
     admin = ADMIN.read_text(encoding="utf-8")
     assert "UI visibility is never the final authorization decision" in admin
     assert "Production credentials must not be reused" in admin
+    assert "audit-correlation.png" in admin
+    assert "does not prove that the shown events occurred in staging or production" in admin
 
 
 def test_documentation_portal_exposes_audience_guides() -> None:
@@ -53,16 +56,18 @@ def test_documentation_portal_exposes_audience_guides() -> None:
         "administration/ADMINISTRATOR_GUIDE.md",
     ):
         assert link in text
-    assert "base screenshot capture has been exercised successfully in CI" in text
+    assert "The governed screenshot catalogue now contains UI-01 through UI-10" in text
+    assert "documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness" in text
 
 
-def test_screenshot_catalogue_tracks_published_and_pending_surfaces() -> None:
+def test_screenshot_catalogue_tracks_published_surfaces() -> None:
     text = SCREENSHOTS.read_text(encoding="utf-8")
     assert "base runtime capture validated" in text
+    assert "UI-01–10 published / governed" in text
     assert "UI-05" in text and "published / governed" in text
-    assert "UI-10" in text and "quality recapture pending exact-head validation" in text
-    assert "not approved for repository promotion" in text
+    assert "UI-10" in text and "published / governed" in text
     assert "loading, empty or transient states are not promoted" in text
+    assert "audit_fixture_rendered = true" in text
     assert "A diagram or API contract must never be promoted as a product screenshot" in text
 
     for name in PUBLISHED_SCREENSHOTS:

@@ -54,7 +54,7 @@ The professional documentation layer includes repository-native system workflows
 
 Mermaid diagrams are preferred for system behavior because they remain reviewable as source text and render directly in GitHub. Product screenshots must originate from the actual DTMO web application. Fixture-backed captures are permitted for deterministic documentation, but are explicitly classified as documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
 
-The base screenshot capture has been exercised successfully in CI for Overview, Intelligence, Sources & Catalogue, Vulnerability Analytics, Visual Analytics, Governance and Administration. Promotion of generated PNG files into the governed repository catalogue remains a separate review action. MISP, AIL and audit/correlation images must only be published when the corresponding actual DTMO runtime surface is renderable and reviewed; conceptual diagrams must not be relabelled as screenshots.
+The governed screenshot catalogue now contains UI-01 through UI-10: Overview, Intelligence, Sources & Catalogue, Vulnerability Analytics, MISP governed workflow, AIL correlation, Visual Analytics, Governance, Administration/RBAC and the read-only audit/correlation surface. Each published PNG is tied to a reviewed runtime capture and retains an explicit documentation-only evidence boundary. Fixture-backed screenshots do not prove live-source connectivity, staging activity, independent assurance or production readiness.
 
 ## Documentation model
 
