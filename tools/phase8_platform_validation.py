@@ -21,7 +21,7 @@ REQUIRED_CHECKS = (
     "privileged_administration_controls",
     "audit_correlation",
     "prometheus_metrics",
-    "grafana_separate_authentication",
+    "grafana_dashboards",
 )
 
 
