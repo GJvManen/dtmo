@@ -8,6 +8,7 @@ USER = ROOT / "docs/user/USER_GUIDE.md"
 ADMIN = ROOT / "docs/administration/ADMINISTRATOR_GUIDE.md"
 PORTAL = ROOT / "docs/README.md"
 SCREENSHOTS = ROOT / "docs/visual/screenshots/README.md"
+AIL_SCREENSHOT = ROOT / "docs/visual/screenshots/ail-correlation-workspace.png"
 
 
 def test_professional_guides_exist_and_preserve_claim_boundaries() -> None:
@@ -42,11 +43,18 @@ def test_documentation_portal_exposes_audience_guides() -> None:
     assert "base screenshot capture has been exercised successfully in CI" in text
 
 
-def test_screenshot_catalogue_is_fail_closed_for_unrendered_surfaces() -> None:
+def test_screenshot_catalogue_tracks_published_and_pending_surfaces() -> None:
     text = SCREENSHOTS.read_text(encoding="utf-8")
+    user = USER.read_text(encoding="utf-8")
+
     assert "base runtime capture validated" in text
-    assert "capture validated; repository promotion pending" in text
+    assert "binary promotion pending" in text
+
     assert "UI-05" in text and "dedicated runtime screenshot pending" in text
-    assert "UI-06" in text and "dedicated runtime screenshot pending" in text
     assert "UI-10" in text and "dedicated runtime screenshot pending" in text
+
+    assert "UI-06" in text and "published / governed" in text
+    assert AIL_SCREENSHOT.is_file()
+    assert "../visual/screenshots/ail-correlation-workspace.png" in user
+
     assert "must never be promoted as a product screenshot" in text
