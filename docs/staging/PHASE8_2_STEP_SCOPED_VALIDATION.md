@@ -53,7 +53,7 @@ python3 tools/phase8_platform_validation.py <manifest.json>
 9. `privileged_administration_controls` — Phase 8.2.9;
 10. `audit_correlation` — Phase 8.2.10;
 11. `prometheus_metrics` — Phase 8.2.11;
-12. `grafana_separate_authentication` — Phase 8.2.12;
+12. `grafana_dashboards` — Phase 8.2.12;
 13. complete manifest/accountable decision — Phase 8.2.13.
 
 ## Evidence boundary
