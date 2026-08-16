@@ -11,7 +11,7 @@ Phase 8 production-equivalent validation and accountable acceptance are `PASS / 
 
 Phase 10 concluded with **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is not production authorized. The active programme is **Phase 11 — Platform Industrialisation**, followed by a new Phase 12 production GO/NO-GO for the materially changed integrated platform.
 
-Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis→DTMO canonical adapter are now **`PASS / REPOSITORY_COMPLETE`**. The active bounded objective is **Phase 11.3 IntelOwl enrichment integration**, beginning with exact-head acceptance of its service/API/security/licensing contract.
+Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis→DTMO canonical adapter are **`PASS / REPOSITORY_COMPLETE`**. The Phase 11.3 IntelOwl contract is accepted. The active bounded objective is now the **IntelOwl enrichment adapter implementation**, currently requiring exact-head repository validation.
 
 ## Lifecycle position
 
@@ -26,7 +26,8 @@ Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis→DTMO canonical
 | Phase 11 | `IN PROGRESS / ACTIVE` |
 | Phase 11.1 Taranis architecture/contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 IntelOwl | `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION` |
+| Phase 11.3 IntelOwl contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 IntelOwl adapter | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
 
 ## Accepted product capabilities
@@ -34,6 +35,8 @@ Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis→DTMO canonical
 DTMO provides one canonical application shell across Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The accepted baseline includes severity/classification semantics and filters, source/provenance context, governed source operations, native analytics, managed principals/roles/permissions, repository-backed governance knowledge, OpenCVE, CIRCL Vulnerability-Lookup, vulnerability prioritization and vendor/product relevance, governed MISP read/export, governed AIL read/enrichment/correlation and vulnerability-management evidence mapping with explicit semantic boundaries for CVSS, EPSS, KEV, MITRE ATT&CK, MISP and AIL.
 
 Phase 11.2 additionally provides the repository-complete Taranis read-only canonical integration: news/story collection, durable checkpointing/reconciliation, detail/CTI retrieval, governed execution, canonical persistence/indexing and connector observability. Repository completion proves implementation and controlled test behavior only; it does not replace deployment, external-assurance or production-authorization evidence classes.
+
+The active IntelOwl slice adds a bounded service/API enrichment adapter. It validates approved observable classes, analyzer allowlists and handling before disclosure; disables IntelOwl external connector side effects in the submitted job; correlates results to immutable upstream job IDs; rejects unknown analyzers, oversized/malformed results and job-identity mismatches; marks partial analyzer success explicitly; and records that enrichment does not grant external-share authority or prove local compromise.
 
 ## Data and persistence model
 
@@ -43,13 +46,15 @@ Phase 11.2 additionally provides the repository-complete Taranis read-only canon
 - **Redis** — queue/cache/runtime coordination;
 - **Prometheus/Grafana** — operational observability.
 
-These remain the accepted DTMO data boundaries until Phase 11 migration decisions explicitly replace or integrate them.
+These remain the accepted DTMO data boundaries until Phase 11 migration decisions explicitly replace or integrate them. This IntelOwl adapter slice does not yet claim durable enrichment-history persistence or production operational integration; those remain a subsequent bounded 11.3 step.
 
 ## Security and authority model
 
 The accepted baseline preserves server-side RBAC, least privilege, bearer-token trust validation, human/service-account separation, privileged Administration safeguards, request correlation, auditable security-relevant actions, provenance/confidence preservation, data minimization and explicit review/share approval boundaries.
 
-Taranis is integrated read-only and cannot grant DTMO publication/share authority. The Phase 11.3 IntelOwl design preserves the same principle: enrichment jobs, analyzer verdicts, tags, evaluations or upstream connector capabilities cannot become DTMO external-share approval or proof of local compromise.
+Taranis is integrated read-only and cannot grant DTMO publication/share authority. IntelOwl follows the same principle: enrichment jobs, analyzer verdicts, tags, evaluations or upstream connector capabilities cannot become DTMO external-share approval or proof of local compromise. The adapter sends an empty IntelOwl connector request and preserves `external_share_authorized=false` and `local_compromise_proven=false` in normalized provenance.
+
+Production configuration for IntelOwl fails closed unless the integration uses HTTPS, a runtime API token and an explicit analyzer allowlist. Email/personal-data enrichment remains excluded by default pending explicit privacy/data-processing approval.
 
 No connector, successful import, enrichment result, CI result, analytics view, Administration privilege, Governance mapping, staging acceptance, external assurance or platform integration automatically grants external publication authority.
 
@@ -80,15 +85,11 @@ Phase 11 is the highest-priority development line. The fixed integration order i
 9. new production-equivalent validation;
 10. new independent external assurance.
 
-The current bounded objective is **Phase 11.3 IntelOwl enrichment integration**. The first slice defines a testable service/API contract before adapter code is accepted. IntelOwl is treated as a separate generic enrichment service; DTMO remains the education-sector CTI/governance decision layer.
-
-The contract requires a dedicated non-admin service identity, secret-backed API token, TLS verification, explicit observable/analyzer allowlists, bounded polling and rate-limit behavior, analyzer/job provenance, fail-closed TLP/privacy handling and exclusion of IntelOwl external connector side effects from the initial path.
+The current bounded objective is **Phase 11.3 IntelOwl enrichment adapter implementation**. The accepted contract remains authoritative. This slice implements the policy-enforced client boundary only; governed execution/persistence and operational integration remain the next bounded 11.3 work if this PR is accepted.
 
 See:
 
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
-- `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`;
-- `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`;
 - `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`;
 - `docs/integrations/INTELOWL_INTEGRATION.md`.
 
@@ -96,10 +97,10 @@ See:
 
 DTMO remains a separate service consumer of upstream platform components. Taranis AI remains behind the accepted service-to-service boundary and its source is not vendored into DTMO.
 
-IntelOwl and pyIntelOwl are AGPL-3.0. The Phase 11.3 contract keeps IntelOwl behind a service/API boundary and does not vendor IntelOwl or pyIntelOwl source into DTMO. Any future embedding, modification, redistribution or operation of modified network-facing IntelOwl components requires explicit licensing review before acceptance.
+IntelOwl and pyIntelOwl are AGPL-3.0. Phase 11.3 keeps IntelOwl behind a service/API boundary and does not vendor IntelOwl or pyIntelOwl source into DTMO. Any future embedding, modification, redistribution or operation of modified network-facing IntelOwl components requires explicit licensing review before acceptance.
 
 ## Evidence boundary
 
 Professional current-state documents describe the present controlled state. Immutable historical run records under `docs/development/` remain scoped to what was true when they were created and are not rewritten to simulate later acceptance.
 
-Repository/CI evidence for Phase 11.1–11.3 must not be represented as live production-equivalent evidence. New Phase 11.10 validation and Phase 11.11 independent assurance are required for the materially changed integrated platform before Phase 12 can consider production authorization.
+Repository/CI evidence for this adapter can prove only code/configuration behavior against synthetic fixtures. It cannot prove live IntelOwl connectivity, deployed service-account permissions, provider credentials, analyzer quality, privacy approval, production-equivalent behavior, independent assurance or production authorization. New Phase 11.10 validation and Phase 11.11 independent assurance are required for the materially changed integrated platform before Phase 12 can consider production authorization.
