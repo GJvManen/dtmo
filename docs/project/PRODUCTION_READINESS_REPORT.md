@@ -9,7 +9,7 @@ DTMO completed the repository engineering baseline, accountable functional accep
 
 Phase 10 concluded with **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The project is in **Phase 11 — Platform Industrialisation**. Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis→DTMO canonical adapter are `PASS / REPOSITORY_COMPLETE`. The Phase 11.3 IntelOwl contract is also `PASS / REPOSITORY_COMPLETE`. The active bounded step is the IntelOwl enrichment adapter, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. A new Phase 12 production GO/NO-GO will be considered only after the integrated platform completes new production-equivalent validation and independent external assurance.
+The project is in **Phase 11 — Platform Industrialisation**. Phase 11.1 Taranis architecture/contract, Phase 11.2 Taranis→DTMO canonical adapter, the Phase 11.3 IntelOwl contract and the bounded IntelOwl adapter are `PASS / REPOSITORY_COMPLETE`. The active bounded step is governed IntelOwl execution, durable enrichment-history persistence and operational integration, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. A new Phase 12 production GO/NO-GO will be considered only after the integrated platform completes fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance.
 
 ## 2. Readiness summary
 
@@ -24,18 +24,21 @@ The project is in **Phase 11 — Platform Industrialisation**. Phase 11.1 Tarani
 | Phase 11.1 | Taranis architecture/API/licensing boundary | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 | Taranis→DTMO canonical adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 contract | IntelOwl service/API/security/licensing contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 adapter | Bounded IntelOwl enrichment adapter | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.3 adapter | Bounded IntelOwl enrichment adapter | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 execution/persistence | Human execution + immutable enrichment history | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New production authorization decision | `NOT STARTED` |
 
 ## 3. Accepted DTMO product baseline
 
 The accepted baseline includes the canonical operator shell across Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance; durable canonical intelligence/provenance; severity/classification and filtering; vulnerability analytics and prioritization; managed RBAC; explicit governance mappings; OpenCVE and CIRCL Vulnerability-Lookup; governed MISP read/export; governed AIL read/enrichment/correlation; and Normenkader IBP SM.07-oriented evidence mapping with explicit semantic boundaries.
 
-Phase 11.2 additionally adds repository-accepted read-only Taranis collection, stable identity/replay, durable checkpointing/reconciliation, bounded detail/CTI retrieval, governed execution, canonical persistence/indexing and connector observability. This remains repository evidence, not live production-equivalent proof.
+Phase 11.2 additionally adds repository-accepted read-only Taranis collection, stable identity/replay, durable checkpointing/reconciliation, bounded detail/CTI retrieval, governed execution, canonical persistence/indexing and connector observability.
 
-The active Phase 11.3 adapter adds a bounded IntelOwl service/API client with pre-disclosure observable/TLP/analyzer policy checks, explicit exclusion of IntelOwl external Connectors, bounded polling, immutable job identity, result-size/analyzer validation and explicit partial-success/provenance semantics. It is not yet a claim of governed durable enrichment-history persistence or live operational integration.
+The accepted Phase 11.3 adapter adds pre-disclosure observable/TLP/analyzer policy checks, explicit exclusion of IntelOwl external Connectors, bounded polling, immutable job identity, result-size/analyzer validation and explicit partial-success/provenance semantics.
 
-The governed UI-01 through UI-10 screenshots remain product documentation illustrations rather than production-state evidence. No IntelOwl screenshot is promoted in this slice because no separately accepted operator surface is introduced.
+The active execution/persistence slice adds a human `REVIEW_INTELLIGENCE` execution endpoint, a read-only `READ_INTELLIGENCE` history endpoint and migration `0011_intelowl_enrichment_history`. Durable records are linked to canonical intelligence, deduplicated by `(item_id, job_id)`, preserve requesting human and analyzer/job attribution, and are database-constrained so enrichment cannot grant external-share authority or establish local compromise.
+
+The governed UI-01 through UI-10 screenshots remain product documentation illustrations rather than production-state evidence. No new IntelOwl screenshot is promoted because this slice introduces an API/repository workflow rather than a separately accepted GUI surface.
 
 ## 4. Phase 10 decision rationale
 
@@ -47,7 +50,9 @@ The active architecture direction is Taranis AI for collection/assessment, Intel
 
 DTMO's established invariants remain mandatory through the integration programme: server-side RBAC and least privilege, human/service-principal separation, privileged Administration safeguards, correlation/audit, provenance/confidence preservation, data minimization and separate review/external-share authority.
 
-The accepted Phase 11.3 IntelOwl contract and active adapter require a dedicated service identity, secret-backed API token, production HTTPS, explicit observable/analyzer allowlists, fail-closed TLP/privacy controls, bounded rate-limit/retry behavior and analyzer/job/result provenance. IntelOwl external Connectors are excluded from the bounded path. Unknown analyzers, job identity mismatches and malformed/oversized results fail closed. Analyzer/provider verdicts remain attributed context and do not become proof of local compromise.
+For governed IntelOwl execution, every requested analyzer is conservatively treated as an external disclosure target. Restricted handling (`red`, `tlp:red`, `review-required`) fails closed before disclosure. The request still sends `connectors_requested=[]`. Unknown analyzers, job-identity mismatches and malformed/oversized results fail closed. Analyzer/provider verdicts remain attributed context and do not become proof of local compromise.
+
+Durable enrichment history is treated as governed intelligence evidence and follows the classification/retention model in `docs/governance/DATA_CLASSIFICATION_RETENTION.md`. Repository CI does not prove production retention, deletion, backup propagation or recovery.
 
 No collector, publisher, enrichment engine, graph platform, case platform, CI result, staging acceptance or production authorization automatically grants external publication/share authority.
 
@@ -69,14 +74,14 @@ Because Phase 11 materially changes the platform, that evidence cannot authorize
 
 The detailed programme is defined in `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`.
 
-The current bounded objective is **Phase 11.3 IntelOwl adapter exact-head acceptance**. `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md` is the accepted contract baseline; `docs/integrations/INTELOWL_INTEGRATION.md` documents the implemented bounded adapter and its trust/data-flow boundaries.
+The current bounded objective is **Phase 11.3 governed IntelOwl execution/persistence exact-head acceptance**. The accepted contract remains `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`; `docs/integrations/INTELOWL_INTEGRATION.md` documents the implementation; `docs/security/INTELOWL_TRUST_BOUNDARY.md`, `docs/operations/INTELOWL_ENRICHMENT_RUNBOOK.md`, `docs/user/INTELOWL_ENRICHMENT_WORKFLOW.md` and `docs/qa/PHASE11_3_INTELOWL_GOVERNED_EXECUTION_GATE.md` define the active security, operations, user and QA boundaries.
 
-After a fully green exact-head merge, the next bounded Phase 11.3 objective is governed execution/persistence and operational integration. OpenCTI remains blocked until Phase 11.3 is repository-complete.
+OpenCTI remains blocked until this exact-head slice is green, merged and Phase 11.3 is reconciled as repository-complete.
 
 ## 9. Evidence boundaries
 
 - Repository CI proves repository-controlled engineering claims within test scope.
-- Contract/adapter gate success is not live integration or deployment evidence.
+- Contract/adapter/execution gate success is not live integration or deployment evidence.
 - Owner acceptance and external assurance remain separate evidence classes.
 - Historical run evidence remains immutable and scoped to the state it covered.
 - A materially changed integrated platform requires fresh deployment-bound evidence.
@@ -85,4 +90,4 @@ After a fully green exact-head merge, the next bounded Phase 11.3 objective is g
 
 ## 10. Recommendation
 
-Continue only with Phase 11 priorities in the defined order. Merge the bounded IntelOwl adapter only on fully green exact-head CI with synchronized documentation. Then complete governed IntelOwl execution/persistence and operational integration before OpenCTI. Continue through later Phase 11 steps only after each preceding bounded gate is accepted.
+Continue only with Phase 11 priorities in the defined order. Merge the governed IntelOwl execution/persistence slice only on fully green exact-head CI with synchronized professional documentation. Reconcile Phase 11.3 as repository-complete after merge, then start Phase 11.4 OpenCTI. Continue through later Phase 11 steps only after each preceding bounded gate is accepted.
