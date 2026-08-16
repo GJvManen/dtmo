@@ -1,6 +1,6 @@
 # DTMO Platform Industrialisation Roadmap
 
-Last updated: **2026-08-16**  
+Last updated: **2026-08-17**  
 Programme state: **`ACTIVE / HIGHEST PRIORITY`**
 
 ## Purpose
@@ -61,42 +61,40 @@ The accepted Phase 11.4 boundary includes the OpenCTI service/API/STIX/licensing
 
 ### 11.5 MISP consolidation
 
-**Status:** `IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION`
+**Status:** `IN PROGRESS / SYNCHRONIZATION STATE IN EXACT-HEAD VALIDATION`
 
-The active bounded slice defines one authoritative MISP service/API, identity, restriction, synchronization and sharing model before implementation changes.
+The MISP v2.5.44 service/API/licensing and authority contract is `PASS / REPOSITORY_COMPLETE`. MISP remains a separate AGPL-3.0 service/API boundary.
 
-Reviewed upstream baseline: **MISP v2.5.44**, kept as a separate **AGPL-3.0** service/API boundary.
+The active bounded implementation reconciles the existing governed inbound `POST /events/restSearch` and human-approved unpublished `POST /events/add` paths through one durable authority state:
 
-Existing E8 capabilities to consolidate:
-
-- governed inbound `POST /events/restSearch` with event/attribute/object identity, distribution, sharing-group, TLP/tag, galaxy and provenance preservation;
-- governed outbound `POST /events/add` requiring separate human DTMO review/share approval, deterministic replay protection and unpublished destination events.
-
-Required Phase 11.5 invariants:
-
-- MISP UUIDs and DTMO canonical UUIDs remain distinct and explicitly attributable;
-- source distribution, sharing-group and TLP restrictions cannot be broadened;
-- ingestion cannot grant `share_approved`, publication authority or local-compromise proof;
-- service accounts, connectors, schedulers, IntelOwl, OpenCTI and MISP itself cannot grant DTMO sharing authority;
-- uncertain outbound delivery blocks automatic replay pending operator reconciliation;
-- MISP server push/pull synchronization and OpenCTI↔MISP automatic synchronization are excluded from the first consolidation boundary;
-- runtime secrets, production HTTPS, least privilege and `401`/`403` fail-closed behavior remain mandatory;
-- repository CI is not live-MISP, deployment, assurance or production evidence.
+- `misp_synchronization_state` binds one DTMO canonical item to one stable MISP event UUID;
+- event UUID, not title or instance-local numeric ID, remains authoritative upstream identity;
+- distribution, sharing-group and TLP restrictions are persisted as a source authority envelope;
+- the accepted envelope is projected to canonical `metadata_json.misp_restrictions`, reusing the existing governed-export enforcement path;
+- conflicting identity mappings, unknown distribution, incomplete sharing-group restrictions or attempts to import share authority fail closed;
+- database constraints enforce known distribution semantics, sharing-group requirements and `external_share_authorized=false`;
+- migration `0013_misp_synchronization_state` follows the accepted OpenCTI migration;
+- human DTMO review/share approval remains the only outbound trigger;
+- uncertain outbound delivery continues to block blind replay;
+- automatic MISP federation, automatic OpenCTI↔MISP synchronization and event publication remain excluded.
 
 ```mermaid
 flowchart LR
-    M[MISP\nseparate AGPL-3.0 service] -->|REST read| R[Governed inbound]
-    R --> V{Identity + restrictions + provenance valid?}
+    M[MISP\nseparate AGPL-3.0 service] -->|events/restSearch| R[Existing governed inbound]
+    R --> V{UUID + restrictions valid?}
     V -->|no| X[Fail closed]
-    V -->|yes| D[(DTMO canonical intelligence)]
+    V -->|yes| S[(MISP synchronization state)]
+    S --> D[(DTMO canonical item\nauthoritative restrictions)]
     D --> H{Human review + share approval?}
     H -->|no| N[No outbound side effect]
-    H -->|yes| P[Durable replay reservation]
+    H -->|yes| P[Existing durable replay reservation]
     P -->|events/add unpublished| M
     M -->|uncertain| U[Block replay; operator reconcile]
 ```
 
-After protected acceptance of the contract, the next bounded Phase 11.5 PR is the single reconciled MISP synchronization-state/persistence and authority-enforcement implementation. Phase 11.6 remains blocked until Phase 11.5 is repository-complete.
+Repository CI remains engineering evidence only. It does not establish live MISP connectivity, deployed credentials/RBAC, lawful data sharing, remote-server trust, federation behavior, independent assurance or production authorization.
+
+After protected acceptance of this implementation and lifecycle reconciliation, Phase 11.5 may become `PASS / REPOSITORY_COMPLETE`. Phase 11.6 remains blocked until then.
 
 ### 11.6 TheHive incident/case handoff
 
@@ -142,8 +140,7 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept the **Phase 11.5 MISP consolidation contract** on fully green exact-head CI.
-2. Implement the reconciled MISP synchronization-state/persistence and authority model as exactly one next bounded PR.
-3. Reconcile Phase 11.5 to `PASS / REPOSITORY_COMPLETE` only after all Phase 11.5 slices are protected-merged.
-4. Start exactly **11.6 TheHive**.
-5. Continue 11.7–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.
+1. Accept the **Phase 11.5 MISP synchronization-state/persistence and authority-enforcement** implementation on fully green exact-head CI.
+2. Reconcile Phase 11.5 to `PASS / REPOSITORY_COMPLETE` only after protected merge.
+3. Start exactly **11.6 TheHive**.
+4. Continue 11.7–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.
