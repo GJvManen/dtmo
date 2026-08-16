@@ -59,35 +59,41 @@ Repository-complete implementation includes read-only collection, stable namespa
 
 ### 11.3 IntelOwl enrichment integration
 
-**Status:** `IN PROGRESS / ADAPTER IN EXACT-HEAD VALIDATION`
+**Status:** `IN PROGRESS / GOVERNED EXECUTION + DURABLE HISTORY IN EXACT-HEAD VALIDATION`
 
-The service/API/security/licensing contract is accepted and repository-complete. The active bounded slice implements the policy-enforced IntelOwl client boundary.
+The service/API/security/licensing contract and bounded policy-enforced IntelOwl client adapter are accepted and repository-complete. The active bounded slice adds human-authorized execution, immutable durable enrichment history and the operational read boundary needed to complete Phase 11.3 repository work.
 
-Implemented in the active adapter slice:
+Accepted adapter capabilities:
 
-- runtime-secret-backed IntelOwl API token;
-- production HTTPS requirement;
+- runtime-secret-backed IntelOwl API token and production HTTPS requirement;
 - explicit production analyzer allowlist;
 - approved default observable classes: CVE, IP, domain, URL and hash;
 - email/personal-data observable classes excluded by default;
 - analyzer requests constrained to the explicit allowlist;
-- `TLP:RED`/restricted handling blocked from analyzers identified as external;
 - `connectors_requested=[]` to prevent MISP/OpenCTI/Slack/email side effects in the initial path;
-- bounded `POST /api/analyze_observable` submission and `GET /api/jobs/{job_id}` polling;
-- immutable upstream job-ID verification;
-- maximum result-size enforcement;
+- bounded submission/polling, immutable upstream job-ID verification and maximum result-size enforcement;
 - unknown returned analyzers rejected fail-closed;
 - explicit partial-success semantics;
-- normalized authority metadata preserving `external_share_authorized=false` and `local_compromise_proven=false`;
-- synthetic tests for allowlist, handling, job identity, partial failure, `429`, polling timeout and production configuration.
+- normalized authority metadata preserving `external_share_authorized=false` and `local_compromise_proven=false`.
 
-This slice deliberately does **not** claim live IntelOwl connectivity, provider credentials, provider/analyzer quality, durable enrichment-history persistence, production-equivalent behavior, privacy approval, independent assurance or production authorization.
+Active governed execution/persistence capabilities:
 
-If this adapter slice is accepted, the next bounded 11.3 priority is governed execution/persistence and operational integration of IntelOwl enrichment history. Phase 11.4 OpenCTI starts only after Phase 11.3 is repository-complete.
+- `POST /api/v1/intelowl/items/{item_id}/enrich` requires a human principal with `REVIEW_INTELLIGENCE`;
+- service accounts cannot autonomously invoke this governed endpoint under the current RBAC model;
+- every requested analyzer is conservatively treated as an external disclosure boundary, so `red`, `tlp:red` and `review-required` handling fails closed before network disclosure;
+- migration `0011_intelowl_enrichment_history` adds immutable durable history linked to canonical intelligence;
+- `(item_id, job_id)` uniqueness makes persistence idempotent for one upstream job;
+- database constraints enforce no external-share authority and no local-compromise proof;
+- `GET /api/v1/intelowl/items/{item_id}/history` exposes read-only persisted enrichment context to principals with `READ_INTELLIGENCE`;
+- operator, user and QA documentation explicitly preserve evidence and authority boundaries.
+
+This slice deliberately does **not** claim live IntelOwl connectivity, provider credentials, provider/analyzer quality, privacy approval, production-equivalent persistence/recovery, independent assurance or production authorization.
+
+Phase 11.4 OpenCTI starts only after this exact-head slice is fully green, merged and Phase 11.3 is reconciled as `PASS / REPOSITORY_COMPLETE`.
 
 ### 11.4 OpenCTI knowledge-graph integration
 
-**Status:** `PLANNED`
+**Status:** `PLANNED / BLOCKED BY 11.3 ACCEPTANCE`
 
 OpenCTI becomes the optional authoritative CTI relationship/graph service for STIX entities and relationships. DTMO remains the education/governance decision layer.
 
@@ -158,8 +164,8 @@ While Phase 11 is active, do not spend development capacity on unrelated UI poli
 
 ## Immediate sequence
 
-1. Accept the bounded **11.3 IntelOwl enrichment adapter** on fully green exact-head CI.
-2. Complete **11.3 governed execution/persistence and operational integration**.
+1. Accept the bounded **11.3 governed IntelOwl execution/persistence and operational integration** slice on fully green exact-head CI.
+2. Reconcile **11.3 as repository-complete**.
 3. Integrate **11.4 OpenCTI**.
 4. Consolidate **11.5 MISP**.
 5. Add **11.6 TheHive** handoff.
