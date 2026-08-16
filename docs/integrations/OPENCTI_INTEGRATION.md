@@ -13,6 +13,8 @@ The Phase 11.4 contract and bounded read-only GraphQL/STIX adapter are accepted 
 
 `backend/dtmo/integrations/opencti.py` performs bounded GraphQL `stixCoreObjects` reads and preserves OpenCTI internal identity, STIX standard ID, entity type, parent types, markings, confidence, timestamps, external references and explicit read-only provenance. Entity types remain allowlisted and malformed GraphQL/STIX/marking/identity/cursor state fails closed.
 
+The read integration remains feature-gated by `DTMO_FEATURE_OPENCTI_READ`. The feature is disabled by default; enabling it does not broaden publication/share authority, connector privileges, mutation authority or marking access.
+
 ## Canonical mapping persistence
 
 `backend/dtmo/persistence/opencti.py` adds two persistence classes:
