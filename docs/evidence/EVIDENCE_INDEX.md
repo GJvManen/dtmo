@@ -78,7 +78,7 @@ The dedicated repository workflow remains `.github/workflows/phase11-intelowl-in
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Accepted repository evidence covers the OpenCTI service/API/licensing contract, bounded GraphQL/STIX adapter, stable identity/marking/provenance preservation, canonical mapping/revision persistence, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. The dedicated workflow remains `.github/workflows/phase11-opencti-integration-contract.yml`.
+Accepted repository evidence covers the OpenCTI service/API/licensing contract, bounded GraphQL/STIX adapter, stable identity/marking/provenance preservation, canonical mapping/revision persistence, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. The accepted persistence contract is exercised by `backend/tests/test_phase11_4_opencti_persistence.py`, and the dedicated workflow remains `.github/workflows/phase11-opencti-integration-contract.yml`.
 
 This evidence does **not** prove live OpenCTI connectivity, deployed service identity or marking segregation, production STIX interoperability, graph quality/performance, privacy approval, HA/recovery, independent assurance or production authorization.
 
