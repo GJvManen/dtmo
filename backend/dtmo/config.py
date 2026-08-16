@@ -53,6 +53,7 @@ class Settings(BaseSettings):
     taranis_page_size: int = Field(default=100, ge=1, le=400)
     taranis_max_pages: int = Field(default=10, ge=1, le=100)
     taranis_reconcile_pages: int = Field(default=1, ge=0, le=20)
+    taranis_detail_cti_limit: int = Field(default=200, ge=0, le=5000)
     taranis_checkpoint_path: str = "/var/lib/dtmo/checkpoints/taranis.json"
     publish_requires_human_approval: bool = True
     feature_live_connectors: bool = False

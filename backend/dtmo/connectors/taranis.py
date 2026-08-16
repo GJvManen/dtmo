@@ -34,6 +34,10 @@ def _stable_id(item: dict[str, Any], *, object_type: str) -> str:
     return f"taranis:{object_type}:{str(value).strip()}"
 
 
+def _upstream_id(item: dict[str, Any], *, object_type: str) -> str:
+    return _stable_id(item, object_type=object_type).split(":", 2)[2]
+
+
 def _text(item: dict[str, Any], *keys: str) -> str:
     for key in keys:
         value = item.get(key)
@@ -71,6 +75,8 @@ def normalize_taranis_item(item: dict[str, Any], *, object_type: str, instance: 
             source_id = str(raw_source_id)
     elif source is not None:
         source_id = str(source)
+    context = item.get("_dtmo_taranis_context")
+    context_status = context.get("status") if isinstance(context, dict) else "not-requested"
     return {
         "adapter": "taranis-read-v1",
         "instance": instance,
@@ -79,6 +85,7 @@ def normalize_taranis_item(item: dict[str, Any], *, object_type: str, instance: 
         "canonical_external_id": external_id,
         "upstream_source_id": source_id,
         "handling": _handling(item),
+        "detail_cti_status": context_status,
         "read_only_import": True,
         "external_share_authorized": False,
     }
@@ -152,6 +159,81 @@ class TaranisReadConnector(Connector):
                 raise ValueError(f"Taranis {field} pagination made no progress")
         return collected, max(checkpoint, offset)
 
+    async def _fetch_detail_cti(
+        self,
+        client: httpx.AsyncClient,
+        *,
+        object_type: str,
+        item: dict[str, Any],
+    ) -> dict[str, Any]:
+        base = self.settings.taranis_api_base.rstrip("/")
+        upstream_id = _upstream_id(item, object_type=object_type)
+        route = "news-items" if object_type == "news-item" else "stories"
+        detail_response = await client.get(
+            f"{base}/api/assess/{route}/{upstream_id}",
+            headers=self._headers(),
+        )
+        if detail_response.status_code == 404:
+            enriched = dict(item)
+            enriched["_dtmo_taranis_context"] = {
+                "status": "reconciliation-race",
+                "detail": None,
+                "cti": None,
+            }
+            return enriched
+        detail_response.raise_for_status()
+        detail = detail_response.json()
+        if not isinstance(detail, dict):
+            raise ValueError(f"Taranis {object_type} detail must be an object")
+        cti_response = await client.get(
+            f"{base}/api/assess/{route}/{upstream_id}/cti",
+            headers=self._headers(),
+        )
+        if cti_response.status_code == 404:
+            cti: Any = None
+            status = "detail-only"
+        else:
+            cti_response.raise_for_status()
+            cti = cti_response.json()
+            if not isinstance(cti, (dict, list)):
+                raise ValueError(f"Taranis {object_type} CTI must be an object or list")
+            status = "complete"
+        enriched = dict(item)
+        for key, value in detail.items():
+            if key not in {"_dtmo_taranis_context"}:
+                enriched[key] = value
+        enriched["_dtmo_taranis_context"] = {
+            "status": status,
+            "detail": detail,
+            "cti": cti,
+        }
+        return enriched
+
+    async def _enrich_collections(
+        self,
+        client: httpx.AsyncClient,
+        news: list[dict[str, Any]],
+        stories: list[dict[str, Any]],
+    ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+        remaining = self.settings.taranis_detail_cti_limit
+        output: dict[str, list[dict[str, Any]]] = {"news-item": [], "story": []}
+        for object_type, items in (("news-item", news), ("story", stories)):
+            for item in items:
+                if remaining > 0:
+                    output[object_type].append(
+                        await self._fetch_detail_cti(client, object_type=object_type, item=item)
+                    )
+                    remaining -= 1
+                else:
+                    skipped = dict(item)
+                    skipped["_dtmo_taranis_context"] = {
+                        "status": "budget-exhausted",
+                        "detail": None,
+                        "cti": None,
+                    }
+                    output[object_type].append(skipped)
+        return output["news-item"], output["story"]
+
     async def fetch(self, client: httpx.AsyncClient) -> Any:
         base = self.settings.taranis_api_base.rstrip("/")
         if not base:
@@ -169,6 +251,7 @@ class TaranisReadConnector(Connector):
             field="stories",
             checkpoint=checkpoint["stories"],
         )
+        news, stories = await self._enrich_collections(client, news, stories)
         return {
             "news_items": news,
             "stories": stories,
