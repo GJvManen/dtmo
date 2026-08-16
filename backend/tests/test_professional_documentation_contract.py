@@ -32,6 +32,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md",
     "docs/qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md",
     "docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md",
+    "docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -162,7 +163,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "Phase 11.4 OpenCTI contract | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.4 OpenCTI read-only adapter | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.4 OpenCTI canonical mapping/persistence | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.5 MISP consolidation contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.5 MISP consolidation contract | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.5 MISP synchronization state/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 12 | `NOT STARTED`",
     ):
         assert marker in current_state
@@ -171,7 +173,7 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.2 Taranis → DTMO canonical adapter\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.3 IntelOwl enrichment integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
-    assert "11.5 MISP consolidation\n\n**Status:** `IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION`" in industrialisation
+    assert "11.5 MISP consolidation\n\n**Status:** `IN PROGRESS / SYNCHRONIZATION STATE IN EXACT-HEAD VALIDATION`" in industrialisation
     assert "11.6 TheHive incident/case handoff" in industrialisation
     assert "11.7 Cortex decision gate" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
@@ -207,10 +209,14 @@ def test_opencti_documents_are_synchronized_with_persistence_slice() -> None:
 
 def test_misp_consolidation_contract_is_exposed() -> None:
     contract = _read("docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md")
-    gate = _read("docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md")
+    contract_gate = _read("docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md")
+    state_gate = _read("docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md")
     for marker in ("MISP v2.5.44", "AGPL-3.0", "events/restSearch", "events/add", "human"):
         assert marker in contract
-    assert "Phase 11.5" in gate
+    assert "PASS / REPOSITORY_COMPLETE" in contract
+    assert "Phase 11.5" in contract_gate
+    for marker in ("misp_synchronization_state", "0013_misp_synchronization_state", "external_share_authorized=false"):
+        assert marker in state_gate
 
 
 def test_documentation_portal_exposes_audience_guides_and_visual_evidence_boundary() -> None:
