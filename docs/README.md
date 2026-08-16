@@ -37,7 +37,7 @@ The active bounded programme step is Phase 11.3 governed IntelOwl execution, dur
 | QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Phase 11.3 IntelOwl Governed Execution Gate](qa/PHASE11_3_INTELOWL_GOVERNED_EXECUTION_GATE.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
 | Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [IntelOwl Enrichment Operations Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md), [IntelOwl Integration](integrations/INTELOWL_INTEGRATION.md) |
 
-The governed screenshot catalogue contains UI-01 through UI-10 and remains the controlled visual reference for accepted operator journeys. These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
+The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for accepted operator journeys. These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
 
 The current IntelOwl execution slice is API/repository based and does not introduce a separately accepted GUI journey. No synthetic screenshot is promoted for this slice because that would falsely imply an accepted operator screen that does not exist.
 
