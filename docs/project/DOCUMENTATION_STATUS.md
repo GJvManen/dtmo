@@ -1,6 +1,6 @@
 # DTMO Documentation Status and Authority
 
-Last reconciled: **2026-08-16**
+Last reconciled: **2026-08-17**
 
 ## Purpose
 
@@ -12,10 +12,10 @@ For current project decisions, use this order:
 
 1. `docs/project/CURRENT_STATE.md` — current controlled product and lifecycle state;
 2. `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md` — active Phase 11 programme and fixed priority order;
-3. `docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md` — accepted Phase 11.4 service/API/STIX/identity/security/licensing contract;
-4. `docs/integrations/OPENCTI_INTEGRATION.md` — active OpenCTI adapter/mapping/persistence boundary;
-5. `docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md` — active operational ordering, restart and recovery boundary;
-6. `docs/qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md` — active exact-head acceptance definition;
+3. `docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md` — accepted Phase 11.5 service/API/licensing/authority contract;
+4. `docs/integrations/MISP_READ_INTEGRATION.md` and `docs/intelligence/MISP_GOVERNED_EXPORT.md` — existing inbound/outbound paths being reconciled;
+5. `docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md` — active exact-head synchronization-state/persistence gate;
+6. OpenCTI contract/integration/runbook documentation — accepted Phase 11.4 boundary;
 7. IntelOwl integration documentation — accepted Phase 11.3 boundary;
 8. Taranis assessment/contract/adapter documentation — accepted Phase 11.1–11.2 boundary;
 9. `docs/roadmap/PRODUCTION_ROADMAP.md` — production-readiness sequence from Phase 10 NO-GO to Phase 12;
@@ -34,13 +34,14 @@ Historical point-in-time records remain valid for what they originally described
 | Platform Industrialisation Roadmap | `CURRENT / ACTIVE` | Maintain through Phase 11 |
 | Taranis assessment/contract/adapter docs | `CURRENT / ACCEPTED` | Preserve accepted boundary |
 | IntelOwl contract/integration/runbook/user docs | `CURRENT / ACCEPTED` | Preserve repository-complete Phase 11.3 boundary |
-| OpenCTI contract | `CURRENT / ACCEPTED` | Preserve accepted Phase 11.4 contract boundary |
-| OpenCTI read adapter | `CURRENT / ACCEPTED` | Preserve accepted bounded read-only semantics |
-| OpenCTI integration/runbook/persistence gate | `CURRENT / IN EXACT-HEAD VALIDATION` | Active canonical mapping/persistence and operational boundary |
+| OpenCTI contract/integration/persistence docs | `CURRENT / ACCEPTED` | Preserve repository-complete Phase 11.4 boundary |
+| MISP consolidation contract | `CURRENT / ACCEPTED` | Preserve accepted Phase 11.5 contract boundary |
+| MISP read/export documentation | `CURRENT / ACTIVE IMPLEMENTATION CONTEXT` | Keep synchronized with shared authority state |
+| Phase 11.5 MISP state gate | `CURRENT / IN EXACT-HEAD VALIDATION` | Active persistence/authority implementation boundary |
 | Production roadmap/readiness/checklist | `CURRENT` | Reconcile together on readiness-gate change |
 | Phase 10 decision record | `CURRENT / DECIDED` | Preserve NO-GO decision and successor rationale |
 | System architecture | `CURRENT — STABLE DESIGN` | Update for accepted component/trust/data-flow changes |
-| Security model | `CURRENT — STABLE CONTROL MODEL` | Update when identity/authorization/security boundaries change |
+| Security model | `CURRENT — ACTIVE PHASE 11.5 CONTROL BOUNDARY` | Update when identity/authorization/security boundaries change |
 | Governance mapping registry | `CURRENT — CONTROLLED CLAIM MODEL` | Update when mappings/framework semantics change |
 | QA/release gates | `CURRENT — CONTROL MODEL` | Update when gate/evidence rules change |
 | Historical phase runbooks/evidence | `HISTORICAL / SUPPORTING` | Never rewrite original evidence claims |
@@ -59,38 +60,37 @@ The professional documentation must consistently distinguish:
 - Phase 11: `IN PROGRESS / ACTIVE`;
 - Phase 11.1–11.2 Taranis: `PASS / REPOSITORY_COMPLETE`;
 - Phase 11.3 IntelOwl: `PASS / REPOSITORY_COMPLETE`;
-- Phase 11.4 OpenCTI contract: `PASS / REPOSITORY_COMPLETE`;
-- Phase 11.4 OpenCTI read-only adapter: `PASS / REPOSITORY_COMPLETE`;
-- Phase 11.4 OpenCTI canonical mapping/persistence: `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
+- Phase 11.4 OpenCTI: `PASS / REPOSITORY_COMPLETE`;
+- Phase 11.5 MISP consolidation contract: `PASS / REPOSITORY_COMPLETE`;
+- Phase 11.5 MISP synchronization state/persistence: `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
 - Phase 12: `NOT STARTED`;
 - DTMO: **not production authorized**.
 
-## Active Phase 11.4 documentation rule
+## Active Phase 11.5 documentation rule
 
-Documentation may describe repository-implemented OpenCTI read and persistence behavior but must not imply live OpenCTI connectivity, deployed credentials/RBAC/markings, production-scale STIX synchronization, production graph correctness, production-equivalent behavior or an accepted OpenCTI operator UI.
+Documentation may describe repository-implemented MISP authority-state behavior but must not imply live MISP connectivity, deployed credentials/RBAC, lawful live-data sharing, successful remote delivery, federation behavior, production-equivalent behavior or an accepted new operator UI.
 
 The active documentation preserves these boundaries:
 
-- OpenCTI remains a separate service/API component; no source is vendored;
-- Community Edition Apache-2.0 and separate Enterprise Edition licensing are distinguished;
-- dedicated non-human least-privilege identity and runtime secrets remain required;
-- OpenCTI/STIX and DTMO identity domains stay separate and explicitly mapped;
-- mappings and immutable reconciliation revisions preserve markings, confidence, timestamps, external references and provenance;
-- conflicting identity drift, malformed data and ambiguous mapping fail closed;
-- database constraints keep `external_share_authorized=false` and `local_compromise_proven=false`;
-- PostgreSQL commit precedes durable checkpoint advance;
-- unchanged replay is idempotent through stable identity and snapshot hashes;
-- connector registration, MISP synchronization, enrichment, TheHive case creation, publication, security administration and arbitrary mutation remain excluded;
-- graph context does not establish local compromise/exposure or DTMO share/publication authority;
+- MISP v2.5.44 remains a separate AGPL-3.0 service/API component and source is not vendored;
+- the existing `events/restSearch` read path and human-approved unpublished `events/add` path are reused rather than duplicated;
+- one stable MISP event UUID maps to one canonical DTMO item;
+- normalized distribution, sharing-group and TLP restrictions are persisted in `misp_synchronization_state`;
+- accepted restrictions are projected to canonical `metadata_json.misp_restrictions` for governed export enforcement;
+- canonical item creation and authority-state reconciliation occur before the database transaction commits;
+- identity collision/drift, malformed/unknown restrictions and inbound share authority fail closed;
+- database constraints preserve known distribution/sharing semantics and `external_share_authorized=false`;
+- human review/share approval remains the only outbound authority;
+- automatic publication, MISP push/pull federation, OpenCTI↔MISP synchronization, TheHive case creation and Cortex adoption remain excluded;
 - repository CI is engineering evidence, not live integration or production evidence.
 
-No synthetic screenshot is promoted because this persistence slice introduces no accepted OpenCTI operator GUI surface.
+No synthetic screenshot is promoted because this persistence/authority slice introduces no accepted operator GUI surface.
 
 ## Evidence and claim rules
 
 Repository CI cannot manufacture staging acceptance; owner acceptance cannot manufacture independent assurance; independent assurance cannot manufacture production authorization. Prior Phase 8/9 evidence remains valid only for the prior candidate. Fresh Phase 11.10 validation and Phase 11.11 independent assurance are required before Phase 12.
 
-Framework mappings, IntelOwl enrichment and OpenCTI graph context remain bounded claims and do not imply blanket compliance, local exposure or compromise without separate attributable evidence.
+Framework mappings, IntelOwl enrichment, OpenCTI graph context and MISP event membership remain bounded claims and do not imply blanket compliance, local exposure, compromise or dissemination authority without separate attributable evidence.
 
 ## Historical / immutable material
 
