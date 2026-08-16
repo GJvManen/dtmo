@@ -6,18 +6,20 @@ This directory contains the authoritative professional documentation for Dutch T
 
 | Area | Current state |
 |---|---|
-| Software baseline | `16.0.0rc12` plus accepted post-RC13/E8 repository enhancements |
+| Software baseline | `16.0.0rc12` plus accepted post-RC13/E8/Phase-11 repository enhancements |
 | Phases 1–7 | `PASS` |
 | RC13 functional product acceptance | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | `PASS / REPOSITORY_COMPLETE` |
 | Phase 8 production-equivalent staging | `PASS / OWNER_ACCEPTED` |
 | Phase 9 independent assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
 | Phase 10 production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
-| Phase 11 platform industrialisation | `IN PROGRESS / ACTIVE` |
+| Phase 11.1 Taranis architecture/contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 IntelOwl | `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **Not production authorized** |
 
-The active programme is Phase 11. Phase 10 did not grant production authorization. Phase 12 is the next production authorization decision after the materially changed integrated platform completes fresh production-equivalent validation and independent external assurance.
+The active bounded programme step is Phase 11.3 IntelOwl enrichment integration. Phase 10 did not grant production authorization. Phase 12 is the next production authorization decision after the materially changed integrated platform completes fresh production-equivalent validation and independent external assurance.
 
 ## Start here
 
@@ -27,8 +29,8 @@ The active programme is Phase 11. Phase 10 did not grant production authorizatio
 | Product / delivery | [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current State](project/CURRENT_STATE.md), [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) |
 | Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
 | Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Security Overview](security/SECURITY_OVERVIEW.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md) |
-| Architecture / engineering | [Taranis Platform Integration Assessment](architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md), [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md) |
-| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Taranis Platform Integration Assessment](architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md) |
+| Architecture / engineering | [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md), [Taranis Platform Integration Assessment](architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md), [Taranis → DTMO Contract](architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md), [Architecture Context](architecture/ARCHITECTURE_CONTEXT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md) |
+| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md), [Governance evidence workflow](architecture/SYSTEM_WORKFLOWS.md) |
 | QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) |
 | Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [Recovery workflow](architecture/SYSTEM_WORKFLOWS.md) |
@@ -40,13 +42,32 @@ The active programme is Phase 11. Phase 10 did not grant production authorizatio
 - [User Guide](user/USER_GUIDE.md) — analyst/reviewer navigation, search, filtering, vulnerability triage, AIL/MISP context and degraded-state behavior;
 - [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md) — identities, RBAC, privileged Administration, source governance, secrets, MISP sharing boundaries and audit/correlation.
 
-These guides are linked to canonical system workflows rather than duplicating incompatible process descriptions.
+These guides are linked to canonical system workflows rather than duplicating incompatible process descriptions. Phase 11.3 is currently an architecture/contract step, so no end-user IntelOwl workflow is claimed until the bounded adapter is implemented and accepted.
 
 ## Phase 11 programme documentation
 
 - [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) defines the fixed Taranis → IntelOwl → OpenCTI → MISP → TheHive → conditional Cortex → runtime industrialisation sequence.
 - [Taranis Platform Integration Assessment](architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md) defines the Phase 11.1 responsibility boundary, Keep/Integrate/Replace/Deprecate/Migrate matrix, trust boundaries and licensing rule.
+- [Taranis → DTMO Integration Contract](architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md) defines the accepted read-only service/API boundary used by the repository-complete Phase 11.2 adapter.
+- [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md) defines the active Phase 11.3 API, identity, analyzer allowlist, TLP/privacy, provenance, rate-limit, authority and AGPL service-boundary contract.
 - [Phase 10 Production Go/No-Go](production/PHASE10_PRODUCTION_GO_NO_GO.md) records the completed `NO-GO / BLOCKED` decision and why the integrated successor candidate requires fresh evidence.
+
+## Phase 11.3 trust-boundary workflow
+
+```mermaid
+flowchart LR
+    D[DTMO governed observable] --> P{Approved class + handling?}
+    P -->|no| R[Review required / do not submit]
+    P -->|yes| A[Allowlisted analyzer/playbook policy]
+    A -->|runtime token + TLS| I[IntelOwl API]
+    I --> J[Bounded job execution]
+    J --> Q[Attributed analyzer reports]
+    Q --> N[DTMO enrichment normalization]
+    N --> C[(Canonical DTMO state)]
+    Q -. no implicit share/publish .-> X[External authority boundary]
+```
+
+This diagram is architectural. It does not claim live IntelOwl connectivity, deployed service identities, provider credentials or production-equivalent behavior.
 
 ## Visual system documentation
 
@@ -54,7 +75,7 @@ These guides are linked to canonical system workflows rather than duplicating in
 - [Visual Documentation Standard](visual/DOCUMENTATION_VISUAL_STANDARD.md) defines how diagrams and screenshots are structured, labelled, reviewed and kept current.
 - [Product Screenshot Catalogue](visual/screenshots/README.md) defines the governed screenshot set.
 
-The governed screenshot catalogue now contains UI-01 through UI-10. Each published PNG is tied to a reviewed DTMO runtime capture using sanitized fixtures where applicable. They are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. They also do not independently prove external assurance or production authorization.
+The governed screenshot catalogue contains UI-01 through UI-10. No IntelOwl screenshot is added in this contract-only slice because a synthetic or unrelated image would falsely imply implemented/runtime behavior. A governed IntelOwl visual becomes applicable only after the actual adapter/operator surface exists.
 
 ## Documentation model
 
@@ -72,6 +93,8 @@ The following documents form the current decision-grade set and must remain mutu
 - `docs/roadmap/PRODUCTION_ROADMAP.md`;
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
 - `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`;
+- `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`;
+- `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`;
 - `docs/evidence/EVIDENCE_INDEX.md`;
 - `docs/qa/QA_AND_RELEASE_GATES.md`;
 - `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`.
@@ -86,7 +109,7 @@ PR chronology, workflow/run identifiers, point-in-time blockers and immutable ev
 
 The repository-complete DTMO baseline provides one governed console across Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The E8 line adds OpenCVE, Vulnerability-Lookup, governed MISP read/export, governed AIL read/enrichment/correlation, explainable vulnerability prioritization, vulnerability analytics and provenance-backed vulnerability-management framework mappings.
 
-Phase 11 changes the platform composition, not DTMO's differentiating mission. DTMO remains the education-sector CTI, vulnerability-context, governance and governed-sharing layer. Generic OSINT collection, generic IOC enrichment, CTI graph and incident/case workflow are integrated from mature open-source projects where practical.
+Phase 11 changes the platform composition, not DTMO's differentiating mission. DTMO remains the education-sector CTI, vulnerability-context, governance and governed-sharing layer. Taranis generic OSINT collection/assessment is repository-integrated through Phase 11.2. IntelOwl is the active generic IOC-enrichment target; OpenCTI and TheHive follow only after IntelOwl is accepted.
 
 PostgreSQL remains canonical DTMO application state until an explicit Phase 11 migration decision changes that boundary. OpenSearch remains the search/index representation; S3-compatible object storage retains raw evidence; Redis provides coordination; Prometheus and separately authenticated Grafana provide operational observability.
 
@@ -99,10 +122,12 @@ Across all documentation the following remain authoritative:
 - privileged Administration safeguards and auditable actions;
 - provenance/confidence preservation and data minimization;
 - separate human review and external-share approval;
-- no publication authority from connectors, CI, analytics, Administration, Governance, Taranis publishers, enrichment engines, staging acceptance or production authorization;
+- no publication authority from connectors, CI, analytics, Administration, Governance, Taranis publishers, IntelOwl enrichment jobs/evaluations, staging acceptance or production authorization;
 - no inferred framework mappings or broad compliance claims from contextual relationships;
 - no raw credentials/tokens in repository evidence;
 - dedicated bounded service identities across integrations;
+- explicit analyzer/playbook allowlisting before IntelOwl execution;
+- unknown/missing TLP or privacy state fails closed;
 - open findings, deviations and residual risks remain explicit.
 
 ## Governance and framework semantics
@@ -111,11 +136,11 @@ The governance model is explicit and provenance-backed. It includes versioned DT
 
 ## Production-readiness evidence boundary
 
-Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the prior candidate. Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` and Phase 11 is `IN PROGRESS / ACTIVE`.
+Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the prior candidate. Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`. Phase 11.1 and 11.2 are repository-complete; Phase 11.3 is active.
 
 Repository CI, Docker Compose, staging emulators, synthetic fixtures and internal self-attestation are not represented as substitutes for external acceptance or independent assurance. Prior Phase 8/9 evidence cannot automatically satisfy the future integrated candidate because Phase 11 materially changes the platform.
 
-DTMO remains not production authorized. Phase 12 is the next production authorization gate after fresh integrated validation and assurance.
+DTMO remains not production authorized. Phase 12 is the next production authorization gate after fresh integrated validation and assurance in Phase 11.10 and 11.11.
 
 ## Maintenance rule
 
