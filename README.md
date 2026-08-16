@@ -12,7 +12,8 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Phase 11.1 Taranis architecture/contract:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.2 Taranis adapter:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.3 IntelOwl contract:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded priority:** Phase 11.3 IntelOwl adapter `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
+> **Phase 11.3 IntelOwl adapter:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded priority:** Phase 11.3 governed IntelOwl execution/persistence `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
 > **Next production authorization:** Phase 12 `NOT STARTED`  
 > **Production status:** **not production authorized**
 
@@ -24,7 +25,7 @@ DTMO is built around five principles:
 
 1. **Provenance first** — source identity and evidence remain traceable through ingestion, normalization, correlation and presentation.
 2. **Fail closed** — missing evidence, invalid contracts, incomplete acceptance or unknown state never become implicit success.
-3. **Human authority remains human** — ingestion, analytics, Administration, CI and staging access do not grant publication or external-sharing authority.
+3. **Human authority remains human** — ingestion, enrichment, analytics, Administration, CI and staging access do not grant publication or external-sharing authority.
 4. **Least privilege by design** — human and service identities are separated and privileged operations remain auditable.
 5. **Evidence-based governance** — framework relationships are explicit, versioned and provenance-backed; mappings are not inferred from free text or semantic similarity.
 
@@ -36,7 +37,7 @@ The canonical web application provides one operator experience for Overview, Int
 
 ### Intelligence and CTI ecosystem
 
-The repository-complete product baseline includes governed integrations and semantics for OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL. Phase 11.1–11.2 added the repository-complete read-only Taranis service boundary and canonical adapter. Phase 11.3 now implements IntelOwl as a separate generic enrichment service rather than vendoring an enrichment engine into DTMO.
+The repository-complete product baseline includes governed integrations and semantics for OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL. Phase 11.1–11.2 added the repository-complete read-only Taranis service boundary and canonical adapter. The Phase 11.3 IntelOwl contract and bounded adapter are repository-complete; the active bounded slice adds human-authorized execution, durable enrichment history and operational read access.
 
 ### Intelligence pipeline
 
@@ -46,31 +47,38 @@ flowchart LR
     TAR --> N[DTMO normalization + provenance]
     N --> O[Raw evidence object storage]
     N --> P[(PostgreSQL canonical state)]
-    N --> X[(OpenSearch index)]
-    P --> ENR[Governed enrichment request]
-    ENR --> G[IntelOwl policy gate\nclass + TLP + analyzer allowlist]
+    H[Human reviewer\nREVIEW_INTELLIGENCE] --> ENR[Governed enrichment request]
+    P --> ENR
+    ENR --> G[IntelOwl policy gate\nclass + handling + analyzer allowlist]
     G --> OWL[IntelOwl API]
     OWL --> ER[Attributed analyzer results]
-    ER --> P
+    ER --> EH[(Immutable enrichment history)]
+    EH --> P
     G -. connectors_requested=[] .-> NO[No implicit external side effects]
+    EH -. never grants .-> SHARE[Human share/publication approval]
     P --> API[FastAPI application services]
-    X --> API
     API --> UI[Unified DTMO console]
 ```
 
 PostgreSQL remains canonical application truth. IntelOwl results are attributable enrichment context: they do not become proof of local compromise or external-share/publication authority.
 
+### Governed IntelOwl execution
+
+The governed execution endpoint requires `REVIEW_INTELLIGENCE`; the current service-account role does not hold that permission. The history endpoint requires `READ_INTELLIGENCE`. The IntelOwl feature flag must be enabled before execution is possible.
+
+Every requested analyzer is conservatively treated as an external disclosure boundary in this slice. Restricted handling (`red`, `tlp:red`, `review-required`) fails closed before network disclosure. The request continues to submit `connectors_requested=[]`, so IntelOwl MISP/OpenCTI/Slack/email connector side effects remain outside the path.
+
+Migration `0011_intelowl_enrichment_history` adds immutable canonical-item-linked records with upstream job identity, requested analyzers, handling input, partial-success state, attributed reports, requesting human identity and database-enforced `external_share_authorized=false` / `local_compromise_proven=false` invariants. `(item_id, job_id)` is unique, making replay of the same upstream job idempotent at the persistence boundary.
+
 ### Security and governance
 
-The IntelOwl adapter requires a runtime-secret API token, production HTTPS and an explicit analyzer allowlist. Approved observable classes default to CVE, IP, domain, URL and hash; email/personal-data observables remain excluded pending explicit privacy/data-processing approval. Restricted handling can block external analyzer disclosure before a network request. Unknown analyzers, job-ID mismatches, oversized/malformed results and unbounded polling fail closed.
-
-The initial adapter submits `connectors_requested=[]`, so IntelOwl MISP/OpenCTI/Slack/email connector side effects remain outside the path. Normalized metadata explicitly records `external_share_authorized=false` and `local_compromise_proven=false`.
+The IntelOwl integration requires a runtime-secret API token, production HTTPS and an explicit analyzer allowlist. Approved observable classes default to CVE, IP, domain, URL and hash; email/personal-data observables remain excluded pending explicit privacy/data-processing approval. Unknown analyzers, job-ID mismatches, oversized/malformed results and unbounded polling fail closed.
 
 ## Architecture
 
 The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, SQLAlchemy/Alembic, PostgreSQL, Redis, OpenSearch, S3-compatible object storage, Prometheus/Grafana, Nginx and a Docker Compose reference topology. The Phase 11 target is a composed service architecture: Taranis AI for collection/assessment, IntelOwl for IOC enrichment, OpenCTI for STIX graph, MISP for governed exchange and TheHive for incident/case handoff.
 
-See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md), [IntelOwl → DTMO Integration Contract](docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md), [IntelOwl Integration](docs/integrations/INTELOWL_INTEGRATION.md) and [Security Overview](docs/security/SECURITY_OVERVIEW.md).
+See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md), [IntelOwl → DTMO Integration Contract](docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md), [IntelOwl Integration](docs/integrations/INTELOWL_INTEGRATION.md), [IntelOwl Enrichment Operations Runbook](docs/operations/INTELOWL_ENRICHMENT_RUNBOOK.md) and [Security Overview](docs/security/SECURITY_OVERVIEW.md).
 
 ## Current maturity and release position
 
@@ -85,7 +93,8 @@ See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md), [IntelOwl �
 | Phase 11.1 | Taranis architecture/API/data-model/identity/licensing | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 | Taranis→DTMO canonical adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 contract | IntelOwl service/API/security/licensing contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 adapter | Bounded IntelOwl enrichment adapter | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.3 adapter | Bounded IntelOwl enrichment adapter | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 execution/persistence | Governed execution + durable enrichment history | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
 
 Phase 8/9 remain historical evidence for the earlier candidate. The materially changed integrated platform requires fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance before Phase 12.
@@ -94,8 +103,8 @@ Phase 8/9 remain historical evidence for the earlier candidate. The materially c
 
 The current priority sequence is:
 
-1. accept the bounded Phase 11.3 IntelOwl adapter on fully green exact-head CI;
-2. complete Phase 11.3 governed execution/persistence and operational integration;
+1. complete Phase 11.3 governed IntelOwl execution/persistence and operational integration on fully green exact-head CI;
+2. reconcile Phase 11.3 as repository-complete after merge;
 3. integrate OpenCTI;
 4. consolidate MISP authority/synchronization;
 5. add TheHive handoff;
@@ -109,7 +118,7 @@ See the [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISA
 
 ## Documentation
 
-The authoritative documentation portal is [docs/README.md](docs/README.md). Historical point-in-time run records remain historical and are not rewritten to claim Phase 11 evidence.
+The authoritative documentation portal is [docs/README.md](docs/README.md). The Phase 11.3 reviewer workflow is [IntelOwl Governed Enrichment Workflow](docs/user/INTELOWL_ENRICHMENT_WORKFLOW.md), and operational handling is documented in [IntelOwl Enrichment Operations Runbook](docs/operations/INTELOWL_ENRICHMENT_RUNBOOK.md). Historical point-in-time run records remain historical and are not rewritten to claim Phase 11 evidence.
 
 ## Local reference environment
 
