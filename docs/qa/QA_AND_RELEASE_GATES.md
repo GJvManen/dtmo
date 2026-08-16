@@ -14,6 +14,7 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 6. **Deployment-bound evidence stays deployment-bound** — materially changed candidates require impact assessment and appropriate revalidation.
 7. **Historical evidence is immutable** — later decisions may supersede current status without rewriting historical run records.
 8. **One bounded Phase 11 objective per PR** — no stacking of unrelated architecture changes behind red CI.
+9. **Professional documentation is a merge criterion** — code/integration work cannot merge when affected authoritative documentation or documentation contract tests are stale.
 
 ## Gate families
 
@@ -43,7 +44,9 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Phase 8 | `PASS / OWNER_ACCEPTED` |
 | Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
 | Phase 10 | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
-| Phase 11 | `IN PROGRESS / ACTIVE` |
+| Phase 11.1 | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.2 | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 | `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION` |
 | Phase 12 | `NOT STARTED` |
 
 DTMO is not production authorized.
@@ -52,11 +55,15 @@ DTMO is not production authorized.
 
 The existing workflow portfolio remains required for DTMO code touched during Phase 11. New integrations add bounded contracts and integration/runtime gates rather than weakening existing controls.
 
+The active contract-specific workflow is **`Phase 11 IntelOwl Integration Contract Gate`**. It validates `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md` together with the authoritative roadmap/current-state/README markers. It proves contract/document synchronization only; it does not prove live IntelOwl connectivity or production behavior.
+
 ## Phase 11 gate sequence
 
 ### 11.1 Taranis architecture and gap assessment
 
-Required before adapter implementation:
+**Repository status:** `PASS / REPOSITORY_COMPLETE`
+
+Accepted before adapter implementation:
 
 - responsibility boundary accepted;
 - exact API/OpenAPI inventory;
@@ -69,26 +76,42 @@ Required before adapter implementation:
 
 ### 11.2 Taranis canonical adapter
 
-Required evidence:
+**Repository status:** `PASS / REPOSITORY_COMPLETE`
+
+Accepted repository evidence:
 
 - authenticated service-to-service contract;
 - idempotent canonical ingestion;
 - provenance/evidence retention;
 - TLP/classification fail-closed behavior;
 - replay/deduplication handling;
+- durable checkpointing/reconciliation;
+- bounded detail/CTI retrieval;
+- governed connector execution;
 - degraded/partial failure behavior;
-- no publication-authority escalation.
+- no publication-authority escalation;
+- final exact-head CI and professional documentation gates green.
 
 ### 11.3 IntelOwl
 
-Required evidence:
+**Current bounded gate:** contract baseline acceptance before adapter implementation.
 
-- dedicated service identity and secret handling;
+Contract evidence required now:
+
+- IntelOwl v6.7-compatible service/API boundary documented;
+- dedicated non-admin service identity and secret handling;
 - TLS verification outside local development;
-- analyzer/result provenance;
-- quota/timeout/failure isolation;
-- privacy decision for email observables;
-- semantic boundary that enrichment is not local exposure/compromise proof.
+- explicit observable and analyzer/playbook allowlists;
+- analyzer/job/result provenance contract;
+- quota/rate-limit/timeout/failure-isolation semantics;
+- TLP/privacy rules, with email/generic personal data disabled pending approval;
+- IntelOwl external Connectors excluded from the initial enrichment path;
+- semantic boundary that enrichment is not local exposure/compromise proof;
+- AGPL-3.0 service boundary and explicit review before vendoring/modification/redistribution;
+- authoritative current-state/roadmap/README/docs-portal synchronization;
+- `Phase 11 IntelOwl Integration Contract Gate` and Professional Documentation Gate exact-head success.
+
+Subsequent adapter evidence must additionally prove bounded job submission/polling, allowlist enforcement, attributed analyzer reports, partial-success semantics, `429` handling, malformed-result fail-closed behavior and canonical enrichment without share/publication side effects.
 
 ### 11.4 OpenCTI
 
@@ -157,6 +180,8 @@ Release gates must preserve:
 - ingestion creates candidate intelligence only;
 - external sharing requires separate human approval;
 - connectors, CI, service accounts and integrated publishers do not gain publication authority;
+- IntelOwl analyzer verdicts/evaluations do not imply local compromise;
+- IntelOwl external Connectors are not enabled merely for enrichment;
 - human and machine roles remain separated;
 - privileged Administration remains least-privilege and auditable;
 - framework mappings remain explicit and do not imply blanket compliance;
