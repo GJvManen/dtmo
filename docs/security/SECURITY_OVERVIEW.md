@@ -7,7 +7,7 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 DTMO protects the confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence used in an education context. Security controls are designed so that source trust, identity, authorization, evidence and human decision boundaries remain visible and enforceable.
 
-DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is the active platform-industrialisation programme. Phase 11.1 and 11.2 are repository-complete. The Phase 11.3 IntelOwl contract is repository-complete and the bounded IntelOwl adapter is the active exact-head integration gate.
+DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is the active platform-industrialisation programme. Phase 11.1 and 11.2 are repository-complete. The Phase 11.3 IntelOwl contract and bounded adapter are repository-complete; governed IntelOwl execution, durable enrichment history and operational integration are the active exact-head gate.
 
 ## Identity and authentication
 
@@ -17,7 +17,7 @@ Production identity requirements include approved issuer/audience/key trust, kno
 
 Local/reference identity helpers are development conveniences, not production identity architecture.
 
-External Phase 11 service integrations use dedicated non-human identities with the minimum required scope. Taranis remains read-only. The IntelOwl adapter requires a dedicated non-admin service identity, runtime-secret API token and HTTPS in production; a `403` is an authorization/configuration failure and never a reason to broaden privilege automatically.
+External Phase 11 service integrations use dedicated non-human identities with the minimum required scope. Taranis remains read-only. IntelOwl requires a dedicated non-admin service identity, runtime-secret API token and HTTPS in production; a `403` is an authorization/configuration failure and never a reason to broaden privilege automatically.
 
 ## Identity and access control
 
@@ -25,6 +25,8 @@ External Phase 11 service integrations use dedicated non-human identities with t
 - Human and service-account authorities remain separated.
 - Least privilege and explicit role/permission scope are enforced server-side.
 - Service accounts/connectors do not receive human review/share-approval authority.
+- Governed IntelOwl execution requires `REVIEW_INTELLIGENCE`; the current service-account role does not hold that permission.
+- IntelOwl enrichment-history reads require `READ_INTELLIGENCE` and remain non-mutating.
 - Auditor/read-only paths remain non-mutating.
 - Privileged Administration actions require appropriate human authority.
 - Administrator self-management and final-active-admin safeguards prevent lockout/escalation failure modes.
@@ -37,7 +39,7 @@ Technical success is not dissemination authority. Source execution, enrichment, 
 
 Connectors, CI, dashboards, analytics, Administration, Governance, staging access, infrastructure administration, Taranis publisher state and IntelOwl analyzer/job results do **not** automatically authorize external sharing or publication.
 
-Existing DTMO human approval and governed MISP/export controls remain authoritative.
+Existing DTMO human approval and governed MISP/export controls remain authoritative. IntelOwl durable history is database-constrained to `external_share_authorized=false` and `local_compromise_proven=false` and cannot mutate canonical `share_approved` state.
 
 ## Source and ingestion security
 
@@ -53,22 +55,23 @@ DTMO threat and vulnerability management preserves source provenance, separates 
 
 ## Phase 11.3 IntelOwl enrichment security boundary
 
-The IntelOwl service/API/security/licensing contract is accepted. The bounded adapter is implemented in the active repository slice and remains subject to exact-head acceptance. No live IntelOwl deployment, provider credential, durable enrichment-history persistence or production-equivalent behavior is claimed by this repository state.
+The IntelOwl service/API/security/licensing contract and bounded adapter are accepted. The active slice introduces the governed operational API and durable history. No live IntelOwl deployment, provider credential, analyzer quality, production-equivalent persistence/recovery or production authorization is claimed by repository CI.
 
 ```mermaid
 flowchart LR
-    C[(DTMO canonical observable)] --> P{Class + TLP/privacy + allowlist valid?}
-    P -->|no| R[Review / reject submission]
+    H[Human reviewer\nREVIEW_INTELLIGENCE] --> E[DTMO governed enrichment API]
+    C[(DTMO canonical item)] --> E
+    E --> P{Class + handling + allowlist valid?}
+    P -->|no| R[Reject before disclosure]
     P -->|yes| I[IntelOwl API\ndedicated non-admin identity]
     I --> A[Allowlisted analyzer/playbook]
     A --> I
-    I --> E[Attributed analyzer report]
-    E --> V{Job ID + analyzer + size valid?}
-    V -->|no| Q[Reject / quarantine fail closed]
-    V -->|yes| N[DTMO enrichment normalization]
-    N --> C
+    I --> V{Job ID + analyzer + size valid?}
+    V -->|no| Q[Reject fail closed]
+    V -->|yes| D[(Immutable enrichment history)]
+    D --> C
     I -. connectors_requested=[] .-> X[MISP / OpenCTI / Slack / Email side effects excluded]
-    N -. no implicit authority .-> H[Human share/publication approval]
+    D -. no implicit authority .-> S[Human share/publication approval]
 ```
 
 Required controls:
@@ -76,15 +79,19 @@ Required controls:
 - only CVE, IP, domain, URL and hash are initially eligible observables;
 - email and other generic personal-data observables remain disabled until explicit privacy/data-processing approval;
 - analyzers/playbooks are explicitly allowlisted; newly available IntelOwl plugins are not automatically trusted;
-- DTMO considers whether an analyzer sends data to an external provider before execution;
-- unknown/missing TLP or handling state fails closed to review-required;
-- `TLP:RED` or equivalent restricted material is not sent to external analyzers;
-- bounded polling, result-size and retry behavior prevents retry storms and uncontrolled disclosure;
-- IntelOwl external Connectors are excluded from the bounded enrichment path through an explicit empty connector request;
+- every requested analyzer is conservatively treated as an external disclosure target in this slice unless a future reviewed contract proves a narrower boundary;
+- unknown/missing or `review-required` handling fails closed;
+- `TLP:RED` or equivalent restricted material is not sent to the separate IntelOwl/analyzer boundary;
+- bounded polling, result-size and timeout behavior prevents retry storms and uncontrolled disclosure;
+- IntelOwl external Connectors are excluded through an explicit empty connector request;
 - immutable upstream job identity is verified before result acceptance;
-- analyzer/job/result identity and timestamps are retained in provenance;
+- persistence verifies the canonical item identity again and deduplicates by `(item_id, job_id)`;
+- requesting human identity, analyzer/job/result attribution and timestamps remain available in durable history;
 - analyzer verdicts such as malicious/suspicious are attributed context and are not local-compromise proof;
-- malformed, oversized, unknown-analyzer or partial results remain explicit and fail closed where attribution/safety cannot be established.
+- malformed, oversized, unknown-analyzer or unsafe results fail closed rather than being promoted to trusted evidence;
+- partial analyzer success remains explicit.
+
+See `docs/security/INTELOWL_TRUST_BOUNDARY.md` for the focused trust-boundary model.
 
 ## Vulnerability intelligence and enrichment semantics
 
@@ -104,24 +111,25 @@ Explainable prioritization must retain input provenance and semantic boundaries 
 - Staging data must use an approved synthetic/sanitized/representative approach unless explicitly authorized otherwise.
 - Treat external enrichment as a potential disclosure of the observable to a provider.
 - Do not enable email/generic personal-data enrichment until lawful purpose, data-processing basis, provider/transfer implications and retention have been explicitly reviewed.
+- Apply the deployment retention policy to durable IntelOwl history, backups and derived copies; repository CI does not prove operational erasure.
 
 ## Persistence and integrity
 
 Security-relevant data responsibilities are explicit:
 
-- PostgreSQL — canonical application/RBAC/intelligence/mapping state;
+- PostgreSQL — canonical application/RBAC/intelligence/mapping state and immutable IntelOwl enrichment history;
 - OpenSearch — supporting search/index representation;
-- S3-compatible object storage — raw evidence;
+- S3-compatible object storage — raw source evidence;
 - Redis — coordination/cache/queue runtime state;
 - Prometheus/Grafana — operational telemetry.
 
-Search/index, raw-object or external enrichment success alone does not replace canonical PostgreSQL truth. The current adapter slice does not yet claim durable enrichment-history persistence; that remains the next bounded Phase 11.3 integration step.
+Migration `0011_intelowl_enrichment_history` adds canonical-item-linked enrichment records. Database constraints keep external-share authority and local-compromise proof false. Search/index, raw-object or external enrichment success alone does not replace canonical PostgreSQL truth.
 
 ## Auditability and observability
 
 Privileged/security-relevant activity is designed to retain actor/principal identity, action/resource context, request/correlation identifiers, before/after state where applicable and auditable event continuity. Operational troubleshooting must preserve correlation/provenance without copying unnecessary sensitive payloads into tickets or repository evidence.
 
-Phase 11 enrichment observability must identify dependency, job/correlation context and outcome without logging API tokens, provider credentials or unnecessary observable payloads.
+Durable IntelOwl history records the requesting principal subject and upstream job attribution. Operational observability must identify dependency, job/correlation context and outcome without logging API tokens, provider credentials or unnecessary observable payloads.
 
 Prometheus and separately authenticated Grafana provide operational telemetry. Monitoring access does not create intelligence-review or publication authority.
 
@@ -134,4 +142,4 @@ Prometheus and separately authenticated Grafana provide operational telemetry. M
 - Workflow configuration alone is not acceptance evidence.
 - Service-to-service integration is preferred where it preserves licensing and trust boundaries.
 
-DTMO is licensed under the **Apache License, Version 2.0** and maintains explicit security/contribution/licensing entry points. IntelOwl and pyIntelOwl remain separate AGPL-3.0 services; source vendoring, embedding, modification or redistribution is not authorized by this adapter slice and requires explicit licensing review.
+DTMO is licensed under the **Apache License, Version 2.0** and maintains explicit security/contribution/licensing entry points. IntelOwl and pyIntelOwl remain separate AGPL-3.0 services; source vendoring, embedding, modification or redistribution is not authorized by this slice and requires explicit licensing review.

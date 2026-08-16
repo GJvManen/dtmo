@@ -5,14 +5,23 @@ on:
     paths:
       - 'backend/dtmo/config.py'
       - 'backend/dtmo/integrations/intelowl.py'
+      - 'backend/dtmo/intelowl_execution.py'
+      - 'backend/dtmo/main.py'
+      - 'backend/dtmo/persistence/intelowl.py'
+      - 'backend/dtmo/persistence/models.py'
+      - 'database/migrations/versions/0011_intelowl_enrichment_history.py'
       - 'docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md'
       - 'docs/integrations/INTELOWL_INTEGRATION.md'
+      - 'docs/operations/INTELOWL_ENRICHMENT_RUNBOOK.md'
+      - 'docs/user/INTELOWL_ENRICHMENT_WORKFLOW.md'
+      - 'docs/qa/PHASE11_3_INTELOWL_GOVERNED_EXECUTION_GATE.md'
       - 'docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md'
       - 'docs/project/CURRENT_STATE.md'
       - 'README.md'
       - 'docs/README.md'
       - 'backend/tests/test_intelowl_integration_contract.py'
       - 'backend/tests/test_phase11_3_intelowl_adapter.py'
+      - 'backend/tests/test_intelowl_governed_execution.py'
       - '.github/workflows/phase11-intelowl-integration-contract.yml'
   workflow_dispatch:
 
@@ -29,5 +38,9 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: python -m pip install -e '.[test]'
-      - name: Validate IntelOwl contract, adapter and authoritative status
-        run: python -m pytest -q backend/tests/test_intelowl_integration_contract.py backend/tests/test_phase11_3_intelowl_adapter.py
+      - name: Validate IntelOwl contract, adapter, governed execution and authoritative status
+        run: >-
+          python -m pytest -q
+          backend/tests/test_intelowl_integration_contract.py
+          backend/tests/test_phase11_3_intelowl_adapter.py
+          backend/tests/test_intelowl_governed_execution.py

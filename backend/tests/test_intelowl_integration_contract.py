@@ -6,6 +6,9 @@ CONTRACT = ROOT / "docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md"
 ROADMAP = ROOT / "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md"
 CURRENT_STATE = ROOT / "docs/project/CURRENT_STATE.md"
 README = ROOT / "README.md"
+PORTAL = ROOT / "docs/README.md"
+RUNBOOK = ROOT / "docs/operations/INTELOWL_ENRICHMENT_RUNBOOK.md"
+USER_WORKFLOW = ROOT / "docs/user/INTELOWL_ENRICHMENT_WORKFLOW.md"
 
 
 def _read(path: Path) -> str:
@@ -73,18 +76,32 @@ def test_intelowl_contract_preserves_service_and_licensing_boundary() -> None:
         assert marker in text, f"missing IntelOwl licensing marker: {marker}"
 
 
-def test_phase11_authoritative_status_moves_to_intelowl_adapter() -> None:
+def test_phase11_authoritative_status_moves_to_governed_intelowl_execution() -> None:
     contract = _read(CONTRACT)
     roadmap = _read(ROADMAP)
     current_state = _read(CURRENT_STATE)
     readme = _read(README)
+    portal = _read(PORTAL)
 
     assert "PHASE 11.3 CONTRACT BASELINE" in contract
     assert "11.2 Taranis → DTMO canonical adapter" in roadmap
     assert "REPOSITORY_COMPLETE" in roadmap
     assert "11.3 IntelOwl enrichment integration" in roadmap
-    assert "ADAPTER IN EXACT-HEAD VALIDATION" in roadmap
-    assert "IntelOwl adapter" in current_state
-    assert "IntelOwl adapter" in readme
+    assert "GOVERNED EXECUTION + DURABLE HISTORY IN EXACT-HEAD VALIDATION" in roadmap
+    assert "governed IntelOwl execution" in current_state
+    assert "governed IntelOwl execution" in readme
+    assert "governed IntelOwl execution" in portal
     assert "not production authorized" in current_state
     assert "not production authorized" in readme
+    assert "not production authorized" in portal
+
+
+def test_governed_execution_documentation_is_exposed_without_false_visual_evidence() -> None:
+    portal = _read(PORTAL)
+    assert "user/INTELOWL_ENRICHMENT_WORKFLOW.md" in portal
+    assert "operations/INTELOWL_ENRICHMENT_RUNBOOK.md" in portal
+    assert "The governed screenshot catalogue now contains UI-01 through UI-10" in portal
+    assert "documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness" in portal
+    assert "No synthetic screenshot is promoted for this slice" in portal
+    assert RUNBOOK.exists()
+    assert USER_WORKFLOW.exists()

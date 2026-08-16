@@ -19,7 +19,8 @@ This roadmap separates production authorization from product evolution and platf
 | Phase 11.1 | Taranis architecture/API/licensing | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 | Taranis→DTMO canonical adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 contract | IntelOwl service/API/security/licensing contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 adapter | Bounded IntelOwl enrichment adapter | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.3 adapter | Bounded IntelOwl enrichment adapter | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 execution/persistence | Governed execution + durable enrichment history | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go for integrated platform | `NOT STARTED` |
 
 DTMO remains **not production authorized**. Phase 10 concluded with a no-go decision and Phase 11 is the highest-priority programme.
@@ -92,15 +93,31 @@ The accepted contract in `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.m
 
 ### Phase 11.3 adapter
 
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+The accepted bounded adapter validates approved observable classes, handling/TLP and analyzer allowlists before disclosure; submits no IntelOwl external Connectors; performs bounded job submission/polling; verifies immutable upstream job identity; rejects oversized/malformed results and unknown analyzers; preserves explicit partial-success state; and records that enrichment neither proves local compromise nor grants DTMO external-share/publication authority.
+
+### Phase 11.3 governed execution and persistence
+
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
 
-The active bounded gate is the IntelOwl enrichment adapter. The implementation validates approved observable classes, handling/TLP and analyzer allowlists before disclosure; submits no IntelOwl external Connectors; performs bounded job submission/polling; verifies immutable upstream job identity; rejects oversized/malformed results and unknown analyzers; preserves explicit partial-success state; and records that enrichment neither proves local compromise nor grants DTMO external-share/publication authority.
+The active bounded gate wires the accepted adapter into a human-authorized operational API and durable canonical-item-linked history:
 
-The companion implementation guide is `docs/integrations/INTELOWL_INTEGRATION.md`.
+- execution requires `REVIEW_INTELLIGENCE` and the IntelOwl feature flag;
+- the current service-account role cannot autonomously invoke the human execution endpoint;
+- every requested analyzer is conservatively treated as an external disclosure target, so restricted handling fails closed before network disclosure;
+- history reads require `READ_INTELLIGENCE`;
+- migration `0011_intelowl_enrichment_history` creates immutable enrichment records;
+- canonical item identity and upstream job identity are preserved and `(item_id, job_id)` is unique;
+- database constraints force `external_share_authorized=false` and `local_compromise_proven=false`;
+- partial analyzer success remains explicitly partial;
+- operational runbook and reviewer workflow preserve evidence, RBAC and share-authority boundaries.
 
-Repository CI for this slice is engineering evidence only. It does not prove live IntelOwl connectivity, deployed service-account permissions, provider credentials, analyzer quality, durable enrichment-history persistence, privacy approval, production-equivalent behavior, independent assurance or production authorization.
+The companion implementation guide is `docs/integrations/INTELOWL_INTEGRATION.md`; operations are in `docs/operations/INTELOWL_ENRICHMENT_RUNBOOK.md`; reviewer semantics are in `docs/user/INTELOWL_ENRICHMENT_WORKFLOW.md`.
 
-After this adapter passes fully green exact-head CI and Professional Documentation Gate and is merged with expected-head protection, the next bounded Phase 11.3 priority is governed execution/persistence and operational integration. Phase 11.4 OpenCTI does not start before Phase 11.3 is repository-complete.
+Repository CI for this slice is engineering evidence only. It does not prove live IntelOwl connectivity, deployed service-account permissions, provider credentials, analyzer quality, privacy approval, production-equivalent persistence/recovery, independent assurance or production authorization.
+
+Phase 11.4 OpenCTI does not start until this slice is fully green, merged with expected-head protection and Phase 11.3 is reconciled as repository-complete.
 
 ## Phase 11.4–11.11
 

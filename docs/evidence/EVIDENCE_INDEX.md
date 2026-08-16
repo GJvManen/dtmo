@@ -6,7 +6,7 @@ Last updated: **2026-08-16**
 
 This index maps DTMO lifecycle stages to their evidence classes and authoritative professional documentation. It is not a CI chronology or incident log. Exact workflow/job/commit history remains under `docs/development/`, GitHub issues/pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1 and 11.2 are `PASS / REPOSITORY_COMPLETE`; the Phase 11.3 IntelOwl contract is `PASS / REPOSITORY_COMPLETE`; the Phase 11.3 IntelOwl adapter is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1 and 11.2 are `PASS / REPOSITORY_COMPLETE`; the Phase 11.3 IntelOwl contract and bounded adapter are `PASS / REPOSITORY_COMPLETE`; Phase 11.3 governed execution/persistence is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
 
 ## Authoritative current-state sources
 
@@ -19,6 +19,9 @@ This index maps DTMO lifecycle stages to their evidence classes and authoritativ
 - `docs/integrations/TARANIS_ADAPTER.md`
 - `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`
 - `docs/integrations/INTELOWL_INTEGRATION.md`
+- `docs/user/INTELOWL_ENRICHMENT_WORKFLOW.md`
+- `docs/operations/INTELOWL_ENRICHMENT_RUNBOOK.md`
+- `docs/qa/PHASE11_3_INTELOWL_GOVERNED_EXECUTION_GATE.md`
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
 - `docs/project/PRODUCTION_READINESS_REPORT.md`
 - `docs/project/PRODUCTION_CHECKLIST.md`
@@ -85,26 +88,33 @@ Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis→DTMO canonical
 
 #### Phase 11.3 IntelOwl adapter
 
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Accepted repository evidence covers runtime-secret IntelOwl API token configuration, production HTTPS and explicit analyzer allowlisting, approved observable classes, fail-closed privacy/TLP checks, `connectors_requested=[]`, bounded submission/polling, immutable job identity, result-size bounds, unknown-analyzer rejection, partial-success semantics and explicit no-share/no-compromise authority markers.
+
+Adapter acceptance does not prove live connectivity, provider credentials, analyzer quality, privacy approval, production-equivalent behavior, independent assurance or production authorization.
+
+#### Phase 11.3 governed execution/persistence
+
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
 The active repository evidence target covers:
 
-- runtime-secret IntelOwl API token configuration;
-- production HTTPS and explicit analyzer allowlist validation;
-- approved observable classes and fail-closed privacy/TLP disclosure checks;
-- explicit `connectors_requested=[]`, preventing IntelOwl external Connector side effects in the bounded path;
-- bounded job submission/polling;
-- immutable upstream job identity verification;
-- maximum accepted result size;
-- unknown-analyzer and malformed-result rejection;
-- partial-success semantics;
-- analyzer/job/result provenance;
-- explicit `external_share_authorized=false` and `local_compromise_proven=false` authority semantics;
-- synthetic coverage for allowlist/handling, identity mismatch, partial failure, `429`, timeout and production configuration.
+- a human-authorized `POST /api/v1/intelowl/items/{item_id}/enrich` boundary requiring `REVIEW_INTELLIGENCE`;
+- no autonomous service-account execution through that endpoint under the current RBAC model;
+- conservative treatment of every requested analyzer as an external service disclosure boundary, causing restricted handling to fail closed before network disclosure;
+- migration `0011_intelowl_enrichment_history` and durable `intelowl_enrichment_records` linked to canonical intelligence;
+- immutable `(item_id, job_id)` uniqueness and idempotent replay persistence;
+- preserved observable/handling decision inputs, analyzer identities, requesting human subject, terminal/partial status and raw normalized result;
+- database-enforced `external_share_authorized=false` and `local_compromise_proven=false`;
+- `GET /api/v1/intelowl/items/{item_id}/history` as a read-only contextual evidence surface requiring `READ_INTELLIGENCE`;
+- operations, user and QA documentation synchronized to the implementation.
 
-This adapter evidence does **not** prove live connectivity, service-account permissions, provider credentials, analyzer quality, durable enrichment-history persistence, privacy approval, production-equivalent behavior, independent assurance or production authorization.
+The exact acceptance definition is `docs/qa/PHASE11_3_INTELOWL_GOVERNED_EXECUTION_GATE.md`.
 
-After adapter acceptance, the next bounded 11.3 evidence class is governed execution/persistence and operational integration. OpenCTI evidence does not begin until Phase 11.3 is repository-complete.
+This evidence does **not** prove live IntelOwl connectivity, provider credentials, analyzer quality, privacy/data-processing approval, production-equivalent PostgreSQL durability/recovery, deployed network trust, independent assurance or production authorization. No historical Phase 8/9 evidence is transferred to this materially changed candidate.
+
+OpenCTI evidence does not begin until Phase 11.3 is repository-complete.
 
 Required Phase 11 evidence subsequently includes OpenCTI interoperability, MISP consolidation, TheHive handoff, conditional Cortex disposition, Kubernetes/Helm/GitOps runtime hardening, migration/compatibility, a new production-equivalent validation package bound to one immutable integrated identity and a new independent external-assurance package for that same candidate.
 
@@ -131,4 +141,5 @@ Framework claims are governed by `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md
 - Raw credentials/tokens and unnecessary personal data must not be stored in repository evidence.
 - Human review/share approval remains separate from technical execution and production authorization.
 - IntelOwl provider/analyzer verdicts remain attributed context and cannot silently become DTMO local-compromise claims.
+- Durable IntelOwl history may not be edited to manufacture a later or stronger authority state.
 - Historical immutable run records are never rewritten to manufacture a later acceptance state.

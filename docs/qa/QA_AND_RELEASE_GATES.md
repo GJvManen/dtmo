@@ -47,7 +47,8 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Phase 11.1 | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 IntelOwl adapter | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.3 IntelOwl adapter | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 governed execution/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
 
 DTMO is not production authorized.
@@ -56,7 +57,9 @@ DTMO is not production authorized.
 
 The existing workflow portfolio remains required for DTMO code touched during Phase 11. New integrations add bounded contracts and integration/runtime tests rather than weakening existing controls.
 
-The **`Phase 11 IntelOwl Integration Contract Gate`** remains the dedicated IntelOwl contract/adapter synchronization gate. For the active adapter slice it validates the accepted architecture contract, implementation tests and authoritative status markers. Its success is repository engineering evidence only; it does not prove live IntelOwl connectivity or production behavior.
+The **`Phase 11 IntelOwl Integration Contract Gate`** is the dedicated IntelOwl synchronization gate. For the active slice it validates the accepted contract and adapter together with governed execution/persistence tests and authoritative lifecycle documentation. Its success is repository engineering evidence only; it does not prove live IntelOwl connectivity, deployment permissions, analyzer quality or production behavior.
+
+The companion `docs/qa/PHASE11_3_INTELOWL_GOVERNED_EXECUTION_GATE.md` defines the bounded execution/persistence acceptance criteria and non-evidence boundary.
 
 ## Phase 11 gate sequence
 
@@ -76,33 +79,35 @@ Accepted repository evidence includes authenticated read-only service integratio
 
 Accepted contract evidence includes the IntelOwl v6.7-compatible service/API boundary, dedicated non-admin identity, runtime-secret handling, TLS requirement, explicit observable/analyzer allowlists, TLP/privacy disclosure rules, analyzer/job/result provenance, bounded quota/rate-limit/failure semantics, exclusion of IntelOwl external Connectors, no-local-compromise semantics and the AGPL-3.0 service boundary.
 
-### 11.3 IntelOwl adapter — active bounded gate
+### 11.3 IntelOwl adapter
+
+**Repository status:** `PASS / REPOSITORY_COMPLETE`.
+
+Accepted repository evidence includes runtime-secret token configuration, production HTTPS and analyzer allowlist validation, approved observable classes, pre-disclosure handling checks, explicit `connectors_requested=[]`, bounded job submission/polling, immutable job identity, maximum result size, unknown-analyzer/malformed-result rejection, partial-success semantics, `429`/timeout behavior and authority metadata that neither proves local compromise nor grants external share/publication authority.
+
+### 11.3 governed execution/persistence — active bounded gate
 
 Required exact-head repository evidence:
 
-- runtime-secret IntelOwl token configuration;
-- production HTTPS and explicit analyzer allowlist validation;
-- approved observable classes and pre-disclosure handling/privacy checks;
-- analyzer requests constrained to the allowlist;
-- explicit `connectors_requested=[]` so MISP/OpenCTI/Slack/email side effects are not invoked;
-- bounded `POST /api/analyze_observable` and `GET /api/jobs/{job_id}` behavior;
-- immutable job-ID verification and correlation;
-- maximum result-size enforcement;
-- unknown analyzer and malformed-result rejection;
-- explicit partial-success semantics;
-- analyzer/job/result provenance;
-- `429`, timeout and degraded dependency tests;
-- normalized semantics that enrichment neither proves local compromise nor grants external-share/publication authority;
-- synchronized README/docs portal/current-state/readiness/roadmap/evidence documentation;
-- full exact-head CI and Professional Documentation Gate success on the same final head.
+- `POST /api/v1/intelowl/items/{item_id}/enrich` is feature-gated and requires `REVIEW_INTELLIGENCE`;
+- the current service-account role cannot autonomously invoke the human review endpoint;
+- requested analyzers remain constrained to the configured allowlist and are conservatively treated as external disclosure targets;
+- `red`, `tlp:red` and `review-required` handling fails closed before external disclosure;
+- `GET /api/v1/intelowl/items/{item_id}/history` requires `READ_INTELLIGENCE` and is non-mutating;
+- migration `0011_intelowl_enrichment_history` upgrades and downgrades successfully;
+- persistence verifies canonical item identity and remains idempotent for `(item_id, job_id)`;
+- durable records preserve observable, handling, requested analyzer, status/partial state, attributed reports, upstream job identity and requesting human subject;
+- database constraints enforce `external_share_authorized=false` and `local_compromise_proven=false`;
+- IntelOwl external Connectors remain excluded through `connectors_requested=[]`;
+- no enrichment outcome mutates canonical share approval;
+- operational runbook, reviewer workflow, security/trust-boundary, retention/governance, roadmap, evidence-index, README/docs portal and current-state documentation remain synchronized;
+- full exact-head CI and Professional Documentation Gate succeed on the same final head.
 
-The adapter gate does not establish live service-account permissions, provider credentials, analyzer quality, durable enrichment-history persistence, privacy approval, production-equivalent behavior or production authorization.
-
-### Next Phase 11.3 slice
-
-Only after the adapter is green and merged with expected-head protection may Phase 11.3 continue with governed execution/persistence and operational integration. That step must add operational/RBAC/persistence/runbook/user-admin documentation as applicable. OpenCTI does not start before Phase 11.3 repository completion.
+Repository acceptance does not establish live service-account permissions, provider credentials, analyzer quality, privacy approval, production-equivalent persistence/recovery, independent assurance or production authorization.
 
 ### 11.4 OpenCTI
+
+OpenCTI remains blocked until the active 11.3 slice is fully green, merged with expected-head protection and Phase 11.3 is reconciled as repository-complete.
 
 Required evidence includes STIX interoperability, entity identity/deduplication, confidence/marking/provenance preservation, graph synchronization failure handling and no duplicate custom graph authority inside DTMO.
 

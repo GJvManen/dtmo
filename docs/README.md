@@ -16,11 +16,12 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 11.1 Taranis architecture/contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 IntelOwl adapter | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.3 IntelOwl adapter | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 governed execution/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
-| Production readiness | **Not production authorized** |
+| Production readiness | **not production authorized** |
 
-The active bounded programme step is Phase 11.3 IntelOwl enrichment-adapter validation. Phase 10 did not grant production authorization. Phase 12 remains the next formal production authorization decision only after fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance for the materially changed integrated platform.
+The active bounded programme step is Phase 11.3 governed IntelOwl execution, durable enrichment-history persistence and operational integration. Phase 10 did not grant production authorization. Phase 12 remains the next formal production authorization decision only after fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance for the materially changed integrated platform.
 
 ## Start here
 
@@ -28,49 +29,49 @@ The active bounded programme step is Phase 11.3 IntelOwl enrichment-adapter vali
 |---|---|
 | Executive / sponsor | [Executive Status](project/EXECUTIVE_STATUS.md), [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
 | Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current State](project/CURRENT_STATE.md), [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) |
-| Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
-| Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Security Overview](security/SECURITY_OVERVIEW.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md) |
+| Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [IntelOwl Governed Enrichment Workflow](user/INTELOWL_ENRICHMENT_WORKFLOW.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
+| Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [IntelOwl Enrichment Operations Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
 | Architecture / engineering | [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md), [IntelOwl Integration](integrations/INTELOWL_INTEGRATION.md), [Taranis → DTMO Contract](architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
-| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
-| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [IntelOwl Integration](integrations/INTELOWL_INTEGRATION.md) |
+| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Phase 11.3 IntelOwl Governed Execution Gate](qa/PHASE11_3_INTELOWL_GOVERNED_EXECUTION_GATE.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
+| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [IntelOwl Enrichment Operations Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md), [IntelOwl Integration](integrations/INTELOWL_INTEGRATION.md) |
 
-The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for the accepted operator journeys documented under [Screenshot Catalogue](visual/screenshots/README.md). These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
+The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for accepted operator journeys. These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
+
+The current IntelOwl execution slice is API/repository based and does not introduce a separately accepted GUI journey. No synthetic screenshot is promoted for this slice because that would falsely imply an accepted operator screen that does not exist.
 
 ## Phase 11 programme documentation
 
 - [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) defines the fixed Taranis → IntelOwl → OpenCTI → MISP → TheHive → conditional Cortex → runtime-industrialisation sequence.
 - [Taranis Platform Integration Assessment](architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md) and [Taranis → DTMO Contract](architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md) define the accepted Taranis service boundary.
 - [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md) is the accepted Phase 11.3 service/API/security/licensing baseline.
-- [IntelOwl Integration](integrations/INTELOWL_INTEGRATION.md) documents the active bounded adapter: approved observable classes, analyzer allowlisting, TLP/privacy disclosure controls, bounded job execution, result provenance and explicit no-share/no-local-compromise semantics.
+- [IntelOwl Integration](integrations/INTELOWL_INTEGRATION.md) documents the accepted adapter plus active governed execution/persistence slice.
+- [IntelOwl Governed Enrichment Workflow](user/INTELOWL_ENRICHMENT_WORKFLOW.md) documents reviewer-facing semantics and human authority boundaries.
+- [IntelOwl Enrichment Operations Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md) documents enablement, triage, recovery and incident handling.
+- [Phase 11.3 IntelOwl Governed Execution Gate](qa/PHASE11_3_INTELOWL_GOVERNED_EXECUTION_GATE.md) defines exact-head repository acceptance and non-evidence.
 - [Phase 10 Production Go/No-Go](production/PHASE10_PRODUCTION_GO_NO_GO.md) preserves the completed `NO-GO / BLOCKED` decision as historical decision evidence.
 
 ## Phase 11.3 trust-boundary workflow
 
 ```mermaid
 flowchart LR
-    D[DTMO governed observable] --> P{Approved class + handling?}
-    P -->|no| R[Review required / no disclosure]
-    P -->|yes| A{Requested analyzers allowlisted?}
-    A -->|no| R
-    A -->|yes| I[IntelOwl API\nruntime token + TLS]
+    H[Human reviewer\nREVIEW_INTELLIGENCE] --> E[Governed IntelOwl execution API]
+    C[(DTMO canonical intelligence)] --> E
+    E --> P{Approved class + handling + analyzers?}
+    P -->|no| R[Reject before disclosure]
+    P -->|yes| I[IntelOwl API\nruntime token + TLS]
     I --> J[Bounded job execution]
     J --> V{Job ID / analyzer / size valid?}
-    V -->|no| Q[Reject / quarantine fail closed]
+    V -->|no| Q[Reject fail closed]
     V -->|yes| N[Attributed enrichment context]
-    N --> C[(DTMO canonical context)]
+    N --> D[(Immutable enrichment history)]
+    D --> C
     I -. connectors_requested=[] .-> X[No MISP/OpenCTI/Slack/Email side effects]
-    N -. no authority .-> H[Human share/publication approval]
+    D -. never grants .-> S[Human share/publication approval]
 ```
 
-This workflow is repository architecture/implementation documentation. It does not prove live IntelOwl connectivity, service-account permissions, provider credentials, analyzer quality or production-equivalent behavior.
-
-## Operator and user documentation boundary
-
-The adapter slice does not yet introduce a separately accepted end-user enrichment workflow or governed IntelOwl administration screen. Therefore existing User Guide and Administrator Guide claims are not expanded to imply runtime capability that has not been wired into governed execution/persistence. A screenshot is likewise not promoted for this slice: a synthetic image would falsely imply an accepted operator surface.
-
-The next bounded Phase 11.3 step, after this adapter is green and merged, is governed execution/persistence and operational integration. User/admin documentation and governed visuals become mandatory in that step if a new operator-visible workflow is introduced.
+Every analyzer is conservatively treated as an external service disclosure boundary in this slice. Restricted handling (`red`, `tlp:red`, `review-required`) therefore fails closed before network disclosure. Durable history preserves requesting human identity and database-enforced `external_share_authorized=false` / `local_compromise_proven=false` invariants.
 
 ## Security and authority invariants
 
@@ -79,9 +80,11 @@ Across the professional documentation set:
 - server-side RBAC and least privilege remain authoritative;
 - human and service identities remain separate;
 - credentials/tokens never belong in repository evidence, logs or screenshots;
+- `REVIEW_INTELLIGENCE` is required for governed IntelOwl execution;
 - TLP/privacy and analyzer allowlists are evaluated before IntelOwl disclosure;
 - IntelOwl external Connectors remain excluded from the bounded enrichment path;
 - unknown analyzer, malformed/oversized result or job-ID mismatch fails closed;
+- enrichment history does not mutate canonical share approval;
 - enrichment context does not prove local compromise;
 - IntelOwl success never grants DTMO external-share/publication authority;
 - Taranis and IntelOwl remain separate services under their own licensing boundaries; no upstream source is vendored by this integration slice.
@@ -90,7 +93,7 @@ Across the professional documentation set:
 
 Professional current-state documentation describes the present controlled state. Historical records under `docs/development/` and earlier Phase 8/9 evidence remain scoped to the candidate and moment they originally covered; they are not rewritten or reused as evidence for the materially changed Phase 11 candidate.
 
-Repository CI, Docker Compose, emulators and synthetic fixtures are engineering evidence only. They do not substitute for future production-equivalent validation, independent assurance or Phase 12 production authorization.
+Repository CI, migrations, Docker Compose, emulators and synthetic fixtures are engineering evidence only. They do not substitute for future production-equivalent validation, independent assurance or Phase 12 production authorization.
 
 ## Maintenance rule
 

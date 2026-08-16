@@ -33,6 +33,10 @@ Phase 11.3 IntelOwl initially permits only governed CVE, IP, domain, URL and cry
 
 IntelOwl analyzer reports are attributed enrichment evidence. They must retain analyzer/provider provenance and must not be treated as proof of local exposure or compromise merely because an external provider returns a malicious/suspicious verdict.
 
+The governed Phase 11.3 execution slice persists immutable enrichment history in `intelowl_enrichment_records`, linked to the canonical intelligence item. The record retains the IntelOwl job identity, observable type/value, handling decision input, requested analyzers, explicit partial-success state, attributed reports, bounded normalized raw result, requesting human subject and timestamp. Database constraints force `external_share_authorized=false` and `local_compromise_proven=false`; persistence is evidence context, not publication authority or compromise proof.
+
+Because the durable record includes the submitted observable and provider result, its classification is at least as restrictive as the submitted observable/context and may become more restrictive when analyzer output introduces sensitive data. The current implementation does not establish an independent fixed retention duration; deployment policy must apply the bounded lifecycle described below before production authorization.
+
 ### Identity and authorization data
 Principal identifiers, roles, assignments and audit-relevant authorization state. Generally `Sensitive`.
 
@@ -51,6 +55,7 @@ DTMO classification and TLP/handling are related but distinct controls. External
 
 - Unknown or missing handling state fails closed to review-required.
 - `TLP:RED` or equivalently restricted data is not submitted to external analyzers.
+- In the current governed execution slice, every requested IntelOwl analyzer is conservatively treated as an external disclosure target unless a future reviewed contract proves a narrower boundary.
 - An IntelOwl analyzer's configured `maximum_tlp` is an additional guardrail, not a replacement for DTMO policy.
 - A newly installed or discoverable analyzer is not automatically approved to receive DTMO data.
 - Analyzer/playbook approval must record whether execution is internal or sends observable data to an external provider.
@@ -72,7 +77,7 @@ DTMO classification and TLP/handling are related but distinct controls. External
 |---|---|
 | Canonical intelligence | Policy-defined lifecycle based on intelligence relevance, source terms and organizational requirements |
 | Raw evidence | Retain as needed to support provenance, auditability and accepted source/legal conditions |
-| Enrichment results | Bounded policy-defined lifecycle tied to relevance, analyzer/provider terms and privacy requirements; retain source/job/analyzer attribution |
+| Enrichment results | Bounded policy-defined lifecycle tied to relevance, analyzer/provider terms and privacy requirements; retain source/job/analyzer attribution and remove corresponding derived/backed-up copies according to deployment policy |
 | Search index | Rebuildable/supporting representation; lifecycle should follow canonical intelligence state |
 | Audit records | Retain according to security/audit requirements and organizational policy |
 | Operational metrics | Shorter operational lifecycle unless required for investigation or assurance |
@@ -90,6 +95,8 @@ Before enabling any IntelOwl analyzer for personal data, the accountable owner m
 ## Disposal
 
 Deletion must consider canonical state, search/index copies, raw-object copies, caches, backups, retained enrichment results and exported evidence. Disposal of Restricted material must use the controls appropriate to the underlying secret/storage platform.
+
+For IntelOwl durable history, deletion/archival implementation and backup propagation remain deployment-policy responsibilities to be validated in later industrialisation and production-equivalent phases; repository CI does not prove operational erasure or retention enforcement.
 
 ## Environment and lifecycle acceptance
 
