@@ -9,7 +9,7 @@ DTMO has completed the repository-controlled engineering baseline through Phase 
 
 Phase 8 production-equivalent validation is `PASS / OWNER_ACCEPTED` and Phase 9 independent external assurance is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate they covered. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1 Taranis architecture/contract, Phase 11.2 Taranis adapter and all accepted Phase 11.3 IntelOwl slices are **`PASS / REPOSITORY_COMPLETE`**. The active bounded objective is **Phase 11.4 OpenCTI service/API/STIX/data-model/identity/security/licensing contract validation**.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1 Taranis architecture/contract, Phase 11.2 Taranis adapter and all Phase 11.3 IntelOwl slices are **`PASS / REPOSITORY_COMPLETE`**. The Phase 11.4 OpenCTI service/API/STIX/data-model/identity/security/licensing contract is now **`PASS / REPOSITORY_COMPLETE`**. The active bounded objective is the **Phase 11.4 OpenCTI read-only STIX/identity adapter**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
 ## Lifecycle position
 
@@ -28,7 +28,8 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1 
 | Phase 11.3 IntelOwl adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 governed execution/persistence | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 OpenCTI contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.4 OpenCTI contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 OpenCTI read-only adapter | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
 
 ## Accepted product and integration capabilities
@@ -39,26 +40,29 @@ Phase 11.2 provides the repository-complete Taranis read-only canonical integrat
 
 Phase 11.3 provides the repository-complete IntelOwl service boundary, bounded enrichment adapter, human-authorized `REVIEW_INTELLIGENCE` execution, durable enrichment history and read-only history access. IntelOwl enrichment never grants external-share authority and does not prove local compromise.
 
-## Phase 11.4 OpenCTI contract baseline
+## Phase 11.4 OpenCTI read-only adapter
 
-The reviewed compatibility baseline is **OpenCTI 7.260811.0**. OpenCTI Community Edition is Apache-2.0; Enterprise Edition uses a separate license. DTMO will consume OpenCTI as a separate service/API boundary and will not vendor OpenCTI source in this phase.
+The accepted OpenCTI contract keeps OpenCTI as a separate service/API boundary. The reviewed compatibility baseline remains **OpenCTI 7.260811.0**. Community Edition is Apache-2.0; Enterprise Edition remains separately licensed. No OpenCTI source is vendored into DTMO.
 
-The contract defines GraphQL, STIX 2.1, TAXII 2.1 and access-controlled stream interfaces; a dedicated least-privilege non-human identity; explicit OpenCTI/STIX-to-DTMO identity mapping; marking/TLP/PAP, confidence and provenance preservation; restart-safe pagination/stream reconciliation; and fail-closed handling of authorization, marking and malformed/unsupported STIX conditions.
+The active adapter slice implements only bounded GraphQL `stixCoreObjects` reads. It preserves stable OpenCTI internal identity, STIX standard identity, entity type, parent types, markings, confidence, timestamps and external references. The adapter attaches explicit provenance markers stating that imported graph context is read-only, does not authorize external sharing and does not prove local compromise.
 
-The initial adapter after contract acceptance is read-oriented. It does not authorize OpenCTI connector registration, MISP synchronization, arbitrary GraphQL mutation, external enrichment, TheHive case creation or report publication.
+Entity types are constrained by an explicit allowlist. GraphQL errors, malformed page structures, unstable/missing identity, malformed markings, invalid confidence and invalid checkpoint/cursor state fail closed. The adapter does not register/invoke OpenCTI connectors, synchronize MISP, trigger enrichment, create TheHive cases, publish reports or perform arbitrary GraphQL mutation.
 
 ```mermaid
 flowchart LR
-    O[OpenCTI API / TAXII / stream] --> A[Bounded OpenCTI adapter]
-    I[Dedicated service identity\nleast privilege + markings] --> O
-    A --> V{Identity + STIX + marking + provenance valid?}
-    V -->|no| X[Reject / quarantine fail closed]
-    V -->|yes| M[OpenCTI/STIX ↔ DTMO mapping]
-    M --> D[(DTMO canonical intelligence)]
-    M -. never grants .-> S[Human share/publication authority]
+    C[(Last committed cursor)] --> A[OpenCTI read-only adapter]
+    I[Dedicated OpenCTI service identity\nleast privilege + markings] --> O[OpenCTI GraphQL]
+    A --> O
+    O --> V{Identity/type/marking/provenance valid?}
+    V -->|no| X[Reject fail closed\ncheckpoint unchanged]
+    V -->|yes| P[Governed DTMO persistence]
+    P --> K{Durable persistence successful?}
+    K -->|no| X
+    K -->|yes| N[(Atomic checkpoint commit)]
+    P -. never grants .-> S[Human share/publication authority]
 ```
 
-Graph presence, relationship confidence or upstream labels do not establish local exposure, exploitability, compromise, attribution certainty, DTMO severity or remediation completion.
+Checkpoint state advances only through the explicit `commit_page(page)` call after successful persistence. The checkpoint file is atomically replaced and restart resumes from the last committed cursor. This repository slice does not claim live OpenCTI connectivity or deployed operational readiness.
 
 ## Data and persistence model
 
@@ -67,17 +71,18 @@ Graph presence, relationship confidence or upstream labels do not establish loca
 - **S3-compatible object storage** — raw source/evidence objects;
 - **Redis** — queue/cache/runtime coordination;
 - **Prometheus/Grafana** — operational observability;
-- **OpenCTI** — external STIX knowledge-graph service under an explicit identity/provenance mapping boundary, not a replacement for DTMO canonical truth.
+- **OpenCTI** — external STIX knowledge-graph service under an explicit identity/provenance mapping boundary, not a replacement for DTMO canonical truth;
+- **OpenCTI checkpoint** — durable cursor state outside source control; it may advance only after successful page persistence.
 
-A later OpenCTI adapter may add durable mapping/checkpoint state only through a separately accepted bounded PR and migration as required.
+The current slice does not yet claim repository-complete canonical OpenCTI mapping/persistence. That is the next bounded Phase 11.4 concern after this read adapter is accepted.
 
 ## Security and authority model
 
 Server-side RBAC, least privilege, human/service separation, auditable privileged actions, provenance, data minimization and explicit review/share approval remain authoritative.
 
-Taranis cannot grant DTMO publication/share authority. IntelOwl jobs/results cannot grant DTMO publication/share authority or local-compromise proof. OpenCTI entities, relationships, confidence, connectors and stream events follow the same rule.
+Taranis cannot grant DTMO publication/share authority. IntelOwl jobs/results cannot grant DTMO publication/share authority or local-compromise proof. OpenCTI entities, relationships, confidence and connector results follow the same rule.
 
-For OpenCTI, routine integration requires a dedicated non-human identity with minimum knowledge/read capability and only the markings required by scope. `Bypass all capabilities`, administrator authority or connector capabilities are not routine integration requirements. `401`, `403`, unknown markings and malformed STIX fail closed; privilege is never broadened automatically.
+Routine OpenCTI integration requires a dedicated non-human identity with minimum knowledge/read capability and only the markings required by scope. `Bypass all capabilities`, administrator authority or connector capabilities are not routine integration requirements. `401`, `403`, malformed identity/markings/STIX/GraphQL responses and corrupt checkpoint state fail closed; privilege is never broadened automatically.
 
 No connector, successful import, enrichment result, graph relationship, CI result, analytics view, Administration privilege, Governance mapping, staging acceptance or prior external assurance automatically grants external publication authority.
 
@@ -89,7 +94,7 @@ Framework relationships remain explicit, versioned and provenance-backed. DTMO i
 
 1. Taranis AI — `PASS / REPOSITORY_COMPLETE` through Phase 11.2;
 2. IntelOwl — `PASS / REPOSITORY_COMPLETE` for Phase 11.3;
-3. OpenCTI — active Phase 11.4 contract objective;
+3. OpenCTI — active Phase 11.4 read-only adapter objective;
 4. MISP consolidation;
 5. TheHive;
 6. Cortex only if IntelOwl cannot satisfy a validated requirement;
@@ -116,6 +121,6 @@ No Phase 11 contract implicitly authorizes vendoring, redistribution or operatio
 
 Professional current-state documents describe the present controlled state. Historical records under `docs/development/` remain scoped to what was true when they were created and are not rewritten to simulate later acceptance.
 
-Repository/CI evidence for the OpenCTI contract can prove only contract/document/test synchronization. It cannot prove live OpenCTI connectivity, deployed service identity or markings, production STIX interoperability, graph correctness/performance, privacy approval, HA/recovery, independent assurance or production authorization.
+Repository/CI evidence for the OpenCTI adapter can prove only synthetic bounded adapter behavior, configuration/document synchronization and exact-head engineering state. It cannot prove live OpenCTI connectivity, deployed service identity or markings, production STIX interoperability, graph correctness/performance, privacy approval, HA/recovery, independent assurance or production authorization.
 
 Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent assurance are required for the materially changed integrated candidate before Phase 12 can consider production authorization.
