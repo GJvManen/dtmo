@@ -43,7 +43,8 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 MISP consolidation contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.5 MISP consolidation contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 MISP synchronization state/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
 
 DTMO is not production authorized.
@@ -52,7 +53,7 @@ DTMO is not production authorized.
 
 Existing workflow families remain required. Each Phase 11 integration adds bounded integration tests without weakening previous quality, security, recovery, governance or documentation controls.
 
-The **Phase 11 IntelOwl Integration Contract Gate** remains repository evidence for accepted Phase 11.3. The **Phase 11 OpenCTI Integration Contract Gate** remains repository evidence for accepted Phase 11.4. The active gate is the **Phase 11 MISP Consolidation Contract Gate**.
+The Phase 11 IntelOwl and OpenCTI integration gates remain repository evidence for accepted Phase 11.3/11.4. The accepted Phase 11 MISP Consolidation Contract Gate remains contract evidence. The active implementation gate is the **Phase 11 MISP Consolidation State Gate**.
 
 ## Phase 11 gate sequence
 
@@ -74,29 +75,32 @@ The **Phase 11 IntelOwl Integration Contract Gate** remains repository evidence 
 
 Accepted evidence covers the service/API/STIX/licensing contract, bounded GraphQL/STIX adapter, explicit OpenCTI/STIX↔DTMO identity mapping, immutable reconciliation history, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. Repository acceptance is not live OpenCTI or production evidence.
 
-### 11.5 MISP consolidation contract — active bounded gate
+### 11.5 MISP consolidation contract
+
+**Repository status:** `PASS / REPOSITORY_COMPLETE`.
+
+The accepted contract fixes MISP v2.5.44 as the reviewed baseline, keeps MISP a separate AGPL-3.0 service/API, identifies the existing `events/restSearch` and human-approved unpublished `events/add` paths as the only initial boundaries, preserves source restrictions and human share authority, and excludes automatic federation/OpenCTI synchronization.
+
+### 11.5 MISP synchronization-state implementation — active bounded gate
 
 Required exact-head repository evidence:
 
-- reviewed upstream baseline **MISP v2.5.44** is recorded;
-- MISP remains a separate **AGPL-3.0** service/API boundary and MISP core source is not vendored;
-- existing inbound `POST /events/restSearch` and governed outbound `POST /events/add` paths are identified as the capabilities to consolidate;
-- MISP event/attribute/object UUIDs remain separate from DTMO canonical UUID identity;
-- distribution, sharing-group and TLP/tag restrictions remain attributable and cannot be broadened on re-export;
-- import does not grant `share_approved`, publication authority or local-compromise proof;
-- outbound delivery requires attributable human DTMO review/share approval;
-- service accounts, collectors, schedulers, IntelOwl, OpenCTI and MISP cannot grant DTMO sharing authority;
-- destination events remain unpublished and successful `events/add` delivery is not publication/federation approval;
-- deterministic replay reservation and `pending`/`success`/`uncertain` semantics prevent blind duplicate replay;
-- uncertain delivery blocks automated replay pending operator reconciliation;
-- MISP server push/pull synchronization and OpenCTI↔MISP automatic synchronization are excluded from the first consolidation boundary;
-- runtime secrets, production HTTPS/certificate validation, least privilege and `401`/`403` fail-closed behavior remain mandatory;
-- `README.md`, `docs/README.md`, current state, roadmap, security, QA and evidence index are synchronized;
-- `docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md`, Professional Documentation Gate, Phase 11 MISP Consolidation Contract Gate and all required exact-head workflows succeed on the same final head.
+- `misp_synchronization_state` durably binds one DTMO canonical item to one stable MISP event UUID;
+- canonical MISP ingestion reconciles the normalized `_dtmo_misp` authority envelope in the same database transaction as the canonical item;
+- event UUID, distribution, sharing group, normalized TLP tags, authority snapshot/hash and last-seen state are preserved;
+- accepted restrictions are projected to canonical `metadata_json.misp_restrictions` for the existing governed export path;
+- event UUID collision, DTMO-item MISP identity drift, unknown distribution, missing sharing group for distribution `4`, malformed/non-authoritative restrictions and attempted inbound external-share authority fail closed;
+- database constraints enforce known distribution, required sharing-group semantics and `external_share_authorized=false`;
+- migration `0013_misp_synchronization_state` follows `0012_opencti_mapping_persistence`, upgrades and downgrades cleanly;
+- existing MISP read/export tests remain green and no second MISP API client is introduced;
+- human review/share approval remains the only outbound authority and destination events remain unpublished;
+- automatic MISP push/pull federation, automatic OpenCTI↔MISP synchronization, TheHive case creation and service-account share approval remain excluded;
+- architecture, integration, security, current-state, QA, evidence, roadmap and README/docs portal documentation remain synchronized;
+- `docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md`, Professional Documentation Gate, RC4 Quality Gate, existing MISP read/export gates and the dedicated Phase 11 MISP Consolidation State Gate all succeed on the same exact head.
 
-Repository acceptance does not establish live MISP credentials, effective production roles, remote-server trust, lawful live-data sharing, production synchronization/federation behavior, staging acceptance, independent assurance or production authorization.
+Repository acceptance does not establish live MISP credentials, effective production roles, remote-server trust, lawful live-data sharing, production synchronization/federation behavior, production-equivalent validation, independent assurance or production authorization.
 
-Only after protected merge may the next bounded Phase 11.5 implementation PR introduce the single reconciled synchronization-state/persistence and authority-enforcement model. Phase 11.6 remains blocked until Phase 11.5 is repository-complete.
+Only after protected merge and lifecycle reconciliation may Phase 11.5 become `PASS / REPOSITORY_COMPLETE`; Phase 11.6 remains blocked until then.
 
 ### 11.6 TheHive / 11.7 Cortex decision
 
