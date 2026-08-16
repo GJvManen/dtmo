@@ -1,7 +1,7 @@
 # DTMO Production Readiness Checklist
 
-Last reconciled: **2026-08-15**  
-Software baseline: **16.0.0rc12 plus accepted post-RC13/E8 repository enhancements**
+Last reconciled: **2026-08-16**  
+Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository enhancements**
 
 This checklist is the high-level control for the post-Phase-10 industrialisation programme and the future Phase 12 production authorization decision.
 
@@ -14,6 +14,9 @@ This checklist is the high-level control for the post-Phase-10 industrialisation
 | Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Independent external assurance |
 | Phase 10 | `NO-GO / BLOCKED` | Accountable production decision |
 | Phase 11 | `IN PROGRESS / ACTIVE` | Platform industrialisation |
+| Phase 11.1 | `PASS / REPOSITORY_COMPLETE` | Taranis architecture/contract |
+| Phase 11.2 | `PASS / REPOSITORY_COMPLETE` | Taranis canonical adapter |
+| Phase 11.3 | `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION` | IntelOwl integration contract |
 | Phase 12 | `NOT STARTED` | Future production authorization |
 
 The accepted Phase 8 and Phase 9 evidence remains scoped to the candidate it originally covered. It is historical prerequisite evidence for the industrialisation decision and must not be reused as production-equivalent validation or independent assurance for the materially changed Phase 11 integrated candidate.
@@ -46,38 +49,64 @@ A checklist item is complete only when its required evidence exists, is attribut
 - [x] Keep / Integrate / Replace / Deprecate / Migrate capability matrix created.
 - [x] Service-to-service integration is the default architecture.
 - [x] Licensing boundary recorded: no Taranis source vendoring before review.
-- [ ] Exact Taranis REST/OpenAPI endpoint inventory completed.
-- [ ] Source/news/story/report schema mapping completed.
-- [ ] Stable identifiers, replay and deduplication rules completed.
-- [ ] Authentication/service-account/least-privilege model completed.
-- [ ] Provenance, TLP and classification transformation rules completed.
-- [ ] Polling versus SSE/event boundary decided.
-- [ ] Duplicated DTMO generic collection functions identified for deprecation.
-- [ ] Integration threat-model abuse cases completed.
-- [ ] Licensing guidance for service integration/redistribution accepted.
-- [ ] Phase 11.2 adapter contracts and rollback criteria accepted.
+- [x] Exact Taranis REST/API inventory completed for the accepted read path.
+- [x] Source/news/story/CTI schema mapping completed.
+- [x] Stable identifiers, replay and deduplication rules completed.
+- [x] Authentication/service-account/least-privilege model completed.
+- [x] Provenance, TLP and classification transformation rules completed.
+- [x] Polling/reconciliation boundary decided.
+- [x] Integration threat-model abuse cases completed.
+- [x] Licensing guidance for service integration/redistribution recorded.
+- [x] Phase 11.2 adapter contract and acceptance criteria accepted.
 
-**Decision:** Phase 11.1 `IN PROGRESS / ACTIVE`.
+**Decision:** Phase 11.1 `PASS / REPOSITORY_COMPLETE`.
 
 ## 4. Phase 11.2 — Taranis → DTMO canonical adapter
 
-- [ ] API client/service identity implemented.
-- [ ] News/source/story/report mapping implemented.
-- [ ] Idempotency/replay/deduplication tested.
-- [ ] Provenance and evidence retention tested.
-- [ ] TLP/classification fail-closed handling tested.
-- [ ] Degraded/partial failure behavior tested.
-- [ ] Publishing authority remains separate from ingestion.
-- [ ] Migration/rollback path tested.
+- [x] Read-only API client/service identity implemented.
+- [x] News/story and detail/CTI mapping implemented.
+- [x] Idempotency/replay/deduplication tested.
+- [x] Durable checkpointing and bounded reconciliation tested.
+- [x] Provenance and evidence retention tested.
+- [x] TLP/classification fail-closed handling tested.
+- [x] Degraded/malformed/partial failure behavior tested.
+- [x] Governed scheduler/manual execution integrated.
+- [x] Canonical persistence/indexing and connector observability integrated.
+- [x] Publishing/share authority remains separate from ingestion.
+- [x] Final exact-head CI and professional documentation gates passed.
+
+**Decision:** Phase 11.2 `PASS / REPOSITORY_COMPLETE`. Live production-equivalent evidence remains future Phase 11.10 work.
 
 ## 5. Phase 11.3 — IntelOwl
 
-- [ ] Dedicated service identity/token and TLS policy approved.
-- [ ] CVE/IP/domain/URL/hash enrichment integrated.
-- [ ] Email enrichment disabled unless privacy scope is explicitly approved.
+### Contract gate — active
+
+- [x] Official IntelOwl v6.7.0 baseline inspected and referenced.
+- [x] Service-to-service/API boundary documented; no IntelOwl source vendored.
+- [x] Dedicated non-admin service identity/token model documented.
+- [x] TLS verification outside local development required.
+- [x] Approved observable scope limited to CVE/IP/domain/URL/hash.
+- [x] Email/generic personal data disabled pending explicit privacy/data-processing approval.
+- [x] Explicit analyzer/playbook allowlisting required.
+- [x] Analyzer/job/result provenance contract defined.
+- [x] Rate-limit/quota/timeout/failure semantics defined.
+- [x] TLP/privacy and external-disclosure controls defined.
+- [x] IntelOwl external Connectors excluded from the initial enrichment path.
+- [x] Enrichment explicitly cannot be represented as local exposure/compromise proof.
+- [x] AGPL-3.0 service-boundary and licensing-review trigger recorded.
+- [ ] Exact-head IntelOwl contract CI fully green.
+- [ ] Professional Documentation Gate fully green on the same exact head.
+
+### Adapter implementation — blocked until contract gate acceptance
+
+- [ ] Runtime configuration and secret-backed API token implemented.
+- [ ] Approved observable/analyzer allowlist enforced in code.
+- [ ] Bounded job submission and polling implemented.
 - [ ] Analyzer identity/raw-result provenance retained.
-- [ ] Rate-limit/quota/timeout/failure handling tested.
-- [ ] Enrichment cannot be misrepresented as local exposure or compromise.
+- [ ] Partial-success semantics implemented.
+- [ ] `429`/quota/timeout/failure handling tested.
+- [ ] Malformed/oversized result handling fails closed.
+- [ ] No external connector/share side effects possible through the enrichment path.
 
 ## 6. Phase 11.4 — OpenCTI
 
@@ -148,4 +177,4 @@ A checklist item is complete only when its required evidence exists, is attribut
 
 ## Current release decision
 
-**Phase 10 is `NO-GO / BLOCKED`. Phase 11 is `IN PROGRESS / ACTIVE`. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1 and 11.2 are repository-complete. Phase 11.3 IntelOwl contract acceptance is active. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**
