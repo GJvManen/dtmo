@@ -62,6 +62,12 @@ class Settings(BaseSettings):
     intelowl_max_poll_attempts: int = Field(default=12, ge=1, le=120)
     intelowl_poll_interval_seconds: float = Field(default=1.0, ge=0.0, le=60.0)
     intelowl_max_result_bytes: int = Field(default=1_000_000, ge=1024, le=20_000_000)
+    opencti_api_base: str = ""
+    opencti_api_token: SecretStr = SecretStr("")
+    opencti_page_size: int = Field(default=100, ge=1, le=500)
+    opencti_max_pages: int = Field(default=10, ge=1, le=100)
+    opencti_allowed_entity_types: str = "indicator,vulnerability,malware,campaign,infrastructure,intrusion-set,threat-actor,attack-pattern"
+    opencti_checkpoint_path: str = "/var/lib/dtmo/checkpoints/opencti.json"
     publish_requires_human_approval: bool = True
     feature_live_connectors: bool = False
     feature_opencve_connector: bool = False
@@ -71,6 +77,7 @@ class Settings(BaseSettings):
     feature_ail_connector: bool = False
     feature_taranis_connector: bool = False
     feature_intelowl_enrichment: bool = False
+    feature_opencti_read: bool = False
     feature_ai_analyst: bool = False
 
     @property
@@ -132,6 +139,15 @@ class Settings(BaseSettings):
                 raise ValueError("production IntelOwl integration requires a runtime API token")
             if not self.intelowl_allowed_analyzers.strip():
                 raise ValueError("production IntelOwl integration requires an explicit analyzer allowlist")
+        if self.feature_opencti_read:
+            if not self.opencti_api_base.startswith("https://"):
+                raise ValueError("production OpenCTI integration requires an HTTPS API base")
+            if not self.opencti_api_token.get_secret_value().strip():
+                raise ValueError("production OpenCTI integration requires a runtime API token")
+            if not self.opencti_allowed_entity_types.strip():
+                raise ValueError("production OpenCTI integration requires an explicit entity-type allowlist")
+            if not self.opencti_checkpoint_path.startswith("/"):
+                raise ValueError("production OpenCTI integration requires an absolute durable checkpoint path")
         return self
 
 
