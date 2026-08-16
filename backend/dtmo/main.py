@@ -34,6 +34,7 @@ from dtmo.frontend import router as frontend_router
 from dtmo.governance_crosswalk import router as governance_crosswalk_router
 from dtmo.governance_crosswalk_experience import router as governance_crosswalk_experience_router
 from dtmo.governance_knowledge import router as governance_knowledge_router
+from dtmo.intelowl_execution import router as intelowl_execution_router
 from dtmo.logging import bind_request_context, clear_request_context, configure_logging, correlation_id, get_logger, resolve_correlation_id
 from dtmo.misp_export_api import router as misp_export_router
 from dtmo.misp_workspace import router as misp_workspace_router
@@ -153,6 +154,7 @@ app.include_router(source_center_router)
 app.include_router(admin_center_router)
 app.include_router(ux_preferences_router)
 app.include_router(intelligence_router)
+app.include_router(intelowl_execution_router)
 app.include_router(misp_export_router)
 app.include_router(misp_workspace_router)
 app.include_router(admin_sources_router)
