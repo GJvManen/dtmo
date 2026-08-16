@@ -1,13 +1,13 @@
 # DTMO Current Project State
 
-Last reconciled: **2026-08-16**  
+Last reconciled: **2026-08-17**  
 Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 repository enhancements**
 
 ## Executive summary
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. RC13 is `PASS / OWNER_ACCEPTED`; E8.1–E8.10 are `PASS / REPOSITORY_COMPLETE`. Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.2 Taranis, Phase 11.3 IntelOwl and Phase 11.4 OpenCTI are `PASS / REPOSITORY_COMPLETE`. The active bounded objective is **Phase 11.5 MISP consolidation contract**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.2 Taranis, Phase 11.3 IntelOwl and Phase 11.4 OpenCTI are `PASS / REPOSITORY_COMPLETE`. The Phase 11.5 MISP consolidation contract is `PASS / REPOSITORY_COMPLETE`. The active bounded objective is **Phase 11.5 MISP synchronization-state/persistence and authority enforcement**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
 ## Lifecycle position
 
@@ -27,7 +27,8 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1�
 | Phase 11.4 OpenCTI read-only adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.4 OpenCTI canonical mapping/persistence | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 MISP consolidation contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.5 MISP consolidation contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 MISP synchronization state/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
 
 ## Accepted Phase 11 capabilities
@@ -38,36 +39,30 @@ Phase 11.3 provides the repository-complete IntelOwl service boundary, bounded e
 
 Phase 11.4 provides the repository-complete OpenCTI service/API/STIX/licensing contract, bounded GraphQL/STIX read adapter, explicit OpenCTI/STIX↔DTMO identity mapping, immutable reconciliation history, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. Repository completion is engineering evidence only and does not establish live OpenCTI or production evidence.
 
-## Active Phase 11.5 MISP consolidation contract
+The accepted Phase 11.5 MISP contract establishes one authority model for the existing read-only `events/restSearch` path and human-approved unpublished `events/add` path. MISP remains a separate AGPL-3.0 service/API; automatic federation and OpenCTI↔MISP synchronization are outside this boundary.
 
-DTMO already contains two MISP capabilities from E8: a governed read-only `events/restSearch` connector and a separate human-approved `events/add` export path. Phase 11.5 consolidates these into one explicit authority and synchronization model instead of adding another MISP client or implicit federation path.
+## Active Phase 11.5 MISP synchronization-state implementation
 
-The reviewed upstream baseline is **MISP v2.5.44**. MISP remains a separate **AGPL-3.0** service/API component; DTMO does not vendor MISP core source.
+The active implementation adds durable PostgreSQL synchronization state without introducing another MISP client. `misp_synchronization_state` binds one DTMO canonical item to one stable MISP event UUID and persists the authoritative source distribution, sharing-group and TLP envelope.
 
-The active contract preserves the following rules:
+Reconciliation fails closed when a MISP event UUID is already bound to another DTMO item, a DTMO item changes MISP event identity, distribution is unknown, sharing-group distribution lacks a group, source restrictions are not marked authoritative, or an inbound projection attempts to grant external-share authority.
 
-- MISP event/attribute/object UUID identity remains distinct from DTMO canonical UUID identity;
-- inbound distribution, sharing-group and TLP/tag restrictions remain attributable and authoritative constraints;
-- import never grants `share_approved`, publication authority, local-compromise proof or blanket governance claims;
-- outbound sharing requires attributable human DTMO review and share approval;
-- service accounts, collectors, schedulers, IntelOwl, OpenCTI and MISP cannot grant DTMO sharing authority;
-- source restrictions cannot be broadened on re-export;
-- `events/add` creates an unpublished destination event and does not itself authorize publication/federation;
-- uncertain outbound delivery blocks automated replay pending operator reconciliation;
-- MISP server push/pull synchronization and automatic OpenCTI↔MISP synchronization remain excluded from this first consolidation boundary;
-- runtime credentials remain secret and production access requires HTTPS, least privilege and fail-closed authorization behavior.
+Accepted inbound restrictions are projected to `metadata_json.misp_restrictions`, which is the existing governed-export enforcement boundary. This directly connects the read and export paths to one restriction model without creating automatic publication or federation.
 
 ```mermaid
 flowchart LR
-    M[MISP\nseparate service] -->|read| R[Governed inbound]
-    R --> V{Identity + restrictions + provenance valid?}
+    M[MISP events/restSearch] --> N[Normalize UUID + restrictions]
+    N --> V{Authority envelope valid?}
     V -->|no| X[Fail closed]
-    V -->|yes| D[(DTMO canonical intelligence)]
+    V -->|yes| S[(misp_synchronization_state)]
+    S --> D[(DTMO canonical item\nmisp_restrictions)]
     D --> H{Human review + share approval?}
-    H -->|no| N[No outbound action]
-    H -->|yes| E[Governed unpublished export]
+    H -->|no| Z[No outbound action]
+    H -->|yes| E[Existing governed events/add\nunpublished]
     E --> M
 ```
+
+Migration `0013_misp_synchronization_state` follows `0012_opencti_mapping_persistence`. Database constraints preserve known distribution semantics, sharing-group requirements and `external_share_authorized=false`.
 
 ## Data and authority model
 
@@ -77,7 +72,7 @@ MISP-origin restrictions and DTMO human approval are cumulative; the more restri
 
 ## Governance and evidence boundary
 
-Framework relationships remain explicit, versioned and provenance-backed. Repository CI for the MISP contract can prove only repository-controlled contract wording, existing path compatibility and documentation synchronization. It cannot prove live credentials, effective production MISP permissions, remote-server trust, lawful live-data sharing, staging acceptance, independent assurance or production authorization.
+Framework relationships remain explicit, versioned and provenance-backed. Repository CI for this MISP slice can prove only schema, synthetic reconciliation behavior, authority-invariant enforcement and documentation synchronization. It cannot prove live credentials, effective production MISP permissions, remote-server trust, lawful live-data sharing, staging acceptance, independent assurance or production authorization.
 
 Historical Phase 8/9 evidence remains valid only for the earlier candidate and is not reused for the materially changed Phase 11 platform. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent assurance remain required before Phase 12.
 
@@ -86,8 +81,8 @@ Historical Phase 8/9 evidence remains valid only for the earlier candidate and i
 1. Taranis AI — `PASS / REPOSITORY_COMPLETE` through Phase 11.2;
 2. IntelOwl — `PASS / REPOSITORY_COMPLETE` for Phase 11.3;
 3. OpenCTI — `PASS / REPOSITORY_COMPLETE` for Phase 11.4;
-4. MISP consolidation — active Phase 11.5 contract validation;
-5. TheHive;
+4. MISP consolidation — active Phase 11.5 synchronization-state/persistence implementation;
+5. TheHive — blocked until Phase 11.5 is repository-complete;
 6. Cortex only if IntelOwl cannot satisfy a validated requirement;
 7. Kubernetes/Helm/GitOps and integrated runtime hardening;
 8. migration/compatibility;
