@@ -1,6 +1,6 @@
 # DTMO Platform Industrialisation Roadmap
 
-Last updated: **2026-08-15**  
+Last updated: **2026-08-16**  
 Programme state: **`ACTIVE / HIGHEST PRIORITY`**
 
 ## Purpose
@@ -47,7 +47,7 @@ The development order is fixed unless a higher-severity security, licensing or a
 
 ### 11.1 Taranis AI architecture and gap assessment
 
-**Status:** `PASS / REPOSITORY COMPLETE`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
 The architecture assessment and accepted integration contract establish the service-to-service boundary for Taranis. DTMO retains education-sector CTI, vulnerability context, governance, provenance and governed publication/share authority. Taranis remains an upstream collection/assessment/reporting service; its implementation source is not vendored into DTMO.
 
@@ -65,9 +65,9 @@ Accepted outcomes:
 
 ### 11.2 Taranis → DTMO canonical adapter
 
-**Status:** `IN PROGRESS / FINAL REPOSITORY SLICE IN EXACT-HEAD VALIDATION`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-The accepted implementation is a bounded API integration rather than a code fork. Completed repository slices now include:
+Repository-complete implementation includes:
 
 - read-only Taranis news-item/story collection;
 - stable namespaced upstream identity and deterministic replay;
@@ -78,27 +78,32 @@ The accepted implementation is a bounded API integration rather than a code fork
 - canonical persistence/indexing through the existing governed connector execution path;
 - scheduler registration behind `feature_live_connectors` + `feature_taranis_connector`;
 - manual execution through the existing `MANAGE_CONNECTORS` permission;
-- connector alerting/observability and professional integration documentation.
+- connector alerting/observability and professional integration documentation;
+- fully green exact-head CI and Professional Documentation Gate on the final bounded repository slice.
 
-Acceptance criteria:
-
-- idempotent ingestion;
-- source identity and original evidence retained;
-- TLP/classification cannot be silently weakened;
-- canonical persistence remains durable;
-- replay and duplicate handling are deterministic;
-- no Taranis publishing permission becomes DTMO external-share authority;
-- contract and integration tests cover degraded, restart, reconciliation, malformed and partial-failure states;
-- detail/CTI request volume is explicitly bounded;
-- exact-head CI and professional documentation gates are fully green.
-
-After this final repository slice is accepted and merged, **Phase 11.2 is repository-complete and the sole next priority becomes Phase 11.3 IntelOwl**. Live composed-platform evidence is intentionally deferred to Phase 11.10 and must not be inferred from CI or historical Phase 8/9 evidence.
+This status means repository implementation acceptance only. It does not prove live composed-platform connectivity, production-equivalent behavior, external assurance or production authorization. Historical Phase 8/9 evidence is not reused for the materially changed candidate.
 
 ### 11.3 IntelOwl enrichment integration
 
-**Status:** `PLANNED / NEXT AFTER 11.2 EXACT-HEAD ACCEPTANCE`
+**Status:** `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION`
 
-Use IntelOwl as the preferred generic IOC enrichment subsystem. Start from the existing Taranis IntelOwl bot path and normalize selected results into DTMO with analyzer identity, timestamps, confidence/context and raw-result provenance.
+The first bounded 11.3 objective is acceptance of `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md` as the implementation boundary for the IntelOwl adapter.
+
+The contract fixes:
+
+- IntelOwl v6.7-compatible service/API boundary;
+- dedicated non-admin service identity and secret-backed API token;
+- HTTPS verification outside local development;
+- approved observable classes: CVE, IP, domain, URL and hash;
+- email/generic personal data disabled until privacy/data-processing approval exists;
+- explicit analyzer/playbook allowlisting instead of running arbitrary available plugins;
+- TLP/privacy-aware external-disclosure controls;
+- bounded job submission, concurrency, polling, result size and retry semantics;
+- analyzer/job/result provenance and canonical correlation;
+- partial-success and degraded dependency semantics;
+- separation of upstream maliciousness/evaluation from local compromise evidence;
+- exclusion of IntelOwl external Connectors from the initial enrichment path;
+- AGPL-3.0 service-to-service licensing boundary and explicit review before vendoring/modification/redistribution.
 
 Priority observable classes:
 
@@ -106,10 +111,9 @@ Priority observable classes:
 - IP;
 - domain;
 - URL;
-- hash;
-- email only where privacy/data-processing approval exists.
+- hash.
 
-Acceptance criteria include dedicated service identity, secret-store backed tokens, HTTPS verification outside local development, provider quota/rate-limit handling, bounded retention and no enrichment result being misrepresented as proof of local compromise.
+Acceptance criteria for the subsequent implementation slice include dedicated service identity, secret-store backed tokens, HTTPS verification, allowlisted analyzers/playbooks, provider quota/rate-limit handling, bounded retention, complete analyzer-result provenance, fail-closed TLP/privacy handling, no connector/share side effects and no enrichment result being misrepresented as proof of local compromise.
 
 ### 11.4 OpenCTI knowledge-graph integration
 
@@ -246,8 +250,8 @@ While Phase 11 is active, do not spend development capacity on unrelated UI poli
 
 ## Immediate sequence
 
-1. Complete the final **11.2 Taranis detail/CTI + governed execution** exact-head gate.
-2. Integrate **11.3 IntelOwl**.
+1. Accept the **11.3 IntelOwl integration contract** on exact-head CI.
+2. Implement the bounded **11.3 IntelOwl enrichment adapter**.
 3. Integrate **11.4 OpenCTI**.
 4. Consolidate **11.5 MISP**.
 5. Add **11.6 TheHive** handoff.
