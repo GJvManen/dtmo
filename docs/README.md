@@ -16,11 +16,12 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 11.1 Taranis architecture/contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 OpenCTI contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.4 OpenCTI contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 OpenCTI read-only adapter | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **not production authorized** |
 
-The active bounded programme step is **Phase 11.4 OpenCTI contract validation**. Phase 10 did not grant production authorization. Phase 12 remains the next formal production authorization decision only after fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance for the materially changed integrated platform.
+The active bounded programme step is the **Phase 11.4 OpenCTI read-only STIX/identity adapter**. Phase 10 did not grant production authorization. Phase 12 remains the next formal production authorization decision only after fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance for the materially changed integrated platform.
 
 ## Start here
 
@@ -38,31 +39,34 @@ The active bounded programme step is **Phase 11.4 OpenCTI contract validation**.
 
 The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for accepted operator journeys. These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
 
-No synthetic screenshot is promoted for the Phase 11.4 contract slice because it introduces no accepted operator GUI surface; creating one would falsely imply deployed OpenCTI functionality.
+No synthetic screenshot is promoted for the Phase 11.4 adapter slice because it introduces no accepted operator GUI surface; creating one would falsely imply deployed OpenCTI functionality.
 
 ## Phase 11 programme documentation
 
 - [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) defines the fixed Taranis → IntelOwl → OpenCTI → MISP → TheHive → conditional Cortex → runtime-industrialisation sequence.
 - [Taranis Platform Integration Assessment](architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md) and [Taranis → DTMO Contract](architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md) define the accepted Taranis service boundary.
 - [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md), [IntelOwl Integration](integrations/INTELOWL_INTEGRATION.md), [IntelOwl Governed Enrichment Workflow](user/INTELOWL_ENRICHMENT_WORKFLOW.md) and [IntelOwl Enrichment Operations Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md) document the repository-complete Phase 11.3 boundary.
-- [OpenCTI → DTMO Integration Contract](architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md) is the active Phase 11.4 service/API/STIX/data-model/identity/security/licensing baseline.
-- [OpenCTI Integration](integrations/OPENCTI_INTEGRATION.md) describes the planned read-oriented adapter and synchronization model.
-- [OpenCTI Integration Operations Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md) documents enablement preconditions, fail-closed conditions, reconciliation and incident handling.
-- [Phase 11.4 OpenCTI Contract Gate](qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md) defines exact-head acceptance and non-evidence.
+- [OpenCTI → DTMO Integration Contract](architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md) is the accepted Phase 11.4 service/API/STIX/data-model/identity/security/licensing baseline.
+- [OpenCTI Integration](integrations/OPENCTI_INTEGRATION.md) documents the active read-only GraphQL/STIX adapter, bounded pagination, provenance preservation and explicit checkpoint-commit semantics.
+- [OpenCTI Integration Operations Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md) documents runtime configuration, fail-closed conditions, persistence-before-checkpoint sequencing, restart and incident handling.
+- [Phase 11.4 OpenCTI Contract Gate](qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md) retains the accepted contract boundary; adapter behavior is additionally covered by `backend/tests/test_phase11_4_opencti_adapter.py` and exact-head CI.
 - [Phase 10 Production Go/No-Go](production/PHASE10_PRODUCTION_GO_NO_GO.md) preserves the completed `NO-GO / BLOCKED` decision as historical decision evidence.
 
-## Phase 11.4 trust-boundary workflow
+## Phase 11.4 read-only trust boundary
 
 ```mermaid
 flowchart LR
-    O[OpenCTI GraphQL / TAXII / stream] --> A[Bounded OpenCTI adapter]
-    I[Dedicated non-human identity\nleast privilege + markings] --> O
-    A --> V{STIX identity + marking + provenance valid?}
-    V -->|no| X[Reject / quarantine fail closed]
-    V -->|yes| M[Explicit OpenCTI/STIX ↔ DTMO mapping]
-    M --> D[(DTMO canonical intelligence)]
-    M -. never grants .-> S[Human DTMO publication/share approval]
-    O -. excluded .-> N[No connector/MISP/case/publication side effects]
+    C[(Last committed cursor)] --> A[OpenCTI read-only adapter]
+    I[Dedicated non-human identity\nleast privilege + markings] --> O[OpenCTI GraphQL]
+    A --> O
+    O --> V{STIX identity + type + marking + provenance valid?}
+    V -->|no| X[Reject fail closed\ncheckpoint unchanged]
+    V -->|yes| P[Governed DTMO persistence]
+    P --> K{Durable persistence successful?}
+    K -->|no| X
+    K -->|yes| N[(Atomic next cursor)]
+    P -. never grants .-> S[Human DTMO publication/share approval]
+    O -. excluded .-> E[No connector/MISP/case/publication side effects]
 ```
 
 ## Security and authority invariants
@@ -73,13 +77,14 @@ Across the professional documentation set:
 - human and service identities remain separate;
 - credentials/tokens never belong in repository evidence, logs or screenshots;
 - OpenCTI routine integration uses a dedicated non-human identity without administrator/bypass authority;
-- OpenCTI marking/TLP/PAP restrictions are enforced as authorization boundaries;
-- OpenCTI/STIX identities stay distinct from DTMO canonical UUIDs and are explicitly mapped;
-- unknown markings, malformed STIX or unsupported relationships fail closed;
+- OpenCTI marking/TLP/PAP restrictions remain authorization boundaries;
+- OpenCTI/STIX identities stay distinct from DTMO canonical UUIDs and are explicitly preserved/mapped;
+- malformed identity, markings, confidence, GraphQL/page/cursor or checkpoint state fail closed;
 - graph confidence and relationships do not prove local compromise, exposure or attribution certainty;
 - OpenCTI success never grants DTMO external-share/publication authority;
+- checkpoint state advances only after successful durable persistence;
 - MISP synchronization is deferred to Phase 11.5 and TheHive case handoff to Phase 11.6;
-- Taranis, IntelOwl and OpenCTI remain separate services under their applicable licensing boundaries; no upstream source is vendored by this contract slice.
+- Taranis, IntelOwl and OpenCTI remain separate services under their applicable licensing boundaries; no upstream source is vendored by this adapter slice.
 
 ## Evidence and history model
 
