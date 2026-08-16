@@ -14,6 +14,7 @@ from dtmo.auth.policy import Permission, Principal
 from dtmo.config import Settings, get_settings
 from dtmo.integrations.intelowl import IntelOwlAdapter, IntelOwlPolicyError
 from dtmo.persistence.intelowl import IntelOwlEnrichmentRepository
+from dtmo.persistence.models import IntelOwlEnrichmentRecord
 
 router = APIRouter(prefix="/api/v1/intelowl", tags=["intelowl"])
 
@@ -40,16 +41,16 @@ class IntelOwlHistoryResponse(BaseModel):
     records: list[IntelOwlExecutionResponse]
 
 
-def _response(record: object) -> IntelOwlExecutionResponse:
+def _response(record: IntelOwlEnrichmentRecord) -> IntelOwlExecutionResponse:
     return IntelOwlExecutionResponse(
-        record_id=getattr(record, "id"),
-        item_id=getattr(record, "item_id"),
-        job_id=getattr(record, "job_id"),
-        status=getattr(record, "status"),
-        partial=getattr(record, "partial"),
-        analyzers=list(getattr(record, "analyzers")),
-        external_share_authorized=getattr(record, "external_share_authorized"),
-        local_compromise_proven=getattr(record, "local_compromise_proven"),
+        record_id=record.id,
+        item_id=record.item_id,
+        job_id=record.job_id,
+        status=record.status,
+        partial=record.partial,
+        analyzers=list(record.analyzers),
+        external_share_authorized=record.external_share_authorized,
+        local_compromise_proven=record.local_compromise_proven,
     )
 
 
