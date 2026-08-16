@@ -17,7 +17,9 @@ This checklist is the high-level control for the post-Phase-10 industrialisation
 | Phase 11.1 | `PASS / REPOSITORY_COMPLETE` | Taranis architecture/contract |
 | Phase 11.2 | `PASS / REPOSITORY_COMPLETE` | Taranis canonical adapter |
 | Phase 11.3 | `PASS / REPOSITORY_COMPLETE` | IntelOwl enrichment integration |
-| Phase 11.4 OpenCTI contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | OpenCTI service/API/STIX/identity/security/licensing contract |
+| Phase 11.4 OpenCTI contract | `PASS / REPOSITORY_COMPLETE` | Service/API/STIX/licensing contract |
+| Phase 11.4 OpenCTI adapter | `PASS / REPOSITORY_COMPLETE` | Read-only GraphQL/STIX adapter |
+| Phase 11.4 OpenCTI persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Canonical mapping/reconciliation/operational integration |
 | Phase 12 | `NOT STARTED` | Future production authorization |
 
 The accepted Phase 8 and Phase 9 evidence remains scoped to the candidate it originally covered and is not reused for the materially changed Phase 11 integrated candidate.
@@ -62,10 +64,8 @@ A checklist item is complete only when its required evidence exists, is attribut
 - [x] Separate service/API boundary; no IntelOwl source vendored.
 - [x] Dedicated non-admin identity, runtime-secret token and production TLS boundary accepted.
 - [x] Observable/analyzer allowlists and privacy/TLP fail-closed controls implemented.
-- [x] External IntelOwl Connectors excluded from the enrichment path.
+- [x] IntelOwl external Connectors excluded from the enrichment path.
 - [x] Bounded job execution, immutable job identity and result validation implemented.
-- [x] Unknown/malformed/oversized result handling fails closed.
-- [x] Partial-success state and provenance preserved.
 - [x] Governed human `REVIEW_INTELLIGENCE` execution endpoint implemented.
 - [x] Durable enrichment-history persistence and read-only history access implemented.
 - [x] Database constraints preserve no-share/no-local-compromise invariants.
@@ -73,34 +73,41 @@ A checklist item is complete only when its required evidence exists, is attribut
 
 **Decision:** Phase 11.3 `PASS / REPOSITORY_COMPLETE`.
 
-## 5. Phase 11.4 — OpenCTI contract — active
+## 5. Phase 11.4 — OpenCTI
 
-- [x] Official OpenCTI `7.260811.0` baseline inspected and recorded.
-- [x] Community Edition Apache-2.0 and separate Enterprise Edition licensing distinction recorded.
+### Accepted contract and read adapter
+
+- [x] Official OpenCTI `7.260811.0` baseline and Community/Enterprise licensing distinction recorded.
 - [x] Service/API boundary defined; no OpenCTI source vendoring authorized.
-- [x] GraphQL, STIX 2.1, TAXII 2.1 and access-controlled stream surfaces bounded.
-- [x] Dedicated least-privilege non-human identity model defined.
-- [x] Administrator/`Bypass all capabilities` and connector privileges excluded from routine integration.
-- [x] OpenCTI/STIX and DTMO canonical identity domains explicitly separated/mapped.
-- [x] Marking/TLP/PAP, confidence and provenance preservation rules defined.
-- [x] Unknown/malformed marking and STIX semantics fail closed.
-- [x] Restart-safe pagination/stream replay and checkpoint requirements defined.
-- [x] Connector/MISP/enrichment/case/publication side effects excluded from the first path.
-- [x] Graph context cannot grant DTMO publication/share authority or prove local compromise.
-- [x] Architecture, integration, security, operations, QA, evidence and roadmap documentation updated.
-- [ ] Full exact-head CI matrix green on the final OpenCTI contract head.
+- [x] GraphQL/STIX 2.1/TAXII 2.1 and least-privilege identity boundaries accepted.
+- [x] Read-only `stixCoreObjects` adapter accepted.
+- [x] Stable OpenCTI/STIX identity, marking, confidence and provenance preservation accepted.
+- [x] Bounded pagination and durable checkpoint semantics accepted.
+- [x] Connector/MISP/enrichment/case/publication side effects excluded.
+- [x] Exact-head CI and professional documentation accepted for those slices.
+
+### Active canonical mapping/persistence + operational integration
+
+- [x] `opencti_object_mappings` schema implemented.
+- [x] `opencti_mapping_revisions` immutable history implemented.
+- [x] Migration `0012_opencti_mapping_persistence` follows `0011_intelowl_enrichment_history`.
+- [x] Unique DTMO-item/OpenCTI and DTMO-item/STIX identity constraints implemented.
+- [x] Conflicting OpenCTI/STIX identity drift fails closed.
+- [x] Markings, confidence, timestamps, external references and provenance preserved.
+- [x] SHA-256 snapshot hashing provides idempotent unchanged replay and attributable revision history.
+- [x] Database constraints enforce `external_share_authorized=false` and `local_compromise_proven=false`.
+- [x] PostgreSQL commit occurs before `commit_page(page)` checkpoint advance.
+- [x] Database commit failure leaves checkpoint state unchanged.
+- [x] Replay remains safe when DB commit succeeds but checkpoint replacement fails.
+- [x] Architecture, integration, security, operations, QA, evidence, README/docs portal and roadmap documentation updated.
+- [ ] Full exact-head CI matrix green on the final persistence head.
 - [ ] Professional Documentation Gate green on that same exact head.
-- [ ] Contract PR protected-merged with expected-head protection.
-
-### Next Phase 11.4 slice — only after contract merge
-
-- [ ] Read-only OpenCTI STIX/identity adapter implemented.
-- [ ] Bounded pagination/reconciliation and durable checkpointing implemented.
-- [ ] Provenance/confidence/marking preservation tested against synthetic contracts.
-- [ ] Operational failure/replay behavior documented and tested.
+- [ ] Persistence PR protected-merged with expected-head protection.
+- [ ] Phase 11.4 lifecycle reconciled to `PASS / REPOSITORY_COMPLETE` after merge.
 
 ## 6. Phase 11.5 — MISP consolidation
 
+- [ ] Start only after Phase 11.4 repository completion.
 - [ ] One authoritative inbound synchronization model accepted.
 - [ ] Conflict/replay handling tested.
 - [ ] DTMO governed outbound approval remains authoritative.
@@ -157,4 +164,4 @@ A checklist item is complete only when its required evidence exists, is attribut
 
 ## Current release decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.3 are repository-complete. The Phase 11.4 OpenCTI contract is the active exact-head gate. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.3 are repository-complete. The Phase 11.4 OpenCTI contract and read-only adapter are repository-complete; canonical mapping/persistence + operational integration is the active exact-head gate. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**
