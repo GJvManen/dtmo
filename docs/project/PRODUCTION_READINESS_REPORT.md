@@ -5,11 +5,11 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 ## 1. Executive conclusion
 
-DTMO completed the repository engineering baseline, accountable functional acceptance, E8.1–E8.10 product evolution, Phase 8 production-equivalent staging acceptance and Phase 9 independent external assurance for the earlier candidate they covered.
+DTMO completed the repository engineering baseline, RC13 `PASS / OWNER_ACCEPTED` functional acceptance, E8.1–E8.10 product evolution, Phase 8 `PASS / OWNER_ACCEPTED` staging acceptance and Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED` independent assurance for the earlier candidate they covered.
 
 Phase 10 concluded with **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-Phase 11.1–11.2 Taranis and Phase 11.3 IntelOwl are `PASS / REPOSITORY_COMPLETE`. Within Phase 11.4, the OpenCTI contract and bounded read-only GraphQL/STIX adapter are `PASS / REPOSITORY_COMPLETE`. The active bounded step is **OpenCTI canonical mapping/persistence + operational integration**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 12 remains dependent on fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance.
+Phase 11.1–11.2 Taranis, Phase 11.3 IntelOwl and Phase 11.4 OpenCTI are `PASS / REPOSITORY_COMPLETE`. The active bounded step is **Phase 11.5 MISP consolidation contract validation**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 12 remains dependent on fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance.
 
 ## 2. Readiness summary
 
@@ -23,70 +23,44 @@ Phase 11.1–11.2 Taranis and Phase 11.3 IntelOwl are `PASS / REPOSITORY_COMPLET
 | Phase 10 | Production authorization decision | `NO-GO / BLOCKED` |
 | Phase 11.1–11.2 | Taranis architecture + canonical adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 | IntelOwl enrichment integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 contract | OpenCTI service/API/STIX/identity/security/licensing | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 adapter | Read-only GraphQL/STIX identity adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 persistence | Canonical mapping/reconciliation/operational integration | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.4 | OpenCTI contract, adapter, persistence and operational integration | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 MISP contract | Service/API/licensing/identity/authority consolidation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New production authorization decision | `NOT STARTED` |
 
-## 3. Accepted DTMO product baseline
+## 3. Accepted Phase 11 baseline
 
-The accepted baseline includes the canonical operator shell, durable canonical intelligence/provenance, classification/filtering, vulnerability analytics/prioritization, managed RBAC, explicit governance mappings, OpenCVE, CIRCL Vulnerability-Lookup, governed MISP read/export, AIL read/enrichment/correlation and Normenkader IBP SM.07-oriented evidence mapping.
+Taranis remains the accepted collection/assessment service boundary; IntelOwl remains the accepted bounded enrichment service; OpenCTI remains the accepted STIX graph service with repository-complete read, mapping/reconciliation persistence and database-before-checkpoint ordering. All retain separate service identities, provenance and no implicit DTMO publication/share authority.
 
-Phase 11.2 adds repository-accepted Taranis collection/canonicalization. Phase 11.3 adds repository-accepted IntelOwl enrichment and durable enrichment history. The accepted OpenCTI read adapter adds bounded GraphQL/STIX retrieval, stable identity/provenance preservation and durable checkpoint semantics.
+## 4. Active Phase 11.5 MISP position
 
-The governed UI-01 through UI-10 screenshots remain documentation illustrations rather than production-state evidence. No OpenCTI screenshot is promoted because Phase 11.4 adds no accepted operator GUI surface.
+DTMO already has governed MISP inbound `events/restSearch` and human-approved outbound `events/add` capabilities. Phase 11.5 consolidates them into one authority and synchronization model without creating a parallel client or implicit federation path.
 
-## 4. Active Phase 11.4 persistence position
+The reviewed upstream baseline is MISP v2.5.44. MISP remains a separate AGPL-3.0 service/API component; MISP core source is not vendored.
 
-The active slice introduces `opencti_object_mappings` and immutable `opencti_mapping_revisions`. Current mapping state explicitly links a DTMO canonical item to OpenCTI internal identity and STIX identity while preserving entity type, parent types, markings, confidence, timestamps, external references and provenance.
+MISP event/attribute/object UUID identity remains separate from DTMO canonical UUID identity. Distribution, sharing-group and TLP/tag restrictions are preserved and cannot be broadened on re-export. Ingestion cannot set DTMO `share_approved`, prove local compromise or grant publication authority. Outbound sharing requires attributable human review/share approval and creates unpublished destination events.
 
-Reconciliation uses SHA-256 canonical snapshot hashes. Unchanged replay is idempotent; changed attributed state adds an immutable revision. OpenCTI/STIX identity drift fails closed rather than being silently merged.
-
-Database constraints enforce `external_share_authorized=false` and `local_compromise_proven=false`. Migration `0012_opencti_mapping_persistence` follows `0011_intelowl_enrichment_history`.
-
-The persistence coordinator commits PostgreSQL before `commit_page(page)` advances the durable cursor. Database failure leaves the checkpoint unchanged; checkpoint failure after database commit remains replay-safe.
+Uncertain remote delivery blocks automatic replay until operator reconciliation. Automatic MISP push/pull federation and OpenCTI↔MISP synchronization remain excluded from this first consolidation boundary.
 
 ## 5. Security and governance posture
 
-DTMO preserves server-side RBAC, least privilege, human/service separation, audit/correlation, provenance/confidence, data minimization and separate human review/external-share authority.
-
-OpenCTI authorization failures, malformed markings/STIX, ambiguous identity mappings and checkpoint corruption fail closed. Administrator or `Bypass all capabilities` privilege is not broadened automatically.
-
-OpenCTI entities, relationships, mappings, revisions and confidence values are attributed CTI context. They do not prove local exposure/exploitability/compromise, establish DTMO severity or grant external publication/share authority.
+Server-side RBAC, least privilege, human/service separation, provenance, data minimization and separate human publication/share authority remain mandatory. Runtime secrets stay outside repository evidence. Production API access requires HTTPS and certificate validation. Authorization failures, ambiguous identity, malformed restrictions and uncertain delivery fail closed.
 
 ## 6. Architecture and licensing impact
 
-The preferred pattern remains service-to-service integration rather than source-code merger. IntelOwl/pyIntelOwl remain separate AGPL-3.0 services. OpenCTI Community Edition is Apache-2.0; Enterprise Edition is separately licensed. No OpenCTI source is vendored and Enterprise-only dependencies require explicit entitlement/legal approval.
-
-The target runtime remains a composed Kubernetes platform hardened later in Phase 11.8.
+The target remains a composed service architecture rather than source-code merger. Taranis, IntelOwl, OpenCTI and MISP remain separate components under their applicable licenses. Any source-level modification, bundling or redistribution requires explicit licensing/legal review before acceptance.
 
 ## 7. Historical evidence effect
 
-Phase 8 and Phase 9 remain valid historical evidence for the prior candidate. Because Phase 11 materially changes the platform, those evidence classes cannot authorize or independently assure the future integrated candidate. New Phase 11.10 and 11.11 evidence is mandatory before Phase 12.
+Phase 8 and Phase 9 remain valid historical evidence for the prior candidate but cannot authorize or independently assure the materially changed Phase 11 platform. New Phase 11.10 production-equivalent validation and Phase 11.11 independent assurance are mandatory before Phase 12.
 
-## 8. Active scope and documentation
+## 8. Active documentation
 
-The detailed programme is `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`.
-
-The current bounded objective is the **Phase 11.4 OpenCTI persistence exact-head gate**. Authoritative documents include:
-
-- `docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md`;
-- `docs/integrations/OPENCTI_INTEGRATION.md`;
-- `docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md`;
-- `docs/qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md`;
-- `docs/security/SECURITY_OVERVIEW.md`;
-- `docs/evidence/EVIDENCE_INDEX.md`.
-
-Phase 11.5 MISP consolidation remains blocked until this slice is protected-merged and Phase 11.4 is reconciled to `PASS / REPOSITORY_COMPLETE`.
+The current bounded objective is governed by `docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md`, `docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md`, the existing MISP read/export documentation, `docs/security/SECURITY_OVERVIEW.md`, `docs/evidence/EVIDENCE_INDEX.md`, the Platform Industrialisation Roadmap and synchronized current-state documents.
 
 ## 9. Evidence boundaries
 
-- Repository CI proves only repository-controlled engineering claims within test scope.
-- Persistence-gate success is not live OpenCTI integration or deployment evidence.
-- Owner acceptance and external assurance remain separate evidence classes.
-- Historical run evidence remains immutable and scoped to the state it covered.
-- Production authorization does not exist until a future Phase 12 `GO` is explicitly recorded.
+Repository CI can prove repository-controlled contract wording, compatibility assertions and documentation synchronization only. It does not prove live MISP credentials/roles, remote-server trust, lawful production sharing, deployment correctness, staging acceptance, independent assurance or production authorization.
 
 ## 10. Recommendation
 
-Continue only with the active Phase 11.4 persistence PR. Merge it only on fully green exact-head CI with synchronized professional documentation and expected-head protection. After protected acceptance, reconcile Phase 11.4 to repository-complete and start exactly Phase 11.5 MISP consolidation.
+Continue only with the active Phase 11.5 MISP consolidation contract. Merge only on fully green exact-head CI with synchronized professional documentation and expected-head protection. After protected acceptance, start exactly one bounded Phase 11.5 synchronization-state/persistence and authority-enforcement implementation PR. Phase 11.6 remains blocked until Phase 11.5 is repository-complete.
