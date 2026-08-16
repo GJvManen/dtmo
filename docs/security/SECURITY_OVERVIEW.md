@@ -23,6 +23,12 @@ DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — P
 
 Technical success is not dissemination authority. Taranis publisher state, IntelOwl analyzer/job results, OpenCTI graph content and MISP ingest/delivery success do **not** authorize DTMO external sharing or publication. Human review and governed DTMO share approval remain authoritative.
 
+## Threat and vulnerability management
+
+DTMO keeps threat-intelligence context, vulnerability evidence and local exposure/compromise claims separate. External source presence, IntelOwl analyzer output, OpenCTI graph relationships, MISP event membership or upstream confidence never by themselves establish DTMO-local exploitability, exposure or compromise. Vulnerability and threat decisions remain provenance-backed, governed and subject to the existing DTMO review and prioritization controls.
+
+This boundary preserves the established Normenkader IBP SM.07-oriented threat and vulnerability management evidence model without turning an integration result or framework mapping into a blanket compliance or maturity claim.
+
 ## Phase 11.3 IntelOwl boundary
 
 Phase 11.3 is `PASS / REPOSITORY_COMPLETE`. IntelOwl remains a separate AGPL-3.0 service/API boundary with explicit analyzer allowlists, runtime-secret token handling, durable attribution and no-share/no-local-compromise invariants.
