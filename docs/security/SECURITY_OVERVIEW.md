@@ -47,6 +47,10 @@ The accepted source ecosystem includes OpenCVE, CIRCL Vulnerability-Lookup, gove
 
 Canonical ingestion preserves raw evidence/source context and requires durable canonical persistence before successful application-level ingestion is reported.
 
+## Threat and vulnerability management
+
+DTMO threat and vulnerability management preserves source provenance, separates external intelligence from local exposure evidence, and keeps CVE/CVSS/EPSS/KEV and enrichment signals attributable rather than treating them as proof of local compromise. Phase 11 enrichment extends this governed evidence model without weakening human review, RBAC, TLP/privacy or publication authority.
+
 ## Phase 11.3 IntelOwl enrichment security boundary
 
 The IntelOwl service/API/security/licensing contract is accepted. The bounded adapter is implemented in the active repository slice and remains subject to exact-head acceptance. No live IntelOwl deployment, provider credential, durable enrichment-history persistence or production-equivalent behavior is claimed by this repository state.
