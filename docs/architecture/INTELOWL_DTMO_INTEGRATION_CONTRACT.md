@@ -2,11 +2,11 @@
 
 Contract date: **2026-08-16**  
 Phase: **11.3 — IntelOwl enrichment integration**  
-Contract state: **`PROPOSED / EXACT-HEAD VALIDATION REQUIRED`**
+Contract state: **`PASS / REPOSITORY_COMPLETE — ACCEPTED IMPLEMENTATION BASELINE`**
 
 ## Purpose
 
-This document defines the bounded service-to-service contract for introducing IntelOwl as DTMO's preferred generic IOC enrichment subsystem after repository completion of Phase 11.2 Taranis integration. It authorizes implementation planning only. It does not claim a live IntelOwl deployment, production-equivalent behavior, external-assurance acceptance or production authorization.
+This document defines the accepted bounded service-to-service contract for introducing IntelOwl as DTMO's preferred generic IOC enrichment subsystem after repository completion of Phase 11.2 Taranis integration. It authorizes bounded adapter implementation under the controls below. Contract acceptance is repository evidence only and does not claim a live IntelOwl deployment, production-equivalent behavior, external-assurance acceptance or production authorization.
 
 ## Upstream baseline
 
@@ -49,7 +49,7 @@ Email and other personally identifying generic observables are **excluded by def
 
 ## Required API surface
 
-The implementation should use the smallest supported API surface necessary for enrichment. The accepted baseline includes:
+The implementation uses the smallest supported API surface necessary for enrichment. The accepted baseline includes:
 
 | Purpose | Method | IntelOwl API class | DTMO rule |
 |---|---|---|---|
@@ -59,7 +59,7 @@ The implementation should use the smallest supported API surface necessary for e
 | Analyzer configuration discovery | `GET` | supported analyzer-config API / official client equivalent | allowlist validation only; never auto-enable arbitrary analyzers |
 | Analyzer health | `GET` | `/api/analyzer/{analyzer_name}/healthcheck` or supported plugin-health equivalent | operational readiness signal only |
 
-Before implementation merge, exact endpoint names and request/response shapes MUST be verified against the deployed/target IntelOwl v6.7-compatible OpenAPI surface or official client behavior. If upstream API shape differs, the implementation contract must be updated rather than silently guessing compatibility.
+Endpoint names and request/response shapes must remain compatible with the target IntelOwl v6.7-compatible OpenAPI surface or official client behavior. If upstream API shape differs, this contract and implementation must be updated rather than silently guessing compatibility.
 
 ## Authentication and identity
 
@@ -136,15 +136,7 @@ A provider verdict such as malicious/suspicious is retained with its source and 
 
 ## Rate limits, quotas and bounded execution
 
-The adapter must be bounded by configuration:
-
-- maximum observables per batch;
-- maximum concurrent IntelOwl jobs;
-- maximum analyzers/playbook per request;
-- maximum polling duration;
-- polling interval with backoff/jitter;
-- maximum result size accepted into raw evidence;
-- per-provider quota/rate-limit handling.
+The adapter is bounded by configuration for observable scope, requested analyzers, polling duration/interval, result size and retry/rate-limit behavior. Future governed execution must additionally bound batch/concurrency at its orchestration layer.
 
 `429` and provider quota exhaustion cause bounded backoff/defer behavior. They do not cause uncontrolled retry storms or fallback to unapproved providers.
 
@@ -168,13 +160,13 @@ IntelOwl failure must not make unrelated DTMO read paths unavailable.
 
 ## Authority boundary
 
-**IntelOwl external Connectors** are excluded from the initial enrichment path. The initial integration MUST NOT enable IntelOwl Connectors, pivots or other actions that can create external side effects merely to perform enrichment. In particular, IntelOwl MISP/OpenCTI/Slack/email/abuse-submission connectors are outside this initial path.
+**IntelOwl external Connectors** are excluded from the bounded enrichment path. The integration MUST NOT enable IntelOwl Connectors, pivots or other actions that can create external side effects merely to perform enrichment. In particular, IntelOwl MISP/OpenCTI/Slack/email/abuse-submission connectors are outside this path.
 
 No IntelOwl job success, connector capability, analyst evaluation, upstream tag or playbook result becomes DTMO external-share/publication approval. Existing DTMO human approval and governed MISP/export controls remain authoritative.
 
 ## Threat-model abuse cases
 
-Phase 11.3 implementation tests must cover at least:
+Phase 11.3 implementation tests cover or must continue to cover:
 
 1. malicious/oversized observable values;
 2. analyzer allowlist bypass attempts;
@@ -182,46 +174,48 @@ Phase 11.3 implementation tests must cover at least:
 4. token leakage through errors/logging;
 5. expired/revoked token;
 6. TLP downgrade or missing handling context;
-7. provider quota exhaustion and `429` storms;
+7. provider quota exhaustion and `429` behavior;
 8. job ID collision/spoofing;
 9. malformed/oversized analyzer reports;
 10. partial job success with one or more failed analyzers;
 11. stale result replay being treated as current evidence;
-12. external connector accidentally enabled in a playbook;
+12. external connector side effects being requested accidentally;
 13. upstream malicious verdict being misrepresented as local compromise;
 14. IntelOwl outage while DTMO remains otherwise healthy.
 
 ## Licensing boundary
 
-IntelOwl and pyIntelOwl are distributed under **AGPL-3.0**. DTMO remains a separate service/API consumer and does not vendor IntelOwl or pyIntelOwl source into the DTMO codebase in this contract step.
+IntelOwl and pyIntelOwl are distributed under **AGPL-3.0**. DTMO remains a separate service/API consumer and does not vendor IntelOwl or pyIntelOwl source into the DTMO codebase.
 
 If DTMO later distributes, embeds or modifies IntelOwl/pyIntelOwl components, or operates a modified network-facing IntelOwl service, the applicable AGPL source-availability and notice obligations require explicit licensing review before that architecture is accepted. This contract does not provide legal advice and does not authorize source redistribution.
 
-## Phase 11.3 implementation acceptance contract
+## Phase 11.3 adapter acceptance contract
 
-The next implementation PR must demonstrate:
+The bounded adapter PR must demonstrate:
 
 - runtime-secret-backed dedicated API token;
-- HTTPS verification default-on outside local development;
+- HTTPS verification/production HTTPS validation;
 - approved observable classification and analyzer/playbook allowlist;
 - bounded job submission and polling;
 - deterministic correlation between DTMO observable, IntelOwl job and analyzer reports;
-- raw-result provenance with analyzer identity and timestamps;
+- result provenance with analyzer identity and timestamps/context;
 - fail-closed TLP/privacy handling;
 - no IntelOwl connector/share side effects in the enrichment path;
 - quota/rate-limit and degraded dependency behavior;
 - partial-success semantics without fabricated success;
 - canonical enrichment that does not imply local compromise;
-- contract/integration tests for auth, allowlist, replay, malformed results, partial failure, outage and `429` handling;
+- contract/integration tests for auth/configuration, allowlist, identity mismatch, malformed/oversized results, partial failure, timeout and `429` handling;
 - synchronized architecture, integration, security, operations, QA/evidence and roadmap documentation;
 - exact-head CI and Professional Documentation Gate success.
 
+Durable enrichment-history persistence, governed execution/RBAC wiring and full operational integration remain a subsequent bounded Phase 11.3 slice after this adapter is accepted.
+
 ## Evidence boundary
 
-Repository acceptance of this contract proves only that the architecture boundary is documented and testable. It does **not** prove live IntelOwl connectivity, service-account permissions, provider credentials, production-equivalent deployment, analyzer operational quality, privacy approval for personal data, independent assurance or production authorization.
+Repository acceptance of this contract proves only that the architecture boundary is documented and testable. Repository acceptance of the adapter proves only the tested repository behavior. Neither proves live IntelOwl connectivity, service-account permissions, provider credentials, production-equivalent deployment, analyzer operational quality, privacy approval for personal data, independent assurance or production authorization.
 
 Historical Phase 8/9 evidence remains historical evidence for the earlier candidate and is not reused for the materially changed integrated platform.
 
 ## Decision
 
-**`PHASE 11.3 CONTRACT BASELINE: PROCEED TO BOUNDED INTELOWL ADAPTER IMPLEMENTATION AFTER EXACT-HEAD ACCEPTANCE`**.
+**`PHASE 11.3 CONTRACT BASELINE: ACCEPTED / REPOSITORY_COMPLETE — BOUNDED INTELOWL ADAPTER MAY PROCEED UNDER THIS CONTRACT`**.
