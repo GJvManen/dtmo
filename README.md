@@ -11,74 +11,59 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Phase 10 production decision:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`  
 > **Phase 11.1 Taranis architecture/contract:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.2 Taranis adapter:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.3 IntelOwl contract:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.3 IntelOwl adapter:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded priority:** Phase 11.3 governed IntelOwl execution/persistence `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
+> **Phase 11.3 IntelOwl integration:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded priority:** Phase 11.4 OpenCTI contract `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
 > **Next production authorization:** Phase 12 `NOT STARTED`  
 > **Production status:** **not production authorized**
 
 ## Why DTMO
 
-Education environments combine broad digital estates, sensitive information, cloud dependencies and a threat landscape ranging from opportunistic exploitation to targeted campaigns. DTMO is designed to turn heterogeneous public and governed intelligence sources into traceable, reviewable and operationally useful security intelligence while preserving authorization, privacy, provenance and publication controls.
+Education environments combine broad digital estates, sensitive information, cloud dependencies and a threat landscape ranging from opportunistic exploitation to targeted campaigns. DTMO turns heterogeneous governed intelligence into traceable, reviewable and operationally useful security intelligence while preserving authorization, privacy, provenance and publication controls.
 
 DTMO is built around five principles:
 
 1. **Provenance first** — source identity and evidence remain traceable through ingestion, normalization, correlation and presentation.
 2. **Fail closed** — missing evidence, invalid contracts, incomplete acceptance or unknown state never become implicit success.
-3. **Human authority remains human** — ingestion, enrichment, analytics, Administration, CI and staging access do not grant publication or external-sharing authority.
+3. **Human authority remains human** — ingestion, enrichment, graph synchronization, analytics, Administration, CI and staging access do not grant publication or external-sharing authority.
 4. **Least privilege by design** — human and service identities are separated and privileged operations remain auditable.
 5. **Evidence-based governance** — framework relationships are explicit, versioned and provenance-backed; mappings are not inferred from free text or semantic similarity.
 
 ## Product capabilities
 
-### Unified security console
+The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The repository-complete baseline includes governed OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL semantics plus Phase 11 Taranis collection/canonicalization and IntelOwl enrichment integration.
 
-The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance.
+Phase 11.4 now defines OpenCTI as the separate STIX knowledge-graph service. DTMO remains authoritative for education-sector relevance, local vulnerability/exposure semantics, governance, review and publication/share authority.
 
-### Intelligence and CTI ecosystem
-
-The repository-complete product baseline includes governed integrations and semantics for OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL. Phase 11.1–11.2 added the repository-complete read-only Taranis service boundary and canonical adapter. The Phase 11.3 IntelOwl contract and bounded adapter are repository-complete; the active bounded slice adds human-authorized execution, durable enrichment history and operational read access.
-
-### Intelligence pipeline
+## Phase 11 composed intelligence pipeline
 
 ```mermaid
 flowchart LR
     S[Approved / governed sources] --> TAR[Taranis AI\ncollection + assessment]
-    TAR --> N[DTMO normalization + provenance]
-    N --> O[Raw evidence object storage]
-    N --> P[(PostgreSQL canonical state)]
-    H[Human reviewer\nREVIEW_INTELLIGENCE] --> ENR[Governed enrichment request]
-    P --> ENR
-    ENR --> G[IntelOwl policy gate\nclass + handling + analyzer allowlist]
-    G --> OWL[IntelOwl API]
-    OWL --> ER[Attributed analyzer results]
-    ER --> EH[(Immutable enrichment history)]
-    EH --> P
-    G -. connectors_requested=[] .-> NO[No implicit external side effects]
-    EH -. never grants .-> SHARE[Human share/publication approval]
-    P --> API[FastAPI application services]
+    TAR --> D[(DTMO canonical intelligence)]
+    D --> OWL[IntelOwl\nbounded enrichment]
+    OWL --> D
+    O[OpenCTI\nSTIX 2.1 graph] <--> M[Explicit identity / provenance mapping]
+    M <--> D
+    M -. never grants .-> H[Human share/publication authority]
+    D --> API[FastAPI application services]
     API --> UI[Unified DTMO console]
 ```
 
-PostgreSQL remains canonical application truth. IntelOwl results are attributable enrichment context: they do not become proof of local compromise or external-share/publication authority.
+PostgreSQL remains canonical DTMO application truth. IntelOwl results and OpenCTI graph context remain attributable evidence/context; neither becomes proof of local compromise or external-share/publication authority.
 
-### Governed IntelOwl execution
+## Phase 11.4 OpenCTI contract
 
-The governed execution endpoint requires `REVIEW_INTELLIGENCE`; the current service-account role does not hold that permission. The history endpoint requires `READ_INTELLIGENCE`. The IntelOwl feature flag must be enabled before execution is possible.
+The reviewed compatibility baseline is **OpenCTI 7.260811.0**. The contract distinguishes Community Edition under Apache-2.0 from separately licensed Enterprise Edition functionality and keeps OpenCTI behind a service/API boundary with no source vendoring.
 
-Every requested analyzer is conservatively treated as an external disclosure boundary in this slice. Restricted handling (`red`, `tlp:red`, `review-required`) fails closed before network disclosure. The request continues to submit `connectors_requested=[]`, so IntelOwl MISP/OpenCTI/Slack/email connector side effects remain outside the path.
+The initial bounded integration surface is read-oriented and covers GraphQL, STIX 2.1, TAXII 2.1 and access-controlled stream semantics. A dedicated non-human OpenCTI identity must use least privilege and only approved markings. OpenCTI/STIX IDs remain distinct from DTMO canonical UUIDs and are mapped explicitly with provenance, confidence and marking context.
 
-Migration `0011_intelowl_enrichment_history` adds immutable canonical-item-linked records with upstream job identity, requested analyzers, handling input, partial-success state, attributed reports, requesting human identity and database-enforced `external_share_authorized=false` / `local_compromise_proven=false` invariants. `(item_id, job_id)` is unique, making replay of the same upstream job idempotent at the persistence boundary.
+The contract does not authorize OpenCTI connector registration, MISP synchronization, external enrichment, arbitrary GraphQL mutations, TheHive case creation or report publication. Unknown markings, malformed STIX and authorization failures fail closed.
 
-### Security and governance
-
-The IntelOwl integration requires a runtime-secret API token, production HTTPS and an explicit analyzer allowlist. Approved observable classes default to CVE, IP, domain, URL and hash; email/personal-data observables remain excluded pending explicit privacy/data-processing approval. Unknown analyzers, job-ID mismatches, oversized/malformed results and unbounded polling fail closed.
+See [OpenCTI → DTMO Integration Contract](docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md), [OpenCTI Integration](docs/integrations/OPENCTI_INTEGRATION.md) and [OpenCTI Integration Operations Runbook](docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md).
 
 ## Architecture
 
 The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, SQLAlchemy/Alembic, PostgreSQL, Redis, OpenSearch, S3-compatible object storage, Prometheus/Grafana, Nginx and a Docker Compose reference topology. The Phase 11 target is a composed service architecture: Taranis AI for collection/assessment, IntelOwl for IOC enrichment, OpenCTI for STIX graph, MISP for governed exchange and TheHive for incident/case handoff.
-
-See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md), [IntelOwl → DTMO Integration Contract](docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md), [IntelOwl Integration](docs/integrations/INTELOWL_INTEGRATION.md), [IntelOwl Enrichment Operations Runbook](docs/operations/INTELOWL_ENRICHMENT_RUNBOOK.md) and [Security Overview](docs/security/SECURITY_OVERVIEW.md).
 
 ## Current maturity and release position
 
@@ -87,38 +72,26 @@ See [System Architecture](docs/architecture/SYSTEM_ARCHITECTURE.md), [IntelOwl �
 | Phases 1–7 | Repository-controlled engineering baseline | `PASS` |
 | RC13 | Unified-console functional acceptance | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | Vulnerability & CTI product evolution | `PASS / REPOSITORY_COMPLETE` |
-| Phase 8 | Production-equivalent staging validation and accountable acceptance | `PASS / OWNER_ACCEPTED` |
+| Phase 8 | Production-equivalent staging validation | `PASS / OWNER_ACCEPTED` |
 | Phase 9 | Independent external assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
 | Phase 10 | Formal production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
 | Phase 11.1 | Taranis architecture/API/data-model/identity/licensing | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 | Taranis→DTMO canonical adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 contract | IntelOwl service/API/security/licensing contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 adapter | Bounded IntelOwl enrichment adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 execution/persistence | Governed execution + durable enrichment history | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.3 | IntelOwl enrichment integration | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 contract | OpenCTI service/API/STIX/identity/security/licensing | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
 
-Phase 8/9 remain historical evidence for the earlier candidate. The materially changed integrated platform requires fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance before Phase 12.
+Historical Phase 8/9 evidence remains bound to the earlier candidate. The materially changed integrated platform requires fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance before Phase 12.
 
 ## Product roadmap
 
-The current priority sequence is:
-
-1. complete Phase 11.3 governed IntelOwl execution/persistence and operational integration on fully green exact-head CI;
-2. reconcile Phase 11.3 as repository-complete after merge;
-3. integrate OpenCTI;
-4. consolidate MISP authority/synchronization;
-5. add TheHive handoff;
-6. add Cortex only when a validated IntelOwl gap exists;
-7. industrialise Kubernetes/Helm/GitOps, HA, secrets, network, observability, recovery and supply chain;
-8. complete migration/compatibility;
-9. execute new production-equivalent validation and independent assurance;
-10. conduct Phase 12 production GO/NO-GO.
+The fixed sequence is OpenCTI → MISP consolidation → TheHive → conditional Cortex → Kubernetes/Helm/GitOps hardening → migration/compatibility → new validation → new independent assurance → Phase 12.
 
 See the [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current Project State](docs/project/CURRENT_STATE.md), [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md) and [Evidence Index](docs/evidence/EVIDENCE_INDEX.md).
 
 ## Documentation
 
-The authoritative documentation portal is [docs/README.md](docs/README.md). The Phase 11.3 reviewer workflow is [IntelOwl Governed Enrichment Workflow](docs/user/INTELOWL_ENRICHMENT_WORKFLOW.md), and operational handling is documented in [IntelOwl Enrichment Operations Runbook](docs/operations/INTELOWL_ENRICHMENT_RUNBOOK.md). Historical point-in-time run records remain historical and are not rewritten to claim Phase 11 evidence.
+The authoritative documentation portal is [docs/README.md](docs/README.md). Historical point-in-time records remain historical and are not rewritten to claim later Phase 11 evidence.
 
 ## Local reference environment
 
@@ -144,6 +117,6 @@ DTMO is licensed under the **Apache License, Version 2.0**. Canonical governance
 - `docs/legal/LICENSING.md`
 - `docs/legal/THIRD_PARTY.md`
 
-Taranis AI remains a separate service behind its own licensing boundary. IntelOwl and pyIntelOwl are AGPL-3.0; Phase 11.3 uses a separate service/API boundary and does not vendor their source into DTMO. Embedding, modification, redistribution or operation of modified network-facing IntelOwl components requires explicit licensing review before acceptance.
+Taranis AI remains a separate service behind its own licensing boundary. IntelOwl and pyIntelOwl remain separate AGPL-3.0 services. OpenCTI Community Edition is Apache-2.0 and OpenCTI Enterprise Edition is separately licensed; Enterprise Edition-only dependencies require explicit entitlement/legal review before acceptance. Phase 11 integrations do not vendor upstream platform source into DTMO.
 
-Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, enrich, publish or redistribute third-party material.
+Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, enrich, synchronize, publish or redistribute third-party material.
