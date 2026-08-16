@@ -168,7 +168,7 @@ IntelOwl failure must not make unrelated DTMO read paths unavailable.
 
 ## Authority boundary
 
-The initial integration MUST NOT enable IntelOwl Connectors, pivots or other actions that can create external side effects merely to perform enrichment. In particular, IntelOwl MISP/OpenCTI/Slack/email/abuse-submission connectors are outside this initial path.
+**IntelOwl external Connectors** are excluded from the initial enrichment path. The initial integration MUST NOT enable IntelOwl Connectors, pivots or other actions that can create external side effects merely to perform enrichment. In particular, IntelOwl MISP/OpenCTI/Slack/email/abuse-submission connectors are outside this initial path.
 
 No IntelOwl job success, connector capability, analyst evaluation, upstream tag or playbook result becomes DTMO external-share/publication approval. Existing DTMO human approval and governed MISP/export controls remain authoritative.
 
