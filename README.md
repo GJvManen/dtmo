@@ -12,9 +12,8 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Phase 11.1 Taranis architecture/contract:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.2 Taranis adapter:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.3 IntelOwl integration:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.4 OpenCTI contract:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.4 OpenCTI read-only adapter:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded priority:** Phase 11.4 OpenCTI canonical mapping/persistence + operational integration `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
+> **Phase 11.4 OpenCTI integration:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded priority:** Phase 11.5 MISP consolidation contract `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
 > **Next production authorization:** Phase 12 `NOT STARTED`  
 > **Production status:** **not production authorized**
 
@@ -26,9 +25,9 @@ DTMO is built around five principles: provenance first; fail closed; human autho
 
 ## Product capabilities
 
-The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The repository-complete baseline includes governed OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL semantics plus Phase 11 Taranis collection/canonicalization and IntelOwl enrichment integration.
+The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The repository-complete baseline includes governed OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL semantics plus Phase 11 Taranis collection/canonicalization, IntelOwl enrichment and OpenCTI graph integration.
 
-Phase 11.4 integrates OpenCTI as a separate STIX knowledge-graph service while DTMO remains authoritative for education-sector relevance, local vulnerability/exposure semantics, Governance, review and publication/share authority.
+Phase 11.5 now consolidates the existing MISP read and governed-export capabilities into one explicit authority and synchronization model. DTMO remains authoritative for education-sector relevance, canonical review state, local exposure/compromise semantics, governance evidence and human publication/share approval.
 
 ## Phase 11 composed intelligence pipeline
 
@@ -39,28 +38,27 @@ flowchart LR
     D --> OWL[IntelOwl\nbounded enrichment]
     OWL --> D
     O[OpenCTI\nSTIX 2.1 graph] --> A[Read-only adapter]
-    A --> M[(Canonical identity/provenance mapping)]
-    M --> D
-    M -. never grants .-> H[Human share/publication authority]
+    A --> D
+    M[MISP\ngoverned exchange] -->|read + source restrictions| D
+    D -->|human-approved unpublished export| M
+    D -. authority remains .-> H[Human share/publication approval]
     D --> API[FastAPI application services]
     API --> UI[Unified DTMO console]
 ```
 
-PostgreSQL remains canonical DTMO application truth. IntelOwl results and OpenCTI graph context remain attributable evidence/context; neither becomes proof of local compromise or external-share/publication authority.
+PostgreSQL remains canonical DTMO application truth. IntelOwl, OpenCTI and MISP provide attributable context/exchange services; none independently establishes local compromise or grants DTMO external-share/publication authority.
 
-## Phase 11.4 OpenCTI canonical persistence
+## Phase 11.5 MISP consolidation
 
-The accepted OpenCTI read adapter performs bounded GraphQL `stixCoreObjects` reads and preserves stable OpenCTI/STIX identities, entity type, markings, confidence, timestamps, external references and provenance. The active slice adds durable PostgreSQL mapping and immutable reconciliation history.
+The reviewed upstream contract baseline is **MISP v2.5.44**. MISP remains a separate **AGPL-3.0** service/API boundary; DTMO does not vendor MISP core source.
 
-`opencti_object_mappings` stores current DTMO-item ↔ OpenCTI/STIX identity context. `opencti_mapping_revisions` stores immutable SHA-256-keyed snapshots. Unchanged replay is idempotent; changed upstream state creates an attributable revision. Conflicting OpenCTI/STIX identity drift fails closed.
+Existing DTMO MISP capabilities are deliberately reused rather than duplicated. The inbound connector uses `POST /events/restSearch` and preserves event/attribute/object identities, distribution, sharing-group, TLP/tag, galaxy and raw provenance context. The outbound path uses `POST /events/add` only after attributable human review/share approval, creates unpublished destination events and uses durable replay protection.
 
-Migration `0012_opencti_mapping_persistence` adds identity uniqueness, confidence validation and database constraints enforcing `external_share_authorized=false` and `local_compromise_proven=false`.
+Phase 11.5 requires source restrictions to remain authoritative and prevents broadening on re-export. Service accounts, schedulers, collectors, IntelOwl, OpenCTI and MISP cannot grant DTMO share approval. Unknown/ambiguous identity or handling semantics, authorization failures and uncertain outbound delivery fail closed.
 
-The operational coordinator commits PostgreSQL before calling `commit_page(page)`. Database failure therefore cannot advance the cursor; checkpoint failure after a database commit is safely replayable.
+Automatic MISP server push/pull synchronization and OpenCTI↔MISP automatic synchronization are excluded from the current contract slice. Repository CI is not live-MISP, deployment, assurance or production evidence.
 
-OpenCTI remains a separate service/API boundary. Community Edition is Apache-2.0; Enterprise Edition is separately licensed. No OpenCTI source is vendored. Connector registration, MISP synchronization, external enrichment, TheHive case creation, report publication, security administration and arbitrary GraphQL mutation remain outside Phase 11.4.
-
-See [OpenCTI → DTMO Integration Contract](docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md), [OpenCTI Integration](docs/integrations/OPENCTI_INTEGRATION.md) and [OpenCTI Integration Operations Runbook](docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md).
+See [MISP → DTMO Consolidation Contract](docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md), [MISP Read Integration](docs/integrations/MISP_READ_INTEGRATION.md) and [MISP Governed Export](docs/intelligence/MISP_GOVERNED_EXPORT.md).
 
 ## Architecture
 
@@ -79,16 +77,15 @@ The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, S
 | Phase 11.1 | Taranis architecture/API/data-model/identity/licensing | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 | Taranis→DTMO canonical adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 | IntelOwl enrichment integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 contract | OpenCTI service/API/STIX/identity/security/licensing | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 adapter | Read-only GraphQL/STIX identity adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 persistence | Canonical mapping/reconciliation/operational integration | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.4 | OpenCTI STIX knowledge-graph integration | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 contract | MISP consolidation authority/service/API/licensing model | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
 
 Historical Phase 8/9 evidence remains bound to the earlier candidate. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.
 
 ## Product roadmap
 
-The fixed sequence is OpenCTI → MISP consolidation → TheHive → conditional Cortex → Kubernetes/Helm/GitOps hardening → migration/compatibility → new validation → new independent assurance → Phase 12.
+The fixed sequence is MISP consolidation → TheHive → conditional Cortex → Kubernetes/Helm/GitOps hardening → migration/compatibility → new validation → new independent assurance → Phase 12.
 
 See the [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current Project State](docs/project/CURRENT_STATE.md), [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md) and [Evidence Index](docs/evidence/EVIDENCE_INDEX.md).
 
@@ -120,6 +117,6 @@ DTMO is licensed under the **Apache License, Version 2.0**. Canonical governance
 - `docs/legal/LICENSING.md`
 - `docs/legal/THIRD_PARTY.md`
 
-Taranis AI remains a separate service behind its own licensing boundary. IntelOwl and pyIntelOwl remain separate AGPL-3.0 services. OpenCTI Community Edition is Apache-2.0 and OpenCTI Enterprise Edition is separately licensed; Enterprise Edition-only dependencies require explicit entitlement/legal review before acceptance. Phase 11 integrations do not vendor upstream platform source into DTMO.
+Taranis AI remains a separate service behind its own licensing boundary. IntelOwl and pyIntelOwl remain separate AGPL-3.0 services. OpenCTI Community Edition is Apache-2.0 and OpenCTI Enterprise Edition is separately licensed. MISP core remains a separate AGPL-3.0 service/API boundary. Phase 11 integrations do not vendor upstream platform source into DTMO without explicit licensing approval.
 
 Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, enrich, synchronize, publish or redistribute third-party material.
