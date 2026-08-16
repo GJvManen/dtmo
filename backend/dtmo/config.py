@@ -55,6 +55,13 @@ class Settings(BaseSettings):
     taranis_reconcile_pages: int = Field(default=1, ge=0, le=20)
     taranis_detail_cti_limit: int = Field(default=200, ge=0, le=5000)
     taranis_checkpoint_path: str = "/var/lib/dtmo/checkpoints/taranis.json"
+    intelowl_api_base: str = ""
+    intelowl_api_token: SecretStr = SecretStr("")
+    intelowl_allowed_observable_types: str = "cve,ip,domain,url,hash"
+    intelowl_allowed_analyzers: str = ""
+    intelowl_max_poll_attempts: int = Field(default=12, ge=1, le=120)
+    intelowl_poll_interval_seconds: float = Field(default=1.0, ge=0.0, le=60.0)
+    intelowl_max_result_bytes: int = Field(default=1_000_000, ge=1024, le=20_000_000)
     publish_requires_human_approval: bool = True
     feature_live_connectors: bool = False
     feature_opencve_connector: bool = False
@@ -63,6 +70,7 @@ class Settings(BaseSettings):
     feature_misp_export: bool = False
     feature_ail_connector: bool = False
     feature_taranis_connector: bool = False
+    feature_intelowl_enrichment: bool = False
     feature_ai_analyst: bool = False
 
     @property
@@ -117,6 +125,13 @@ class Settings(BaseSettings):
                 raise ValueError("production Taranis integration requires a runtime API token")
             if not self.taranis_checkpoint_path.startswith("/"):
                 raise ValueError("production Taranis integration requires an absolute durable checkpoint path")
+        if self.feature_intelowl_enrichment:
+            if not self.intelowl_api_base.startswith("https://"):
+                raise ValueError("production IntelOwl integration requires an HTTPS API base")
+            if not self.intelowl_api_token.get_secret_value().strip():
+                raise ValueError("production IntelOwl integration requires a runtime API token")
+            if not self.intelowl_allowed_analyzers.strip():
+                raise ValueError("production IntelOwl integration requires an explicit analyzer allowlist")
         return self
 
 
