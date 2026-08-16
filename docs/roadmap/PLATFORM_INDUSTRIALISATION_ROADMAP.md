@@ -5,7 +5,7 @@ Programme state: **`ACTIVE / HIGHEST PRIORITY`**
 
 ## Purpose
 
-Phase 10 concluded with `NO-GO / BLOCKED` for production authorization. Phase 11 is the successor industrialisation programme and is executed one bounded pull request at a time. Historical Phase 8/9 evidence remains candidate-bound and is not reused as evidence for the materially changed integrated platform.
+Phase 10 concluded with `NO-GO / BLOCKED` for production authorization. Phase 11 is the successor industrialisation programme and is executed one bounded pull request at a time. Historical Phase 8/9 evidence remains candidate-bound and is not reused for the materially changed integrated platform.
 
 DTMO prefers mature service integrations over rebuilding generic collection, enrichment, graph, exchange and case-management platforms inside DTMO.
 
@@ -58,48 +58,43 @@ Repository-complete implementation includes read-only collection, stable namespa
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-The Phase 11.3 contract, bounded adapter and governed execution/persistence boundary are accepted. Repository-complete scope includes production HTTPS/token/analyzer allowlist policy, bounded submission/polling, fail-closed TLP/privacy behavior, immutable job identity, explicit partial success, human `REVIEW_INTELLIGENCE` execution authority, durable enrichment history and database-enforced no-share/no-local-compromise invariants.
-
-IntelOwl remains a separate AGPL-3.0 service/API boundary. No historical Phase 8/9 evidence is transferred to this materially changed candidate.
+The contract, bounded adapter and governed execution/persistence boundary are accepted. IntelOwl remains a separate AGPL-3.0 service/API boundary with explicit analyzer allowlists, human review authority, durable enrichment history and no-share/no-local-compromise invariants.
 
 ### 11.4 OpenCTI knowledge-graph integration
 
-**Status:** `IN PROGRESS / READ-ONLY ADAPTER IN EXACT-HEAD VALIDATION`
+**Status:** `IN PROGRESS / CANONICAL PERSISTENCE IN EXACT-HEAD VALIDATION`
 
-The service/API/STIX/data-model/identity/security/licensing contract is `PASS / REPOSITORY_COMPLETE`. The active bounded slice implements the first read-only adapter against that accepted contract.
+The OpenCTI service/API/STIX/licensing contract and bounded read-only GraphQL/STIX adapter are `PASS / REPOSITORY_COMPLETE`. The active final Phase 11.4 slice adds canonical mapping persistence, immutable reconciliation history and operational persistence-before-checkpoint ordering.
 
-Implemented repository scope in this slice:
+Active repository scope:
 
-- separate OpenCTI service/API boundary with no source vendoring;
-- read-only GraphQL `stixCoreObjects` retrieval;
-- stable OpenCTI internal ID and STIX standard-ID preservation;
-- explicit entity-type allowlist;
-- marking/TLP context, confidence, timestamps and external-reference provenance preservation;
-- explicit no-share/no-local-compromise provenance markers;
-- bounded page size and maximum page count;
-- durable checkpoint state that advances only after the caller confirms successful page persistence;
-- atomic checkpoint replacement and restart from the last committed cursor;
-- fail-closed GraphQL error, malformed identity/type/marking/confidence/page/cursor/checkpoint handling;
-- production validation requiring HTTPS, runtime token, entity allowlist and absolute durable checkpoint path;
-- no OpenCTI connector registration, MISP synchronization, enrichment, case creation, publication or arbitrary GraphQL mutation.
+- `opencti_object_mappings` for explicit DTMO-item ↔ OpenCTI internal ID ↔ STIX ID mapping;
+- `opencti_mapping_revisions` for immutable SHA-256-keyed reconciliation snapshots;
+- preservation of entity type, parent types, markings, confidence, timestamps, external references and provenance;
+- unique identity constraints plus fail-closed OpenCTI/STIX identity drift detection;
+- database-enforced `external_share_authorized=false` and `local_compromise_proven=false`;
+- idempotent unchanged replay and attributable revision creation for changed upstream state;
+- migration `0012_opencti_mapping_persistence` after `0011_intelowl_enrichment_history`;
+- persistence coordinator that commits PostgreSQL before `commit_page(page)` advances the durable cursor;
+- replay safety when checkpoint replacement fails after database commit;
+- no connector registration, MISP synchronization, enrichment, case creation, publication, security administration or GraphQL mutation.
 
 ```mermaid
 flowchart LR
-    C[(Last committed cursor)] --> A[Read-only OpenCTI adapter]
-    I[Dedicated service identity\nleast privilege + markings] --> O[OpenCTI GraphQL]
-    A --> O
-    O --> V{Identity/type/marking/provenance valid?}
-    V -->|no| X[Fail closed\ncheckpoint unchanged]
-    V -->|yes| P[Governed DTMO persistence]
-    P --> K{Durable commit successful?}
-    K -->|no| X
-    K -->|yes| C2[(Atomic next cursor)]
-    P -. never grants .-> S[Human publication/share authority]
+    O[OpenCTI GraphQL] --> A[Accepted read-only adapter]
+    A --> V{Identity / markings / provenance valid?}
+    V -->|no| X[Fail closed]
+    V -->|yes| M[(Canonical OpenCTI mapping)]
+    M --> R[(Immutable mapping revisions)]
+    M --> D{PostgreSQL commit?}
+    D -->|no| X
+    D -->|yes| C[(Durable cursor commit)]
+    M -. never grants .-> S[Human publication/share authority]
 ```
 
-Repository CI for this slice is engineering evidence only. It does not prove live OpenCTI connectivity, deployed credentials/RBAC/markings, production-scale graph correctness/performance, privacy approval, HA/recovery, independent assurance or production authorization.
+Repository CI remains engineering evidence only. It does not prove live OpenCTI connectivity, deployed credentials/RBAC/markings, production-scale graph correctness/performance, privacy approval, HA/recovery, independent assurance or production authorization.
 
-After protected acceptance, the remaining Phase 11.4 work is a separately bounded canonical mapping/persistence/operational integration slice before 11.4 can become repository-complete.
+After protected acceptance of this slice and lifecycle reconciliation, **Phase 11.4 may become `PASS / REPOSITORY_COMPLETE`** and the next bounded priority is 11.5 MISP consolidation.
 
 ### 11.5 MISP consolidation
 
@@ -155,8 +150,8 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept the **read-only OpenCTI STIX/identity adapter** on fully green exact-head CI.
-2. Add the separately bounded canonical mapping/persistence/operational integration needed to finish Phase 11.4.
-3. Mark 11.4 repository-complete only after all required OpenCTI slices are protected-merged and documentation is reconciled.
-4. Continue to **11.5 MISP consolidation**, then 11.6–11.11 in the fixed order.
+1. Accept the **OpenCTI canonical mapping/persistence + operational integration** slice on fully green exact-head CI.
+2. Reconcile Phase 11.4 to `PASS / REPOSITORY_COMPLETE` only after protected merge.
+3. Start exactly **11.5 MISP consolidation**.
+4. Continue 11.6–11.11 in fixed order.
 5. Enter Phase 12 only after every required Phase 11 gate is accepted.

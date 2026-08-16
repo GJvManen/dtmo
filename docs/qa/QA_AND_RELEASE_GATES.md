@@ -11,10 +11,9 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 3. **No inferred PASS** — queued, in-progress, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
 4. **Expected-head merge protection** — protected merge must reject a moved head.
 5. **Evidence classes remain separate** — CI, owner acceptance, real staging, independent assurance, platform-integration evidence and production authorization are not interchangeable.
-6. **Deployment-bound evidence stays deployment-bound** — materially changed candidates require impact assessment and appropriate revalidation.
-7. **Historical evidence is immutable** — later decisions may supersede current status without rewriting historical run records.
-8. **One bounded Phase 11 objective per PR** — unrelated architecture work is not stacked behind red CI.
-9. **Professional documentation is a merge criterion** — code/integration work cannot merge when affected authoritative documentation or documentation-contract tests are stale.
+6. **Historical evidence is immutable** — later decisions may supersede current status without rewriting historical run records.
+7. **One bounded Phase 11 objective per PR** — unrelated architecture work is not stacked behind red CI.
+8. **Professional documentation is a merge criterion** — code/integration work cannot merge when affected authoritative documentation or documentation-contract tests are stale.
 
 ## Gate families
 
@@ -24,9 +23,6 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Security & identity | Authentication, authorization, privileged actions and secret boundaries | Repository CI + deployed validation + assurance |
 | Data integrity & recovery | Migrations, persistence, integrity and recovery | Repository CI + deployed validation/assurance |
 | Connector reliability | Contract/state/retry/timeout/replay/freshness/provenance/failure isolation | Repository CI + deployed validation |
-| Performance | Ingestion/read/concurrency/degraded behavior | Repository CI + representative external validation |
-| Accessibility & browser UX | Keyboard/contrast/reflow/responsive/browser journeys | Repository CI + accountable functional acceptance |
-| Observability & operations | Metrics/correlation/tracing/alerts/dashboards/runbooks | Repository CI + deployed operations |
 | Governance | Mapping truth and authority separation | Repository CI + governance review |
 | Platform integration | API/data-model interoperability, provenance, identity, replay/dedupe and migration | Phase 11 repository + integration evidence |
 | Integrated runtime | Kubernetes/Helm/GitOps, secrets, network, HA/recovery, observability and supply-chain controls | Phase 11 deployed validation |
@@ -46,18 +42,18 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Phase 11.1 Taranis | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 OpenCTI contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.4 OpenCTI contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 OpenCTI read-only adapter | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 OpenCTI persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
 
 DTMO is not production authorized.
 
 ## Repository-controlled evidence
 
-Existing workflow families remain required. Each Phase 11 integration adds a bounded contract/integration gate without weakening previous quality, security, recovery, governance or documentation controls.
+Existing workflow families remain required. Each Phase 11 integration adds bounded integration tests without weakening previous quality, security, recovery, governance or documentation controls.
 
-The **Phase 11 IntelOwl Integration Contract Gate** remains evidence for repository-complete Phase 11.3. It does not become live-provider or production evidence.
-
-The active **Phase 11 OpenCTI Integration Contract Gate** validates `docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md`, its professional documentation set, the synchronized lifecycle status and the OpenCTI documentation contract test.
+The **Phase 11 IntelOwl Integration Contract Gate** remains repository evidence for accepted Phase 11.3. The **Phase 11 OpenCTI Integration Contract Gate** now covers the accepted contract/read adapter and the active canonical persistence slice.
 
 ## Phase 11 gate sequence
 
@@ -69,40 +65,42 @@ The active **Phase 11 OpenCTI Integration Contract Gate** validates `docs/archit
 
 **Repository status:** `PASS / REPOSITORY_COMPLETE`.
 
-Accepted evidence includes authenticated read-only service integration, idempotent canonical ingestion, provenance/evidence retention, fail-closed TLP/classification, replay/deduplication, durable checkpointing/reconciliation, bounded detail/CTI retrieval, governed connector execution and degraded/failure handling.
-
 ### 11.3 IntelOwl integration
 
 **Repository status:** `PASS / REPOSITORY_COMPLETE`.
 
-Accepted evidence includes the IntelOwl service/API/licensing contract, bounded analyzer adapter, production HTTPS/token/analyzer allowlist checks, privacy/TLP fail-closed behavior, immutable job identity, bounded polling/result validation, explicit partial success, governed human execution, durable enrichment history and no-share/no-local-compromise invariants.
+### 11.4 OpenCTI contract
 
-### 11.4 OpenCTI contract — active bounded gate
+**Repository status:** `PASS / REPOSITORY_COMPLETE`.
+
+### 11.4 OpenCTI read-only adapter
+
+**Repository status:** `PASS / REPOSITORY_COMPLETE`.
+
+Accepted evidence covers bounded GraphQL `stixCoreObjects` retrieval, stable OpenCTI/STIX identity, entity allowlists, marking/confidence/provenance preservation, fail-closed malformed state, bounded pagination and explicit `commit_page(page)` semantics.
+
+### 11.4 OpenCTI canonical persistence — active bounded gate
 
 Required exact-head repository evidence:
 
-- reviewed OpenCTI baseline `7.260811.0` is recorded;
-- Community Edition Apache-2.0 and separately licensed Enterprise Edition are distinguished;
-- DTMO remains a separate service/API consumer and vendors no OpenCTI source;
-- GraphQL, STIX 2.1, TAXII 2.1 and access-controlled streams are bounded;
-- the initial implementation path is read-oriented;
-- dedicated non-human least-privilege identity and marking access are mandatory;
-- administrator/`Bypass all capabilities` and connector privileges are not routine requirements;
-- OpenCTI internal/STIX identity and DTMO canonical UUID remain distinct and explicitly mapped;
-- markings/TLP/PAP, confidence, provenance and timestamps are preserved;
-- unknown/malformed markings, malformed/unsupported STIX and authorization failures fail closed;
-- future pagination/stream replay must be bounded, restart-safe and idempotent;
-- checkpoint/cursor advancement occurs only after durable accepted state;
-- connector registration, MISP synchronization, enrichment, TheHive case creation and report publication are excluded from this first boundary;
-- OpenCTI graph context cannot mutate DTMO external-share/publication authority or prove local compromise;
-- `README.md`, `docs/README.md`, current state, roadmap, security, operations, QA and evidence index remain synchronized;
-- `docs/qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md`, Professional Documentation Gate and all required exact-head CI succeed on the same final head.
+- migration `0012_opencti_mapping_persistence` follows `0011_intelowl_enrichment_history`;
+- `opencti_object_mappings` preserves DTMO item identity, OpenCTI internal ID and STIX ID explicitly;
+- `opencti_mapping_revisions` preserves immutable attributable snapshots;
+- unchanged replay is idempotent through SHA-256 snapshot hashes;
+- changed upstream state creates one new immutable revision;
+- conflicting OpenCTI/STIX identity drift and ambiguous mappings fail closed;
+- entity type, parent types, markings/TLP/PAP context, confidence, timestamps, external references and provenance remain preserved;
+- database constraints enforce `external_share_authorized=false` and `local_compromise_proven=false`;
+- PostgreSQL commit completes before `commit_page(page)` advances durable cursor state;
+- database commit failure leaves the checkpoint unchanged;
+- replay remains safe when DB commit succeeds but checkpoint replacement fails;
+- connector registration, MISP synchronization, enrichment, TheHive case creation, report publication, OpenCTI security administration and arbitrary GraphQL mutation remain excluded;
+- `README.md`, `docs/README.md`, current state, roadmap, security, integration, operations, QA and evidence index are synchronized;
+- `docs/qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md`, Professional Documentation Gate, Phase 11 OpenCTI Integration Contract Gate and all other required exact-head workflows succeed on the same final head.
 
-Repository acceptance does not establish live OpenCTI connectivity, deployed credentials, effective production RBAC/marking segregation, real STIX graph interoperability/performance, privacy approval, production HA/recovery, independent assurance or production authorization.
+Repository acceptance does not establish live OpenCTI connectivity, deployed credentials, effective production RBAC/marking segregation, production STIX interoperability/performance, privacy approval, HA/recovery, independent assurance or production authorization.
 
-### 11.4 next implementation gate
-
-Only after the contract PR is fully green and protected-merged may a new bounded PR implement the **read-only OpenCTI STIX/identity adapter with pagination/reconciliation and provenance preservation**.
+Only after protected merge and lifecycle reconciliation may Phase 11.4 become `PASS / REPOSITORY_COMPLETE`. Phase 11.5 remains blocked until then.
 
 ### 11.5 MISP consolidation
 
@@ -135,7 +133,7 @@ Release gates must preserve:
 - ingestion/enrichment/graph synchronization creates candidate/context intelligence only;
 - external sharing requires separate human approval;
 - connectors, CI, service accounts and integrated publishers do not gain publication authority;
-- IntelOwl analyzer verdicts and OpenCTI graph relationships do not imply local compromise;
+- IntelOwl analyzer verdicts and OpenCTI graph mappings do not imply local compromise;
 - human and machine roles remain separated;
 - framework mappings remain explicit and do not imply blanket compliance;
 - provenance, confidence and markings are preserved across service boundaries;

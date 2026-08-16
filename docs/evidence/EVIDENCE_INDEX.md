@@ -4,9 +4,9 @@ Last updated: **2026-08-16**
 
 ## Purpose
 
-This index maps DTMO lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology or incident log. Exact workflow/job/commit history remains under `docs/development/`, GitHub issues/pull requests and CI artifacts.
+This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.2 Taranis and Phase 11.3 IntelOwl are `PASS / REPOSITORY_COMPLETE`; the Phase 11.4 OpenCTI contract is `PASS / REPOSITORY_COMPLETE`; the Phase 11.4 OpenCTI read-only adapter is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.2 Taranis and Phase 11.3 IntelOwl are `PASS / REPOSITORY_COMPLETE`; the Phase 11.4 OpenCTI contract and read-only adapter are `PASS / REPOSITORY_COMPLETE`; Phase 11.4 canonical mapping/persistence is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
 
 ## Authoritative current-state sources
 
@@ -14,18 +14,13 @@ This index maps DTMO lifecycle stages to evidence classes and authoritative prof
 - `docs/README.md`
 - `docs/project/CURRENT_STATE.md`
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`
-- `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`
-- `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`
-- `docs/integrations/TARANIS_ADAPTER.md`
-- `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`
-- `docs/integrations/INTELOWL_INTEGRATION.md`
-- `docs/user/INTELOWL_ENRICHMENT_WORKFLOW.md`
-- `docs/operations/INTELOWL_ENRICHMENT_RUNBOOK.md`
 - `docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md`
 - `docs/integrations/OPENCTI_INTEGRATION.md`
 - `docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md`
 - `docs/qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md`
 - `backend/tests/test_phase11_4_opencti_adapter.py`
+- `backend/tests/test_phase11_4_opencti_persistence.py`
+- `database/migrations/versions/0012_opencti_mapping_persistence.py`
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
 - `docs/project/PRODUCTION_READINESS_REPORT.md`
 - `docs/project/PRODUCTION_CHECKLIST.md`
@@ -33,18 +28,15 @@ This index maps DTMO lifecycle stages to evidence classes and authoritative prof
 - `docs/project/DOCUMENTATION_STATUS.md`
 - `docs/qa/QA_AND_RELEASE_GATES.md`
 - `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`
-- `docs/traceability/TRACEABILITY_MATRIX.md`
 
 ## Evidence hierarchy
 
-DTMO distinguishes six non-interchangeable evidence classes:
-
-1. **Repository-controlled engineering evidence** — exact-head CI, contracts, synthetic integration tests and repository recovery/performance/observability evidence.
-2. **Accountable functional evidence** — explicit project-owner acceptance of product behavior.
-3. **Real-environment evidence** — production-equivalent staging deployment/validation tied to its accepted identity.
-4. **Independent assurance evidence** — external security/resilience/operational assessment independent from repository CI or self-attestation.
-5. **Formal production authorization** — accountable go/no-go decision for a specific candidate.
-6. **Platform-integration evidence** — service contract, adapter, migration, trust-boundary, runtime and interoperability evidence for the Phase 11 composed platform; this does not become production authorization by itself.
+1. **Repository-controlled engineering evidence** — exact-head CI, contracts, migrations and synthetic integration tests.
+2. **Accountable functional evidence** — explicit owner acceptance of product behavior.
+3. **Real-environment evidence** — production-equivalent validation bound to an immutable deployment identity.
+4. **Independent assurance evidence** — external assessment independent from repository CI.
+5. **Formal production authorization** — accountable GO/NO-GO for a specific candidate.
+6. **Platform-integration evidence** — service contracts, adapters, mappings, migrations and interoperability evidence; never production authorization by itself.
 
 ## Lifecycle evidence map
 
@@ -72,77 +64,71 @@ DTMO distinguishes six non-interchangeable evidence classes:
 
 **Status:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`.
 
-Production authorization was not granted. The accountable decision remains in `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`.
-
 ### Phase 11.1–11.2 Taranis
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
-
-Evidence covers the Taranis service contract and canonical read adapter, durable pagination/checkpointing/reconciliation, detail/CTI retrieval, governed execution, canonical persistence/indexing and observability. It is repository evidence, not live production evidence.
 
 ### Phase 11.3 IntelOwl
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Accepted repository evidence covers the IntelOwl service/API/licensing contract, bounded analyzer adapter, runtime-secret/HTTPS/allowlist configuration, privacy/TLP fail-closed behavior, bounded polling/result validation, immutable job identity, partial-success semantics, human-authorized execution and durable enrichment history with explicit no-share/no-local-compromise authority markers.
-
-The dedicated repository contract workflow remains `.github/workflows/phase11-intelowl-integration-contract.yml`. Its accepted exact-head results are repository-controlled engineering evidence only; they are not live-service, production-equivalent, independent-assurance or production-authorization evidence.
+The dedicated repository workflow remains `.github/workflows/phase11-intelowl-integration-contract.yml`. Its results are repository engineering evidence only.
 
 ### Phase 11.4 OpenCTI contract
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Accepted contract evidence covers OpenCTI `7.260811.0`, Community/Enterprise licensing separation, the separate service/API boundary, GraphQL/STIX 2.1/TAXII 2.1/stream boundaries, least-privilege identity, identity/provenance/marking preservation, fail-closed semantics and exclusion of connector/MISP/enrichment/case/publication side effects. The dedicated contract workflow remains `.github/workflows/phase11-opencti-integration-contract.yml`.
+The accepted contract covers OpenCTI `7.260811.0`, licensing separation, service/API boundaries, STIX/TAXII/GraphQL semantics, least privilege, provenance/marking preservation and excluded side effects. The dedicated workflow remains `.github/workflows/phase11-opencti-integration-contract.yml`.
 
 ### Phase 11.4 OpenCTI read-only adapter
 
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Accepted repository evidence covers bounded GraphQL `stixCoreObjects` reads, stable OpenCTI/STIX identity preservation, entity allowlists, markings/confidence/external references, fail-closed malformed state, durable cursor loading and explicit post-persistence `commit_page(page)` semantics.
+
+### Phase 11.4 OpenCTI canonical mapping/persistence
+
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
-The active repository engineering evidence target covers:
+The active repository evidence target covers:
 
-- `backend/dtmo/integrations/opencti.py` read-only GraphQL `stixCoreObjects` adapter;
-- stable OpenCTI internal identity plus STIX standard-ID preservation;
-- entity-type allowlist, markings, confidence, timestamps and external-reference provenance;
-- explicit `external_share_authorized=false` and `local_compromise_proven=false` provenance markers;
-- bounded page-size and maximum-page controls;
-- durable checkpoint state that is loaded on restart and never advanced by network retrieval alone;
-- explicit `commit_page(page)` checkpoint advancement only after successful caller persistence;
-- atomic checkpoint replacement;
-- fail-closed malformed GraphQL/data/page/cursor/checkpoint/identity/type/marking/confidence behavior;
-- production validation for HTTPS, runtime token, entity allowlist and absolute durable checkpoint path;
-- synthetic tests in `backend/tests/test_phase11_4_opencti_adapter.py`.
+- `backend/dtmo/persistence/opencti.py` canonical mapping and reconciliation logic;
+- `opencti_object_mappings` current attributed state;
+- `opencti_mapping_revisions` immutable snapshot history;
+- SHA-256 canonical snapshot hashes for replay idempotency;
+- fail-closed OpenCTI-internal-ID/STIX-ID drift and ambiguous identity mapping;
+- preserved entity type, parent types, markings, confidence, timestamps, external references and provenance;
+- database-enforced `external_share_authorized=false` and `local_compromise_proven=false`;
+- migration `0012_opencti_mapping_persistence` following `0011_intelowl_enrichment_history`;
+- persistence coordinator ordering: PostgreSQL commit before checkpoint advance;
+- no checkpoint advance when database commit fails;
+- safe replay when database commit succeeds but checkpoint replacement fails;
+- tests in `backend/tests/test_phase11_4_opencti_persistence.py`.
 
-This adapter evidence does **not** prove live OpenCTI connectivity, deployed service identity or effective marking segregation, real STIX interoperability, graph quality/performance, privacy/data-processing approval, production HA/recovery, independent assurance or production authorization. It also does not yet establish repository-complete canonical OpenCTI mapping/persistence; that remains a later bounded Phase 11.4 slice.
+This evidence does **not** prove live OpenCTI connectivity, deployed service identity or marking segregation, production STIX interoperability, graph quality/performance, privacy approval, HA/recovery, independent assurance or production authorization.
 
 ### Phase 11.5–11.9
 
-Future evidence covers MISP consolidation, TheHive handoff, conditional Cortex disposition, integrated Kubernetes/Helm/GitOps runtime hardening and migration/compatibility in the fixed roadmap order.
+Future evidence covers MISP consolidation, TheHive handoff, conditional Cortex disposition, Kubernetes/Helm/GitOps runtime hardening and migration/compatibility in fixed order.
 
 ### Phase 11.10–11.11
 
-The materially changed integrated candidate requires fresh production-equivalent validation and fresh independent external assurance bound to the same immutable deployment identity. Historical Phase 8/9 evidence cannot satisfy these gates by itself.
+Fresh production-equivalent validation and fresh independent assurance must target the same immutable integrated candidate. Historical Phase 8/9 evidence cannot satisfy these gates.
 
 ### Phase 12
 
 **Status:** `NOT STARTED`.
 
-Phase 12 can start only after required Phase 11 validation/assurance is accepted. A `GO` must be explicitly accountable and bound to one immutable production release identity.
-
 ## Evidence transfer rule
 
-Historical Phase 8 and Phase 9 acceptance is retained but candidate-bound. It cannot be automatically transferred to the materially changed Phase 11 integrated platform.
+Historical Phase 8/9 acceptance remains candidate-bound and cannot be transferred automatically to the materially changed Phase 11 platform.
 
-## Governance evidence
+## Governance and handling rules
 
-Framework claims are governed by `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`. A mapping is not a blanket compliance, maturity, certification, exposure or remediation claim. IntelOwl outputs and OpenCTI graph relationships are contextual evidence and do not establish local exploitability or compromise without separate attributable local evidence.
+Framework claims remain governed by explicit provenance-backed mappings. IntelOwl outputs and OpenCTI graph context do not establish local exploitability, compromise or dissemination authority without separate attributable evidence.
 
-## Evidence handling rules
-
-- Evidence must be attributable, scoped and reviewable.
-- Exact-head automated evidence belongs to the exact state tested.
-- Deployment-bound evidence belongs to the deployment identity it covered.
+- Exact-head evidence belongs only to the exact state tested.
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
-- Raw credentials/tokens and unnecessary personal data must not be stored in repository evidence.
-- Human review/share approval remains separate from technical execution and production authorization.
-- OpenCTI graph confidence/relationships cannot silently become DTMO local-compromise or publication-authority claims.
-- Historical immutable run records are never rewritten to manufacture a later acceptance state.
+- Credentials/tokens and unnecessary personal data do not belong in repository evidence.
+- Human review/share approval remains separate from technical execution.
+- Historical immutable run records are never rewritten to manufacture later acceptance.
