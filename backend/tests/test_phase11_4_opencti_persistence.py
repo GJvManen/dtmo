@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
 import pytest
@@ -82,7 +82,7 @@ async def test_unchanged_replay_is_idempotent() -> None:
     session = SimpleNamespace(
         get=AsyncMock(return_value=SimpleNamespace(id=item_id)),
         scalar=AsyncMock(side_effect=[mapping, mapping, revision]),
-        add=AsyncMock(),
+        add=Mock(),
         flush=AsyncMock(),
     )
     repository = OpenCTIMappingRepository(session)  # type: ignore[arg-type]
@@ -101,7 +101,7 @@ async def test_identity_drift_fails_closed() -> None:
     session = SimpleNamespace(
         get=AsyncMock(return_value=SimpleNamespace(id=item_id)),
         scalar=AsyncMock(side_effect=[existing, None]),
-        add=AsyncMock(),
+        add=Mock(),
         flush=AsyncMock(),
     )
     repository = OpenCTIMappingRepository(session)  # type: ignore[arg-type]
@@ -133,7 +133,7 @@ async def test_persistence_coordinator_commits_database_before_checkpoint() -> N
 async def test_checkpoint_does_not_advance_when_database_commit_fails() -> None:
     page = OpenCTIPage(items=(_item(),), request_cursor=None, next_cursor="c-1", has_next_page=True)
     item_id = uuid4()
-    checkpoint = AsyncMock()
+    checkpoint = Mock()
     session = SimpleNamespace(commit=AsyncMock(side_effect=RuntimeError("commit failed")))
     adapter = SimpleNamespace(commit_page=checkpoint)
     coordinator = OpenCTIPersistenceCoordinator(session, adapter)  # type: ignore[arg-type]
