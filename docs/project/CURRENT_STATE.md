@@ -9,7 +9,7 @@ DTMO has completed the repository-controlled engineering baseline through Phase 
 
 Phase 8 production-equivalent validation is `PASS / OWNER_ACCEPTED` and Phase 9 independent external assurance is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate they covered. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1 Taranis architecture/contract, Phase 11.2 Taranis adapter and Phase 11.3 IntelOwl integration are **`PASS / REPOSITORY_COMPLETE`**. The active bounded objective is **Phase 11.4 OpenCTI service/API/STIX/data-model/identity/security/licensing contract validation**.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis adapter are **`PASS / REPOSITORY_COMPLETE`**. The **Phase 11.3 IntelOwl contract**, bounded adapter and governed execution/persistence integration are **`PASS / REPOSITORY_COMPLETE`**. The active bounded objective is **Phase 11.4 OpenCTI service/API/STIX/data-model/identity/security/licensing contract validation**.
 
 ## Lifecycle position
 
@@ -24,6 +24,7 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1 
 | Phase 11 | `IN PROGRESS / ACTIVE` |
 | Phase 11.1 Taranis architecture/contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 IntelOwl contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.4 OpenCTI contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
