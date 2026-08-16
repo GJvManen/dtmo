@@ -7,7 +7,7 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 DTMO protects the confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence used in an education context. Security controls are designed so that source trust, identity, authorization, evidence and human decision boundaries remain visible and enforceable.
 
-DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is the active platform-industrialisation programme. Phase 11.1 and 11.2 are repository-complete. Phase 11.3 IntelOwl is the active bounded integration step.
+DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is the active platform-industrialisation programme. Phase 11.1 and 11.2 are repository-complete. The Phase 11.3 IntelOwl contract is repository-complete and the bounded IntelOwl adapter is the active exact-head integration gate.
 
 ## Identity and authentication
 
@@ -17,7 +17,7 @@ Production identity requirements include approved issuer/audience/key trust, kno
 
 Local/reference identity helpers are development conveniences, not production identity architecture.
 
-External Phase 11 service integrations use dedicated non-human identities with the minimum required scope. Taranis remains read-only. The proposed IntelOwl path requires a dedicated non-admin service identity and runtime-secret API token; a `403` is an authorization/configuration failure and never a reason to broaden privilege automatically.
+External Phase 11 service integrations use dedicated non-human identities with the minimum required scope. Taranis remains read-only. The IntelOwl adapter requires a dedicated non-admin service identity, runtime-secret API token and HTTPS in production; a `403` is an authorization/configuration failure and never a reason to broaden privilege automatically.
 
 ## Identity and access control
 
@@ -49,7 +49,7 @@ Canonical ingestion preserves raw evidence/source context and requires durable c
 
 ## Phase 11.3 IntelOwl enrichment security boundary
 
-The IntelOwl integration is currently at contract stage; no live adapter is claimed yet. The accepted design direction is service-to-service and fail-closed.
+The IntelOwl service/API/security/licensing contract is accepted. The bounded adapter is implemented in the active repository slice and remains subject to exact-head acceptance. No live IntelOwl deployment, provider credential, durable enrichment-history persistence or production-equivalent behavior is claimed by this repository state.
 
 ```mermaid
 flowchart LR
@@ -59,9 +59,11 @@ flowchart LR
     I --> A[Allowlisted analyzer/playbook]
     A --> I
     I --> E[Attributed analyzer report]
-    E --> N[DTMO enrichment normalization]
+    E --> V{Job ID + analyzer + size valid?}
+    V -->|no| Q[Reject / quarantine fail closed]
+    V -->|yes| N[DTMO enrichment normalization]
     N --> C
-    I -. external connectors excluded .-> X[MISP / OpenCTI / Slack / Email side effects]
+    I -. connectors_requested=[] .-> X[MISP / OpenCTI / Slack / Email side effects excluded]
     N -. no implicit authority .-> H[Human share/publication approval]
 ```
 
@@ -70,11 +72,12 @@ Required controls:
 - only CVE, IP, domain, URL and hash are initially eligible observables;
 - email and other generic personal-data observables remain disabled until explicit privacy/data-processing approval;
 - analyzers/playbooks are explicitly allowlisted; newly available IntelOwl plugins are not automatically trusted;
-- DTMO must consider whether an analyzer sends data to an external provider before execution;
+- DTMO considers whether an analyzer sends data to an external provider before execution;
 - unknown/missing TLP or handling state fails closed to review-required;
 - `TLP:RED` or equivalent restricted material is not sent to external analyzers;
-- bounded concurrency, polling, result-size, retry and provider-quota behavior prevents retry storms and uncontrolled disclosure;
-- IntelOwl external Connectors are excluded from the initial enrichment path;
+- bounded polling, result-size and retry behavior prevents retry storms and uncontrolled disclosure;
+- IntelOwl external Connectors are excluded from the bounded enrichment path through an explicit empty connector request;
+- immutable upstream job identity is verified before result acceptance;
 - analyzer/job/result identity and timestamps are retained in provenance;
 - analyzer verdicts such as malicious/suspicious are attributed context and are not local-compromise proof;
 - malformed, oversized, unknown-analyzer or partial results remain explicit and fail closed where attribution/safety cannot be established.
@@ -108,7 +111,7 @@ Security-relevant data responsibilities are explicit:
 - Redis — coordination/cache/queue runtime state;
 - Prometheus/Grafana — operational telemetry.
 
-Search/index, raw-object or external enrichment success alone does not replace canonical PostgreSQL truth.
+Search/index, raw-object or external enrichment success alone does not replace canonical PostgreSQL truth. The current adapter slice does not yet claim durable enrichment-history persistence; that remains the next bounded Phase 11.3 integration step.
 
 ## Auditability and observability
 
@@ -127,53 +130,4 @@ Prometheus and separately authenticated Grafana provide operational telemetry. M
 - Workflow configuration alone is not acceptance evidence.
 - Service-to-service integration is preferred where it preserves licensing and trust boundaries.
 
-DTMO is licensed under the **Apache License, Version 2.0** and maintains explicit security/contribution/licensing entry points.
-
-Taranis remains a separately licensed service and its source is not vendored into DTMO under the accepted Phase 11.1/11.2 boundary. IntelOwl and pyIntelOwl are AGPL-3.0; the Phase 11.3 contract keeps them as separate service/API components. Embedding, modification, redistribution or operation of modified network-facing IntelOwl components requires explicit licensing review before architecture acceptance.
-
-## Threat and vulnerability management
-
-Threat, CVE and vendor-advisory review must be target-specific where it supports a deployment or assurance decision. Record source/provenance, review time, affected component/version, applicability, confidence and remediation/disposition.
-
-For the materially changed Phase 11 candidate, repository tests and contracts remain engineering evidence. Deployment-specific vulnerability/security review belongs to fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent assurance.
-
-## Framework and governance claims
-
-Framework mappings are security-relevant claims and therefore fail closed. Current controlled truth includes:
-
-- Normenkader IBP — explicit partial DTMO control crosswalks and governed evidence relationships, including vulnerability-management evidence for `SM.07` and supporting controls;
-- MITRE ATT&CK — explicit threat/detection/classification context and governed technique relationships;
-- NIST CSF 2.0 — explicit DTMO control/outcome relationships;
-- CVSS 4.0 — vulnerability-scoring context with explicit claim boundaries;
-- DTMO internal security/release governance — repository-backed mappings.
-
-Mappings are explicit, versioned/provenance-backed and non-inferred. A mapping does not imply complete compliance, certification, maturity, local exploitability or control effectiveness in a specific deployment unless corresponding evidence exists.
-
-## Environment and evidence security
-
-### Local/reference
-
-Docker Compose provides engineering/reference evidence only. Development-only object-storage/bootstrap/admin credential compatibility patterns must not be reused as staging/production identity architecture.
-
-### Historical Phase 8 and Phase 9
-
-Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the prior candidate they covered. Those evidence classes remain historical and candidate-bound.
-
-### Integrated Phase 11 candidate
-
-Because Phase 11 materially changes service composition and trust boundaries, prior Phase 8/9 evidence cannot be reused as production-equivalent validation or independent assurance for the integrated candidate. Fresh Phase 11.10 validation and Phase 11.11 independent assurance are required against an immutable integrated deployment identity.
-
-### Production
-
-Production authorization was not granted in Phase 10. A future Phase 12 `GO` can occur only after all mandatory Phase 11 evidence classes, ownership/support, residual-risk and release-identity requirements are accepted.
-
-## Non-negotiable claim boundaries
-
-- Missing, queued, failed, skipped, cancelled, stale, inferred or inaccessible evidence is not `PASS`.
-- Repository CI does not create owner, deployment or independent-assurance acceptance.
-- Historical Phase 8/9 evidence is not automatically transferable to the materially changed integrated candidate.
-- Technical success, enrichment, analysis or upstream publisher state does not authorize publication/share.
-- Raw secrets are never documentation evidence.
-- Framework mappings are never inferred and never imply blanket compliance.
-- IntelOwl analyzer/provider verdicts are attributed enrichment context, not proof of local compromise.
-- Unknown TLP/privacy/analyzer state fails closed.
+DTMO is licensed under the **Apache License, Version 2.0** and maintains explicit security/contribution/licensing entry points. IntelOwl and pyIntelOwl remain separate AGPL-3.0 services; source vendoring, embedding, modification or redistribution is not authorized by this adapter slice and requires explicit licensing review.
