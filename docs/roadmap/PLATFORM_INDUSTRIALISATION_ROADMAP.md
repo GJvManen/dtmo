@@ -5,43 +5,40 @@ Programme state: **`ACTIVE / HIGHEST PRIORITY`**
 
 ## Purpose
 
-Phase 10 concluded with `NO-GO / BLOCKED` for production authorization. The accepted DTMO product, staging and external-assurance evidence remains valuable, but the accountable production decision requires a stronger industrial platform foundation before a new production authorization attempt.
+Phase 10 concluded with `NO-GO / BLOCKED` for production authorization. Phase 11 is the successor industrialisation programme and is executed one bounded pull request at a time. Historical Phase 8/9 evidence remains candidate-bound and is not reused as evidence for the materially changed integrated platform.
 
-This roadmap defines the successor programme. It deliberately prefers integration with mature open-source platforms over rebuilding generic OSINT, enrichment, knowledge-graph, case-management and orchestration capabilities inside DTMO.
+DTMO prefers mature service integrations over rebuilding generic collection, enrichment, graph, exchange and case-management platforms inside DTMO.
 
 ## Strategic target
 
-DTMO remains the education-sector CTI, vulnerability-context, governance and decision-support layer. Generic platform responsibilities are delegated where a mature project already provides them.
-
 ```mermaid
 flowchart LR
-    EXT[External OSINT / CERT / vendor / web sources] --> TAR[Taranis AI\ncollection + assessment + reporting]
-    TAR --> OWL[IntelOwl\nIOC enrichment]
+    EXT[External OSINT / CERT / vendor sources] --> TAR[Taranis AI\ncollection + assessment]
     TAR --> DTMO[DTMO\neducation CTI + vulnerability context + governance]
+    DTMO --> OWL[IntelOwl\nIOC enrichment]
     OWL --> DTMO
-    DTMO <--> OCTI[OpenCTI\nSTIX knowledge graph]
+    DTMO <--> OCTI[OpenCTI\nSTIX 2.1 knowledge graph]
     DTMO --> MISP[MISP\ngoverned exchange]
     DTMO --> HIVE[TheHive\nincident/case workflow]
     MISP <--> OCTI
 ```
 
-The target is an integrated platform, not a source-code merger. Service boundaries, APIs, provenance and authorization remain explicit.
+The target is a composed service architecture, not a source-code merger. Provenance, RBAC, human publication/share authority and fail-closed evidence rules remain explicit across every boundary.
 
-## Priority order
+## Fixed priority order
 
-The development order is fixed unless a higher-severity security, licensing or architecture blocker is found:
-
-1. **Taranis AI** — collection, analyst workflow, structured reporting and production deployment foundation.
-2. **IntelOwl** — IOC enrichment subsystem.
-3. **OpenCTI** — STIX knowledge graph and relationship model.
-4. **MISP consolidation** — one authoritative governed sharing and synchronization model.
-5. **TheHive** — incident/case-management handoff from accepted intelligence.
-6. **Cortex only if needed** — add only when IntelOwl cannot satisfy a validated analyzer/orchestration requirement.
-7. **Platform industrialisation** — Kubernetes/Helm/GitOps, HA, secrets, ingress, observability, backup/recovery and supply-chain hardening across the composed platform.
-8. **Migration and compatibility** — preserve DTMO canonical intelligence, governance, E8 connectors and evidence semantics.
-9. **Production-equivalent validation** of the integrated platform.
-10. **Independent external assurance** of the integrated platform.
-11. **Phase 12 production GO/NO-GO**.
+1. 11.1 Taranis AI architecture/API/data-model/identity/licensing assessment.
+2. 11.2 Taranis → DTMO canonical adapter.
+3. 11.3 IntelOwl enrichment integration.
+4. 11.4 OpenCTI STIX knowledge-graph integration.
+5. 11.5 MISP consolidation and authoritative governed sharing model.
+6. 11.6 TheHive incident/case handoff.
+7. 11.7 Cortex only if a validated IntelOwl capability gap exists.
+8. 11.8 Kubernetes/Helm/GitOps plus HA/secrets/network/observability/recovery/supply-chain hardening.
+9. 11.9 migration/compatibility.
+10. 11.10 new production-equivalent validation.
+11. 11.11 new independent external assurance.
+12. Phase 12 formal production GO/NO-GO.
 
 ## Phase 11 — Platform industrialisation
 
@@ -49,128 +46,114 @@ The development order is fixed unless a higher-severity security, licensing or a
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-The architecture assessment and accepted integration contract establish the service-to-service boundary for Taranis. DTMO retains education-sector CTI, vulnerability context, governance, provenance and governed publication/share authority. Taranis remains an upstream collection/assessment/reporting service; its implementation source is not vendored into DTMO.
+The accepted assessment establishes a service-to-service Taranis boundary. DTMO retains education-sector CTI, vulnerability context, governance, provenance and governed publication/share authority. Taranis source is not vendored into DTMO.
 
 ### 11.2 Taranis → DTMO canonical adapter
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-Repository-complete implementation includes read-only collection, stable namespaced identity, fail-closed TLP handling, durable checkpointing/reconciliation, bounded detail/CTI retrieval, governed execution, canonical persistence/indexing and observability. Repository completion is not live production evidence and historical Phase 8/9 evidence is not reused for the materially changed candidate.
+Repository-complete implementation includes read-only collection, stable namespaced identity, fail-closed TLP handling, durable checkpointing/reconciliation, bounded detail/CTI retrieval, governed execution, canonical persistence/indexing and observability.
 
 ### 11.3 IntelOwl enrichment integration
 
-**Status:** `IN PROGRESS / GOVERNED EXECUTION + DURABLE HISTORY IN EXACT-HEAD VALIDATION`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-The service/API/security/licensing contract and bounded policy-enforced IntelOwl client adapter are accepted and repository-complete. The active bounded slice adds human-authorized execution, immutable durable enrichment history and the operational read boundary needed to complete Phase 11.3 repository work.
+The Phase 11.3 contract, bounded adapter and governed execution/persistence boundary are accepted. Repository-complete scope includes production HTTPS/token/analyzer allowlist policy, bounded submission/polling, fail-closed TLP/privacy behavior, immutable job identity, explicit partial success, human `REVIEW_INTELLIGENCE` execution authority, durable enrichment history and database-enforced no-share/no-local-compromise invariants.
 
-Accepted adapter capabilities:
-
-- runtime-secret-backed IntelOwl API token and production HTTPS requirement;
-- explicit production analyzer allowlist;
-- approved default observable classes: CVE, IP, domain, URL and hash;
-- email/personal-data observable classes excluded by default;
-- analyzer requests constrained to the explicit allowlist;
-- `connectors_requested=[]` to prevent MISP/OpenCTI/Slack/email side effects in the initial path;
-- bounded submission/polling, immutable upstream job-ID verification and maximum result-size enforcement;
-- unknown returned analyzers rejected fail-closed;
-- explicit partial-success semantics;
-- normalized authority metadata preserving `external_share_authorized=false` and `local_compromise_proven=false`.
-
-Active governed execution/persistence capabilities:
-
-- `POST /api/v1/intelowl/items/{item_id}/enrich` requires a human principal with `REVIEW_INTELLIGENCE`;
-- service accounts cannot autonomously invoke this governed endpoint under the current RBAC model;
-- every requested analyzer is conservatively treated as an external disclosure boundary, so `red`, `tlp:red` and `review-required` handling fails closed before network disclosure;
-- migration `0011_intelowl_enrichment_history` adds immutable durable history linked to canonical intelligence;
-- `(item_id, job_id)` uniqueness makes persistence idempotent for one upstream job;
-- database constraints enforce no external-share authority and no local-compromise proof;
-- `GET /api/v1/intelowl/items/{item_id}/history` exposes read-only persisted enrichment context to principals with `READ_INTELLIGENCE`;
-- operator, user and QA documentation explicitly preserve evidence and authority boundaries.
-
-This slice deliberately does **not** claim live IntelOwl connectivity, provider credentials, provider/analyzer quality, privacy approval, production-equivalent persistence/recovery, independent assurance or production authorization.
-
-Phase 11.4 OpenCTI starts only after this exact-head slice is fully green, merged and Phase 11.3 is reconciled as `PASS / REPOSITORY_COMPLETE`.
+IntelOwl remains a separate AGPL-3.0 service/API boundary. No historical Phase 8/9 evidence is transferred to this materially changed candidate.
 
 ### 11.4 OpenCTI knowledge-graph integration
 
-**Status:** `PLANNED / BLOCKED BY 11.3 ACCEPTANCE`
+**Status:** `IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION`
 
-OpenCTI becomes the optional authoritative CTI relationship/graph service for STIX entities and relationships. DTMO remains the education/governance decision layer.
+OpenCTI becomes the CTI relationship/knowledge-graph service for STIX entities and relationships while DTMO remains the education/governance decision layer.
 
-Required scope:
+The active bounded contract slice defines:
 
-- STIX 2.x import/export boundary;
-- entity identity and deduplication policy;
-- ATT&CK relationships;
-- vulnerabilities, indicators, malware, campaigns, infrastructure and threat actors;
-- graph links surfaced in DTMO without duplicating a graph database implementation;
-- provenance and confidence preservation.
+- reviewed upstream compatibility baseline **OpenCTI 7.260811.0**;
+- Community Edition Apache-2.0 versus separately licensed Enterprise Edition boundary;
+- separate service/API consumption with no OpenCTI source vendoring;
+- GraphQL, STIX 2.1, TAXII 2.1 and access-controlled stream boundaries;
+- dedicated least-privilege non-human identity and runtime-secret handling;
+- explicit OpenCTI/STIX ↔ DTMO canonical identity mapping;
+- marking/TLP/PAP, confidence and provenance preservation;
+- fail-closed behavior for unknown markings, malformed STIX, authorization failures and unsupported semantics;
+- restart-safe pagination/stream reconciliation requirements;
+- no implicit connector registration, MISP synchronization, enrichment, case creation or publication side effects;
+- no graph result, confidence or relationship becoming local-compromise proof or DTMO share/publication authority.
+
+```mermaid
+flowchart LR
+    O[OpenCTI GraphQL / TAXII / stream] --> A[Bounded OpenCTI adapter]
+    I[Dedicated service identity\nleast privilege + markings] --> O
+    A --> V{STIX identity + marking + provenance valid?}
+    V -->|no| X[Reject / quarantine fail closed]
+    V -->|yes| M[Explicit OpenCTI/STIX ↔ DTMO mapping]
+    M --> D[(DTMO canonical intelligence)]
+    M -. never grants .-> S[Human publication/share authority]
+    O -. side effects excluded .-> N[No connector/MISP/case/publication automation]
+```
+
+This contract does not claim live OpenCTI connectivity, deployed credentials, effective production RBAC/markings, real graph interoperability/performance, privacy approval, HA/recovery, independent assurance or production authorization.
+
+After protected acceptance, the next bounded Phase 11.4 PR is the **read-only OpenCTI STIX/identity adapter with pagination/reconciliation and provenance preservation**.
 
 ### 11.5 MISP consolidation
 
-**Status:** `PLANNED`
+**Status:** `PLANNED / BLOCKED BY 11.4`
 
-Consolidate DTMO and Taranis MISP capabilities into one documented authority model. DTMO governed outbound approval remains authoritative and automated collectors/publishers receive no implicit external-share authority.
+Consolidate inbound/synchronization and governed outbound exchange into one documented authority model. DTMO human/governed outbound approval remains authoritative.
 
 ### 11.6 TheHive incident/case handoff
 
 **Status:** `PLANNED`
 
-Introduce controlled intelligence-to-case handoff with explicit case-creation permission, provenance back to DTMO intelligence, correlation identifiers and separation between case state and canonical CTI truth.
+Introduce controlled intelligence-to-case handoff with explicit case-creation permission, provenance back to DTMO intelligence and separation between case state and canonical CTI truth.
 
 ### 11.7 Cortex decision gate
 
 **Status:** `PLANNED / CONDITIONAL`
 
-Cortex is adopted only when a documented analyzer/orchestration requirement cannot be met safely and maintainably by IntelOwl. Duplicate enrichment platforms require an explicit architecture decision record.
+Adopt Cortex only when an accepted IntelOwl capability-gap analysis proves it is needed.
 
 ### 11.8 Integrated runtime industrialisation
 
 **Status:** `PLANNED`
 
-Required capabilities include Kubernetes, Helm/value-driven configuration, GitOps promotion, immutable image identities, PostgreSQL HA/recovery, Redis persistence/HA appropriate to queue semantics, evidence-storage durability, TLS ingress/network policies, external secret management, workload identities, centralized observability, SBOM/vulnerability scanning/signing/attestation, resource controls, capacity testing and upgrade/rollback procedures.
+Kubernetes, Helm, GitOps, immutable images, workload identities/external secrets, TLS/network policy, HA/recovery, centralized observability, SBOM/scanning/signing/attestation, capacity and upgrade/rollback procedures are required across the composed platform.
 
 ### 11.9 Migration and compatibility
 
 **Status:** `PLANNED`
 
-Preserve accepted DTMO data and governance value while retiring duplicated implementation. Every deprecation requires a documented replacement and rollback path.
+Preserve canonical intelligence, provenance, classification, governance and accepted E8 semantics while retiring duplication with explicit rollback paths.
 
 ### 11.10 Integrated production-equivalent validation
 
 **Status:** `PLANNED`
 
-Repeat production-equivalent validation against one immutable integrated deployment identity. Prior Phase 8 evidence is historical and cannot authorize the materially changed composed platform.
+Run new production-equivalent validation against one immutable integrated deployment identity. Prior Phase 8 evidence is historical only.
 
 ### 11.11 Independent external assurance
 
 **Status:** `PLANNED`
 
-Repeat independent external assurance on the integrated platform after 11.10 acceptance, including identity/trust boundaries, secrets, network segmentation, supply chain, integration abuse cases, privacy/data handling and resilience.
+Run fresh independent assurance against the same integrated candidate after 11.10 acceptance.
 
 ## Phase 12 — Production GO/NO-GO
 
 **Status:** `NOT STARTED`
 
-A `GO` requires accepted Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance against the same immutable integrated release identity, plus accountable ownership/change/support/residual-risk/rollback authority. Phase 12 remains fail-closed.
+A `GO` requires accepted 11.10 and 11.11 evidence for the same immutable integrated release identity plus accountable production ownership, residual-risk, change/support and rollback authority. Missing evidence remains fail-closed.
 
 ## Delivery discipline
 
-The programme is executed one bounded pull request at a time. Each PR must have one primary objective, explicit acceptance criteria, architecture/security/evidence boundaries, exact-head CI, professional documentation updates and one declared next priority. Material architecture changes are not stacked behind red CI.
-
-## Stop / defer list
-
-While Phase 11 is active, do not spend development capacity on unrelated UI polish, new generic crawlers, a custom IOC enrichment engine, a custom STIX graph engine, a custom SOAR, generic case management or a separate report-publishing engine unless Phase 11 proves an integration cannot satisfy the requirement.
+Every bounded PR requires one primary objective, exact-head CI, expected-head merge protection, professional documentation synchronization, explicit security/licensing/evidence boundaries and one declared next priority. A code/integration PR does not merge when required documentation is missing or stale.
 
 ## Immediate sequence
 
-1. Accept the bounded **11.3 governed IntelOwl execution/persistence and operational integration** slice on fully green exact-head CI.
-2. Reconcile **11.3 as repository-complete**.
-3. Integrate **11.4 OpenCTI**.
-4. Consolidate **11.5 MISP**.
-5. Add **11.6 TheHive** handoff.
-6. Decide **11.7 Cortex** only from evidence.
-7. Industrialise the composed runtime in **11.8**.
-8. Complete migration/compatibility in **11.9**.
-9. Execute **11.10** and **11.11**.
-10. Enter **Phase 12** only after all Phase 11 release blockers are closed.
+1. Accept the **11.4 OpenCTI contract** on fully green exact-head CI.
+2. Implement the bounded **read-only OpenCTI STIX/identity adapter**.
+3. Complete remaining OpenCTI reconciliation/operational integration until 11.4 is repository-complete.
+4. Continue to **11.5 MISP consolidation**, then 11.6–11.11 in the fixed order.
+5. Enter Phase 12 only after every required Phase 11 gate is accepted.

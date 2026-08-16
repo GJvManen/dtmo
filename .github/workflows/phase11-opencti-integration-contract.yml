@@ -1,0 +1,35 @@
+name: Phase 11 OpenCTI Integration Contract Gate
+
+on:
+  pull_request:
+    paths:
+      - 'docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md'
+      - 'docs/integrations/OPENCTI_INTEGRATION.md'
+      - 'docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md'
+      - 'docs/qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md'
+      - 'docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md'
+      - 'docs/project/CURRENT_STATE.md'
+      - 'docs/security/SECURITY_OVERVIEW.md'
+      - 'docs/evidence/EVIDENCE_INDEX.md'
+      - 'README.md'
+      - 'docs/README.md'
+      - 'backend/tests/test_opencti_integration_contract.py'
+      - 'backend/tests/test_intelowl_integration_contract.py'
+      - '.github/workflows/phase11-opencti-integration-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  opencti-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Validate OpenCTI contract and authoritative status
+        run: python -m pytest -q backend/tests/test_opencti_integration_contract.py backend/tests/test_intelowl_integration_contract.py

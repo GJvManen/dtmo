@@ -5,19 +5,17 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 ## Security objectives
 
-DTMO protects the confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence used in an education context. Security controls are designed so that source trust, identity, authorization, evidence and human decision boundaries remain visible and enforceable.
+DTMO protects the confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence used in an education context. Security controls keep source trust, identity, authorization, evidence and human decision boundaries explicit and enforceable.
 
-DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is the active platform-industrialisation programme. Phase 11.1 and 11.2 are repository-complete. The Phase 11.3 IntelOwl contract and bounded adapter are repository-complete; governed IntelOwl execution, durable enrichment history and operational integration are the active exact-head gate.
+DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is active. Phase 11.1–11.2 Taranis and Phase 11.3 IntelOwl are repository-complete. The active bounded gate is the Phase 11.4 OpenCTI contract.
 
 ## Identity and authentication
 
 Bearer tokens are externally issued and cryptographically validated according to the configured trust model. DTMO does not silently mint or rewrite active external token claims from managed local principal state.
 
-Production identity requirements include approved issuer/audience/key trust, known role/principal-type claims, token-state validation where applicable and explicit reconciliation/reissue/revocation when role state changes.
+External Phase 11 services use dedicated non-human identities with minimum required scope. Taranis remains read-only. IntelOwl uses a dedicated non-admin identity. OpenCTI routine integration likewise requires a dedicated non-human identity with only the knowledge/read capabilities and allowed markings required by the bounded path.
 
-Local/reference identity helpers are development conveniences, not production identity architecture.
-
-External Phase 11 service integrations use dedicated non-human identities with the minimum required scope. Taranis remains read-only. IntelOwl requires a dedicated non-admin service identity, runtime-secret API token and HTTPS in production; a `403` is an authorization/configuration failure and never a reason to broaden privilege automatically.
+OpenCTI administrator authority, `Bypass all capabilities` and connector capabilities are not routine DTMO integration requirements. A `401` or `403` is an authorization/configuration failure and never a reason to broaden privilege automatically.
 
 ## Identity and access control
 
@@ -25,121 +23,108 @@ External Phase 11 service integrations use dedicated non-human identities with t
 - Human and service-account authorities remain separated.
 - Least privilege and explicit role/permission scope are enforced server-side.
 - Service accounts/connectors do not receive human review/share-approval authority.
-- Governed IntelOwl execution requires `REVIEW_INTELLIGENCE`; the current service-account role does not hold that permission.
-- IntelOwl enrichment-history reads require `READ_INTELLIGENCE` and remain non-mutating.
+- Governed IntelOwl execution requires `REVIEW_INTELLIGENCE`; IntelOwl history reads require `READ_INTELLIGENCE`.
+- OpenCTI access is bounded by OpenCTI role/capability and marking/data-segregation controls.
 - Auditor/read-only paths remain non-mutating.
-- Privileged Administration actions require appropriate human authority.
-- Administrator self-management and final-active-admin safeguards prevent lockout/escalation failure modes.
+- Privileged Administration remains human-authorized and auditable.
 - Client-supplied role or identity values do not establish privilege.
-- External-platform administrative/superuser authority is not required merely to support bounded DTMO integration.
 
 ## Separation of duties and publication authority
 
-Technical success is not dissemination authority. Source execution, enrichment, analysis, review, external-share approval, Administration, security/CISO authority and audit access remain distinct responsibilities.
+Technical success is not dissemination authority. Source execution, enrichment, graph synchronization, analysis, review, external-share approval, Administration, security/CISO authority and audit access remain distinct responsibilities.
 
-Connectors, CI, dashboards, analytics, Administration, Governance, staging access, infrastructure administration, Taranis publisher state and IntelOwl analyzer/job results do **not** automatically authorize external sharing or publication.
-
-Existing DTMO human approval and governed MISP/export controls remain authoritative. IntelOwl durable history is database-constrained to `external_share_authorized=false` and `local_compromise_proven=false` and cannot mutate canonical `share_approved` state.
+Taranis publisher state, IntelOwl analyzer/job results and OpenCTI entities/relationships/confidence/connector capabilities do **not** authorize DTMO external sharing or publication. Existing DTMO human approval and governed export/MISP controls remain authoritative.
 
 ## Source and ingestion security
 
-Source execution is fail-closed around approved profiles, endpoints, normalization semantics, provenance and source restrictions. Credentialed integrations use logical secret references; raw API keys, passwords or bearer tokens are not stored as repository/catalog evidence.
+Source execution is fail-closed around approved profiles, endpoints, normalization semantics, provenance and source restrictions. Credentialed integrations use logical runtime secret references; raw API keys, passwords or bearer tokens are not stored as repository/catalog evidence.
 
-The accepted source ecosystem includes OpenCVE, CIRCL Vulnerability-Lookup, governed MISP read and separately governed outbound export, governed AIL read/enrichment/correlation and the Phase 11.2 Taranis read-only canonical integration. Taranis collection preserves stable upstream identity, provenance, handling restrictions, bounded replay/checkpoint semantics and explicit no-share authority.
-
-Canonical ingestion preserves raw evidence/source context and requires durable canonical persistence before successful application-level ingestion is reported.
+The accepted source ecosystem includes OpenCVE, CIRCL Vulnerability-Lookup, governed MISP read/export, AIL read/enrichment/correlation and the Phase 11.2 Taranis canonical integration. Canonical ingestion preserves raw evidence/source context and requires durable canonical persistence before successful application-level ingestion is reported.
 
 ## Threat and vulnerability management
 
-DTMO threat and vulnerability management preserves source provenance, separates external intelligence from local exposure evidence, and keeps CVE/CVSS/EPSS/KEV and enrichment signals attributable rather than treating them as proof of local compromise. Phase 11 enrichment extends this governed evidence model without weakening human review, RBAC, TLP/privacy or publication authority.
+DTMO threat and vulnerability management preserves source provenance, separates external intelligence from local exposure evidence, and keeps CVE/CVSS/EPSS/KEV, enrichment and graph signals attributable rather than treating them as proof of local compromise. Phase 11 integrations extend this evidence model without weakening human review, RBAC, privacy/TLP or publication authority.
 
 ## Phase 11.3 IntelOwl enrichment security boundary
 
-The IntelOwl service/API/security/licensing contract and bounded adapter are accepted. The active slice introduces the governed operational API and durable history. No live IntelOwl deployment, provider credential, analyzer quality, production-equivalent persistence/recovery or production authorization is claimed by repository CI.
+The IntelOwl service/API/security/licensing contract, bounded adapter and governed execution/persistence path are repository-complete. The accepted path keeps analyzer allowlists, HTTPS/token requirements, bounded polling/result validation, `connectors_requested=[]`, durable job attribution and database-enforced `external_share_authorized=false` / `local_compromise_proven=false` invariants.
+
+IntelOwl remains a separate AGPL-3.0 service. Repository acceptance does not prove live provider connectivity, production credentials, analyzer quality, privacy approval or production authorization.
+
+## Phase 11.4 OpenCTI security boundary
+
+The reviewed baseline is OpenCTI 7.260811.0. DTMO consumes OpenCTI as a separate service/API boundary. Community Edition is Apache-2.0; Enterprise Edition is separately licensed and any Enterprise-only dependency requires explicit entitlement/legal review.
 
 ```mermaid
 flowchart LR
-    H[Human reviewer\nREVIEW_INTELLIGENCE] --> E[DTMO governed enrichment API]
-    C[(DTMO canonical item)] --> E
-    E --> P{Class + handling + allowlist valid?}
-    P -->|no| R[Reject before disclosure]
-    P -->|yes| I[IntelOwl API\ndedicated non-admin identity]
-    I --> A[Allowlisted analyzer/playbook]
-    A --> I
-    I --> V{Job ID + analyzer + size valid?}
-    V -->|no| Q[Reject fail closed]
-    V -->|yes| D[(Immutable enrichment history)]
-    D --> C
-    I -. connectors_requested=[] .-> X[MISP / OpenCTI / Slack / Email side effects excluded]
-    D -. no implicit authority .-> S[Human share/publication approval]
+    I[Dedicated OpenCTI service identity\nleast privilege + allowed markings] --> O[OpenCTI API / TAXII / stream]
+    O --> A[DTMO OpenCTI adapter]
+    A --> V{Identity + STIX + marking + provenance valid?}
+    V -->|no| Q[Reject / quarantine fail closed]
+    V -->|yes| M[Explicit OpenCTI/STIX ↔ DTMO mapping]
+    M --> D[(DTMO canonical intelligence)]
+    M -. no implicit authority .-> S[Human share/publication approval]
+    O -. excluded .-> X[No connector/MISP/case/publication side effects]
 ```
 
 Required controls:
 
-- only CVE, IP, domain, URL and hash are initially eligible observables;
-- email and other generic personal-data observables remain disabled until explicit privacy/data-processing approval;
-- analyzers/playbooks are explicitly allowlisted; newly available IntelOwl plugins are not automatically trusted;
-- every requested analyzer is conservatively treated as an external disclosure target in this slice unless a future reviewed contract proves a narrower boundary;
-- unknown/missing or `review-required` handling fails closed;
-- `TLP:RED` or equivalent restricted material is not sent to the separate IntelOwl/analyzer boundary;
-- bounded polling, result-size and timeout behavior prevents retry storms and uncontrolled disclosure;
-- IntelOwl external Connectors are excluded through an explicit empty connector request;
-- immutable upstream job identity is verified before result acceptance;
-- persistence verifies the canonical item identity again and deduplicates by `(item_id, job_id)`;
-- requesting human identity, analyzer/job/result attribution and timestamps remain available in durable history;
-- analyzer verdicts such as malicious/suspicious are attributed context and are not local-compromise proof;
-- malformed, oversized, unknown-analyzer or unsafe results fail closed rather than being promoted to trusted evidence;
-- partial analyzer success remains explicit.
-
-See `docs/security/INTELOWL_TRUST_BOUNDARY.md` for the focused trust-boundary model.
+- initial OpenCTI implementation is read-oriented;
+- DTMO canonical UUID and OpenCTI/STIX identity remain distinct and explicitly mapped;
+- mutable names/labels are never sufficient deduplication identity;
+- markings/TLP/PAP and confidence are preserved with provenance;
+- unknown/malformed marking or unsupported STIX semantics fail closed;
+- `TLP:RED` or equivalent restricted data is never automatically broadened or published;
+- pagination/stream processing must be bounded, restart-safe and idempotent;
+- checkpoint/cursor state advances only after successful durable DTMO persistence;
+- create/update/delete/merge events are distinct reconciliation inputs;
+- OpenCTI outage or synchronization failure must not make unrelated DTMO read paths unavailable;
+- routine integration does not register connectors, enable MISP synchronization, trigger enrichment, create cases, publish reports or modify OpenCTI security/marking configuration;
+- graph presence, relationship confidence or upstream labels are contextual evidence and do not prove local compromise/exposure/attribution certainty;
+- OpenCTI success never mutates DTMO `share_approved` or publication authority.
 
 ## Vulnerability intelligence and enrichment semantics
 
-DTMO supports governed vulnerability context including CVE, vendor/product, CWE, CVSS, EPSS, KEV and sighting evidence where sources support those fields. These signals inform prioritization and analysis but do not by themselves prove local exposure, exploitability, compromise or remediation completion.
+DTMO supports governed vulnerability context including CVE, vendor/product, CWE, CVSS, EPSS, KEV and sighting evidence where sources support those fields. These signals inform prioritization but do not by themselves prove local exposure, exploitability, compromise or remediation completion.
 
-IntelOwl enrichment adds another contextual evidence class. Provider/analyzer result, reliability, confidence/evaluation, DTMO relevance, local exposure evidence, severity and TLP/handling remain separate dimensions. A provider verdict must never silently become an assertion that a DTMO-managed environment is affected.
-
-Explainable prioritization must retain input provenance and semantic boundaries rather than collapse external signals into unsupported certainty.
+IntelOwl and OpenCTI add contextual evidence classes. Provider/analyzer/graph results, reliability, confidence, DTMO relevance, local exposure evidence, severity and TLP/handling remain separate dimensions.
 
 ## Data protection and privacy
 
 - Collect and retain only data needed for the defined intelligence purpose.
-- Preserve source and enrichment provenance and confidence/context.
+- Preserve source, enrichment and graph provenance/confidence/context.
 - Avoid unnecessary personal data in logs and retained evidence.
 - Do not commit secret values, credentials or bearer tokens.
-- Minimize evidence artifacts and restrict sensitive references.
-- Staging data must use an approved synthetic/sanitized/representative approach unless explicitly authorized otherwise.
-- Treat external enrichment as a potential disclosure of the observable to a provider.
-- Do not enable email/generic personal-data enrichment until lawful purpose, data-processing basis, provider/transfer implications and retention have been explicitly reviewed.
-- Apply the deployment retention policy to durable IntelOwl history, backups and derived copies; repository CI does not prove operational erasure.
+- Treat external enrichment and graph synchronization as potential data disclosures across service boundaries.
+- Apply the stronger applicable marking/handling restriction across integrations.
+- Do not infer privacy/data-processing approval from technical connectivity.
 
 ## Persistence and integrity
 
-Security-relevant data responsibilities are explicit:
+Security-relevant responsibilities remain explicit:
 
-- PostgreSQL — canonical application/RBAC/intelligence/mapping state and immutable IntelOwl enrichment history;
+- PostgreSQL — canonical DTMO application/RBAC/intelligence state and IntelOwl enrichment history;
 - OpenSearch — supporting search/index representation;
 - S3-compatible object storage — raw source evidence;
 - Redis — coordination/cache/queue runtime state;
-- Prometheus/Grafana — operational telemetry.
+- Prometheus/Grafana — operational telemetry;
+- OpenCTI — separate graph service, never a silent replacement for DTMO canonical application truth.
 
-Migration `0011_intelowl_enrichment_history` adds canonical-item-linked enrichment records. Database constraints keep external-share authority and local-compromise proof false. Search/index, raw-object or external enrichment success alone does not replace canonical PostgreSQL truth.
+Future OpenCTI mapping/checkpoint persistence must be introduced through a reviewed migration and adapter PR before repository completion is claimed.
 
 ## Auditability and observability
 
-Privileged/security-relevant activity is designed to retain actor/principal identity, action/resource context, request/correlation identifiers, before/after state where applicable and auditable event continuity. Operational troubleshooting must preserve correlation/provenance without copying unnecessary sensitive payloads into tickets or repository evidence.
+Privileged/security-relevant activity retains actor/principal identity, action/resource context, correlation identifiers and attributable outcomes. Operational troubleshooting must not copy secrets or unnecessary sensitive payloads into tickets or repository evidence.
 
-Durable IntelOwl history records the requesting principal subject and upstream job attribution. Operational observability must identify dependency, job/correlation context and outcome without logging API tokens, provider credentials or unnecessary observable payloads.
-
-Prometheus and separately authenticated Grafana provide operational telemetry. Monitoring access does not create intelligence-review or publication authority.
+OpenCTI synchronization observability must expose dependency/cursor/correlation outcome without exposing runtime tokens or unnecessary STIX payload content.
 
 ## Supply chain and licensing security
 
 - Exact-head CI is required before protected merge.
-- A new commit invalidates earlier PR-head evidence for that PR.
-- Open-source governance/licensing have dedicated controls.
-- Dependency/container/advisory review must preserve provenance and applicability.
-- Workflow configuration alone is not acceptance evidence.
+- A new commit invalidates earlier PR-head evidence.
+- Open-source governance/licensing controls remain mandatory.
 - Service-to-service integration is preferred where it preserves licensing and trust boundaries.
-
-DTMO is licensed under the **Apache License, Version 2.0** and maintains explicit security/contribution/licensing entry points. IntelOwl and pyIntelOwl remain separate AGPL-3.0 services; source vendoring, embedding, modification or redistribution is not authorized by this slice and requires explicit licensing review.
+- DTMO is Apache-2.0.
+- IntelOwl/pyIntelOwl remain separate AGPL-3.0 services.
+- OpenCTI Community Edition is Apache-2.0; Enterprise Edition is separately licensed.
+- Phase 11.4 does not vendor OpenCTI source or authorize unapproved Enterprise Edition features.
