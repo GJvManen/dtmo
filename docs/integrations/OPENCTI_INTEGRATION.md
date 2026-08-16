@@ -1,95 +1,79 @@
 # OpenCTI Integration
 
-Status: **Phase 11.4 read-only adapter / exact-head validation required**  
+Status: **Phase 11.4 canonical mapping/persistence + operational integration / exact-head validation required**  
 Last updated: **2026-08-16**
 
 ## Objective
 
-OpenCTI supplies the STIX relationship/knowledge-graph capability for the Phase 11 composed platform. DTMO remains the education-sector CTI, vulnerability-context, governance, review and publication/share-authority layer.
+OpenCTI supplies the STIX relationship/knowledge-graph capability for the Phase 11 composed platform. DTMO remains authoritative for education-sector context, governance, review and publication/share decisions.
 
-The accepted Phase 11.4 contract is implemented here as a bounded **read-only GraphQL/STIX identity adapter**. This slice does not enable OpenCTI mutations or any external side effect.
+The Phase 11.4 contract and bounded read-only GraphQL/STIX adapter are accepted repository baselines. The active final Phase 11.4 slice adds durable canonical OpenCTI identity mapping, immutable reconciliation history and the persistence-before-checkpoint operational boundary. It does not authorize OpenCTI mutations or external side effects.
 
-## Implemented adapter boundary
+## Read-only adapter boundary
 
-The adapter in `backend/dtmo/integrations/opencti.py`:
+`backend/dtmo/integrations/opencti.py` performs bounded GraphQL `stixCoreObjects` reads and preserves OpenCTI internal identity, STIX standard ID, entity type, parent types, markings, confidence, timestamps, external references and explicit read-only provenance. Entity types remain allowlisted and malformed GraphQL/STIX/marking/identity/cursor state fails closed.
 
-- authenticates to a separately deployed OpenCTI service with a runtime bearer token;
-- performs only GraphQL `stixCoreObjects` reads;
-- uses explicit page-size and maximum-page bounds;
-- preserves OpenCTI internal ID, STIX standard ID, entity type, parent types, markings, confidence, timestamps and external references;
-- attaches DTMO provenance markers that keep the import read-only and explicitly set `external_share_authorized=false` and `local_compromise_proven=false`;
-- rejects entity types outside the configured allowlist;
-- fails closed on GraphQL errors, malformed page structures, unstable/missing identity, malformed markings, malformed confidence and invalid cursors;
-- writes no OpenCTI data and invokes no OpenCTI connectors.
+## Canonical mapping persistence
 
-## Durable pagination and restart semantics
+`backend/dtmo/persistence/opencti.py` adds two persistence classes:
 
-Checkpoint state is intentionally **not** advanced by `read_pages()`. The caller receives bounded `OpenCTIPage` objects and must first persist the page successfully. Only then may it invoke `commit_page(page)`. This separates network retrieval from durable acceptance and prevents partial/failed persistence from skipping upstream data.
+- `opencti_object_mappings` stores the current attributed mapping between one DTMO canonical item and stable OpenCTI/STIX identity;
+- `opencti_mapping_revisions` stores immutable snapshots keyed by mapping plus SHA-256 snapshot hash so upstream changes remain attributable and prior evidence is not destroyed.
 
-The checkpoint is written atomically through a temporary file plus `os.replace()`. On restart the adapter resumes from the last explicitly committed cursor. Malformed checkpoint files fail closed.
+Identity is fail-closed. A known OpenCTI internal ID may not silently change STIX ID, and a known STIX ID may not silently change OpenCTI internal ID. Mutable labels are not identity keys.
+
+Every stored mapping preserves markings, confidence, timestamps, external references and provenance and is database-constrained to `external_share_authorized=false` and `local_compromise_proven=false`.
+
+## Idempotent reconciliation
+
+The repository hashes a canonical JSON snapshot of the OpenCTI-derived state. Replaying an unchanged object updates `last_seen_at` without creating duplicate revision history. A changed attributable snapshot updates current mapping context and adds one immutable revision. Ambiguous identity changes fail closed instead of being merged heuristically.
 
 ```mermaid
 sequenceDiagram
-    participant P as DTMO persistence/orchestrator
-    participant A as OpenCTI read adapter
-    participant C as Durable checkpoint
     participant O as OpenCTI GraphQL
+    participant A as Read-only adapter
+    participant P as OpenCTI mapping repository
+    participant D as PostgreSQL
+    participant C as Durable checkpoint
 
-    P->>A: read_pages()
-    A->>C: load last committed cursor
-    A->>O: POST /graphql stixCoreObjects(first, after)
-    O-->>A: nodes + pageInfo
-    A->>A: validate identity/type/marking/provenance
-    A-->>P: bounded OpenCTIPage(s)
-    Note over P,C: checkpoint has not moved
-    P->>P: persist accepted page successfully
-    P->>A: commit_page(page)
-    A->>C: atomic cursor commit
+    A->>O: bounded stixCoreObjects read
+    O-->>A: identity + markings + provenance
+    A-->>P: validated OpenCTIPage
+    P->>D: idempotent mapping + revision persistence
+    D-->>P: durable commit
+    P->>A: persistence complete
+    A->>C: commit_page(page)
+    Note over D,C: DB commit always precedes checkpoint advance
 ```
 
-## Configuration
+If the database commit fails, the checkpoint does not advance. If checkpoint replacement fails after database commit, replay is safe because mapping identity and revision snapshot hashes are idempotent.
 
-The adapter is disabled by default. Relevant settings are:
+## Migration
 
-- `DTMO_FEATURE_OPENCTI_READ=false`;
-- `DTMO_OPENCTI_API_BASE`;
-- `DTMO_OPENCTI_API_TOKEN`;
-- `DTMO_OPENCTI_PAGE_SIZE`;
-- `DTMO_OPENCTI_MAX_PAGES`;
-- `DTMO_OPENCTI_ALLOWED_ENTITY_TYPES`;
-- `DTMO_OPENCTI_CHECKPOINT_PATH`.
+Migration `0012_opencti_mapping_persistence` follows `0011_intelowl_enrichment_history` and creates both mapping tables, identity uniqueness constraints, confidence validation, no-share/no-compromise constraints and reconciliation indexes.
 
-Production validation requires HTTPS, a non-empty runtime token, an explicit entity-type allowlist and an absolute durable checkpoint path. The token is never repository evidence.
+## Configuration and service boundary
 
-## Identity and authority model
+The adapter remains disabled by default and requires production HTTPS, a runtime bearer token, explicit entity-type allowlist and absolute durable checkpoint path. The OpenCTI token remains runtime-only evidence and is never committed.
 
-DTMO canonical UUIDs and OpenCTI/STIX identities remain distinct. Mutable labels/names are never treated as stable identity. The current adapter preserves upstream identities and provenance but does not yet create the durable DTMO canonical mapping/presentation layer; that remains a later bounded Phase 11.4 slice after this adapter is accepted.
-
-OpenCTI graph facts are attributed CTI context. They do not automatically:
-
-- prove DTMO-local exposure or compromise;
-- set DTMO severity;
-- change canonical share approval;
-- authorize publication;
-- authorize MISP exchange;
-- create cases or incidents.
+OpenCTI remains a separate service. Community Edition is Apache-2.0 and Enterprise Edition remains separately licensed; no OpenCTI source is vendored into DTMO.
 
 ## Side effects excluded
 
-This read adapter does **not** authorize or implement:
+Phase 11.4 still does not authorize:
 
-- OpenCTI connector registration/invocation;
+- OpenCTI connector registration or invocation;
 - MISP synchronization;
 - TheHive case creation;
-- automatic report publication;
 - external enrichment triggers;
-- security/marking configuration changes;
-- arbitrary GraphQL mutations.
+- automatic report publication;
+- security/marking administration;
+- arbitrary GraphQL mutation.
+
+No successful mapping, graph relationship or confidence value changes DTMO share approval, publication authority, severity or local-compromise state.
 
 ## Evidence boundary
 
-Repository tests may establish bounded synthetic adapter behavior, configuration validation and documentation synchronization only. They do not prove live OpenCTI connectivity, deployed credentials/RBAC/markings, real STIX graph correctness/performance, privacy approval, HA/recovery, independent assurance or production authorization.
+Repository tests and exact-head CI can establish schema, idempotence, ordering and documentation contracts only. They do not prove live OpenCTI connectivity, deployed credentials/RBAC/markings, production graph correctness/performance, privacy approval, HA/recovery, independent assurance or production authorization. Historical Phase 8/9 evidence remains candidate-bound.
 
-Historical Phase 8/9 evidence remains candidate-bound and is not reused for the materially changed integrated platform.
-
-See `docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md` for the authoritative contract and `docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md` for operational handling.
+See `docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md` and `docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md`.
