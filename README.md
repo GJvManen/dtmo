@@ -12,7 +12,8 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Phase 11.1 Taranis architecture/contract:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.2 Taranis adapter:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.3 IntelOwl integration:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded priority:** Phase 11.4 OpenCTI contract `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
+> **Phase 11.4 OpenCTI contract:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded priority:** Phase 11.4 OpenCTI read-only STIX/identity adapter `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
 > **Next production authorization:** Phase 12 `NOT STARTED`  
 > **Production status:** **not production authorized**
 
@@ -32,7 +33,7 @@ DTMO is built around five principles:
 
 The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The repository-complete baseline includes governed OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL semantics plus Phase 11 Taranis collection/canonicalization and IntelOwl enrichment integration.
 
-Phase 11.4 now defines OpenCTI as the separate STIX knowledge-graph service. DTMO remains authoritative for education-sector relevance, local vulnerability/exposure semantics, governance, review and publication/share authority.
+Phase 11.4 integrates OpenCTI as a separate STIX knowledge-graph service while DTMO remains authoritative for education-sector relevance, local vulnerability/exposure semantics, governance, review and publication/share authority.
 
 ## Phase 11 composed intelligence pipeline
 
@@ -51,13 +52,15 @@ flowchart LR
 
 PostgreSQL remains canonical DTMO application truth. IntelOwl results and OpenCTI graph context remain attributable evidence/context; neither becomes proof of local compromise or external-share/publication authority.
 
-## Phase 11.4 OpenCTI contract
+## Phase 11.4 OpenCTI read-only adapter
 
-The reviewed compatibility baseline is **OpenCTI 7.260811.0**. The contract distinguishes Community Edition under Apache-2.0 from separately licensed Enterprise Edition functionality and keeps OpenCTI behind a service/API boundary with no source vendoring.
+The reviewed compatibility baseline is **OpenCTI 7.260811.0**. The accepted contract distinguishes Community Edition under Apache-2.0 from separately licensed Enterprise Edition functionality and keeps OpenCTI behind a service/API boundary with no source vendoring.
 
-The initial bounded integration surface is read-oriented and covers GraphQL, STIX 2.1, TAXII 2.1 and access-controlled stream semantics. A dedicated non-human OpenCTI identity must use least privilege and only approved markings. OpenCTI/STIX IDs remain distinct from DTMO canonical UUIDs and are mapped explicitly with provenance, confidence and marking context.
+The active bounded adapter performs only GraphQL `stixCoreObjects` reads. It preserves OpenCTI and STIX identities, entity type, markings, confidence, timestamps and external references, applies an explicit entity-type allowlist and adds provenance markers that cannot grant external-share authority or local-compromise proof.
 
-The contract does not authorize OpenCTI connector registration, MISP synchronization, external enrichment, arbitrary GraphQL mutations, TheHive case creation or report publication. Unknown markings, malformed STIX and authorization failures fail closed.
+Pagination is bounded by page size and maximum page count. Durable checkpoint state advances only after the caller has successfully persisted a returned page and explicitly calls `commit_page(page)`. Invalid GraphQL responses, identity/type/marking/confidence/page/cursor/checkpoint state fail closed. Production enablement requires HTTPS, a runtime token, explicit entity-type allowlist and an absolute durable checkpoint path.
+
+The adapter does not authorize OpenCTI connector registration, MISP synchronization, external enrichment, arbitrary GraphQL mutations, TheHive case creation or report publication.
 
 See [OpenCTI → DTMO Integration Contract](docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md), [OpenCTI Integration](docs/integrations/OPENCTI_INTEGRATION.md) and [OpenCTI Integration Operations Runbook](docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md).
 
@@ -78,7 +81,8 @@ The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, S
 | Phase 11.1 | Taranis architecture/API/data-model/identity/licensing | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 | Taranis→DTMO canonical adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 | IntelOwl enrichment integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 contract | OpenCTI service/API/STIX/identity/security/licensing | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.4 contract | OpenCTI service/API/STIX/identity/security/licensing | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 adapter | Read-only GraphQL/STIX identity adapter | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
 
 Historical Phase 8/9 evidence remains bound to the earlier candidate. The materially changed integrated platform requires fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance before Phase 12.

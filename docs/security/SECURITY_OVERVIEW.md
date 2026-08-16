@@ -7,7 +7,7 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 DTMO protects the confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence used in an education context. Security controls keep source trust, identity, authorization, evidence and human decision boundaries explicit and enforceable.
 
-DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is active. Phase 11.1–11.2 Taranis and Phase 11.3 IntelOwl are repository-complete. The active bounded gate is the Phase 11.4 OpenCTI contract.
+DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is active. Phase 11.1–11.2 Taranis and Phase 11.3 IntelOwl are repository-complete. The Phase 11.4 OpenCTI contract is `PASS / REPOSITORY_COMPLETE`; the active bounded gate is the **OpenCTI read-only STIX/identity adapter**.
 
 ## Identity and authentication
 
@@ -55,32 +55,37 @@ IntelOwl remains a separate AGPL-3.0 service. Repository acceptance does not pro
 
 The reviewed baseline is OpenCTI 7.260811.0. DTMO consumes OpenCTI as a separate service/API boundary. Community Edition is Apache-2.0; Enterprise Edition is separately licensed and any Enterprise-only dependency requires explicit entitlement/legal review.
 
+The active adapter is read-only and uses only GraphQL `stixCoreObjects` retrieval. Production enablement requires HTTPS, a runtime bearer token, an explicit entity-type allowlist and an absolute durable checkpoint path. The token is a runtime secret and never repository evidence.
+
 ```mermaid
 flowchart LR
-    I[Dedicated OpenCTI service identity\nleast privilege + allowed markings] --> O[OpenCTI API / TAXII / stream]
-    O --> A[DTMO OpenCTI adapter]
-    A --> V{Identity + STIX + marking + provenance valid?}
-    V -->|no| Q[Reject / quarantine fail closed]
-    V -->|yes| M[Explicit OpenCTI/STIX ↔ DTMO mapping]
-    M --> D[(DTMO canonical intelligence)]
-    M -. no implicit authority .-> S[Human share/publication approval]
+    I[Dedicated OpenCTI service identity\nleast privilege + allowed markings] --> O[OpenCTI GraphQL read]
+    C[(Last committed cursor)] --> A[DTMO OpenCTI read adapter]
+    A --> O
+    O --> V{Identity + type + marking + provenance valid?}
+    V -->|no| Q[Reject fail closed\ncheckpoint unchanged]
+    V -->|yes| P[Governed durable persistence]
+    P --> K{Persistence succeeded?}
+    K -->|no| Q
+    K -->|yes| N[(Atomic checkpoint commit)]
+    P -. no implicit authority .-> S[Human share/publication approval]
     O -. excluded .-> X[No connector/MISP/case/publication side effects]
 ```
 
 Required controls:
 
-- initial OpenCTI implementation is read-oriented;
-- DTMO canonical UUID and OpenCTI/STIX identity remain distinct and explicitly mapped;
+- DTMO canonical UUID and OpenCTI/STIX identity remain distinct and explicitly mapped/preserved;
 - mutable names/labels are never sufficient deduplication identity;
-- markings/TLP/PAP and confidence are preserved with provenance;
-- unknown/malformed marking or unsupported STIX semantics fail closed;
+- markings/TLP/PAP and confidence remain attributable provenance;
+- malformed identity, marking, confidence, GraphQL/page/cursor or checkpoint state fails closed;
 - `TLP:RED` or equivalent restricted data is never automatically broadened or published;
-- pagination/stream processing must be bounded, restart-safe and idempotent;
-- checkpoint/cursor state advances only after successful durable DTMO persistence;
-- create/update/delete/merge events are distinct reconciliation inputs;
+- pagination is bounded by page size and maximum-page limits;
+- `read_pages()` does not advance durable state;
+- checkpoint/cursor state advances only through `commit_page(page)` after successful durable DTMO persistence;
+- checkpoint writes use atomic replacement and malformed checkpoint files fail closed;
 - OpenCTI outage or synchronization failure must not make unrelated DTMO read paths unavailable;
 - routine integration does not register connectors, enable MISP synchronization, trigger enrichment, create cases, publish reports or modify OpenCTI security/marking configuration;
-- graph presence, relationship confidence or upstream labels are contextual evidence and do not prove local compromise/exposure/attribution certainty;
+- graph presence, confidence or upstream labels are contextual evidence and do not prove local compromise/exposure/attribution certainty;
 - OpenCTI success never mutates DTMO `share_approved` or publication authority.
 
 ## Vulnerability intelligence and enrichment semantics
@@ -108,9 +113,10 @@ Security-relevant responsibilities remain explicit:
 - S3-compatible object storage — raw source evidence;
 - Redis — coordination/cache/queue runtime state;
 - Prometheus/Grafana — operational telemetry;
-- OpenCTI — separate graph service, never a silent replacement for DTMO canonical application truth.
+- OpenCTI — separate graph service, never a silent replacement for DTMO canonical application truth;
+- OpenCTI checkpoint — restart cursor state only; it is not canonical intelligence and advances only after durable page persistence.
 
-Future OpenCTI mapping/checkpoint persistence must be introduced through a reviewed migration and adapter PR before repository completion is claimed.
+A later bounded Phase 11.4 slice must add the durable canonical OpenCTI mapping/persistence/operational integration needed before repository completion can be claimed.
 
 ## Auditability and observability
 

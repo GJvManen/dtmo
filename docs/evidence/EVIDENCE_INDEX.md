@@ -6,7 +6,7 @@ Last updated: **2026-08-16**
 
 This index maps DTMO lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology or incident log. Exact workflow/job/commit history remains under `docs/development/`, GitHub issues/pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.2 Taranis and Phase 11.3 IntelOwl are `PASS / REPOSITORY_COMPLETE`; Phase 11.4 OpenCTI contract is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.2 Taranis and Phase 11.3 IntelOwl are `PASS / REPOSITORY_COMPLETE`; the Phase 11.4 OpenCTI contract is `PASS / REPOSITORY_COMPLETE`; the Phase 11.4 OpenCTI read-only adapter is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
 
 ## Authoritative current-state sources
 
@@ -25,6 +25,7 @@ This index maps DTMO lifecycle stages to evidence classes and authoritative prof
 - `docs/integrations/OPENCTI_INTEGRATION.md`
 - `docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md`
 - `docs/qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md`
+- `backend/tests/test_phase11_4_opencti_adapter.py`
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
 - `docs/project/PRODUCTION_READINESS_REPORT.md`
 - `docs/project/PRODUCTION_CHECKLIST.md`
@@ -87,32 +88,31 @@ Accepted repository evidence covers the IntelOwl service/API/licensing contract,
 
 The dedicated repository contract workflow remains `.github/workflows/phase11-intelowl-integration-contract.yml`. Its accepted exact-head results are repository-controlled engineering evidence only; they are not live-service, production-equivalent, independent-assurance or production-authorization evidence.
 
-This does not prove live IntelOwl connectivity, deployed credentials, analyzer quality, privacy approval, production-equivalent behavior, independent assurance or production authorization.
-
 ### Phase 11.4 OpenCTI contract
+
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Accepted contract evidence covers OpenCTI `7.260811.0`, Community/Enterprise licensing separation, the separate service/API boundary, GraphQL/STIX 2.1/TAXII 2.1/stream boundaries, least-privilege identity, identity/provenance/marking preservation, fail-closed semantics and exclusion of connector/MISP/enrichment/case/publication side effects. The dedicated contract workflow remains `.github/workflows/phase11-opencti-integration-contract.yml`.
+
+### Phase 11.4 OpenCTI read-only adapter
 
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
-The active repository evidence target covers:
+The active repository engineering evidence target covers:
 
-- reviewed OpenCTI `7.260811.0` compatibility baseline;
-- Community Edition Apache-2.0 and separate Enterprise Edition licensing distinction;
-- separate service/API boundary with no OpenCTI source vendoring;
-- GraphQL, STIX 2.1, TAXII 2.1 and access-controlled stream boundaries;
-- dedicated least-privilege service identity and runtime-secret handling;
-- explicit OpenCTI/STIX ↔ DTMO canonical identity mapping;
-- marking/TLP/PAP, confidence and provenance preservation;
-- fail-closed authorization/marking/STIX semantics;
-- bounded, durable and idempotent pagination/stream replay requirements;
-- exclusion of connector registration, MISP synchronization, enrichment, case creation and publication side effects;
-- preservation of DTMO human publication/share authority and no-local-compromise semantics;
-- synchronized architecture, integration, security, operations, QA, roadmap, README/docs portal and evidence documentation.
+- `backend/dtmo/integrations/opencti.py` read-only GraphQL `stixCoreObjects` adapter;
+- stable OpenCTI internal identity plus STIX standard-ID preservation;
+- entity-type allowlist, markings, confidence, timestamps and external-reference provenance;
+- explicit `external_share_authorized=false` and `local_compromise_proven=false` provenance markers;
+- bounded page-size and maximum-page controls;
+- durable checkpoint state that is loaded on restart and never advanced by network retrieval alone;
+- explicit `commit_page(page)` checkpoint advancement only after successful caller persistence;
+- atomic checkpoint replacement;
+- fail-closed malformed GraphQL/data/page/cursor/checkpoint/identity/type/marking/confidence behavior;
+- production validation for HTTPS, runtime token, entity allowlist and absolute durable checkpoint path;
+- synthetic tests in `backend/tests/test_phase11_4_opencti_adapter.py`.
 
-The exact acceptance definition is `docs/qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md`; the dedicated repository workflow is `.github/workflows/phase11-opencti-integration-contract.yml`.
-
-This contract evidence does **not** prove live OpenCTI connectivity, deployed credentials or effective marking segregation, real STIX interoperability, graph quality/performance, privacy/data-processing approval, production HA/recovery, independent assurance or production authorization.
-
-After protected acceptance, the next repository evidence class is the bounded read-only OpenCTI STIX/identity adapter with pagination/reconciliation and provenance preservation.
+This adapter evidence does **not** prove live OpenCTI connectivity, deployed service identity or effective marking segregation, real STIX interoperability, graph quality/performance, privacy/data-processing approval, production HA/recovery, independent assurance or production authorization. It also does not yet establish repository-complete canonical OpenCTI mapping/persistence; that remains a later bounded Phase 11.4 slice.
 
 ### Phase 11.5–11.9
 

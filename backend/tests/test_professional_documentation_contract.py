@@ -82,7 +82,6 @@ def _read(path: str) -> str:
 def test_professional_documentation_building_blocks_exist() -> None:
     for path in STABLE_DOCUMENTS:
         assert (ROOT / path).is_file(), f"missing professional documentation building block: {path}"
-
     assert (ROOT / "docs/project/DOCUMENTATION_STANDARD.md").is_file()
     assert (ROOT / "docs/traceability/TRACEABILITY_MATRIX.md").is_file()
     assert (ROOT / "docs/intelligence/SOURCE_CATALOG.md").is_file()
@@ -92,34 +91,16 @@ def test_professional_documentation_building_blocks_exist() -> None:
 def test_project_readme_retains_professional_product_structure() -> None:
     readme = _read("README.md")
     for heading in (
-        "## Why DTMO",
-        "## Product capabilities",
-        "## Architecture",
-        "## Current maturity and release position",
-        "## Product roadmap",
-        "## Documentation",
-        "## Open source and responsible use",
+        "## Why DTMO", "## Product capabilities", "## Architecture",
+        "## Current maturity and release position", "## Product roadmap",
+        "## Documentation", "## Open source and responsible use",
     ):
         assert heading in readme
-
     for marker in (
-        "Apache License, Version 2.0",
-        "PostgreSQL",
-        "OpenSearch",
-        "Sources & Catalog",
-        "Visual Analytics",
-        "Administration",
-        "Governance",
-        "E8.1–E8.10",
-        "Phase 9",
-        "Phase 10",
-        "Phase 11",
-        "Phase 12",
-        "Taranis AI",
-        "IntelOwl",
-        "OpenCTI",
-        "TheHive",
-        "Phase 11.3 IntelOwl",
+        "Apache License, Version 2.0", "PostgreSQL", "OpenSearch", "Sources & Catalog",
+        "Visual Analytics", "Administration", "Governance", "E8.1–E8.10", "Phase 9",
+        "Phase 10", "Phase 11", "Phase 12", "Taranis AI", "IntelOwl", "OpenCTI",
+        "TheHive", "Phase 11.3 IntelOwl",
     ):
         assert marker in readme
 
@@ -127,58 +108,29 @@ def test_project_readme_retains_professional_product_structure() -> None:
 def test_architecture_retains_required_layers_and_trust_boundaries() -> None:
     architecture = _read("docs/architecture/SYSTEM_ARCHITECTURE.md")
     for marker in (
-        "## 2. Logical architecture",
-        "### 3.1 Source ingress",
-        "### 3.2 Normalization and provenance",
-        "### 3.3 Canonical persistence",
-        "### 3.5 Canonical browser product",
-        "### 3.6 Identity and authentication",
-        "### 3.7 Authorization and Administration",
-        "### 3.10 Governance knowledge and framework mapping",
-        "## 4. Trust boundaries",
-        "## 5. Deployment architecture",
-        "## 8. Security invariants",
+        "## 2. Logical architecture", "### 3.1 Source ingress", "### 3.2 Normalization and provenance",
+        "### 3.3 Canonical persistence", "### 3.5 Canonical browser product", "### 3.6 Identity and authentication",
+        "### 3.7 Authorization and Administration", "### 3.10 Governance knowledge and framework mapping",
+        "## 4. Trust boundaries", "## 5. Deployment architecture", "## 8. Security invariants",
     ):
         assert marker in architecture
 
     taranis = _read("docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md")
     for marker in (
-        "Keep / Integrate / Replace / Deprecate / Migrate",
-        "service-to-service",
-        "Taranis AI",
-        "IntelOwl",
-        "OpenCTI",
-        "MISP",
-        "TheHive",
-        "EUPL-1.2",
-        "Apache-2.0",
-        "Trust boundaries introduced by integration",
+        "Keep / Integrate / Replace / Deprecate / Migrate", "service-to-service", "Taranis AI", "IntelOwl",
+        "OpenCTI", "MISP", "TheHive", "EUPL-1.2", "Apache-2.0", "Trust boundaries introduced by integration",
     ):
         assert marker in taranis
 
     intelowl = _read("docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md")
     for marker in (
-        "v6.7.0",
-        "service-to-service",
-        "dedicated non-human IntelOwl service identity",
-        "explicit allowlist",
-        "TLP",
-        "provenance",
-        "AGPL-3.0",
-        "external-share/publication approval",
+        "v6.7.0", "service-to-service", "dedicated non-human IntelOwl service identity", "explicit allowlist",
+        "TLP", "provenance", "AGPL-3.0", "external-share/publication approval",
     ):
         assert marker in intelowl
 
     opencti = _read("docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md")
-    for marker in (
-        "7.260811.0",
-        "service-to-service",
-        "STIX 2.1",
-        "TAXII 2.1",
-        "provenance",
-        "Apache-2.0",
-        "Enterprise Edition",
-    ):
+    for marker in ("7.260811.0", "service-to-service", "STIX 2.1", "TAXII 2.1", "provenance", "Apache-2.0", "Enterprise Edition"):
         assert marker in opencti
 
 
@@ -204,14 +156,15 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "Phase 11.3 IntelOwl contract" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
     assert "Phase 11.3 IntelOwl adapter" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
     assert "Phase 11.3 governed execution/persistence" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
-    assert "Phase 11.4 OpenCTI contract" in current_state and "IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED" in current_state
+    assert "Phase 11.4 OpenCTI contract" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
+    assert "Phase 11.4 OpenCTI read-only adapter" in current_state and "IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED" in current_state
     assert "Phase 12" in current_state and "NOT STARTED" in current_state
 
     roadmap = _read("docs/roadmap/PRODUCTION_ROADMAP.md")
     assert "Phase 10" in roadmap and "NO-GO / BLOCKED" in roadmap
     assert "Phase 11.2" in roadmap and "PASS / REPOSITORY_COMPLETE" in roadmap
     assert "Phase 11.3" in roadmap and "IntelOwl" in roadmap and "PASS / REPOSITORY_COMPLETE" in roadmap
-    assert "Phase 11.4 contract" in roadmap and "IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED" in roadmap
+    assert "Phase 11.4" in roadmap and "IN PROGRESS" in roadmap
     assert "Phase 12" in roadmap and "NOT STARTED" in roadmap
 
     industrialisation = _read("docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md")
@@ -225,7 +178,7 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
     assert "11.2 Taranis → DTMO canonical adapter\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.3 IntelOwl enrichment integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
-    assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION`" in industrialisation
+    assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `IN PROGRESS / READ-ONLY ADAPTER IN EXACT-HEAD VALIDATION`" in industrialisation
 
     phase10 = _read("docs/production/PHASE10_PRODUCTION_GO_NO_GO.md")
     assert "NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED" in phase10
@@ -242,7 +195,6 @@ def test_intelowl_contract_and_integration_docs_are_synchronized() -> None:
     portal = _read("docs/README.md")
     qa = _read("docs/qa/QA_AND_RELEASE_GATES.md")
     evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
-
     assert "IntelOwl external Connectors" in contract
     assert "IntelOwl external Connectors" in integration
     assert "IntelOwl → DTMO Integration Contract" in portal
@@ -257,10 +209,11 @@ def test_opencti_contract_documents_are_synchronized() -> None:
     portal = _read("docs/README.md")
     qa = _read("docs/qa/QA_AND_RELEASE_GATES.md")
     evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
-
     for marker in ("STIX 2.1", "TAXII 2.1", "provenance"):
         assert marker in contract
-        assert marker in integration or marker in runbook
+    for marker in ("read-only", "commit_page(page)", "provenance"):
+        assert marker in integration
+    assert "checkpoint" in runbook.lower()
     assert "OpenCTI" in portal
     assert "Phase 11 OpenCTI Integration Contract Gate" in qa
     assert "phase11-opencti-integration-contract.yml" in evidence
@@ -279,20 +232,11 @@ def test_stable_professional_documents_do_not_become_operational_run_logs() -> N
 def test_documentation_standard_preserves_evidence_separation() -> None:
     standard = _read("docs/project/DOCUMENTATION_STANDARD.md")
     for requirement in (
-        "Class A — stable professional documentation",
-        "Class B — operational and immutable evidence",
-        "no PR chronology in project homepage",
-        "architecture is architecture",
-        "current phase state must be consistent",
+        "Class A — stable professional documentation", "Class B — operational and immutable evidence",
+        "no PR chronology in project homepage", "architecture is architecture", "current phase state must be consistent",
         "Historical immutable run records",
     ):
         assert requirement.lower() in standard.lower()
-
     status = _read("docs/project/DOCUMENTATION_STATUS.md")
-    for marker in (
-        "Authority order",
-        "Current documentation baseline",
-        "Historical / immutable",
-        "Evidence and claim rules",
-    ):
+    for marker in ("Authority order", "Current documentation baseline", "Historical / immutable", "Evidence and claim rules"):
         assert marker.lower() in status.lower()
