@@ -17,7 +17,8 @@ This document gives accountable decision makers the concise current decision pos
 | Phase 11.1–11.2 Taranis | `PASS / REPOSITORY_COMPLETE` | Service boundary and canonical adapter accepted |
 | Phase 11.3 IntelOwl | `PASS / REPOSITORY_COMPLETE` | Enrichment integration accepted |
 | Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE` | Contract, read adapter and persistence accepted |
-| Phase 11.5 MISP consolidation contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Current bounded integration-contract gate |
+| Phase 11.5 MISP consolidation contract | `PASS / REPOSITORY_COMPLETE` | MISP service/API/licensing/authority model accepted |
+| Phase 11.5 MISP synchronization state/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Current bounded implementation gate |
 | Phase 11 platform industrialisation | `IN PROGRESS / ACTIVE` | Highest-priority programme |
 | Phase 12 production authorization | `NOT STARTED` | New decision only after integrated validation and assurance |
 
@@ -27,15 +28,15 @@ The project has not received a production `GO`. Phase 11 continues to industrial
 
 Historical Phase 8 and Phase 9 evidence remains valid only for the candidate it originally covered and cannot be treated as production acceptance of the materially changed Phase 11 platform.
 
-The active engineering decision is whether the bounded Phase 11.5 MISP consolidation contract preserves the accepted service, identity, restriction, provenance and human-share-authority boundaries before implementation work begins.
+The active engineering decision is whether the bounded Phase 11.5 MISP persistence implementation correctly binds stable MISP event identity and authoritative source restrictions to canonical DTMO state without creating publication authority or a second MISP synchronization path.
 
 ## Phase 11 required progression
 
 1. **Completed:** Taranis architecture/licensing and canonical adapter.
 2. **Completed:** IntelOwl bounded enrichment integration.
 3. **Completed:** OpenCTI contract, read adapter and canonical mapping/persistence integration.
-4. **Active:** MISP consolidation contract, followed by one bounded synchronization-state/persistence implementation slice.
-5. Add TheHive incident/case handoff.
+4. **Contract completed; implementation active:** MISP synchronization-state/persistence and authority enforcement.
+5. Add TheHive incident/case handoff only after Phase 11.5 repository completion.
 6. Adopt Cortex only if a validated IntelOwl capability gap remains.
 7. Industrialise the composed runtime with Kubernetes/Helm/GitOps, HA, secrets, network policy, observability, backup/recovery and supply-chain controls.
 8. Complete migration/compatibility.
@@ -45,9 +46,11 @@ The active engineering decision is whether the bounded Phase 11.5 MISP consolida
 
 ## MISP decision boundary
 
-The active contract requires a separate AGPL-3.0 MISP service/API boundary; preservation of MISP UUID identity, distribution, sharing-group and TLP/tag restrictions; human DTMO review/share approval for outbound sharing; deterministic replay protection; unpublished `events/add` destination events; and fail-closed reconciliation after uncertain delivery.
+MISP v2.5.44 remains a separate AGPL-3.0 service/API. The accepted contract preserves MISP UUID identity, distribution, sharing-group and TLP/tag restrictions; human DTMO review/share approval for outbound sharing; deterministic replay protection; unpublished `events/add` destination events; and fail-closed reconciliation after uncertain delivery.
 
-Service accounts, connectors, schedulers, IntelOwl, OpenCTI and MISP itself cannot grant DTMO share approval. Automatic MISP federation and OpenCTI↔MISP synchronization are outside the current boundary.
+The active implementation adds `misp_synchronization_state`, maps one stable MISP event UUID to one DTMO canonical item, persists the authoritative source restriction envelope and projects it to canonical `metadata_json.misp_restrictions` in the same database transaction as canonical ingestion. Identity collision/drift, malformed or incomplete restrictions and attempted inbound external-share authority fail closed.
+
+Service accounts, connectors, schedulers, IntelOwl, OpenCTI and MISP itself cannot grant DTMO share approval. Automatic MISP federation, automatic publication and OpenCTI↔MISP synchronization remain outside the boundary.
 
 ## Decision rules
 
@@ -60,4 +63,4 @@ Service accounts, connectors, schedulers, IntelOwl, OpenCTI and MISP itself cann
 
 ## Current decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.4 are `PASS / REPOSITORY_COMPLETE`. Phase 11.5 MISP consolidation contract validation is the active bounded exact-head gate. DTMO remains not production authorized; Phase 12 starts only after Phase 11.10/11.11 evidence is accepted.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.4 and the Phase 11.5 MISP contract are `PASS / REPOSITORY_COMPLETE`. Phase 11.5 MISP synchronization-state/persistence exact-head validation is the active bounded gate. DTMO remains not production authorized; Phase 12 starts only after Phase 11.10/11.11 evidence is accepted.**
