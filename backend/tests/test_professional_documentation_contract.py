@@ -11,6 +11,10 @@ STABLE_DOCUMENTS = (
     "docs/README.md",
     "docs/architecture/SYSTEM_ARCHITECTURE.md",
     "docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md",
+    "docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md",
+    "docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md",
+    "docs/integrations/TARANIS_ADAPTER.md",
+    "docs/integrations/INTELOWL_INTEGRATION.md",
     "docs/ux/FRONTEND_UX.md",
     "docs/security/SECURITY_OVERVIEW.md",
     "docs/governance/GOVERNANCE_MAPPING_REGISTRY.md",
@@ -112,6 +116,7 @@ def test_project_readme_retains_professional_product_structure() -> None:
         "IntelOwl",
         "OpenCTI",
         "TheHive",
+        "Phase 11.3 IntelOwl",
     ):
         assert marker in readme
 
@@ -148,6 +153,19 @@ def test_architecture_retains_required_layers_and_trust_boundaries() -> None:
     ):
         assert marker in taranis
 
+    intelowl = _read("docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md")
+    for marker in (
+        "v6.7.0",
+        "service-to-service",
+        "dedicated non-human IntelOwl service identity",
+        "explicit allowlist",
+        "TLP",
+        "provenance",
+        "AGPL-3.0",
+        "external-share/publication approval",
+    ):
+        assert marker in intelowl
+
 
 def test_current_professional_lifecycle_is_consistent() -> None:
     for path in CURRENT_STATE_DOCUMENTS:
@@ -167,11 +185,14 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "Phase 9" in current_state and "PASS / EXTERNAL_ASSURANCE_ACCEPTED" in current_state
     assert "Phase 10" in current_state and "NO-GO / BLOCKED" in current_state
     assert "Phase 11" in current_state and "IN PROGRESS / ACTIVE" in current_state
+    assert "Phase 11.2 Taranis adapter" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
+    assert "Phase 11.3 IntelOwl" in current_state and "CONTRACT BASELINE IN EXACT-HEAD VALIDATION" in current_state
     assert "Phase 12" in current_state and "NOT STARTED" in current_state
 
     roadmap = _read("docs/roadmap/PRODUCTION_ROADMAP.md")
     assert "Phase 10" in roadmap and "NO-GO / BLOCKED" in roadmap
-    assert "Phase 11" in roadmap and "IN PROGRESS / ACTIVE" in roadmap
+    assert "Phase 11.2" in roadmap and "PASS / REPOSITORY_COMPLETE" in roadmap
+    assert "Phase 11.3" in roadmap and "CONTRACT BASELINE IN EXACT-HEAD VALIDATION" in roadmap
     assert "Phase 12" in roadmap and "NOT STARTED" in roadmap
 
     industrialisation = _read("docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md")
@@ -183,6 +204,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.6 TheHive incident/case handoff" in industrialisation
     assert "11.7 Cortex decision gate" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
+    assert "11.2 Taranis → DTMO canonical adapter\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
+    assert "11.3 IntelOwl enrichment integration\n\n**Status:** `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION`" in industrialisation
 
     phase10 = _read("docs/production/PHASE10_PRODUCTION_GO_NO_GO.md")
     assert "NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED" in phase10
@@ -191,6 +214,21 @@ def test_current_professional_lifecycle_is_consistent() -> None:
 
     phase8_gate = _read("docs/qa/PHASE8_STAGING_DEPLOYMENT_PARITY_GATE.md")
     assert "Repository CI, local Docker Compose, staging emulators and synthetic browser fixtures cannot satisfy this gate by themselves" in phase8_gate
+
+
+def test_intelowl_contract_and_integration_docs_are_synchronized() -> None:
+    contract = _read("docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md")
+    integration = _read("docs/integrations/INTELOWL_INTEGRATION.md")
+    portal = _read("docs/README.md")
+    qa = _read("docs/qa/QA_AND_RELEASE_GATES.md")
+    evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
+
+    assert "CONTRACT-ONLY / ADAPTER NOT YET IMPLEMENTED" in integration
+    assert "IntelOwl external Connectors" in contract
+    assert "IntelOwl external Connectors" in integration
+    assert "IntelOwl → DTMO Integration Contract" in portal
+    assert "Phase 11 IntelOwl Integration Contract Gate" in qa
+    assert "phase11-intelowl-integration-contract.yml" in evidence
 
 
 def test_stable_professional_documents_do_not_become_operational_run_logs() -> None:
