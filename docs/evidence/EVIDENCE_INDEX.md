@@ -1,20 +1,23 @@
 # DTMO Evidence Index
 
-Last updated: **2026-08-15**
+Last updated: **2026-08-16**
 
 ## Purpose
 
 This index maps DTMO lifecycle stages to their evidence classes and authoritative professional documentation. It is not a CI chronology or incident log. Exact workflow/job/commit history remains under `docs/development/`, GitHub issues/pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is `IN PROGRESS / ACTIVE`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1 and 11.2 are `PASS / REPOSITORY_COMPLETE`; Phase 11.3 IntelOwl is `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
 
 ## Authoritative current-state sources
 
+- `README.md`
+- `docs/README.md`
 - `docs/project/CURRENT_STATE.md`
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`
 - `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`
 - `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`
 - `docs/integrations/TARANIS_ADAPTER.md`
+- `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
 - `docs/project/PRODUCTION_READINESS_REPORT.md`
 - `docs/project/PRODUCTION_CHECKLIST.md`
@@ -73,15 +76,18 @@ Production authorization was not granted. The accountable decision is recorded i
 
 **Status:** `IN PROGRESS / ACTIVE`.
 
-Phase 11.1 Taranis architecture/contract work is repository-complete. Phase 11.2 now has repository evidence for the read-only canonical adapter, fail-closed handling, stable identity, deterministic replay, durable atomic checkpointing, bounded pagination/reconciliation, bounded detail/CTI retrieval and governed connector execution. This evidence is repository-controlled only and does not prove live Taranis permissions, persistent-volume deployment or production-equivalent behavior.
+Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis→DTMO canonical adapter are repository-complete. The final Phase 11.2 exact-head acceptance covered read-only canonical collection, fail-closed handling, stable identity, deterministic replay, durable atomic checkpointing, bounded pagination/reconciliation, bounded detail/CTI retrieval, governed scheduler/manual execution, canonical persistence/indexing and connector observability.
+
+The active repository evidence target is **Phase 11.3 IntelOwl contract acceptance**. `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md` records the proposed v6.7-compatible service/API boundary, dedicated non-admin identity, runtime-token/TLS rules, observable/analyzer allowlists, TLP/privacy constraints, bounded execution/rate limits, analyzer/job/result provenance, partial-failure semantics, exclusion of external IntelOwl Connector side effects and AGPL-3.0 service-boundary requirements.
+
+This is repository-controlled contract evidence only. It does not prove live IntelOwl connectivity, a deployed service account, provider credentials, analyzer quality, production-equivalent runtime behavior or production authorization.
 
 Required evidence classes progressively include:
 
-- Taranis API/data-model/identity/licensing assessment;
-- service-to-service adapter contracts and interoperability tests;
-- provenance/classification/replay/deduplication evidence;
-- Taranis detail/CTI and governed scheduler/manual execution evidence;
-- IntelOwl enrichment contract/runtime evidence;
+- accepted Taranis API/data-model/identity/licensing assessment;
+- accepted Taranis service-to-service adapter and governed execution evidence;
+- IntelOwl service/API/security/licensing contract evidence;
+- IntelOwl bounded enrichment adapter/runtime evidence with analyzer/job provenance;
 - OpenCTI STIX/entity/relationship interoperability evidence;
 - consolidated MISP authority/synchronization evidence;
 - TheHive handoff evidence and conditional Cortex decision evidence;
@@ -95,7 +101,10 @@ Primary Phase 11 documents:
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
 - `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`;
 - `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`;
-- `docs/integrations/TARANIS_ADAPTER.md`.
+- `docs/integrations/TARANIS_ADAPTER.md`;
+- `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`.
+
+Current IntelOwl contract CI evidence is expected from `.github/workflows/phase11-intelowl-integration-contract.yml` on the exact final PR head. A successful workflow run establishes document/contract synchronization only and must not be relabelled as live integration evidence.
 
 ### Phase 12 — production go/no-go
 
@@ -111,7 +120,7 @@ Historical Phase 8 and Phase 9 acceptance is not discarded. However, it is candi
 
 Framework claims are governed by `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`. The current model includes explicit versioned/provenance-backed relationships and E8.10 vulnerability-management evidence mapping, including Normenkader IBP SM.07 and semantic boundaries for CVSS, EPSS, KEV, MITRE ATT&CK, MISP and AIL.
 
-A mapping is not a blanket compliance, maturity, certification, exposure or remediation claim.
+A mapping is not a blanket compliance, maturity, certification, exposure or remediation claim. IntelOwl analyzer outputs are likewise contextual enrichment evidence; they do not establish local exploitability or compromise without separate attributable local evidence.
 
 ## Evidence handling rules
 
@@ -121,4 +130,5 @@ A mapping is not a blanket compliance, maturity, certification, exposure or reme
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
 - Raw credentials/tokens and unnecessary personal data must not be stored in repository evidence.
 - Human review/share approval remains separate from technical execution and production authorization.
+- IntelOwl provider/analyzer verdicts remain attributed context and cannot silently become DTMO local-compromise claims.
 - Historical immutable run records are never rewritten to manufacture a later acceptance state.
