@@ -19,7 +19,7 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 11.3 IntelOwl adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 governed execution/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
-| Production readiness | **Not production authorized** |
+| Production readiness | **not production authorized** |
 
 The active bounded programme step is Phase 11.3 governed IntelOwl execution, durable enrichment-history persistence and operational integration. Phase 10 did not grant production authorization. Phase 12 remains the next formal production authorization decision only after fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance for the materially changed integrated platform.
 
