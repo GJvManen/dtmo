@@ -124,6 +124,17 @@ The local Compose topology is a development/reference environment only.
 
 ## Open source and responsible use
 
-DTMO is licensed under the **Apache License, Version 2.0**. Taranis AI remains a separate service behind its own licensing boundary. IntelOwl and pyIntelOwl are AGPL-3.0; Phase 11.3 uses a separate service/API boundary and does not vendor their source into DTMO. Embedding, modification, redistribution or operation of modified network-facing IntelOwl components requires explicit licensing review before acceptance.
+DTMO is licensed under the **Apache License, Version 2.0**. Canonical governance and legal entry points remain:
+
+- `LICENSE`
+- `NOTICE`
+- `SECURITY.md`
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
+- `SUPPORTED_VERSIONS.md`
+- `docs/legal/LICENSING.md`
+- `docs/legal/THIRD_PARTY.md`
+
+Taranis AI remains a separate service behind its own licensing boundary. IntelOwl and pyIntelOwl are AGPL-3.0; Phase 11.3 uses a separate service/API boundary and does not vendor their source into DTMO. Embedding, modification, redistribution or operation of modified network-facing IntelOwl components requires explicit licensing review before acceptance.
 
 Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, enrich, publish or redistribute third-party material.
