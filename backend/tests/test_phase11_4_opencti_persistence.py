@@ -8,6 +8,7 @@ import pytest
 
 from dtmo.integrations.opencti import OpenCTIItem, OpenCTIPage
 from dtmo.persistence.opencti import (
+    OpenCTIMappingRepository,
     OpenCTIMappingRevision,
     OpenCTIObjectMapping,
     OpenCTIPersistenceCoordinator,
@@ -62,6 +63,53 @@ def test_opencti_snapshot_is_stable_and_keeps_provenance_markings() -> None:
     assert snapshot["local_compromise_proven"] is False
     assert snapshot_hash(snapshot) == snapshot_hash(mapping_snapshot(_item()))
     assert snapshot_hash(snapshot) != snapshot_hash(mapping_snapshot(_item(confidence=81)))
+
+
+@pytest.mark.asyncio
+async def test_unchanged_replay_is_idempotent() -> None:
+    item_id = uuid4()
+    item = _item()
+    digest = snapshot_hash(mapping_snapshot(item))
+    mapping = SimpleNamespace(
+        id=uuid4(),
+        item_id=item_id,
+        opencti_id=item.opencti_id,
+        stix_id=item.stix_id,
+        snapshot_hash=digest,
+        last_seen_at=None,
+    )
+    revision = SimpleNamespace(id=uuid4(), snapshot_hash=digest)
+    session = SimpleNamespace(
+        get=AsyncMock(return_value=SimpleNamespace(id=item_id)),
+        scalar=AsyncMock(side_effect=[mapping, mapping, revision]),
+        add=AsyncMock(),
+        flush=AsyncMock(),
+    )
+    repository = OpenCTIMappingRepository(session)  # type: ignore[arg-type]
+
+    result = await repository.persist_item(item_id=item_id, item=item)
+
+    assert result is mapping
+    session.add.assert_not_called()
+    assert session.flush.await_count == 1
+
+
+@pytest.mark.asyncio
+async def test_identity_drift_fails_closed() -> None:
+    item_id = uuid4()
+    existing = SimpleNamespace(id=uuid4(), opencti_id="o-1", stix_id="indicator--different")
+    session = SimpleNamespace(
+        get=AsyncMock(return_value=SimpleNamespace(id=item_id)),
+        scalar=AsyncMock(side_effect=[existing, None]),
+        add=AsyncMock(),
+        flush=AsyncMock(),
+    )
+    repository = OpenCTIMappingRepository(session)  # type: ignore[arg-type]
+
+    with pytest.raises(ValueError, match="internal identity changed STIX identity"):
+        await repository.persist_item(item_id=item_id, item=_item())
+
+    session.add.assert_not_called()
 
 
 @pytest.mark.asyncio
