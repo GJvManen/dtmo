@@ -1,6 +1,6 @@
 # MISP → DTMO Consolidation Contract
 
-Status: **PHASE 11.5 CONTRACT IN EXACT-HEAD VALIDATION**  
+Status: **PHASE 11.5 CONTRACT `PASS / REPOSITORY_COMPLETE`**  
 Reviewed upstream baseline: **MISP v2.5.44** (released 2026-07-13)
 
 ## Purpose
@@ -8,6 +8,8 @@ Reviewed upstream baseline: **MISP v2.5.44** (released 2026-07-13)
 Phase 11.5 consolidates DTMO's existing E8 MISP read and governed-export capabilities into one explicit authority, synchronization and lifecycle model. It does not introduce a second CTI truth store, automatic publication authority, or a hidden MISP-to-OpenCTI synchronization path.
 
 MISP remains a separate service accessed through its REST API. DTMO remains authoritative for education-sector relevance, canonical review state, local exposure/compromise semantics, governance evidence, and human publication/share approval.
+
+The contract is accepted repository engineering evidence. The active bounded implementation is the single reconciled MISP synchronization-state/persistence and authority-enforcement layer described by `docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md`.
 
 ## Upstream and licensing boundary
 
@@ -22,7 +24,7 @@ DTMO already has two bounded E8 capabilities:
 1. **Inbound read** via `POST /events/restSearch`, preserving event UUID, organisation, distribution, sharing group, TLP/tags, galaxies, attributes, objects, relationships and raw provenance.
 2. **Governed outbound export** via `POST /events/add`, requiring separate human DTMO review/share approval, deterministic event UUID/replay protection, preserved restrictions, unpublished destination events and operator inspection after uncertain delivery.
 
-Phase 11.5 must reconcile these paths rather than creating parallel MISP clients or separate authority models.
+Phase 11.5 reconciles these paths rather than creating parallel MISP clients or separate authority models.
 
 ## Authoritative inbound model
 
@@ -34,6 +36,8 @@ The single authoritative inbound path remains read-oriented and fail-closed.
 - Import creates candidate/context intelligence only. It never sets DTMO `share_approved`, publication authority, local-compromise proof or a governance-compliance claim.
 - Replay of the same upstream identity/revision is idempotent; changed upstream state remains attributable and must not silently overwrite historical evidence.
 - Pagination/reconciliation must be bounded, restart-safe and advance durable state only after accepted persistence.
+
+The implementation persists the event authority envelope in `misp_synchronization_state` and projects accepted restrictions to canonical `metadata_json.misp_restrictions`, allowing the existing governed-export path to enforce the same source restrictions.
 
 ## Authoritative outbound model
 
@@ -73,7 +77,8 @@ flowchart LR
     M[MISP v2.5.44\nseparate AGPL-3.0 service] -->|REST read| R[Governed inbound adapter]
     R --> V{Identity + restrictions + provenance valid?}
     V -->|no| X[Fail closed]
-    V -->|yes| D[(DTMO canonical intelligence)]
+    V -->|yes| S[(MISP synchronization state)]
+    S --> D[(DTMO canonical intelligence\nauthoritative restrictions)]
     D --> H{Human review + share approval?}
     H -->|no| N[No outbound side effect]
     H -->|yes| P[Durable replay reservation]
@@ -115,4 +120,4 @@ This contract does not authorize:
 
 Repository acceptance may prove contract wording, existing API/path compatibility, fail-closed authority invariants and documentation synchronization. It does **not** prove live MISP credentials, effective production MISP roles, remote-server trust, production data legality, real federation behavior, staging acceptance, independent assurance or production authorization.
 
-After this contract is protected-merged, the next bounded Phase 11.5 slice is implementation of the **single reconciled MISP synchronization state/persistence model and authority enforcement**, reusing the existing read/export paths rather than duplicating them.
+The contract slice is accepted. The current Phase 11.5 acceptance target is the synchronization-state/persistence and authority-enforcement implementation. Phase 11.6 remains blocked until that implementation is protected-merged and Phase 11.5 is reconciled to `PASS / REPOSITORY_COMPLETE`.
