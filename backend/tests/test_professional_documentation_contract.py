@@ -186,13 +186,15 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "Phase 10" in current_state and "NO-GO / BLOCKED" in current_state
     assert "Phase 11" in current_state and "IN PROGRESS / ACTIVE" in current_state
     assert "Phase 11.2 Taranis adapter" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
-    assert "Phase 11.3 IntelOwl" in current_state and "CONTRACT BASELINE IN EXACT-HEAD VALIDATION" in current_state
+    assert "Phase 11.3 IntelOwl contract" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
+    assert "Phase 11.3 IntelOwl adapter" in current_state and "IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED" in current_state
     assert "Phase 12" in current_state and "NOT STARTED" in current_state
 
     roadmap = _read("docs/roadmap/PRODUCTION_ROADMAP.md")
     assert "Phase 10" in roadmap and "NO-GO / BLOCKED" in roadmap
     assert "Phase 11.2" in roadmap and "PASS / REPOSITORY_COMPLETE" in roadmap
-    assert "Phase 11.3" in roadmap and "CONTRACT BASELINE IN EXACT-HEAD VALIDATION" in roadmap
+    assert "Phase 11.3 contract" in roadmap and "PASS / REPOSITORY_COMPLETE" in roadmap
+    assert "Phase 11.3 adapter" in roadmap and "IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED" in roadmap
     assert "Phase 12" in roadmap and "NOT STARTED" in roadmap
 
     industrialisation = _read("docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md")
@@ -205,7 +207,7 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.7 Cortex decision gate" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
     assert "11.2 Taranis → DTMO canonical adapter\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
-    assert "11.3 IntelOwl enrichment integration\n\n**Status:** `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION`" in industrialisation
+    assert "11.3 IntelOwl enrichment integration\n\n**Status:** `IN PROGRESS / ADAPTER IN EXACT-HEAD VALIDATION`" in industrialisation
 
     phase10 = _read("docs/production/PHASE10_PRODUCTION_GO_NO_GO.md")
     assert "NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED" in phase10
@@ -223,7 +225,7 @@ def test_intelowl_contract_and_integration_docs_are_synchronized() -> None:
     qa = _read("docs/qa/QA_AND_RELEASE_GATES.md")
     evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
 
-    assert "CONTRACT-ONLY / ADAPTER NOT YET IMPLEMENTED" in integration
+    assert "ADAPTER IMPLEMENTED / EXACT-HEAD VALIDATION REQUIRED" in integration
     assert "IntelOwl external Connectors" in contract
     assert "IntelOwl external Connectors" in integration
     assert "IntelOwl → DTMO Integration Contract" in portal
