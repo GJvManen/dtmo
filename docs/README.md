@@ -36,7 +36,7 @@ The active bounded programme step is Phase 11.3 IntelOwl enrichment-adapter vali
 | QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
 | Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [IntelOwl Integration](integrations/INTELOWL_INTEGRATION.md) |
 
-The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for the accepted operator journeys documented under [Screenshot Catalogue](visual/screenshots/README.md).
+The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for the accepted operator journeys documented under [Screenshot Catalogue](visual/screenshots/README.md). These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
 
 ## Phase 11 programme documentation
 
