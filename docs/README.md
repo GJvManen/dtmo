@@ -35,7 +35,7 @@ The active bounded programme step is **Phase 11.5 MISP consolidation contract va
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md), [MISP Governed Export](intelligence/MISP_GOVERNED_EXPORT.md) |
 | QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Phase 11.5 MISP Consolidation Contract Gate](qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
-| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [MISP Read Integration](integrations/MISP_READ_INTEGRATION.md), [MISP Governed Export](intelligence/MISP_GOVERNED_EXPORT.md), [OpenCTI Integration Operations Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md) |
+| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [IntelOwl Enrichment Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md), [MISP Read Integration](integrations/MISP_READ_INTEGRATION.md), [MISP Governed Export](intelligence/MISP_GOVERNED_EXPORT.md), [OpenCTI Integration Operations Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md) |
 
 The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for accepted operator journeys. These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
 
@@ -44,7 +44,7 @@ No synthetic screenshot is promoted for the Phase 11.5 contract slice because th
 ## Phase 11 programme documentation
 
 - [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) defines the fixed Taranis → IntelOwl → OpenCTI → MISP → TheHive → conditional Cortex → runtime-industrialisation sequence.
-- [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md) documents repository-complete Phase 11.3.
+- [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md) and [IntelOwl Enrichment Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md) document repository-complete Phase 11.3.
 - Phase 11.4 OpenCTI persistence and integration are `PASS / REPOSITORY_COMPLETE`; the accepted contract, adapter and runbook remain authoritative historical-current design references.
 - [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md) is the active Phase 11.5 service/API/licensing/authority baseline.
 - [MISP Read Integration](integrations/MISP_READ_INTEGRATION.md) and [MISP Governed Export](intelligence/MISP_GOVERNED_EXPORT.md) are the existing bounded paths to be consolidated rather than duplicated.
