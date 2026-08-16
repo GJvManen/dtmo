@@ -54,14 +54,8 @@ class IntelligenceItem(Base):
     title: Mapped[str] = mapped_column(String(500))
     summary: Mapped[str] = mapped_column(Text, default="")
     canonical_url: Mapped[str] = mapped_column(Text)
-    published_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True),
-        nullable=True,
-    )
-    discovered_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=utc_now,
-    )
+    published_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    discovered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
     content_hash: Mapped[str] = mapped_column(String(64), index=True)
     severity: Mapped[IntelligenceSeverity] = mapped_column(
         SAEnum(
@@ -86,31 +80,27 @@ class IntelligenceItem(Base):
     )
     confidence_rationale: Mapped[list[str]] = mapped_column(JSON, default=list)
     education_relevance: Mapped[int] = mapped_column(Integer, default=0, index=True)
-    review_status: Mapped[str] = mapped_column(
-        String(32),
-        default="candidate",
-        index=True,
-    )
+    review_status: Mapped[str] = mapped_column(String(32), default="candidate", index=True)
     share_approved: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     tags: Mapped[list[str]] = mapped_column(JSON, default=list)
     metadata_json: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
 
     provenance: Mapped[list[ProvenanceRecord]] = relationship(
-        back_populates="item",
-        cascade="all, delete-orphan",
+        back_populates="item", cascade="all, delete-orphan"
     )
     revisions: Mapped[list[IntelligenceRevision]] = relationship(
         back_populates="item",
         cascade="all, delete-orphan",
         order_by="IntelligenceRevision.revision_number",
     )
+    intelowl_enrichments: Mapped[list[IntelOwlEnrichmentRecord]] = relationship(
+        back_populates="item",
+        cascade="all, delete-orphan",
+        order_by="IntelOwlEnrichmentRecord.created_at",
+    )
 
     __table_args__ = (
-        UniqueConstraint(
-            "source_id",
-            "external_id",
-            name="uq_intelligence_source_external",
-        ),
+        UniqueConstraint("source_id", "external_id", name="uq_intelligence_source_external"),
         CheckConstraint(
             "confidence_score >= 0 AND confidence_score <= 100",
             name="ck_intelligence_confidence_score",
@@ -119,12 +109,7 @@ class IntelligenceItem(Base):
             "education_relevance >= 0 AND education_relevance <= 100",
             name="ck_intelligence_education_relevance",
         ),
-        Index(
-            "ix_intelligence_priority",
-            "severity",
-            "education_relevance",
-            "review_status",
-        ),
+        Index("ix_intelligence_priority", "severity", "education_relevance", "review_status"),
     )
 
 
@@ -133,16 +118,12 @@ class ProvenanceRecord(Base):
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     item_id: Mapped[UUID] = mapped_column(
-        ForeignKey("intelligence_items.id", ondelete="CASCADE"),
-        index=True,
+        ForeignKey("intelligence_items.id", ondelete="CASCADE"), index=True
     )
     source_url: Mapped[str] = mapped_column(Text)
     source_title: Mapped[str | None] = mapped_column(String(500), nullable=True)
     publisher: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    retrieved_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=utc_now,
-    )
+    retrieved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
     content_hash: Mapped[str] = mapped_column(String(64))
     exact_passage: Mapped[str | None] = mapped_column(Text, nullable=True)
     source_reliability: Mapped[SourceReliability] = mapped_column(
@@ -167,10 +148,7 @@ class ProvenanceRecord(Base):
             name="ck_provenance_confidence_score",
         ),
         UniqueConstraint(
-            "item_id",
-            "source_url",
-            "content_hash",
-            name="uq_provenance_item_source_content",
+            "item_id", "source_url", "content_hash", name="uq_provenance_item_source_content"
         ),
     )
 
@@ -182,36 +160,60 @@ class IntelligenceRevision(Base):
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     item_id: Mapped[UUID] = mapped_column(
-        ForeignKey("intelligence_items.id", ondelete="CASCADE"),
-        index=True,
+        ForeignKey("intelligence_items.id", ondelete="CASCADE"), index=True
     )
     revision_number: Mapped[int] = mapped_column(Integer)
     content_hash: Mapped[str] = mapped_column(String(64), index=True)
     snapshot: Mapped[dict[str, Any]] = mapped_column(JSON)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=utc_now,
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
     created_by: Mapped[str] = mapped_column(String(255), default="system")
     change_reason: Mapped[str] = mapped_column(Text, default="ingestion")
 
     item: Mapped[IntelligenceItem] = relationship(back_populates="revisions")
 
     __table_args__ = (
+        CheckConstraint("revision_number >= 1", name="ck_intelligence_revision_number"),
+        UniqueConstraint("item_id", "revision_number", name="uq_intelligence_item_revision"),
+        UniqueConstraint("item_id", "content_hash", name="uq_intelligence_item_revision_hash"),
+    )
+
+
+class IntelOwlEnrichmentRecord(Base):
+    """Immutable governed record of one completed IntelOwl enrichment execution."""
+
+    __tablename__ = "intelowl_enrichment_records"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    item_id: Mapped[UUID] = mapped_column(
+        ForeignKey("intelligence_items.id", ondelete="CASCADE"), index=True
+    )
+    job_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    observable_type: Mapped[str] = mapped_column(String(64), nullable=False)
+    observable_value: Mapped[str] = mapped_column(Text, nullable=False)
+    handling: Mapped[str] = mapped_column(String(64), nullable=False)
+    analyzers: Mapped[list[str]] = mapped_column(JSON, default=list)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
+    partial: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    reports: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list)
+    raw_result: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    requested_by: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, index=True)
+    external_share_authorized: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    local_compromise_proven: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+
+    item: Mapped[IntelligenceItem] = relationship(back_populates="intelowl_enrichments")
+
+    __table_args__ = (
+        UniqueConstraint("item_id", "job_id", name="uq_intelowl_enrichment_item_job"),
         CheckConstraint(
-            "revision_number >= 1",
-            name="ck_intelligence_revision_number",
+            "external_share_authorized = false",
+            name="ck_intelowl_enrichment_no_share_authority",
         ),
-        UniqueConstraint(
-            "item_id",
-            "revision_number",
-            name="uq_intelligence_item_revision",
+        CheckConstraint(
+            "local_compromise_proven = false",
+            name="ck_intelowl_enrichment_no_compromise_proof",
         ),
-        UniqueConstraint(
-            "item_id",
-            "content_hash",
-            name="uq_intelligence_item_revision_hash",
-        ),
+        Index("ix_intelowl_enrichment_item_created", "item_id", "created_at"),
     )
 
 
@@ -220,14 +222,8 @@ class ConnectorRun(Base):
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     connector_id: Mapped[str] = mapped_column(String(128), index=True)
-    started_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=utc_now,
-    )
-    finished_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True),
-        nullable=True,
-    )
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     status: Mapped[str] = mapped_column(String(32), index=True)
     fetched: Mapped[int] = mapped_column(Integer, default=0)
     inserted: Mapped[int] = mapped_column(Integer, default=0)
