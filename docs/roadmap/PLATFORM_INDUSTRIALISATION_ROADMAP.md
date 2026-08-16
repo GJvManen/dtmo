@@ -20,7 +20,6 @@ flowchart LR
     DTMO <--> OCTI[OpenCTI\nSTIX 2.1 knowledge graph]
     DTMO --> MISP[MISP\ngoverned exchange]
     DTMO --> HIVE[TheHive\nincident/case workflow]
-    MISP <--> OCTI
 ```
 
 The target is a composed service architecture, not a source-code merger. Provenance, RBAC, human publication/share authority and fail-closed evidence rules remain explicit across every boundary.
@@ -46,67 +45,62 @@ The target is a composed service architecture, not a source-code merger. Provena
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-The accepted assessment establishes a service-to-service Taranis boundary. DTMO retains education-sector CTI, vulnerability context, governance, provenance and governed publication/share authority. Taranis source is not vendored into DTMO.
-
 ### 11.2 Taranis → DTMO canonical adapter
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
-
-Repository-complete implementation includes read-only collection, stable namespaced identity, fail-closed TLP handling, durable checkpointing/reconciliation, bounded detail/CTI retrieval, governed execution, canonical persistence/indexing and observability.
 
 ### 11.3 IntelOwl enrichment integration
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-The contract, bounded adapter and governed execution/persistence boundary are accepted. IntelOwl remains a separate AGPL-3.0 service/API boundary with explicit analyzer allowlists, human review authority, durable enrichment history and no-share/no-local-compromise invariants.
-
 ### 11.4 OpenCTI knowledge-graph integration
 
-**Status:** `IN PROGRESS / CANONICAL PERSISTENCE IN EXACT-HEAD VALIDATION`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-The OpenCTI service/API/STIX/licensing contract and bounded read-only GraphQL/STIX adapter are `PASS / REPOSITORY_COMPLETE`. The active final Phase 11.4 slice adds canonical mapping persistence, immutable reconciliation history and operational persistence-before-checkpoint ordering.
-
-Active repository scope:
-
-- `opencti_object_mappings` for explicit DTMO-item ↔ OpenCTI internal ID ↔ STIX ID mapping;
-- `opencti_mapping_revisions` for immutable SHA-256-keyed reconciliation snapshots;
-- preservation of entity type, parent types, markings, confidence, timestamps, external references and provenance;
-- unique identity constraints plus fail-closed OpenCTI/STIX identity drift detection;
-- database-enforced `external_share_authorized=false` and `local_compromise_proven=false`;
-- idempotent unchanged replay and attributable revision creation for changed upstream state;
-- migration `0012_opencti_mapping_persistence` after `0011_intelowl_enrichment_history`;
-- persistence coordinator that commits PostgreSQL before `commit_page(page)` advances the durable cursor;
-- replay safety when checkpoint replacement fails after database commit;
-- no connector registration, MISP synchronization, enrichment, case creation, publication, security administration or GraphQL mutation.
-
-```mermaid
-flowchart LR
-    O[OpenCTI GraphQL] --> A[Accepted read-only adapter]
-    A --> V{Identity / markings / provenance valid?}
-    V -->|no| X[Fail closed]
-    V -->|yes| M[(Canonical OpenCTI mapping)]
-    M --> R[(Immutable mapping revisions)]
-    M --> D{PostgreSQL commit?}
-    D -->|no| X
-    D -->|yes| C[(Durable cursor commit)]
-    M -. never grants .-> S[Human publication/share authority]
-```
-
-Repository CI remains engineering evidence only. It does not prove live OpenCTI connectivity, deployed credentials/RBAC/markings, production-scale graph correctness/performance, privacy approval, HA/recovery, independent assurance or production authorization.
-
-After protected acceptance of this slice and lifecycle reconciliation, **Phase 11.4 may become `PASS / REPOSITORY_COMPLETE`** and the next bounded priority is 11.5 MISP consolidation.
+The accepted Phase 11.4 boundary includes the OpenCTI service/API/STIX/licensing contract, bounded read-only GraphQL/STIX adapter, explicit OpenCTI/STIX↔DTMO identity mapping, immutable reconciliation history, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. Repository acceptance remains engineering evidence only and does not prove live OpenCTI deployment or production authorization.
 
 ### 11.5 MISP consolidation
 
-**Status:** `PLANNED / BLOCKED BY 11.4`
+**Status:** `IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION`
 
-Consolidate inbound/synchronization and governed outbound exchange into one documented authority model. DTMO human/governed outbound approval remains authoritative.
+The active bounded slice defines one authoritative MISP service/API, identity, restriction, synchronization and sharing model before implementation changes.
+
+Reviewed upstream baseline: **MISP v2.5.44**, kept as a separate **AGPL-3.0** service/API boundary.
+
+Existing E8 capabilities to consolidate:
+
+- governed inbound `POST /events/restSearch` with event/attribute/object identity, distribution, sharing-group, TLP/tag, galaxy and provenance preservation;
+- governed outbound `POST /events/add` requiring separate human DTMO review/share approval, deterministic replay protection and unpublished destination events.
+
+Required Phase 11.5 invariants:
+
+- MISP UUIDs and DTMO canonical UUIDs remain distinct and explicitly attributable;
+- source distribution, sharing-group and TLP restrictions cannot be broadened;
+- ingestion cannot grant `share_approved`, publication authority or local-compromise proof;
+- service accounts, connectors, schedulers, IntelOwl, OpenCTI and MISP itself cannot grant DTMO sharing authority;
+- uncertain outbound delivery blocks automatic replay pending operator reconciliation;
+- MISP server push/pull synchronization and OpenCTI↔MISP automatic synchronization are excluded from the first consolidation boundary;
+- runtime secrets, production HTTPS, least privilege and `401`/`403` fail-closed behavior remain mandatory;
+- repository CI is not live-MISP, deployment, assurance or production evidence.
+
+```mermaid
+flowchart LR
+    M[MISP\nseparate AGPL-3.0 service] -->|REST read| R[Governed inbound]
+    R --> V{Identity + restrictions + provenance valid?}
+    V -->|no| X[Fail closed]
+    V -->|yes| D[(DTMO canonical intelligence)]
+    D --> H{Human review + share approval?}
+    H -->|no| N[No outbound side effect]
+    H -->|yes| P[Durable replay reservation]
+    P -->|events/add unpublished| M
+    M -->|uncertain| U[Block replay; operator reconcile]
+```
+
+After protected acceptance of the contract, the next bounded Phase 11.5 PR is the single reconciled MISP synchronization-state/persistence and authority-enforcement implementation. Phase 11.6 remains blocked until Phase 11.5 is repository-complete.
 
 ### 11.6 TheHive incident/case handoff
 
-**Status:** `PLANNED`
-
-Introduce controlled intelligence-to-case handoff with explicit case-creation permission, provenance back to DTMO intelligence and separation between case state and canonical CTI truth.
+**Status:** `PLANNED / BLOCKED BY 11.5`
 
 ### 11.7 Cortex decision gate
 
@@ -123,8 +117,6 @@ Kubernetes, Helm, GitOps, immutable images, workload identities/external secrets
 ### 11.9 Migration and compatibility
 
 **Status:** `PLANNED`
-
-Preserve canonical intelligence, provenance, classification, governance and accepted E8 semantics while retiring duplication with explicit rollback paths.
 
 ### 11.10 Integrated production-equivalent validation
 
@@ -150,8 +142,8 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept the **OpenCTI canonical mapping/persistence + operational integration** slice on fully green exact-head CI.
-2. Reconcile Phase 11.4 to `PASS / REPOSITORY_COMPLETE` only after protected merge.
-3. Start exactly **11.5 MISP consolidation**.
-4. Continue 11.6–11.11 in fixed order.
-5. Enter Phase 12 only after every required Phase 11 gate is accepted.
+1. Accept the **Phase 11.5 MISP consolidation contract** on fully green exact-head CI.
+2. Implement the reconciled MISP synchronization-state/persistence and authority model as exactly one next bounded PR.
+3. Reconcile Phase 11.5 to `PASS / REPOSITORY_COMPLETE` only after all Phase 11.5 slices are protected-merged.
+4. Start exactly **11.6 TheHive**.
+5. Continue 11.7–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.
