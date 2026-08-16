@@ -6,7 +6,7 @@ Last updated: **2026-08-16**
 
 This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.2 Taranis and Phase 11.3 IntelOwl are `PASS / REPOSITORY_COMPLETE`; the Phase 11.4 OpenCTI contract and read-only adapter are `PASS / REPOSITORY_COMPLETE`; Phase 11.4 canonical mapping/persistence is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.2 Taranis, Phase 11.3 IntelOwl and Phase 11.4 OpenCTI are `PASS / REPOSITORY_COMPLETE`; Phase 11.5 MISP consolidation is `IN PROGRESS / CONTRACT EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
 
 ## Authoritative current-state sources
 
@@ -14,19 +14,19 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `docs/README.md`
 - `docs/project/CURRENT_STATE.md`
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`
-- `docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md`
-- `docs/integrations/OPENCTI_INTEGRATION.md`
-- `docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md`
-- `docs/qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md`
-- `backend/tests/test_phase11_4_opencti_adapter.py`
-- `backend/tests/test_phase11_4_opencti_persistence.py`
-- `database/migrations/versions/0012_opencti_mapping_persistence.py`
+- `docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md`
+- `docs/integrations/MISP_READ_INTEGRATION.md`
+- `docs/intelligence/MISP_GOVERNED_EXPORT.md`
+- `docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md`
+- `backend/tests/test_phase11_5_misp_consolidation_contract.py`
+- `.github/workflows/phase11-misp-consolidation-contract.yml`
+- `docs/security/SECURITY_OVERVIEW.md`
+- `docs/qa/QA_AND_RELEASE_GATES.md`
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
 - `docs/project/PRODUCTION_READINESS_REPORT.md`
 - `docs/project/PRODUCTION_CHECKLIST.md`
 - `docs/project/EXECUTIVE_STATUS.md`
 - `docs/project/DOCUMENTATION_STATUS.md`
-- `docs/qa/QA_AND_RELEASE_GATES.md`
 - `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`
 
 ## Evidence hierarchy
@@ -74,42 +74,43 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 
 The dedicated repository workflow remains `.github/workflows/phase11-intelowl-integration-contract.yml`. Its results are repository engineering evidence only.
 
-### Phase 11.4 OpenCTI contract
+### Phase 11.4 OpenCTI
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
-The accepted contract covers OpenCTI `7.260811.0`, licensing separation, service/API boundaries, STIX/TAXII/GraphQL semantics, least privilege, provenance/marking preservation and excluded side effects. The dedicated workflow remains `.github/workflows/phase11-opencti-integration-contract.yml`.
-
-### Phase 11.4 OpenCTI read-only adapter
-
-**Status:** `PASS / REPOSITORY_COMPLETE`.
-
-Accepted repository evidence covers bounded GraphQL `stixCoreObjects` reads, stable OpenCTI/STIX identity preservation, entity allowlists, markings/confidence/external references, fail-closed malformed state, durable cursor loading and explicit post-persistence `commit_page(page)` semantics.
-
-### Phase 11.4 OpenCTI canonical mapping/persistence
-
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
-
-The active repository evidence target covers:
-
-- `backend/dtmo/persistence/opencti.py` canonical mapping and reconciliation logic;
-- `opencti_object_mappings` current attributed state;
-- `opencti_mapping_revisions` immutable snapshot history;
-- SHA-256 canonical snapshot hashes for replay idempotency;
-- fail-closed OpenCTI-internal-ID/STIX-ID drift and ambiguous identity mapping;
-- preserved entity type, parent types, markings, confidence, timestamps, external references and provenance;
-- database-enforced `external_share_authorized=false` and `local_compromise_proven=false`;
-- migration `0012_opencti_mapping_persistence` following `0011_intelowl_enrichment_history`;
-- persistence coordinator ordering: PostgreSQL commit before checkpoint advance;
-- no checkpoint advance when database commit fails;
-- safe replay when database commit succeeds but checkpoint replacement fails;
-- tests in `backend/tests/test_phase11_4_opencti_persistence.py`.
+Accepted repository evidence covers the OpenCTI service/API/licensing contract, bounded GraphQL/STIX adapter, stable identity/marking/provenance preservation, canonical mapping/revision persistence, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. The accepted persistence contract is exercised by `backend/tests/test_phase11_4_opencti_persistence.py`, and the dedicated workflow remains `.github/workflows/phase11-opencti-integration-contract.yml`.
 
 This evidence does **not** prove live OpenCTI connectivity, deployed service identity or marking segregation, production STIX interoperability, graph quality/performance, privacy approval, HA/recovery, independent assurance or production authorization.
 
-### Phase 11.5–11.9
+### Phase 11.5 MISP consolidation contract
 
-Future evidence covers MISP consolidation, TheHive handoff, conditional Cortex disposition, Kubernetes/Helm/GitOps runtime hardening and migration/compatibility in fixed order.
+**Status:** `IN PROGRESS / CONTRACT EXACT-HEAD VALIDATION REQUIRED`.
+
+The active repository evidence target covers:
+
+- reviewed upstream baseline **MISP v2.5.44**;
+- separate **AGPL-3.0** service/API boundary with no MISP core source vendoring;
+- consolidation of existing inbound `POST /events/restSearch` and governed outbound `POST /events/add` paths rather than duplication;
+- preservation of event/attribute/object UUID identity, distribution, sharing-group, TLP/tag and provenance context;
+- DTMO canonical UUID identity remaining separate from MISP identities;
+- import never granting `share_approved`, publication authority or local-compromise proof;
+- human DTMO review/share approval remaining mandatory for outbound delivery;
+- service accounts, collectors, schedulers, IntelOwl, OpenCTI and MISP not gaining DTMO sharing authority;
+- source restrictions not being broadened on re-export;
+- unpublished destination events, deterministic replay reservations and fail-closed uncertain-delivery handling;
+- automatic MISP server push/pull synchronization and OpenCTI↔MISP synchronization excluded from this first boundary;
+- runtime-secret, production HTTPS and least-privilege requirements;
+- tests in `backend/tests/test_phase11_5_misp_consolidation_contract.py` and workflow `.github/workflows/phase11-misp-consolidation-contract.yml`.
+
+Repository contract evidence does **not** prove live MISP credentials, effective production roles, remote-server trust, lawful live-data sharing, production federation behavior, staging acceptance, independent assurance or production authorization.
+
+### Phase 11.5 next implementation slice
+
+Only after protected acceptance of the contract may DTMO implement the single reconciled MISP synchronization-state/persistence and authority-enforcement model. Phase 11.6 remains blocked until Phase 11.5 is repository-complete.
+
+### Phase 11.6–11.9
+
+Future evidence covers TheHive handoff, conditional Cortex disposition, Kubernetes/Helm/GitOps runtime hardening and migration/compatibility in fixed order.
 
 ### Phase 11.10–11.11
 
@@ -125,7 +126,7 @@ Historical Phase 8/9 acceptance remains candidate-bound and cannot be transferre
 
 ## Governance and handling rules
 
-Framework claims remain governed by explicit provenance-backed mappings. IntelOwl outputs and OpenCTI graph context do not establish local exploitability, compromise or dissemination authority without separate attributable evidence.
+Framework claims remain governed by explicit provenance-backed mappings. IntelOwl outputs, OpenCTI graph context and MISP event presence do not establish local exploitability, compromise or dissemination authority without separate attributable evidence.
 
 - Exact-head evidence belongs only to the exact state tested.
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.

@@ -70,21 +70,20 @@ def test_opencti_contract_is_least_privilege_and_fail_closed() -> None:
         assert marker in text, f"missing OpenCTI fail-closed marker: {marker}"
 
 
-def test_phase11_status_tracks_opencti_persistence_validation() -> None:
+def test_phase11_status_preserves_completed_opencti_boundary_and_moves_to_misp() -> None:
     roadmap = _read(ROADMAP)
     current_state = _read(CURRENT_STATE)
     readme = _read(README)
     portal = _read(PORTAL)
 
     assert "11.3 IntelOwl enrichment integration" in roadmap
-    assert "PASS / REPOSITORY_COMPLETE" in roadmap
     assert "11.4 OpenCTI knowledge-graph integration" in roadmap
-    assert "IN PROGRESS / CANONICAL PERSISTENCE IN EXACT-HEAD VALIDATION" in roadmap
+    assert "11.5 MISP consolidation" in roadmap
+    assert "IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION" in roadmap
     for text in (current_state, readme, portal):
-        assert "Phase 11.3" in text
-        assert "PASS / REPOSITORY_COMPLETE" in text
         assert "Phase 11.4 OpenCTI" in text
-        assert "persistence" in text.lower()
+        assert "PASS / REPOSITORY_COMPLETE" in text
+        assert "Phase 11.5 MISP" in text
         assert "not production authorized" in text
 
 
