@@ -12,6 +12,8 @@ README = ROOT / "README.md"
 PORTAL = ROOT / "docs/README.md"
 SECURITY = ROOT / "docs/security/SECURITY_OVERVIEW.md"
 EVIDENCE = ROOT / "docs/evidence/EVIDENCE_INDEX.md"
+ADAPTER = ROOT / "backend/dtmo/integrations/opencti.py"
+ADAPTER_TESTS = ROOT / "backend/tests/test_phase11_4_opencti_adapter.py"
 
 
 def _read(path: Path) -> str:
@@ -68,7 +70,7 @@ def test_opencti_contract_is_least_privilege_and_fail_closed() -> None:
         assert marker in text, f"missing OpenCTI fail-closed marker: {marker}"
 
 
-def test_phase11_status_moves_from_intelowl_to_opencti_contract() -> None:
+def test_phase11_status_moves_from_opencti_contract_to_read_adapter() -> None:
     roadmap = _read(ROADMAP)
     current_state = _read(CURRENT_STATE)
     readme = _read(README)
@@ -77,15 +79,16 @@ def test_phase11_status_moves_from_intelowl_to_opencti_contract() -> None:
     assert "11.3 IntelOwl enrichment integration" in roadmap
     assert "PASS / REPOSITORY_COMPLETE" in roadmap
     assert "11.4 OpenCTI knowledge-graph integration" in roadmap
-    assert "CONTRACT IN EXACT-HEAD VALIDATION" in roadmap
+    assert "READ-ONLY ADAPTER IN EXACT-HEAD VALIDATION" in roadmap
     for text in (current_state, readme, portal):
         assert "Phase 11.3" in text
         assert "PASS / REPOSITORY_COMPLETE" in text
         assert "Phase 11.4 OpenCTI" in text
+        assert "read-only" in text.lower()
         assert "not production authorized" in text
 
 
-def test_opencti_professional_documentation_is_exposed() -> None:
+def test_opencti_adapter_and_professional_documentation_are_exposed() -> None:
     portal = _read(PORTAL)
     for path in (
         "architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md",
@@ -94,8 +97,18 @@ def test_opencti_professional_documentation_is_exposed() -> None:
         "qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md",
     ):
         assert path in portal
+    integration = _read(INTEGRATION)
+    for marker in (
+        "backend/dtmo/integrations/opencti.py",
+        "commit_page(page)",
+        "external_share_authorized=false",
+        "local_compromise_proven=false",
+        "DTMO_FEATURE_OPENCTI_READ",
+    ):
+        assert marker in integration
     assert "OpenCTI" in _read(SECURITY)
     assert "OpenCTI" in _read(EVIDENCE)
-    assert INTEGRATION.exists()
+    assert ADAPTER.exists()
+    assert ADAPTER_TESTS.exists()
     assert RUNBOOK.exists()
     assert QA_GATE.exists()
