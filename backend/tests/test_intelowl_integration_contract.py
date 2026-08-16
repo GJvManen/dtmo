@@ -73,7 +73,7 @@ def test_intelowl_contract_preserves_service_and_licensing_boundary() -> None:
         assert marker in text, f"missing IntelOwl licensing marker: {marker}"
 
 
-def test_phase11_authoritative_status_moves_to_intelowl() -> None:
+def test_phase11_authoritative_status_moves_to_intelowl_adapter() -> None:
     contract = _read(CONTRACT)
     roadmap = _read(ROADMAP)
     current_state = _read(CURRENT_STATE)
@@ -83,8 +83,8 @@ def test_phase11_authoritative_status_moves_to_intelowl() -> None:
     assert "11.2 Taranis → DTMO canonical adapter" in roadmap
     assert "REPOSITORY_COMPLETE" in roadmap
     assert "11.3 IntelOwl enrichment integration" in roadmap
-    assert "CONTRACT BASELINE IN EXACT-HEAD VALIDATION" in roadmap
-    assert "Phase 11.3 IntelOwl" in current_state
-    assert "Phase 11.3 IntelOwl" in readme
+    assert "ADAPTER IN EXACT-HEAD VALIDATION" in roadmap
+    assert "IntelOwl adapter" in current_state
+    assert "IntelOwl adapter" in readme
     assert "not production authorized" in current_state
     assert "not production authorized" in readme
