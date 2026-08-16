@@ -23,6 +23,7 @@ Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis→DTMO canonical
 | Phase 8 | `PASS / OWNER_ACCEPTED` |
 | Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
 | Phase 10 | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
+| Phase 11 | `IN PROGRESS / ACTIVE` |
 | Phase 11.1 Taranis architecture/contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl | `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION` |
@@ -88,7 +89,8 @@ See:
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
 - `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`;
 - `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`;
-- `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`.
+- `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`;
+- `docs/integrations/INTELOWL_INTEGRATION.md`.
 
 ## Licensing boundary
 
