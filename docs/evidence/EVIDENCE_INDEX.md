@@ -6,7 +6,7 @@ Last updated: **2026-08-16**
 
 This index maps DTMO lifecycle stages to their evidence classes and authoritative professional documentation. It is not a CI chronology or incident log. Exact workflow/job/commit history remains under `docs/development/`, GitHub issues/pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1 and 11.2 are `PASS / REPOSITORY_COMPLETE`; Phase 11.3 IntelOwl is `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1 and 11.2 are `PASS / REPOSITORY_COMPLETE`; the Phase 11.3 IntelOwl contract is `PASS / REPOSITORY_COMPLETE`; the Phase 11.3 IntelOwl adapter is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
 
 ## Authoritative current-state sources
 
@@ -18,6 +18,7 @@ This index maps DTMO lifecycle stages to their evidence classes and authoritativ
 - `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`
 - `docs/integrations/TARANIS_ADAPTER.md`
 - `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`
+- `docs/integrations/INTELOWL_INTEGRATION.md`
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
 - `docs/project/PRODUCTION_READINESS_REPORT.md`
 - `docs/project/PRODUCTION_CHECKLIST.md`
@@ -31,12 +32,12 @@ This index maps DTMO lifecycle stages to their evidence classes and authoritativ
 
 DTMO distinguishes six non-interchangeable evidence classes:
 
-1. **Repository-controlled engineering evidence** — exact-head CI, contracts, browser tests and repository recovery/performance/observability evidence.
+1. **Repository-controlled engineering evidence** — exact-head CI, contracts, synthetic integration tests and repository recovery/performance/observability evidence.
 2. **Accountable functional evidence** — explicit project-owner acceptance of product behavior.
 3. **Real-environment evidence** — production-equivalent staging deployment/validation tied to its accepted identity.
 4. **Independent assurance evidence** — external security/resilience/operational assessment independent from repository CI or project self-attestation.
 5. **Formal production authorization** — accountable go/no-go decision for a specific candidate.
-6. **Platform-integration evidence** — service contract, migration, trust-boundary, runtime and interoperability evidence for the Phase 11 composed platform; this does not become production authorization by itself.
+6. **Platform-integration evidence** — service contract, adapter, migration, trust-boundary, runtime and interoperability evidence for the Phase 11 composed platform; this does not become production authorization by itself.
 
 ## Lifecycle evidence map
 
@@ -52,13 +53,11 @@ DTMO distinguishes six non-interchangeable evidence classes:
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Repository evidence covers OpenCVE, Vulnerability-Lookup, vulnerability prioritization, vendor/product relevance, vulnerability analytics, governed MISP read/export, governed AIL read/enrichment/correlation and vulnerability-management governance evidence mapping. Repository completion does not create external sharing authority or production authorization.
-
 ### Phase 8 — production-equivalent staging acceptance
 
 **Status:** `PASS / OWNER_ACCEPTED`.
 
-Accepted historical evidence remains attributable to the prior candidate. Repository CI, Docker Compose and staging emulators remain supporting engineering evidence and are not represented as the source of external Phase 8 acceptance.
+Accepted historical evidence remains attributable to the prior candidate. Repository CI, Docker Compose and staging emulators are not represented as the source of accountable Phase 8 acceptance.
 
 ### Phase 9 — independent external assurance
 
@@ -76,35 +75,38 @@ Production authorization was not granted. The accountable decision is recorded i
 
 **Status:** `IN PROGRESS / ACTIVE`.
 
-Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis→DTMO canonical adapter are repository-complete. The final Phase 11.2 exact-head acceptance covered read-only canonical collection, fail-closed handling, stable identity, deterministic replay, durable atomic checkpointing, bounded pagination/reconciliation, bounded detail/CTI retrieval, governed scheduler/manual execution, canonical persistence/indexing and connector observability.
+Phase 11.1 Taranis architecture/contract and Phase 11.2 Taranis→DTMO canonical adapter are repository-complete. Their evidence remains repository-controlled integration evidence rather than proof of live production behavior.
 
-The active repository evidence target is **Phase 11.3 IntelOwl contract acceptance**. `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md` records the proposed v6.7-compatible service/API boundary, dedicated non-admin identity, runtime-token/TLS rules, observable/analyzer allowlists, TLP/privacy constraints, bounded execution/rate limits, analyzer/job/result provenance, partial-failure semantics, exclusion of external IntelOwl Connector side effects and AGPL-3.0 service-boundary requirements.
+#### Phase 11.3 IntelOwl contract
 
-This is repository-controlled contract evidence only. It does not prove live IntelOwl connectivity, a deployed service account, provider credentials, analyzer quality, production-equivalent runtime behavior or production authorization.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Required evidence classes progressively include:
+`docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md` is the accepted v6.7-compatible service/API/security/licensing baseline. The exact-head contract gate is `.github/workflows/phase11-intelowl-integration-contract.yml`. Acceptance proves contract/test synchronization only; it does not prove live IntelOwl connectivity, deployed identity or provider credentials.
 
-- accepted Taranis API/data-model/identity/licensing assessment;
-- accepted Taranis service-to-service adapter and governed execution evidence;
-- IntelOwl service/API/security/licensing contract evidence;
-- IntelOwl bounded enrichment adapter/runtime evidence with analyzer/job provenance;
-- OpenCTI STIX/entity/relationship interoperability evidence;
-- consolidated MISP authority/synchronization evidence;
-- TheHive handoff evidence and conditional Cortex decision evidence;
-- Kubernetes/Helm/GitOps runtime, secrets, identity, network, HA/recovery, observability and supply-chain evidence;
-- migration/compatibility and rollback evidence;
-- a new production-equivalent validation package bound to one immutable integrated deployment identity;
-- a new independent external assurance package for that same integrated candidate.
+#### Phase 11.3 IntelOwl adapter
 
-Primary Phase 11 documents:
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
-- `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
-- `docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md`;
-- `docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md`;
-- `docs/integrations/TARANIS_ADAPTER.md`;
-- `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`.
+The active repository evidence target covers:
 
-Current IntelOwl contract CI evidence is expected from `.github/workflows/phase11-intelowl-integration-contract.yml` on the exact final PR head. A successful workflow run establishes document/contract synchronization only and must not be relabelled as live integration evidence.
+- runtime-secret IntelOwl API token configuration;
+- production HTTPS and explicit analyzer allowlist validation;
+- approved observable classes and fail-closed privacy/TLP disclosure checks;
+- explicit `connectors_requested=[]`, preventing IntelOwl external Connector side effects in the bounded path;
+- bounded job submission/polling;
+- immutable upstream job identity verification;
+- maximum accepted result size;
+- unknown-analyzer and malformed-result rejection;
+- partial-success semantics;
+- analyzer/job/result provenance;
+- explicit `external_share_authorized=false` and `local_compromise_proven=false` authority semantics;
+- synthetic coverage for allowlist/handling, identity mismatch, partial failure, `429`, timeout and production configuration.
+
+This adapter evidence does **not** prove live connectivity, service-account permissions, provider credentials, analyzer quality, durable enrichment-history persistence, privacy approval, production-equivalent behavior, independent assurance or production authorization.
+
+After adapter acceptance, the next bounded 11.3 evidence class is governed execution/persistence and operational integration. OpenCTI evidence does not begin until Phase 11.3 is repository-complete.
+
+Required Phase 11 evidence subsequently includes OpenCTI interoperability, MISP consolidation, TheHive handoff, conditional Cortex disposition, Kubernetes/Helm/GitOps runtime hardening, migration/compatibility, a new production-equivalent validation package bound to one immutable integrated identity and a new independent external-assurance package for that same candidate.
 
 ### Phase 12 — production go/no-go
 
@@ -114,19 +116,17 @@ Phase 12 can start only after Phase 11 production-equivalent validation and inde
 
 ## Evidence transfer rule
 
-Historical Phase 8 and Phase 9 acceptance is not discarded. However, it is candidate-bound and cannot be automatically transferred to the materially changed Phase 11 integrated platform. Any material component, trust-boundary or deployment change requires explicit impact assessment and appropriate revalidation.
+Historical Phase 8 and Phase 9 acceptance is not discarded. It is candidate-bound and cannot be automatically transferred to the materially changed Phase 11 integrated platform. Material component, trust-boundary or deployment changes require explicit impact assessment and appropriate revalidation.
 
 ## Governance evidence
 
-Framework claims are governed by `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`. The current model includes explicit versioned/provenance-backed relationships and E8.10 vulnerability-management evidence mapping, including Normenkader IBP SM.07 and semantic boundaries for CVSS, EPSS, KEV, MITRE ATT&CK, MISP and AIL.
-
-A mapping is not a blanket compliance, maturity, certification, exposure or remediation claim. IntelOwl analyzer outputs are likewise contextual enrichment evidence; they do not establish local exploitability or compromise without separate attributable local evidence.
+Framework claims are governed by `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`. A mapping is not a blanket compliance, maturity, certification, exposure or remediation claim. IntelOwl analyzer outputs are likewise contextual enrichment evidence and do not establish local exploitability or compromise without separate attributable local evidence.
 
 ## Evidence handling rules
 
 - Evidence must be attributable, scoped and reviewable.
 - Exact-head automated evidence belongs to the exact state tested.
-- Deployment-bound evidence belongs to the deployment identity it actually covered.
+- Deployment-bound evidence belongs to the deployment identity it covered.
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
 - Raw credentials/tokens and unnecessary personal data must not be stored in repository evidence.
 - Human review/share approval remains separate from technical execution and production authorization.

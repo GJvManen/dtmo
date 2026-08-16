@@ -31,7 +31,7 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Governance | Mapping truth and authority separation | Repository CI + governance review |
 | Platform integration | API/data-model interoperability, provenance, identity, replay/dedupe and migration | Phase 11 repository + integration evidence |
 | Integrated runtime | Kubernetes/Helm/GitOps, secrets, network, HA/recovery, observability and supply-chain controls | Phase 11 deployed validation |
-| Independent assurance | Independent security/resilience/privacy/operational assessment of integrated candidate | Phase 11 external assurance |
+| Independent assurance | Independent assessment of integrated candidate | Phase 11 external assurance |
 | Production decision | Formal accountable go/no-go for integrated candidate | Phase 12 |
 
 ## Current acceptance status
@@ -46,122 +46,81 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Phase 10 | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
 | Phase 11.1 | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 | `IN PROGRESS / CONTRACT BASELINE IN EXACT-HEAD VALIDATION` |
+| Phase 11.3 IntelOwl contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 IntelOwl adapter | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
 
 DTMO is not production authorized.
 
 ## Repository-controlled evidence
 
-The existing workflow portfolio remains required for DTMO code touched during Phase 11. New integrations add bounded contracts and integration/runtime gates rather than weakening existing controls.
+The existing workflow portfolio remains required for DTMO code touched during Phase 11. New integrations add bounded contracts and integration/runtime tests rather than weakening existing controls.
 
-The active contract-specific workflow is **`Phase 11 IntelOwl Integration Contract Gate`**. It validates `docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md` together with the authoritative roadmap/current-state/README markers. It proves contract/document synchronization only; it does not prove live IntelOwl connectivity or production behavior.
+The **`Phase 11 IntelOwl Integration Contract Gate`** remains the dedicated IntelOwl contract/adapter synchronization gate. For the active adapter slice it validates the accepted architecture contract, implementation tests and authoritative status markers. Its success is repository engineering evidence only; it does not prove live IntelOwl connectivity or production behavior.
 
 ## Phase 11 gate sequence
 
 ### 11.1 Taranis architecture and gap assessment
 
-**Repository status:** `PASS / REPOSITORY_COMPLETE`
-
-Accepted before adapter implementation:
-
-- responsibility boundary accepted;
-- exact API/OpenAPI inventory;
-- schema/identity/provenance/classification mapping;
-- replay/deduplication strategy;
-- authentication/service-account design;
-- licensing boundary accepted;
-- integration threat-model abuse cases;
-- adapter contract and rollback criteria.
+**Repository status:** `PASS / REPOSITORY_COMPLETE`.
 
 ### 11.2 Taranis canonical adapter
 
-**Repository status:** `PASS / REPOSITORY_COMPLETE`
+**Repository status:** `PASS / REPOSITORY_COMPLETE`.
 
-Accepted repository evidence:
+Accepted repository evidence includes authenticated read-only service integration, idempotent canonical ingestion, provenance/evidence retention, fail-closed TLP/classification, replay/deduplication, durable checkpointing/reconciliation, bounded detail/CTI retrieval, governed connector execution, degraded/partial failure handling, no publication-authority escalation and fully green exact-head/documentation gates.
 
-- authenticated service-to-service contract;
-- idempotent canonical ingestion;
-- provenance/evidence retention;
-- TLP/classification fail-closed behavior;
-- replay/deduplication handling;
-- durable checkpointing/reconciliation;
-- bounded detail/CTI retrieval;
-- governed connector execution;
-- degraded/partial failure behavior;
-- no publication-authority escalation;
-- final exact-head CI and professional documentation gates green.
+### 11.3 IntelOwl contract
 
-### 11.3 IntelOwl
+**Repository status:** `PASS / REPOSITORY_COMPLETE`.
 
-**Current bounded gate:** contract baseline acceptance before adapter implementation.
+Accepted contract evidence includes the IntelOwl v6.7-compatible service/API boundary, dedicated non-admin identity, runtime-secret handling, TLS requirement, explicit observable/analyzer allowlists, TLP/privacy disclosure rules, analyzer/job/result provenance, bounded quota/rate-limit/failure semantics, exclusion of IntelOwl external Connectors, no-local-compromise semantics and the AGPL-3.0 service boundary.
 
-Contract evidence required now:
+### 11.3 IntelOwl adapter — active bounded gate
 
-- IntelOwl v6.7-compatible service/API boundary documented;
-- dedicated non-admin service identity and secret handling;
-- TLS verification outside local development;
-- explicit observable and analyzer/playbook allowlists;
-- analyzer/job/result provenance contract;
-- quota/rate-limit/timeout/failure-isolation semantics;
-- TLP/privacy rules, with email/generic personal data disabled pending approval;
-- IntelOwl external Connectors excluded from the initial enrichment path;
-- semantic boundary that enrichment is not local exposure/compromise proof;
-- AGPL-3.0 service boundary and explicit review before vendoring/modification/redistribution;
-- authoritative current-state/roadmap/README/docs-portal synchronization;
-- `Phase 11 IntelOwl Integration Contract Gate` and Professional Documentation Gate exact-head success.
+Required exact-head repository evidence:
 
-Subsequent adapter evidence must additionally prove bounded job submission/polling, allowlist enforcement, attributed analyzer reports, partial-success semantics, `429` handling, malformed-result fail-closed behavior and canonical enrichment without share/publication side effects.
+- runtime-secret IntelOwl token configuration;
+- production HTTPS and explicit analyzer allowlist validation;
+- approved observable classes and pre-disclosure handling/privacy checks;
+- analyzer requests constrained to the allowlist;
+- explicit `connectors_requested=[]` so MISP/OpenCTI/Slack/email side effects are not invoked;
+- bounded `POST /api/analyze_observable` and `GET /api/jobs/{job_id}` behavior;
+- immutable job-ID verification and correlation;
+- maximum result-size enforcement;
+- unknown analyzer and malformed-result rejection;
+- explicit partial-success semantics;
+- analyzer/job/result provenance;
+- `429`, timeout and degraded dependency tests;
+- normalized semantics that enrichment neither proves local compromise nor grants external-share/publication authority;
+- synchronized README/docs portal/current-state/readiness/roadmap/evidence documentation;
+- full exact-head CI and Professional Documentation Gate success on the same final head.
+
+The adapter gate does not establish live service-account permissions, provider credentials, analyzer quality, durable enrichment-history persistence, privacy approval, production-equivalent behavior or production authorization.
+
+### Next Phase 11.3 slice
+
+Only after the adapter is green and merged with expected-head protection may Phase 11.3 continue with governed execution/persistence and operational integration. That step must add operational/RBAC/persistence/runbook/user-admin documentation as applicable. OpenCTI does not start before Phase 11.3 repository completion.
 
 ### 11.4 OpenCTI
 
-Required evidence:
-
-- STIX interoperability;
-- entity identity/deduplication;
-- confidence/marking/provenance preservation;
-- graph synchronization failure handling;
-- no duplicate custom graph authority inside DTMO.
+Required evidence includes STIX interoperability, entity identity/deduplication, confidence/marking/provenance preservation, graph synchronization failure handling and no duplicate custom graph authority inside DTMO.
 
 ### 11.5 MISP consolidation
 
-Required evidence:
-
-- one authoritative inbound/synchronization model;
-- conflict/replay handling;
-- DTMO outbound approval remains authoritative;
-- distribution/TLP/sharing-group fail-closed behavior;
-- automated collectors/publishers cannot gain implicit share authority.
+Required evidence includes one authoritative inbound/synchronization model, conflict/replay handling, DTMO outbound approval remaining authoritative, distribution/TLP/sharing-group fail-closed behavior and no implicit share authority for automated components.
 
 ### 11.6 TheHive / 11.7 Cortex decision
 
-Required evidence:
-
-- controlled case handoff with provenance/audit references;
-- case state and canonical CTI remain separate;
-- Cortex remains absent unless an explicit IntelOwl capability gap is accepted.
+Required evidence includes controlled case handoff with provenance/audit references and a documented Cortex decision based only on an accepted IntelOwl capability gap.
 
 ### 11.8 Integrated runtime
 
-Required evidence:
-
-- Kubernetes/Helm/GitOps deployment contract;
-- immutable image versions/digests;
-- workload identities and external secrets;
-- TLS/network policies;
-- PostgreSQL/Redis/storage durability and recovery;
-- centralized audit/logging/metrics/alerting;
-- SBOM/scanning/signing/attestation;
-- capacity, upgrade and rollback tests.
+Required evidence includes Kubernetes/Helm/GitOps, immutable images, workload identities/external secrets, TLS/network policies, database/queue/storage durability and recovery, centralized observability, SBOM/scanning/signing/attestation, capacity, upgrade and rollback tests.
 
 ### 11.9 Migration and compatibility
 
-Required evidence:
-
-- migration correctness and rollback;
-- preservation of canonical intelligence, provenance, classification and governance;
-- explicit disposition of existing E8 connectors/integrations;
-- no silent data/authority loss.
+Required evidence includes migration correctness/rollback, preservation of canonical intelligence/provenance/classification/governance and explicit disposition of existing E8 integrations.
 
 ### 11.10–11.11 Integrated validation and assurance
 
@@ -169,15 +128,13 @@ The integrated candidate must receive fresh production-equivalent validation and
 
 ## Phase 12 production-decision model
 
-Phase 12 is `NOT STARTED`. It requires accepted Phase 11 validation/assurance plus production-specific approvals for environment/ownership/support, immutable release identity, IAM/secrets/network, backup/recovery/rollback, monitoring/on-call/escalation, incident-response handover, privacy/data/legal/governance, open findings/residual risk, change/release authorization and go-live/rollback authority.
-
-Any missing mandatory input, unresolved release-blocking finding, unaccepted residual risk or material release-identity mismatch is `NO-GO / BLOCKED`.
+Phase 12 is `NOT STARTED`. It requires accepted Phase 11 validation/assurance plus production-specific approvals. Missing mandatory input, unresolved release-blocking findings, unaccepted residual risk or material release-identity mismatch is `NO-GO / BLOCKED`.
 
 ## Security and publication invariants
 
 Release gates must preserve:
 
-- ingestion creates candidate intelligence only;
+- ingestion/enrichment creates candidate/context intelligence only;
 - external sharing requires separate human approval;
 - connectors, CI, service accounts and integrated publishers do not gain publication authority;
 - IntelOwl analyzer verdicts/evaluations do not imply local compromise;
@@ -187,8 +144,7 @@ Release gates must preserve:
 - framework mappings remain explicit and do not imply blanket compliance;
 - provenance and confidence are preserved across service boundaries;
 - raw secret values are not committed as evidence;
-- external integrations use dedicated identities and bounded scopes;
-- Grafana is not made anonymously accessible for convenience.
+- external integrations use dedicated identities and bounded scopes.
 
 ## Release decision rule
 
