@@ -85,6 +85,8 @@ Evidence covers the Taranis service contract and canonical read adapter, durable
 
 Accepted repository evidence covers the IntelOwl service/API/licensing contract, bounded analyzer adapter, runtime-secret/HTTPS/allowlist configuration, privacy/TLP fail-closed behavior, bounded polling/result validation, immutable job identity, partial-success semantics, human-authorized execution and durable enrichment history with explicit no-share/no-local-compromise authority markers.
 
+The dedicated repository contract workflow remains `.github/workflows/phase11-intelowl-integration-contract.yml`. Its accepted exact-head results are repository-controlled engineering evidence only; they are not live-service, production-equivalent, independent-assurance or production-authorization evidence.
+
 This does not prove live IntelOwl connectivity, deployed credentials, analyzer quality, privacy approval, production-equivalent behavior, independent assurance or production authorization.
 
 ### Phase 11.4 OpenCTI contract
