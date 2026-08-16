@@ -23,6 +23,7 @@ from dtmo.governance import (
 from dtmo.intelligence import IntelligenceType
 from dtmo.lake.minio_store import MinioObjectStore
 from dtmo.lake.service import IntelligenceLake
+from dtmo.persistence.misp import reconcile_misp_state
 from dtmo.persistence.repository import IntelligenceRepository
 from dtmo.persistence.session import Database
 from dtmo.search.service import OpenSearchService
@@ -112,6 +113,18 @@ async def _persist_intelligence(
         for entry in request.provenance
     ]
     item, inserted = await repository.ingest_candidate(payload)
+
+    if request.source_id == "misp":
+        projection = request.raw_payload.get("_dtmo_misp")
+        if not isinstance(projection, dict):
+            raise ValueError("MISP canonical ingestion requires authoritative normalized restrictions")
+        await session.run_sync(
+            lambda sync_session: reconcile_misp_state(
+                sync_session,
+                item_id=item.id,
+                projection=projection,
+            )
+        )
 
     # PUT-by-ID in OpenSearch is idempotent. Always attempt indexing so that an
     # operator can replay a connector after a previous index outage or mapping
@@ -261,12 +274,12 @@ async def review_intelligence_item(
     }
 
 
-@router.post("/intelligence/{item_id}/share-approval")
-async def approve_intelligence_item_sharing(
+@router.post("/intelligence/{item_id}/approve-share")
+async def approve_share(
     item_id: UUID,
     principal: Annotated[
         Principal,
-        Depends(require_permission(Permission.SHARE_APPROVE)),
+        Depends(require_permission(Permission.APPROVE_SHARE)),
     ],
     session: Annotated[AsyncSession, Depends(get_session)],
     request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
@@ -281,7 +294,6 @@ async def approve_intelligence_item_sharing(
             )
         )
     except GovernedDecisionError as exc:
-        await session.commit()
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return {
         "id": str(result.item_id),
@@ -291,68 +303,49 @@ async def approve_intelligence_item_sharing(
     }
 
 
-@router.post("/security/tokens/revoke", response_model=TokenRevocationResponse)
-async def revoke_token(
-    request: TokenRevocationRequest,
-    principal: Annotated[
-        Principal,
-        Depends(require_permission(Permission.REVOKE_TOKENS)),
-    ],
-    session: Annotated[AsyncSession, Depends(get_session)],
-    settings: Annotated[Settings, Depends(get_settings)],
-    request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
-) -> TokenRevocationResponse:
-    store = TokenStateStore.from_url(settings.redis_url)
-    try:
-        result = await session.run_sync(
-            lambda sync_session: revoke_token_with_audit(
-                sync_session,
-                store=store,
-                principal=principal,
-                jti=request.jti,
-                expires_at=request.expires_at,
-                reason=request.reason,
-                request_id=request_id,
-            )
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-    except TokenStateError as exc:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
-    return TokenRevocationResponse(
-        jti=result.jti,
-        expires_at=result.expires_at,
-        audit_event_id=str(result.audit_event_id),
-    )
-
-
 @router.get("/intelligence/search", response_model=SearchResponse)
 async def search_intelligence(
     principal: Annotated[
         Principal,
         Depends(require_permission(Permission.READ_INTELLIGENCE)),
     ],
-    q: str = Query(min_length=2, max_length=300),
-    severity: str | None = Query(default=None, max_length=32),
-    minimum_relevance: int = Query(default=0, ge=0, le=100),
-    size: int = Query(default=50, ge=1, le=200),
+    q: Annotated[str | None, Query(max_length=500)] = None,
+    severity: Annotated[str | None, Query(max_length=32)] = None,
+    item_type: Annotated[str | None, Query(max_length=64)] = None,
+    source_id: Annotated[str | None, Query(max_length=64)] = None,
+    sort: Annotated[str, Query(max_length=32)] = "newest",
+    page: Annotated[int, Query(ge=1)] = 1,
+    page_size: Annotated[int, Query(ge=1, le=100)] = 25,
 ) -> SearchResponse:
     del principal
+    return await search_service.search(
+        q=q,
+        severity=severity,
+        item_type=item_type,
+        source_id=source_id,
+        sort=sort,
+        page=page,
+        page_size=page_size,
+    )
+
+
+@router.post("/tokens/revoke", response_model=TokenRevocationResponse)
+async def revoke_token(
+    request: TokenRevocationRequest,
+    principal: Annotated[
+        Principal,
+        Depends(require_permission(Permission.MANAGE_USERS)),
+    ],
+    settings: Annotated[Settings, Depends(get_settings)],
+    x_request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
+) -> TokenRevocationResponse:
     try:
-        results = await search_service.search(
-            q,
-            severity=severity,
-            minimum_relevance=minimum_relevance,
-            size=size,
+        return await revoke_token_with_audit(
+            database=database,
+            settings=settings,
+            principal=principal,
+            token_id=request.token_id,
+            request_id=x_request_id,
         )
-    except Exception as exc:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"search backend unavailable: {type(exc).__name__}",
-        ) from exc
-    return SearchResponse(query=q, count=len(results), results=results)
-
-
-async def close_services() -> None:
-    await database.close()
-    await search_service.close()
+    except TokenStateError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
