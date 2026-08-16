@@ -1,105 +1,86 @@
 # OpenCTI Integration Operations Runbook
 
-Status: **Phase 11.4 read-only adapter / exact-head validation required**  
+Status: **Phase 11.4 canonical mapping/persistence + operational integration / exact-head validation required**  
 Last updated: **2026-08-16**
 
 ## Scope
 
-This runbook defines the operational boundary for the bounded DTMO→OpenCTI read adapter. Repository acceptance does not claim that OpenCTI is deployed, credentialed or live-connected.
+This runbook governs the read-only DTMO→OpenCTI synchronization path, durable canonical identity mapping and restart-safe checkpoint sequence. Repository acceptance does not claim that OpenCTI is deployed, credentialed or live-connected.
 
 ## Preconditions before enablement
 
 - approved OpenCTI edition and licensing/entitlement recorded;
 - immutable deployed OpenCTI version identified;
-- dedicated DTMO service identity created;
-- minimum OpenCTI roles/capabilities and allowed markings reviewed;
+- dedicated least-privilege DTMO service identity and allowed markings reviewed;
 - token stored in the approved runtime secret manager;
-- TLS endpoint and certificate trust validated;
-- GraphQL path selected and documented;
-- privacy/data-handling review completed for the actual dataset;
+- TLS endpoint/certificate trust and privacy/data-handling basis validated;
+- migration `0012_opencti_mapping_persistence` applied and schema verified;
 - durable writable checkpoint location mounted at the configured absolute path;
-- backup/recovery responsibilities known;
-- Phase 11.4 adapter exact-head repository gate accepted.
+- database backup/recovery and checkpoint recovery responsibilities documented;
+- Phase 11.4 exact-head repository gates accepted.
 
-## Runtime configuration
+## Runtime sequence
 
-The path remains disabled unless `DTMO_FEATURE_OPENCTI_READ=true`. Configure `DTMO_OPENCTI_API_BASE`, `DTMO_OPENCTI_API_TOKEN`, `DTMO_OPENCTI_PAGE_SIZE`, `DTMO_OPENCTI_MAX_PAGES`, `DTMO_OPENCTI_ALLOWED_ENTITY_TYPES` and `DTMO_OPENCTI_CHECKPOINT_PATH` through deployment configuration/runtime secrets.
-
-Production validation requires HTTPS, a runtime token, an explicit entity-type allowlist and an absolute checkpoint path. Never place the real token in repository files, screenshots or evidence.
-
-## Normal operation
-
-1. load the last durable cursor;
-2. request a bounded GraphQL `stixCoreObjects` page window;
-3. validate stable OpenCTI/STIX identity, configured entity type, markings, confidence and provenance;
-4. persist the accepted page in the governed DTMO persistence layer;
-5. only after successful durable persistence call `commit_page(page)`;
-6. verify that the checkpoint reflects the committed cursor and that share/publication state is unchanged.
+1. load the last durable OpenCTI cursor;
+2. request bounded GraphQL `stixCoreObjects` pages;
+3. validate stable OpenCTI/STIX identity, entity allowlist, markings, confidence and provenance;
+4. reconcile each object into `opencti_object_mappings`;
+5. create an immutable `opencti_mapping_revisions` snapshot only when the canonical snapshot hash is new;
+6. commit the PostgreSQL transaction;
+7. only after successful database commit call `commit_page(page)` to atomically advance the checkpoint;
+8. verify share/publication and local-compromise authority remain false/unchanged.
 
 `read_pages()` never advances the checkpoint by itself.
 
 ```mermaid
 flowchart LR
     C[(Last committed cursor)] --> A[OpenCTI read adapter]
-    A --> O[OpenCTI GraphQL read]
+    A --> O[OpenCTI GraphQL]
     O --> V{Identity/type/marking/provenance valid?}
     V -->|no| X[Fail closed; checkpoint unchanged]
-    V -->|yes| P[Persist accepted context]
-    P --> K{Durable commit successful?}
-    K -->|no| X
-    K -->|yes| N[Atomic checkpoint commit]
+    V -->|yes| M[Idempotent mapping reconcile]
+    M --> R[(Immutable revision history)]
+    M --> D{PostgreSQL commit successful?}
+    D -->|no| X
+    D -->|yes| N[(Atomic checkpoint commit)]
     N -. never changes .-> S[Human publication/share authority]
 ```
 
+## Idempotency and identity drift
+
+Replaying an unchanged OpenCTI object is safe: the mapping snapshot hash prevents duplicate revision history. A changed snapshot produces a new immutable revision while updating the current attributed mapping. If a known OpenCTI internal ID changes STIX identity, or a known STIX identity changes OpenCTI internal ID, reconciliation fails closed. Operators must investigate rather than force-merge identities.
+
 ## Fail-closed conditions
 
-Stop or quarantine the integration path on:
+Stop or quarantine the integration path on authentication/authorization failure, GraphQL errors, disallowed entity type, missing/unstable identity, malformed markings, invalid confidence, malformed pagination/checkpoint state, ambiguous identity mapping, failed database transaction, migration/schema mismatch, repeated timeout/`429`/`5xx`, or broader-than-approved OpenCTI privilege.
 
-- `401` / invalid authentication;
-- `403` / insufficient capability or marking access;
-- GraphQL `errors` responses;
-- unknown/disallowed entity type;
-- missing or unstable OpenCTI/STIX identity;
-- malformed marking structures;
-- invalid confidence values;
-- malformed pagination metadata or missing next cursor;
-- malformed/corrupt checkpoint state;
-- oversized/unexpected payload behavior at the surrounding HTTP/runtime boundary;
-- repeated timeout, `429` or `5xx` beyond the configured operational retry budget;
-- evidence that the configured account has broader privilege than approved.
+Do not broaden privileges or edit checkpoint state to make synchronization appear successful.
 
-Do not broaden privileges automatically to make the integration succeed.
-
-## Reconciliation and restart
-
-The current adapter resumes from the last explicitly committed GraphQL cursor. Because OpenCTI cursors are opaque, this slice does not claim time-window overlap semantics. Operators/orchestration must therefore preserve page persistence and checkpoint commit as one governed sequence.
+## Restart and recovery
 
 After interruption:
 
-1. inspect the durable checkpoint without modifying it;
-2. restart from that cursor;
-3. safely replay any page that was persisted but whose checkpoint commit was interrupted using stable OpenCTI/STIX identity and version/update context;
-4. preserve prior DTMO evidence history;
-5. advance the cursor only after durable persistence succeeds.
+1. verify database and checkpoint integrity independently;
+2. restart from the last durable cursor;
+3. replay a page when database persistence completed but checkpoint replacement did not;
+4. rely on stable identity plus snapshot hash for idempotent replay;
+5. preserve all prior mapping revisions;
+6. advance the cursor only after the database transaction commits.
 
-A later Phase 11.4 persistence/mapping slice may add stronger database-backed idempotency/reconciliation semantics; that must be accepted separately.
+If the checkpoint moved without corresponding durable database state, stop and restore/reconcile from evidence; do not continue with a guessed cursor.
+
+## Migration and rollback
+
+Before enablement, apply Alembic through `0012_opencti_mapping_persistence`. Rollback drops only OpenCTI mapping/revision tables after operators have exported any required evidence and disabled synchronization. A database downgrade does not itself alter OpenCTI.
 
 ## Incident handling
 
-For suspected data leakage, authorization bypass, unexpected broader marking access or unapproved side effects:
-
-1. disable `DTMO_FEATURE_OPENCTI_READ`;
-2. revoke or rotate the integration token;
-3. preserve request/correlation IDs and non-secret evidence;
-4. identify affected OpenCTI identities/markings and DTMO mappings;
-5. confirm no DTMO share approval was mutated;
-6. record corrective action and revalidation requirements;
-7. do not resume until the trust boundary is reviewed.
+For suspected leakage, authorization bypass, marking overexposure, identity ambiguity or unapproved side effects: disable `DTMO_FEATURE_OPENCTI_READ`, revoke/rotate the token, preserve non-secret correlation evidence, identify affected mappings/revisions, verify DTMO share approval was not modified, record corrective action, and require trust-boundary revalidation before resume.
 
 ## Side effects that remain prohibited
 
-The Phase 11.4 read adapter does not authorize connector registration, MISP sync, external enrichment, arbitrary GraphQL mutations, case creation, report publication or OpenCTI security/marking administration.
+Phase 11.4 does not authorize connector registration, MISP sync, external enrichment, arbitrary GraphQL mutation, TheHive case creation, report publication or OpenCTI security/marking administration.
 
 ## Evidence rule
 
-Repository CI is engineering evidence only. Live endpoint health, effective RBAC/marking segregation, deployed secret handling, real graph correctness, HA/recovery and production readiness require later deployment-bound evidence. Historical Phase 8/9 evidence cannot be reused as acceptance of this materially changed integrated candidate.
+Repository CI proves engineering contracts only. It does not prove live endpoint health, effective production RBAC/marking segregation, deployed secret handling, production-scale graph correctness, HA/recovery, independent assurance or production authorization. Historical Phase 8/9 evidence remains bound to the earlier candidate.
