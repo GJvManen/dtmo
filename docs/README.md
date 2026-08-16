@@ -16,7 +16,7 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 11.1 Taranis architecture/contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 OpenCTI persistence/integration | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.5 MISP consolidation contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **not production authorized** |
@@ -39,13 +39,13 @@ The active bounded programme step is **Phase 11.5 MISP consolidation contract va
 
 The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for accepted operator journeys. These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
 
-No new synthetic screenshot is promoted for the Phase 11.5 contract slice because the bounded change defines service/API/authority behavior and introduces no accepted operator GUI surface.
+No synthetic screenshot is promoted for the Phase 11.5 contract slice because the bounded change defines service/API/authority behavior and introduces no accepted operator GUI surface.
 
 ## Phase 11 programme documentation
 
 - [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) defines the fixed Taranis → IntelOwl → OpenCTI → MISP → TheHive → conditional Cortex → runtime-industrialisation sequence.
 - [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md) documents repository-complete Phase 11.3.
-- [OpenCTI → DTMO Integration Contract](architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md), [OpenCTI Integration](integrations/OPENCTI_INTEGRATION.md) and its operations runbook document repository-complete Phase 11.4.
+- Phase 11.4 OpenCTI persistence and integration are `PASS / REPOSITORY_COMPLETE`; the accepted contract, adapter and runbook remain authoritative historical-current design references.
 - [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md) is the active Phase 11.5 service/API/licensing/authority baseline.
 - [MISP Read Integration](integrations/MISP_READ_INTEGRATION.md) and [MISP Governed Export](intelligence/MISP_GOVERNED_EXPORT.md) are the existing bounded paths to be consolidated rather than duplicated.
 - [Evidence Index](evidence/EVIDENCE_INDEX.md) keeps repository evidence separate from deployment, assurance and production authorization evidence.
