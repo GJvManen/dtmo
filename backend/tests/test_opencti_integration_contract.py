@@ -70,7 +70,7 @@ def test_opencti_contract_is_least_privilege_and_fail_closed() -> None:
         assert marker in text, f"missing OpenCTI fail-closed marker: {marker}"
 
 
-def test_phase11_status_moves_from_opencti_contract_to_read_adapter() -> None:
+def test_phase11_status_tracks_opencti_persistence_validation() -> None:
     roadmap = _read(ROADMAP)
     current_state = _read(CURRENT_STATE)
     readme = _read(README)
@@ -79,12 +79,12 @@ def test_phase11_status_moves_from_opencti_contract_to_read_adapter() -> None:
     assert "11.3 IntelOwl enrichment integration" in roadmap
     assert "PASS / REPOSITORY_COMPLETE" in roadmap
     assert "11.4 OpenCTI knowledge-graph integration" in roadmap
-    assert "READ-ONLY ADAPTER IN EXACT-HEAD VALIDATION" in roadmap
+    assert "IN PROGRESS / CANONICAL PERSISTENCE IN EXACT-HEAD VALIDATION" in roadmap
     for text in (current_state, readme, portal):
         assert "Phase 11.3" in text
         assert "PASS / REPOSITORY_COMPLETE" in text
         assert "Phase 11.4 OpenCTI" in text
-        assert "read-only" in text.lower()
+        assert "persistence" in text.lower()
         assert "not production authorized" in text
 
 
