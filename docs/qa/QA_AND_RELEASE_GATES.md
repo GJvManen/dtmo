@@ -42,9 +42,8 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Phase 11.1 Taranis | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 OpenCTI contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 OpenCTI read-only adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 OpenCTI persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 MISP consolidation contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
 
 DTMO is not production authorized.
@@ -53,7 +52,7 @@ DTMO is not production authorized.
 
 Existing workflow families remain required. Each Phase 11 integration adds bounded integration tests without weakening previous quality, security, recovery, governance or documentation controls.
 
-The **Phase 11 IntelOwl Integration Contract Gate** remains repository evidence for accepted Phase 11.3. The **Phase 11 OpenCTI Integration Contract Gate** now covers the accepted contract/read adapter and the active canonical persistence slice.
+The **Phase 11 IntelOwl Integration Contract Gate** remains repository evidence for accepted Phase 11.3. The **Phase 11 OpenCTI Integration Contract Gate** remains repository evidence for accepted Phase 11.4. The active gate is the **Phase 11 MISP Consolidation Contract Gate**.
 
 ## Phase 11 gate sequence
 
@@ -69,42 +68,35 @@ The **Phase 11 IntelOwl Integration Contract Gate** remains repository evidence 
 
 **Repository status:** `PASS / REPOSITORY_COMPLETE`.
 
-### 11.4 OpenCTI contract
+### 11.4 OpenCTI integration
 
 **Repository status:** `PASS / REPOSITORY_COMPLETE`.
 
-### 11.4 OpenCTI read-only adapter
+Accepted evidence covers the service/API/STIX/licensing contract, bounded GraphQL/STIX adapter, explicit OpenCTI/STIX↔DTMO identity mapping, immutable reconciliation history, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. Repository acceptance is not live OpenCTI or production evidence.
 
-**Repository status:** `PASS / REPOSITORY_COMPLETE`.
-
-Accepted evidence covers bounded GraphQL `stixCoreObjects` retrieval, stable OpenCTI/STIX identity, entity allowlists, marking/confidence/provenance preservation, fail-closed malformed state, bounded pagination and explicit `commit_page(page)` semantics.
-
-### 11.4 OpenCTI canonical persistence — active bounded gate
+### 11.5 MISP consolidation contract — active bounded gate
 
 Required exact-head repository evidence:
 
-- migration `0012_opencti_mapping_persistence` follows `0011_intelowl_enrichment_history`;
-- `opencti_object_mappings` preserves DTMO item identity, OpenCTI internal ID and STIX ID explicitly;
-- `opencti_mapping_revisions` preserves immutable attributable snapshots;
-- unchanged replay is idempotent through SHA-256 snapshot hashes;
-- changed upstream state creates one new immutable revision;
-- conflicting OpenCTI/STIX identity drift and ambiguous mappings fail closed;
-- entity type, parent types, markings/TLP/PAP context, confidence, timestamps, external references and provenance remain preserved;
-- database constraints enforce `external_share_authorized=false` and `local_compromise_proven=false`;
-- PostgreSQL commit completes before `commit_page(page)` advances durable cursor state;
-- database commit failure leaves the checkpoint unchanged;
-- replay remains safe when DB commit succeeds but checkpoint replacement fails;
-- connector registration, MISP synchronization, enrichment, TheHive case creation, report publication, OpenCTI security administration and arbitrary GraphQL mutation remain excluded;
-- `README.md`, `docs/README.md`, current state, roadmap, security, integration, operations, QA and evidence index are synchronized;
-- `docs/qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md`, Professional Documentation Gate, Phase 11 OpenCTI Integration Contract Gate and all other required exact-head workflows succeed on the same final head.
+- reviewed upstream baseline **MISP v2.5.44** is recorded;
+- MISP remains a separate **AGPL-3.0** service/API boundary and MISP core source is not vendored;
+- existing inbound `POST /events/restSearch` and governed outbound `POST /events/add` paths are identified as the capabilities to consolidate;
+- MISP event/attribute/object UUIDs remain separate from DTMO canonical UUID identity;
+- distribution, sharing-group and TLP/tag restrictions remain attributable and cannot be broadened on re-export;
+- import does not grant `share_approved`, publication authority or local-compromise proof;
+- outbound delivery requires attributable human DTMO review/share approval;
+- service accounts, collectors, schedulers, IntelOwl, OpenCTI and MISP cannot grant DTMO sharing authority;
+- destination events remain unpublished and successful `events/add` delivery is not publication/federation approval;
+- deterministic replay reservation and `pending`/`success`/`uncertain` semantics prevent blind duplicate replay;
+- uncertain delivery blocks automated replay pending operator reconciliation;
+- MISP server push/pull synchronization and OpenCTI↔MISP automatic synchronization are excluded from the first consolidation boundary;
+- runtime secrets, production HTTPS/certificate validation, least privilege and `401`/`403` fail-closed behavior remain mandatory;
+- `README.md`, `docs/README.md`, current state, roadmap, security, QA and evidence index are synchronized;
+- `docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md`, Professional Documentation Gate, Phase 11 MISP Consolidation Contract Gate and all required exact-head workflows succeed on the same final head.
 
-Repository acceptance does not establish live OpenCTI connectivity, deployed credentials, effective production RBAC/marking segregation, production STIX interoperability/performance, privacy approval, HA/recovery, independent assurance or production authorization.
+Repository acceptance does not establish live MISP credentials, effective production roles, remote-server trust, lawful live-data sharing, production synchronization/federation behavior, staging acceptance, independent assurance or production authorization.
 
-Only after protected merge and lifecycle reconciliation may Phase 11.4 become `PASS / REPOSITORY_COMPLETE`. Phase 11.5 remains blocked until then.
-
-### 11.5 MISP consolidation
-
-Required evidence includes one authoritative inbound/synchronization model, conflict/replay handling, DTMO outbound approval remaining authoritative, distribution/TLP/sharing-group fail-closed behavior and no implicit share authority for automated components.
+Only after protected merge may the next bounded Phase 11.5 implementation PR introduce the single reconciled synchronization-state/persistence and authority-enforcement model. Phase 11.6 remains blocked until Phase 11.5 is repository-complete.
 
 ### 11.6 TheHive / 11.7 Cortex decision
 
@@ -130,13 +122,13 @@ Phase 12 is `NOT STARTED`. It requires accepted Phase 11 validation/assurance pl
 
 Release gates must preserve:
 
-- ingestion/enrichment/graph synchronization creates candidate/context intelligence only;
+- ingestion/enrichment/graph/MISP synchronization creates candidate/context intelligence only;
 - external sharing requires separate human approval;
-- connectors, CI, service accounts and integrated publishers do not gain publication authority;
-- IntelOwl analyzer verdicts and OpenCTI graph mappings do not imply local compromise;
+- connectors, CI, service accounts and integrated platforms do not gain publication authority;
+- IntelOwl analyzer verdicts, OpenCTI graph mappings and MISP event presence do not imply local compromise;
 - human and machine roles remain separated;
 - framework mappings remain explicit and do not imply blanket compliance;
-- provenance, confidence and markings are preserved across service boundaries;
+- provenance, confidence, markings and MISP distribution/sharing restrictions are preserved across service boundaries;
 - raw secret values are not committed as evidence;
 - external integrations use dedicated identities and bounded scopes.
 
