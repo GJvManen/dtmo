@@ -75,7 +75,7 @@ This diagram is architectural. It does not claim live IntelOwl connectivity, dep
 - [Visual Documentation Standard](visual/DOCUMENTATION_VISUAL_STANDARD.md) defines how diagrams and screenshots are structured, labelled, reviewed and kept current.
 - [Product Screenshot Catalogue](visual/screenshots/README.md) defines the governed screenshot set.
 
-The governed screenshot catalogue now contains UI-01 through UI-10. No IntelOwl screenshot is added in this contract-only slice because a synthetic or unrelated image would falsely imply implemented/runtime behavior. A governed IntelOwl visual becomes applicable only after the actual adapter/operator surface exists.
+The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. No IntelOwl screenshot is added in this contract-only slice because a synthetic or unrelated image would falsely imply implemented/runtime behavior. A governed IntelOwl visual becomes applicable only after the actual adapter/operator surface exists.
 
 ## Documentation model
 
