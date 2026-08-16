@@ -13,8 +13,11 @@ STABLE_DOCUMENTS = (
     "docs/architecture/TARANIS_PLATFORM_INTEGRATION_ASSESSMENT.md",
     "docs/architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md",
     "docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md",
+    "docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md",
     "docs/integrations/TARANIS_ADAPTER.md",
     "docs/integrations/INTELOWL_INTEGRATION.md",
+    "docs/integrations/OPENCTI_INTEGRATION.md",
+    "docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md",
     "docs/ux/FRONTEND_UX.md",
     "docs/security/SECURITY_OVERVIEW.md",
     "docs/governance/GOVERNANCE_MAPPING_REGISTRY.md",
@@ -166,6 +169,18 @@ def test_architecture_retains_required_layers_and_trust_boundaries() -> None:
     ):
         assert marker in intelowl
 
+    opencti = _read("docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md")
+    for marker in (
+        "7.260811.0",
+        "service-to-service",
+        "STIX 2.1",
+        "TAXII 2.1",
+        "provenance",
+        "Apache-2.0",
+        "Enterprise Edition",
+    ):
+        assert marker in opencti
+
 
 def test_current_professional_lifecycle_is_consistent() -> None:
     for path in CURRENT_STATE_DOCUMENTS:
@@ -188,15 +203,15 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "Phase 11.2 Taranis adapter" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
     assert "Phase 11.3 IntelOwl contract" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
     assert "Phase 11.3 IntelOwl adapter" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
-    assert "Phase 11.3 governed execution/persistence" in current_state and "IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED" in current_state
+    assert "Phase 11.3 governed execution/persistence" in current_state and "PASS / REPOSITORY_COMPLETE" in current_state
+    assert "Phase 11.4 OpenCTI contract" in current_state and "IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED" in current_state
     assert "Phase 12" in current_state and "NOT STARTED" in current_state
 
     roadmap = _read("docs/roadmap/PRODUCTION_ROADMAP.md")
     assert "Phase 10" in roadmap and "NO-GO / BLOCKED" in roadmap
     assert "Phase 11.2" in roadmap and "PASS / REPOSITORY_COMPLETE" in roadmap
-    assert "Phase 11.3 contract" in roadmap and "PASS / REPOSITORY_COMPLETE" in roadmap
-    assert "Phase 11.3 adapter" in roadmap and "PASS / REPOSITORY_COMPLETE" in roadmap
-    assert "Phase 11.3 execution/persistence" in roadmap and "IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED" in roadmap
+    assert "Phase 11.3" in roadmap and "IntelOwl" in roadmap and "PASS / REPOSITORY_COMPLETE" in roadmap
+    assert "Phase 11.4 contract" in roadmap and "IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED" in roadmap
     assert "Phase 12" in roadmap and "NOT STARTED" in roadmap
 
     industrialisation = _read("docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md")
@@ -209,7 +224,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.7 Cortex decision gate" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
     assert "11.2 Taranis → DTMO canonical adapter\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
-    assert "11.3 IntelOwl enrichment integration\n\n**Status:** `IN PROGRESS / GOVERNED EXECUTION + DURABLE HISTORY IN EXACT-HEAD VALIDATION`" in industrialisation
+    assert "11.3 IntelOwl enrichment integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
+    assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION`" in industrialisation
 
     phase10 = _read("docs/production/PHASE10_PRODUCTION_GO_NO_GO.md")
     assert "NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED" in phase10
@@ -227,12 +243,27 @@ def test_intelowl_contract_and_integration_docs_are_synchronized() -> None:
     qa = _read("docs/qa/QA_AND_RELEASE_GATES.md")
     evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
 
-    assert "GOVERNED EXECUTION + DURABLE HISTORY IMPLEMENTED / EXACT-HEAD VALIDATION REQUIRED" in integration
     assert "IntelOwl external Connectors" in contract
     assert "IntelOwl external Connectors" in integration
     assert "IntelOwl → DTMO Integration Contract" in portal
     assert "Phase 11 IntelOwl Integration Contract Gate" in qa
     assert "phase11-intelowl-integration-contract.yml" in evidence
+
+
+def test_opencti_contract_documents_are_synchronized() -> None:
+    contract = _read("docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md")
+    integration = _read("docs/integrations/OPENCTI_INTEGRATION.md")
+    runbook = _read("docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md")
+    portal = _read("docs/README.md")
+    qa = _read("docs/qa/QA_AND_RELEASE_GATES.md")
+    evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
+
+    for marker in ("STIX 2.1", "TAXII 2.1", "provenance"):
+        assert marker in contract
+        assert marker in integration or marker in runbook
+    assert "OpenCTI" in portal
+    assert "Phase 11 OpenCTI Integration Contract Gate" in qa
+    assert "phase11-opencti-integration-contract.yml" in evidence
 
 
 def test_stable_professional_documents_do_not_become_operational_run_logs() -> None:
