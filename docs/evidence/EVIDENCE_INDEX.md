@@ -1,12 +1,12 @@
 # DTMO Evidence Index
 
-Last updated: **2026-08-16**
+Last updated: **2026-08-17**
 
 ## Purpose
 
 This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.2 Taranis, Phase 11.3 IntelOwl and Phase 11.4 OpenCTI are `PASS / REPOSITORY_COMPLETE`; Phase 11.5 MISP consolidation is `IN PROGRESS / CONTRACT EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.2 Taranis, Phase 11.3 IntelOwl and Phase 11.4 OpenCTI are `PASS / REPOSITORY_COMPLETE`; the Phase 11.5 MISP consolidation contract is `PASS / REPOSITORY_COMPLETE`; Phase 11.5 synchronization-state/persistence is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
 
 ## Authoritative current-state sources
 
@@ -18,8 +18,11 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `docs/integrations/MISP_READ_INTEGRATION.md`
 - `docs/intelligence/MISP_GOVERNED_EXPORT.md`
 - `docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md`
+- `docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md`
 - `backend/tests/test_phase11_5_misp_consolidation_contract.py`
+- `backend/tests/test_phase11_5_misp_consolidation_state.py`
 - `.github/workflows/phase11-misp-consolidation-contract.yml`
+- `.github/workflows/phase11-misp-consolidation-state.yml`
 - `docs/security/SECURITY_OVERVIEW.md`
 - `docs/qa/QA_AND_RELEASE_GATES.md`
 - `docs/roadmap/PRODUCTION_ROADMAP.md`
@@ -84,29 +87,33 @@ This evidence does **not** prove live OpenCTI connectivity, deployed service ide
 
 ### Phase 11.5 MISP consolidation contract
 
-**Status:** `IN PROGRESS / CONTRACT EXACT-HEAD VALIDATION REQUIRED`.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Accepted repository evidence covers MISP v2.5.44, the separate AGPL-3.0 service/API boundary, one authority model spanning existing `events/restSearch` and human-approved unpublished `events/add` paths, preservation of UUID/distribution/sharing-group/TLP/provenance restrictions, no source vendoring, no implicit share authority, no automatic federation and no automatic OpenCTI↔MISP synchronization.
+
+The accepted contract test/workflow remain `backend/tests/test_phase11_5_misp_consolidation_contract.py` and `.github/workflows/phase11-misp-consolidation-contract.yml`.
+
+### Phase 11.5 MISP synchronization-state implementation
+
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
 The active repository evidence target covers:
 
-- reviewed upstream baseline **MISP v2.5.44**;
-- separate **AGPL-3.0** service/API boundary with no MISP core source vendoring;
-- consolidation of existing inbound `POST /events/restSearch` and governed outbound `POST /events/add` paths rather than duplication;
-- preservation of event/attribute/object UUID identity, distribution, sharing-group, TLP/tag and provenance context;
-- DTMO canonical UUID identity remaining separate from MISP identities;
-- import never granting `share_approved`, publication authority or local-compromise proof;
-- human DTMO review/share approval remaining mandatory for outbound delivery;
-- service accounts, collectors, schedulers, IntelOwl, OpenCTI and MISP not gaining DTMO sharing authority;
-- source restrictions not being broadened on re-export;
-- unpublished destination events, deterministic replay reservations and fail-closed uncertain-delivery handling;
-- automatic MISP server push/pull synchronization and OpenCTI↔MISP synchronization excluded from this first boundary;
-- runtime-secret, production HTTPS and least-privilege requirements;
-- tests in `backend/tests/test_phase11_5_misp_consolidation_contract.py` and workflow `.github/workflows/phase11-misp-consolidation-contract.yml`.
+- durable `misp_synchronization_state` binding one DTMO canonical item to one stable MISP event UUID;
+- event UUID identity remaining distinct from DTMO canonical identity;
+- authoritative distribution, sharing-group and normalized TLP restrictions persisted with an attributable snapshot/hash;
+- accepted source restrictions projected to canonical `metadata_json.misp_restrictions`, consumed by the existing governed export path;
+- canonical MISP candidate persistence and state reconciliation occurring inside the same database transaction;
+- failure on event UUID collision, DTMO-item identity drift, unknown distribution, missing sharing group for distribution `4`, malformed/non-authoritative restriction state or attempted inbound external-share authority;
+- database-enforced `external_share_authorized=false` and sharing/distribution constraints;
+- migration `0013_misp_synchronization_state` after `0012_opencti_mapping_persistence`, including upgrade/downgrade validation;
+- existing MISP read/export gates staying green;
+- tests in `backend/tests/test_phase11_5_misp_consolidation_state.py` and workflow `.github/workflows/phase11-misp-consolidation-state.yml`;
+- professional lifecycle, security, integration, QA and evidence documentation synchronized to the same exact head.
 
-Repository contract evidence does **not** prove live MISP credentials, effective production roles, remote-server trust, lawful live-data sharing, production federation behavior, staging acceptance, independent assurance or production authorization.
+Repository implementation evidence does **not** prove live MISP credentials, effective production roles, remote-server trust, lawful live-data sharing, production federation behavior, production-equivalent validation, independent assurance or production authorization.
 
-### Phase 11.5 next implementation slice
-
-Only after protected acceptance of the contract may DTMO implement the single reconciled MISP synchronization-state/persistence and authority-enforcement model. Phase 11.6 remains blocked until Phase 11.5 is repository-complete.
+Phase 11.6 remains blocked until this implementation is protected-merged and Phase 11.5 is reconciled to `PASS / REPOSITORY_COMPLETE`.
 
 ### Phase 11.6–11.9
 
