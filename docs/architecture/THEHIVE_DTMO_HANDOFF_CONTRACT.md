@@ -1,6 +1,6 @@
 # TheHive → DTMO Incident/Case Handoff Contract
 
-Status: **`PHASE 11.6 CONTRACT BASELINE / EXACT-HEAD VALIDATION REQUIRED`**  
+Status: **`PHASE 11.6 CONTRACT ACCEPTED / BOUNDED HANDOFF IMPLEMENTATION IN EXACT-HEAD VALIDATION`**  
 Upstream baseline reviewed: **TheHive 5.5.16 (2026-06-30)**  
 Public API baseline: **TheHive API v1 (`/api/v1`)**
 
@@ -8,11 +8,11 @@ Public API baseline: **TheHive API v1 (`/api/v1`)**
 
 Phase 11.6 introduces a controlled service-to-service boundary between DTMO intelligence and TheHive incident/case workflow. DTMO remains authoritative for canonical CTI, education-sector relevance, provenance, governance and human publication/share authority. TheHive becomes authoritative only for the lifecycle of a case after an explicitly authorized handoff.
 
-This contract does not create a runtime adapter. It defines the identity, data, authorization, licensing, failure and evidence rules that a later bounded implementation must satisfy.
+The contract baseline was accepted before runtime mutation code. The active bounded implementation realizes only the contract-approved human-authorized `POST /api/v1/case` path plus durable reservation/reconciliation state and read-only handoff history.
 
 ## 2. Upstream and licensing boundary
 
-TheHive remains a separate StrangeBee service. DTMO does not vendor TheHive source or assume redistribution rights. The reviewed upstream baseline is TheHive 5.5.16. Public API v0 is deprecated; DTMO integrations must target API v1.
+TheHive remains a separate StrangeBee service. DTMO does not vendor TheHive source or assume redistribution rights. The reviewed upstream baseline is TheHive 5.5.16. Public API v0 is deprecated; DTMO integrations target API v1.
 
 TheHive 5.3+ requires an activated license for continued write functionality after the initial trial. Community is free but requires license acquisition/activation; Gold and Platinum are paid tiers. License entitlements and quotas are deployment prerequisites, not repository assumptions.
 
@@ -25,98 +25,112 @@ Primary upstream references reviewed on 2026-08-17:
 
 ## 3. Bounded API surface
 
-The initial integration may use only an explicit allowlist of TheHive API v1 operations needed for controlled case handoff. The first mutation candidate is `POST /api/v1/case` after DTMO authorization. Any observable/task creation is a later implementation decision and must be separately bounded.
+The accepted runtime allowlist contains only explicit case creation through `POST /api/v1/case` after DTMO authorization. The DTMO-side read-only history route exposes its own durable handoff state and does not mutate TheHive.
 
-Administration, license management, organization ownership transfer, arbitrary case-access changes, responder execution, Cortex execution, MISP connector administration, case deletion and bulk mutation are outside the initial boundary.
+Observable/task creation, administration, license management, organization ownership transfer, arbitrary case-access changes, responder execution, Cortex execution, MISP connector administration, case deletion and bulk mutation remain outside this boundary.
 
 ## 4. Authority model
 
 A DTMO intelligence item, MISP event, OpenCTI object, IntelOwl result or Taranis assessment **never creates a TheHive case by itself**.
 
-Case handoff requires an explicit human-authorized DTMO action under a server-side RBAC permission dedicated to incident/case handoff. Publication/share approval and case-handoff approval are distinct authorities.
+Case handoff requires an explicit human-authorized DTMO action under the dedicated server-side `handoff:case` permission. In the bounded role model this permission is held by CISO, CERT, Senior Analyst and Administrator roles. Service accounts do not receive it. Publication/share approval and case-handoff approval remain distinct authorities.
 
 TheHive case creation does not grant DTMO publication/share authority, does not prove local compromise and does not change canonical CTI truth.
 
 ## 5. Identity and idempotency
 
-DTMO must preserve a durable mapping between:
+DTMO preserves a durable mapping between:
 
 - DTMO canonical intelligence UUID;
 - DTMO handoff request UUID/idempotency key;
 - TheHive case `_id` or stable case identity returned by API v1;
 - TheHive organization context;
-- source provenance and source restriction envelope.
+- human principal and source restriction envelope.
 
-Mutable case titles, descriptions, tags or assignees must never be used as identity.
+Mutable case titles, descriptions, tags or assignees are never identity.
 
-Before retrying an uncertain case-creation delivery, DTMO must reconcile the durable handoff state. Blind replay of a potentially successful `POST /api/v1/case` is forbidden because duplicate cases would create conflicting operational truth.
+Migration `0014_thehive_handoff_state` creates the durable `thehive_handoff_state` reservation table. A reservation is committed before the external mutation. A request already marked `delivered` or `ambiguous` cannot be automatically replayed. Conflicting request or TheHive case identities fail closed.
 
 ## 6. Data mapping
 
-A handoff payload may contain only reviewed, minimized fields. Candidate mappings are:
+A handoff payload contains only reviewed, minimized fields:
 
 | DTMO | TheHive | Rule |
 |---|---|---|
-| canonical title | `title` | required, bounded length |
-| analyst-approved summary | `description` / `summary` | sanitized/minimized |
-| DTMO severity | `severity` | explicit deterministic mapping |
-| effective TLP | `tlp` | never broaden source restrictions |
-| effective PAP | `pap` | explicit mapping; unknown fails closed |
-| canonical tags/framework references | `tags` | allowlisted and non-secret |
-| DTMO UUID / provenance reference | custom field or link | implementation must preserve traceability |
+| canonical title | `title` | required, whitespace-normalized and bounded |
+| human-approved summary | `description` | bounded; canonical UUID appended for traceability |
+| DTMO severity | `severity` | deterministic explicit mapping |
+| effective TLP | `tlp` | explicit map; unknown fails closed |
+| effective PAP | `pap` | explicit map; unknown fails closed |
+| canonical tags | `tags` | bounded, deduplicated, non-empty values only |
+| DTMO UUID | description reference | immutable traceability reference |
 
-Attachments, raw source bodies, credentials, private enrichment results and unrelated personal data are excluded by default.
+Attachments, raw source bodies, credentials, private enrichment results and unrelated personal data remain excluded.
 
 ## 7. TLP/PAP and access control
 
-TheHive supports case `tlp`, `pap` and access controls. DTMO must calculate the effective restriction before handoff and must not create a case if the mapping is unknown, ambiguous or broader than authoritative source restrictions.
+The bounded implementation maps explicitly supplied effective TLP/PAP values and refuses unknown values before external mutation. It does not implement case-access administration or automatic external sharing.
 
-The initial case must use the least-broad access supported by the approved deployment profile. Automatic external sharing is excluded. Any later change to TheHive case access is a separate governed action.
+This repository mapping is engineering evidence only. Deployment-bound validation must still prove that the approved real-data handling profile correctly represents the authoritative source restrictions in the actual TheHive organization.
 
 ## 8. Authentication and least privilege
 
-The runtime integration requires a dedicated non-human TheHive identity scoped to the target organization with only the permissions required for the accepted case-handoff API surface. Platform administration, organization administration and unrestricted cross-organization access are prohibited for routine handoff.
+Runtime integration uses a dedicated non-human TheHive identity scoped to one explicitly configured organization. The runtime token is obtained from `DTMO_THEHIVE_API_TOKEN`; the organization from `DTMO_THEHIVE_ORGANIZATION`. Platform administration, organization administration and unrestricted cross-organization access are prohibited for routine handoff.
 
-Secrets are runtime secrets and never repository evidence. `401`, `403`, license/read-only state, unknown organization context and permission mismatch fail closed.
+`DTMO_FEATURE_THEHIVE_HANDOFF` is false by default. Production configuration validation requires an HTTPS API base, a non-empty runtime token and explicit organization whenever the feature is enabled. These settings do not establish live entitlement or deployed permission evidence.
 
 ## 9. Failure model
 
 The integration fails closed on:
 
-- missing human handoff approval;
-- missing or malformed DTMO identity/provenance;
-- unknown TLP/PAP/access mapping;
-- source restrictions that cannot be represented safely;
-- authentication/authorization failure;
-- TheHive license state that prevents write operations;
-- timeout or ambiguous response after case creation;
-- conflicting DTMO↔TheHive identity mapping;
-- malformed API response.
+- missing human `handoff:case` authority;
+- service-account attempts to authorize handoff;
+- disabled feature flag;
+- missing canonical item or provenance;
+- unknown TLP/PAP/severity mapping;
+- missing runtime service identity configuration;
+- authentication/authorization/write-boundary rejection;
+- timeout or network ambiguity after case creation may have been delivered;
+- a success response without stable case identity;
+- conflicting DTMO↔TheHive request/case identity.
 
-A TheHive outage must not make unrelated DTMO read paths unavailable.
+Definitive pre-delivery/upstream failures may be recorded as `failed`. Potentially delivered requests become `ambiguous` and automated replay is blocked. A TheHive outage does not make unrelated DTMO read paths unavailable.
 
 ## 10. Trust boundary
 
 ```mermaid
 flowchart LR
-    D[(DTMO canonical intelligence)] --> A{Human case-handoff approval?}
+    D[(DTMO canonical intelligence)] --> A{Human handoff:case authority?}
     A -->|no| N[No TheHive mutation]
     A -->|yes| V{Identity + provenance + TLP/PAP valid?}
     V -->|no| X[Fail closed]
-    V -->|yes| R[(Durable handoff reservation)]
+    V -->|yes| R[(Commit durable reservation)]
     R --> C[TheHive API v1\nPOST /api/v1/case]
-    C -->|201 + identity| M[(DTMO↔TheHive mapping)]
-    C -->|timeout/ambiguous| U[Block blind replay\noperator reconciliation]
+    C -->|stable identity| M[(Delivered DTMO↔TheHive mapping)]
+    C -->|timeout / malformed identity| U[(Ambiguous state)]
+    U --> B[Block blind replay\noperator reconciliation]
     M --> H[TheHive case lifecycle]
-    H -. does not grant .-> S[DTMO publication/share authority]
+    H -. cannot grant .-> S[DTMO publication/share authority]
 ```
 
-## 11. Evidence boundary
+## 11. Repository implementation boundary
 
-Repository contract tests may prove documentation consistency and bounded policy assertions only. They cannot prove live TheHive connectivity, effective permissions, license entitlement, organization configuration, privacy approval, TLP/PAP correctness on real data, HA/recovery, operational acceptance, independent assurance or production authorization.
+The implementation consists of:
 
-Historical Phase 8/9 evidence remains candidate-bound and is not reused for this materially changed integrated platform.
+- `backend/dtmo/integrations/thehive.py` — minimized payload mapping and API-v1 case-create adapter;
+- `backend/dtmo/thehive_handoff.py` — human-authorized DTMO handoff/history API;
+- `backend/dtmo/persistence/thehive.py` — durable reservation, delivered/ambiguous/failed state;
+- `database/migrations/versions/0014_thehive_handoff_state.py` — database-enforced identity and no-authority invariants;
+- dedicated Phase 11.6 adapter/state contract tests and exact-head gate.
 
-## 12. Explicit exclusions
+The database enforces unique request identity, unique confirmed TheHive case identity, bounded lifecycle states, `external_share_authorized=false` and `local_compromise_proven=false`.
 
-This contract does not authorize automatic case creation, automatic incident escalation, responder execution, Cortex adoption, MISP→TheHive automation, external portal sharing, organization/access administration, report publication or production use.
+## 12. Evidence boundary
+
+Repository CI may prove synthetic route, RBAC, persistence, state-machine, configuration and documentation contracts only. It cannot prove live TheHive connectivity, effective permissions, license entitlement, organization configuration, privacy approval, TLP/PAP correctness on real data, HA/recovery, operational acceptance, independent assurance or production authorization.
+
+Historical Phase 8/9 evidence remains candidate-bound and is not reused for this materially changed integrated platform. Fresh Phase 11.10 and 11.11 evidence remains required before Phase 12.
+
+## 13. Explicit exclusions
+
+This implementation does not authorize automatic case creation, automatic incident escalation, observable/task mutation, responder execution, Cortex adoption, MISP→TheHive automation, external portal sharing, organization/access administration, case deletion, report publication or production use.
