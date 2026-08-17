@@ -1,17 +1,23 @@
 # Phase 11.7 Cortex Decision Gate
 
-State: **`IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`**  
+State: **`PASS / REPOSITORY_COMPLETE — OPERATOR RE-ENTRY REQUIREMENT RECORDED`**  
 Decision date: **2026-08-17**
 
-## Decision
+## Original accepted decision
 
-DTMO does **not** adopt Cortex in the current Phase 11 candidate. Phase 11.7 was explicitly conditional on a validated capability gap remaining after the accepted IntelOwl integration. Repository review finds no such validated gap for the currently approved DTMO enrichment requirements.
+DTMO does **not** adopt Cortex in the original Phase 11 candidate assessed by this decision. Phase 11.7 was explicitly conditional on a validated capability gap remaining after the accepted IntelOwl integration. Repository review found no such validated gap for the then-approved DTMO enrichment requirements.
 
-This is a bounded architecture decision, not production evidence. A future Cortex proposal requires a new, attributable requirement and a separate capability-gap assessment; absence of a current gap does not claim that IntelOwl can satisfy every conceivable SOAR or responder use case.
+That decision remains valid historical architecture evidence for the requirement set it assessed. It is not rewritten into a claim that Cortex was required at that time.
+
+## New attributable requirement and re-entry
+
+On **2026-08-17** the accountable operator explicitly required DTMO to add a **Cortex connector**. This is a new attributable requirement that did not exist in the original Phase 11.7 requirement set and therefore triggers the decision's re-entry path.
+
+The re-entry is intentionally narrower than full Cortex adoption: DTMO adds an **analyzer-only service/API connector**. Cortex responders, automated response, TheHive responder automation and any mutation authority remain excluded. The connector is additive and does not replace the accepted IntelOwl enrichment boundary.
 
 ## Evidence reviewed
 
-The accepted Phase 11.3 IntelOwl boundary already provides the required generic enrichment capabilities for the defined DTMO scope:
+The accepted Phase 11.3 IntelOwl boundary already provides the required generic enrichment capabilities for the original DTMO scope:
 
 | DTMO requirement | Accepted IntelOwl capability | Decision |
 |---|---|---|
@@ -26,39 +32,35 @@ The accepted Phase 11.3 IntelOwl boundary already provides the required generic 
 | No local-compromise inference | database-enforced no-local-compromise invariant | covered |
 | Bounded execution / outage isolation | bounded polling, quota/error handling and dependency isolation | covered |
 
-IntelOwl Connectors and external side-effect actions remain deliberately excluded. That exclusion is an authority/control boundary, not a capability defect that justifies Cortex adoption.
+IntelOwl Connectors and external side-effect actions remain deliberately excluded. That exclusion remains an authority/control boundary rather than retroactive evidence of a capability defect.
 
 ## Cortex boundary
 
-Cortex analyzers/responders would add another service, identity, secret, licensing/maintenance and external-side-effect boundary. Responders in particular introduce mutation/response authority that is outside the accepted enrichment requirement and would require separate human authorization, replay safety, data-handling, audit and deployment evidence.
+Cortex remains a separate service/API and licensing boundary. The bounded DTMO connector may invoke explicitly allowlisted **analyzers only** and import the returned report as read-only enrichment evidence.
 
-The accepted TheHive handoff does not create a Cortex requirement. Case creation remains a distinct human-authorized operation and responders remain excluded.
+Responders introduce mutation/response authority and remain excluded. The accepted TheHive handoff remains a distinct human-authorized case-creation path and does not inherit Cortex responder authority.
 
 ## Trust-boundary decision
 
 ```mermaid
 flowchart LR
-    R[Validated DTMO enrichment requirements] --> I[IntelOwl accepted Phase 11.3 boundary]
-    I --> C{Unmet validated requirement?}
-    C -->|no| N[Do not adopt Cortex]
-    C -->|yes, future attributable evidence| G[New bounded gap assessment]
-    G --> A{Cortex uniquely justified?}
-    A -->|no| N
-    A -->|yes| P[Separate architecture/licensing/security PR]
+    R[Original validated enrichment requirements] --> I[IntelOwl accepted Phase 11.3 boundary]
+    I --> C{Original unmet validated requirement?}
+    C -->|no| N[Original decision: no Cortex adoption]
+    O[New accountable operator requirement\nCortex connector] --> G[Bounded re-entry]
+    G --> A[Cortex analyzer-only service/API connector]
+    A --> E[Read-only enrichment evidence]
+    A -. responders excluded .-> X[No response/mutation authority]
 ```
 
 ## Re-entry criteria
 
-Cortex may be reconsidered only when all of the following exist:
+The original decision required a new attributable requirement, explicit licensing/identity/secret/network/provenance/human-authority design, a new bounded PR and exact-head acceptance before runtime integration. The operator requirement above supplies the attributable re-entry trigger. The bounded connector PR must still satisfy all remaining controls.
 
-1. a concrete operational requirement not satisfied by the accepted IntelOwl contract;
-2. attributable evidence that the gap is material rather than a convenience preference;
-3. analysis showing the requirement cannot be met safely by an approved IntelOwl analyzer/playbook or existing DTMO/TheHive boundary;
-4. explicit licensing, identity, secret, network, provenance and human-authority design;
-5. a new bounded PR and exact-head acceptance before any runtime integration.
+Any future expansion from analyzers to responders requires a **new** decision and cannot be inferred from acceptance of this connector.
 
 ## Evidence boundary
 
-Repository CI can validate this decision record and consistency with the accepted IntelOwl/TheHive contracts. It cannot establish live analyzer coverage, provider quality, production permissions, operational responder safety, independent assurance or production authorization.
+Repository CI can validate connector policy, synthetic request/response handling and consistency with accepted IntelOwl/TheHive contracts. It cannot establish live analyzer coverage, provider quality, production permissions, operational responder safety, lawful disclosure authority, independent assurance or production authorization.
 
-Historical Phase 8/9 evidence is not reused. Phase 11.8 remains the next priority only after this decision gate is protected-merged.
+Historical Phase 8/9 evidence is not reused. Phase 11.8 remains the next priority after this bounded re-entry connector is protected-merged.
