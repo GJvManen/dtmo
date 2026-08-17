@@ -17,7 +17,7 @@ The connector uses the official Cortex REST API with API-key bearer authenticati
 - `GET /api/job/{JOB_ID}/waitreport?atMost=...` — retrieve the bounded job report;
 - API key identity must have only the permissions needed to analyze/read jobs in the approved Cortex organization.
 
-No organization administration, user administration, analyzer enable/disable/update, job deletion or responder execution is permitted by DTMO.
+No organization administration, user administration, analyzer enable/disable/update, job deletion or responder execution is permitted by DTMO. Cortex responders and any responder-triggered external side effects remain outside this bounded connector.
 
 ## Authority and provenance invariants
 
@@ -28,7 +28,7 @@ No organization administration, user administration, analyzer enable/disable/upd
 5. TLP is explicit and fail-closed; values outside the Cortex 0..3 range are rejected before network I/O.
 6. Stable Cortex job identity is required and returned analyzer identity must match the requested analyzer when present.
 7. Result size is bounded and malformed result structures fail closed.
-8. Responders and all external side-effect actions remain excluded.
+8. Cortex responders and all external side-effect actions remain excluded.
 9. DTMO stores or presents Cortex output only as attributable enrichment evidence and preserves the canonical DTMO item identity in connector metadata.
 10. Live provider/API credentials, analyzer configuration, organization scope and lawful disclosure authorization are deployment evidence, never inferred from CI.
 
