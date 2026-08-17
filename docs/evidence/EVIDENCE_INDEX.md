@@ -6,7 +6,7 @@ Last updated: **2026-08-17**
 
 This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.5 are `PASS / REPOSITORY_COMPLETE`; the Phase 11.6 TheHive contract is `PASS / REPOSITORY_COMPLETE`; the bounded Phase 11.6 TheHive handoff implementation is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.6 are `PASS / REPOSITORY_COMPLETE`; Phase 11.7 is an accepted historical Cortex decision baseline; Phase 11.7b Cortex analyzer connector is `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`; Phase 11.8 is blocked by 11.7b; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
 
 ## Authoritative current-state sources
 
@@ -14,6 +14,14 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `docs/README.md`
 - `docs/project/CURRENT_STATE.md`
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`
+- `docs/architecture/CORTEX_DECISION_GATE.md`
+- `docs/architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md`
+- `docs/integrations/CORTEX_ANALYZER_CONNECTOR.md`
+- `docs/operations/CORTEX_ANALYZER_RUNBOOK.md`
+- `docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`
+- `backend/dtmo/integrations/cortex.py`
+- `backend/tests/test_phase11_7b_cortex_connector.py`
+- `.github/workflows/phase11-cortex-connector.yml`
 - `docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md`
 - `docs/integrations/THEHIVE_HANDOFF.md`
 - `docs/operations/THEHIVE_HANDOFF_RUNBOOK.md`
@@ -21,14 +29,6 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md`
 - `docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md`
 - `docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md`
-- `backend/dtmo/integrations/thehive.py`
-- `backend/dtmo/persistence/thehive.py`
-- `backend/dtmo/thehive_handoff.py`
-- `database/migrations/versions/0014_thehive_handoff_state.py`
-- `backend/tests/test_thehive_handoff_contract.py`
-- `backend/tests/test_phase11_6_thehive_handoff_adapter.py`
-- `backend/tests/test_phase11_6_thehive_handoff_state.py`
-- `.github/workflows/phase11-thehive-handoff-contract.yml`
 - `.github/workflows/phase11-thehive-handoff-implementation.yml`
 - `docs/security/SECURITY_OVERVIEW.md`
 - `docs/qa/QA_AND_RELEASE_GATES.md`
@@ -74,54 +74,50 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 
 **Status:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`.
 
-### Phase 11.1–11.5
+### Phase 11.1–11.6
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Accepted repository evidence covers Taranis, IntelOwl, OpenCTI and MISP service boundaries, identity/provenance preservation, durable reconciliation/state, fail-closed authority controls and human publication/share authority. These are repository engineering claims only.
+Accepted repository evidence covers Taranis, IntelOwl, OpenCTI, MISP and TheHive service boundaries, identity/provenance preservation, durable reconciliation/state, fail-closed authority controls and human publication/share/case-handoff authority. These are repository engineering claims only.
 
-### Phase 11.6 TheHive contract
+The accepted TheHive implementation evidence includes `backend/tests/test_phase11_6_thehive_handoff_adapter.py`, `backend/tests/test_phase11_6_thehive_handoff_state.py` and `.github/workflows/phase11-thehive-handoff-implementation.yml`. A green gate does not prove live TheHive entitlement, permissions or production authorization.
 
-**Status:** `PASS / REPOSITORY_COMPLETE`.
+### Phase 11.7 Cortex decision
 
-The accepted contract establishes TheHive 5.5.16/API v1, separate StrangeBee service/licensing boundary, dedicated human case-handoff authority distinct from publication/share authority, stable DTMO↔TheHive identity requirements, fail-closed TLP/PAP/access handling, data minimization and no-blind-replay semantics before runtime mutation code.
+**Status:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`.
 
-This remains repository engineering evidence only. It does not establish a live entitlement, tenant, credential, organization or production-ready integration.
+The accepted decision record concluded that Cortex was not adopted under the requirement set then available because no validated IntelOwl capability gap existed. That point-in-time claim remains preserved.
 
-### Phase 11.6 TheHive bounded handoff implementation
+### Phase 11.7b Cortex analyzer connector
 
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+**Status:** `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`.
 
-The active repository evidence target covers:
+The accountable owner added Cortex connector integration as a new attributable requirement on 2026-08-17. The active repository evidence target covers:
 
-- the dedicated `handoff:case` permission and human/service identity separation;
-- the only accepted external mutation being `POST /api/v1/case`;
-- canonical item identity and repository provenance validation before handoff;
-- deterministic severity/TLP/PAP mapping with unknown values failing closed;
-- prevention of TLP broadening where authoritative TLP tags are known;
-- fail-closed blocking when authoritative MISP distribution/sharing-group restrictions cannot yet be safely represented in the configured TheHive organization/access model;
-- minimized payload fields and exclusion of attachments, raw source bodies, credentials, private enrichment and unrelated personal data;
-- migration `0014_thehive_handoff_state` and durable PostgreSQL reservation before external mutation;
-- unique request identity and unique confirmed TheHive case identity;
-- `reserved`, `delivered`, `ambiguous` and `failed` state semantics;
-- stable case identity being required for `delivered` status;
-- timeout/network uncertainty or malformed success identity becoming `ambiguous` and blocking automatic replay;
-- persisted upstream outcome being minimized to case identity, number and organization rather than arbitrary response content;
-- database-enforced `external_share_authorized=false` and `local_compromise_proven=false` invariants;
-- runtime feature being disabled by default and production configuration requiring HTTPS API base, secret token and explicit organization when enabled;
-- synchronized architecture, integration, security, operations, user/admin, QA, evidence, roadmap and documentation-portal material.
+- separate Cortex service/API identity boundary and no upstream source vendoring;
+- API-key bearer authentication;
+- production HTTPS/token/analyzer-allowlist guardrails;
+- explicit observable datatype and analyzer allowlists;
+- analyzer-only `POST /api/analyzer/{ANALYZER_ID}/run` execution;
+- bounded `GET /api/job/{JOB_ID}/waitreport` retrieval;
+- explicit Cortex TLP 0..3 validation before network I/O;
+- stable job identity and analyzer-identity checks;
+- bounded JSON report size and malformed-result fail-closed behavior;
+- explicit `external_share_authorized=false` and `local_compromise_proven=false` result metadata;
+- responder, external side-effect, administrative, file/attachment and automatic provider-fallback exclusions;
+- synchronized architecture, integration, security, operations, QA, roadmap and documentation-portal material.
 
-The dedicated implementation tests/workflow are:
+Dedicated repository evidence is:
 
-- `backend/tests/test_phase11_6_thehive_handoff_adapter.py`;
-- `backend/tests/test_phase11_6_thehive_handoff_state.py`;
-- `.github/workflows/phase11-thehive-handoff-implementation.yml`.
+- `backend/tests/test_phase11_7b_cortex_connector.py`;
+- `.github/workflows/phase11-cortex-connector.yml`;
+- `docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`.
 
-A green implementation gate does **not** prove live TheHive connectivity, deployed service-account permissions, activated license entitlement, organization/access configuration, privacy approval, correct TLP/PAP handling on real data, HA/recovery, production-equivalent validation, independent assurance or production authorization.
+A green connector gate does **not** prove live Cortex connectivity, effective organization/service-account permissions, enabled analyzer quality, provider subscriptions, lawful disclosure, runtime secrets, network policy, HA/recovery, production-equivalent validation, independent assurance or production authorization.
 
-### Phase 11.7–11.9
+### Phase 11.8–11.9
 
-Future evidence covers the conditional Cortex disposition, Kubernetes/Helm/GitOps runtime hardening and migration/compatibility in fixed order.
+After protected Phase 11.7b acceptance, evidence covers Kubernetes/Helm/GitOps runtime hardening and migration/compatibility in fixed order. Cortex must participate in the same secrets, network, observability, recovery and supply-chain controls if the connector is accepted.
 
 ### Phase 11.10–11.11
 
@@ -133,7 +129,7 @@ Fresh production-equivalent validation and fresh independent assurance must targ
 
 ## Evidence transfer rule
 
-Historical Phase 8/9 acceptance remains candidate-bound and cannot be transferred automatically to the materially changed Phase 11 platform.
+Historical Phase 8/9 acceptance remains candidate-bound and cannot be transferred automatically to the materially changed Phase 11 platform. The historical Phase 11.7 Cortex decision is also not rewritten to manufacture a later requirement.
 
 ## Governance and handling rules
 
@@ -143,4 +139,5 @@ Framework claims remain governed by explicit provenance-backed mappings. Externa
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
 - Credentials/tokens and unnecessary personal data do not belong in repository evidence.
 - Human review/share approval and human case-handoff approval remain separate from technical execution.
+- Cortex analyzer output is enrichment evidence only.
 - Historical immutable run records are never rewritten to manufacture later acceptance.
