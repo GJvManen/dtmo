@@ -30,6 +30,7 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `docs/operations/CORTEX_ANALYZER_RUNBOOK.md`
 - `docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`
 - `docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md`
+- `.github/workflows/phase11-thehive-handoff-implementation.yml`
 - `docs/security/SECURITY_OVERVIEW.md`
 - `docs/qa/QA_AND_RELEASE_GATES.md`
 - `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`
@@ -66,6 +67,8 @@ Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASS
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
 Accepted repository evidence covers Taranis, IntelOwl, OpenCTI, MISP and TheHive service boundaries, identity/provenance preservation, durable reconciliation/state, fail-closed authority controls and human publication/share/case-handoff authority. These are repository engineering claims only.
+
+The accepted TheHive implementation remains regression-protected by `.github/workflows/phase11-thehive-handoff-implementation.yml`; retaining this reference records repository evidence only and does not imply live TheHive entitlement, permissions or production authorization.
 
 ### Phase 11.7 Cortex decision
 
