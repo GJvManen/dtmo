@@ -1,8 +1,8 @@
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-CONTRACT = ROOT / "docs" / "integration" / "THEHIVE_DTMO_HANDOFF_CONTRACT.md"
-ROADMAP = ROOT / "docs" / "project" / "PLATFORM_INDUSTRIALISATION_ROADMAP.md"
+CONTRACT = ROOT / "docs" / "architecture" / "THEHIVE_DTMO_HANDOFF_CONTRACT.md"
+ROADMAP = ROOT / "docs" / "roadmap" / "PLATFORM_INDUSTRIALISATION_ROADMAP.md"
 CURRENT_STATE = ROOT / "docs" / "project" / "CURRENT_STATE.md"
 CONTRACT_GATE = ROOT / ".github" / "workflows" / "phase11-thehive-handoff-contract.yml"
 IMPLEMENTATION_GATE = ROOT / ".github" / "workflows" / "phase11-thehive-handoff-implementation.yml"
@@ -41,9 +41,6 @@ def test_phase11_status_preserves_accepted_thehive_and_active_cortex_decision() 
     # Preserve the accepted 11.7 decision as historical evidence while allowing
     # the attributable owner requirement to advance through bounded Phase 11.7b.
     assert "Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE`" in state
-    assert (
-        "Phase 11.7b Cortex analyzer connector | "
-        "`IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`"
-    ) in state
+    assert "Phase 11.7b Cortex analyzer connector | `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`" in state
     assert CONTRACT_GATE.exists()
     assert IMPLEMENTATION_GATE.exists()
