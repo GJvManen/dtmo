@@ -6,7 +6,7 @@ Last updated: **2026-08-17**
 
 This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.7b are `PASS / REPOSITORY_COMPLETE` with the original Phase 11.7 Cortex decision retained as a historical baseline; Phase 11.8a Kubernetes/Helm/GitOps runtime foundation is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.7b are `PASS / REPOSITORY_COMPLETE` with the original Phase 11.7 Cortex decision retained as a historical baseline; Phase 11.8a Kubernetes/Helm/GitOps runtime foundation is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
 
 ## Authoritative current-state sources
 
@@ -51,11 +51,11 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 
 ### RC13 and E8
 
-Accepted historical repository/owner evidence remains unchanged and is not upgraded by Phase 11 work.
+RC13 remains `PASS / OWNER_ACCEPTED`; accepted historical repository/owner evidence remains unchanged and is not upgraded by Phase 11 work.
 
 ### Phase 8–9
 
-**Status:** accepted for the earlier candidate only. These records are historical and cannot satisfy Phase 11.10 or 11.11.
+Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only. These records are historical and cannot satisfy Phase 11.10 or 11.11.
 
 ### Phase 10
 
@@ -83,23 +83,9 @@ Accepted repository evidence covers the later attributable owner-required analyz
 
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
-The bounded repository evidence target covers:
+The bounded repository evidence target covers governed Helm/GitOps configuration, mandatory immutable image digests, existing-secret consumption without secret material in Git, non-root/read-only runtime hardening, disabled service-account token automounting, resource/probe defaults, application PDB foundation and default-deny NetworkPolicy with explicit external CIDR configuration.
 
-- governed Helm chart and GitOps-owned environment values;
-- mandatory immutable image digest with render failure when absent;
-- no embedded secret material in Git-owned values and explicit `existingSecret` consumption;
-- non-root UID/GID 10001, `RuntimeDefault` seccomp, read-only root filesystem, dropped capabilities and no privilege escalation;
-- disabled service-account token automounting;
-- resource requests/limits and `/health` readiness/liveness probes;
-- two application replicas and PodDisruptionBudget foundation;
-- default-deny NetworkPolicy with same-namespace/DNS allowances and explicit external CIDR configuration;
-- synchronized architecture, administration, operations, QA, current-state, roadmap, README, documentation portal and evidence material.
-
-Dedicated repository evidence is:
-
-- `backend/tests/test_phase11_8_runtime_foundation.py`;
-- `.github/workflows/phase11-runtime-foundation.yml`;
-- `docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md`.
+Dedicated repository evidence is `backend/tests/test_phase11_8_runtime_foundation.py`, `.github/workflows/phase11-runtime-foundation.yml` and `docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md`.
 
 A green 11.8a gate does **not** prove live Kubernetes admission, CNI enforcement, cloud IAM, external-secret controller permissions, stateful/multi-zone HA, ingress/TLS, centralized observability, backup/restore, recovery objectives, SBOM/vulnerability scanning, image signing, provenance attestations, capacity, exercised upgrades/rollbacks, production-equivalent validation, independent assurance or production authorization.
 
