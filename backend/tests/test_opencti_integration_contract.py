@@ -79,7 +79,7 @@ def test_phase11_status_preserves_completed_opencti_boundary_and_moves_to_misp()
     assert "11.3 IntelOwl enrichment integration" in roadmap
     assert "11.4 OpenCTI knowledge-graph integration" in roadmap
     assert "11.5 MISP consolidation" in roadmap
-    assert "IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION" in roadmap
+    assert "IN PROGRESS / SYNCHRONIZATION STATE IN EXACT-HEAD VALIDATION" in roadmap
     for text in (current_state, readme, portal):
         assert "Phase 11.4 OpenCTI" in text
         assert "PASS / REPOSITORY_COMPLETE" in text
