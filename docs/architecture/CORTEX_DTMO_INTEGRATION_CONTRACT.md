@@ -22,14 +22,14 @@ No organization administration, user administration, analyzer enable/disable/upd
 ## Authority and provenance invariants
 
 1. Cortex analyzer execution is enrichment only; it does not establish local compromise.
-2. Cortex output never grants DTMO publication/share authority.
+2. Cortex output never grants DTMO publication/share authority. Normalized connector metadata records `external_share_authorized=false`.
 3. Analyzer IDs and observable datatypes are explicit allowlists.
 4. Personal-data datatypes are excluded from this slice.
 5. TLP is explicit and fail-closed; values outside the Cortex 0..3 range are rejected before network I/O.
 6. Stable Cortex job identity is required and returned analyzer identity must match the requested analyzer when present.
 7. Result size is bounded and malformed result structures fail closed.
 8. Cortex responders and all external side-effect actions remain excluded.
-9. DTMO stores or presents Cortex output only as attributable enrichment evidence and preserves the canonical DTMO item identity in connector metadata.
+9. DTMO stores or presents Cortex output only as attributable enrichment evidence and preserves the canonical DTMO item identity in connector metadata. Analyzer output does not prove local compromise; normalized metadata records `local_compromise_proven=false`.
 10. Live provider/API credentials, analyzer configuration, organization scope and lawful disclosure authorization are deployment evidence, never inferred from CI.
 
 ## Trust boundary
@@ -41,7 +41,7 @@ flowchart LR
     A -->|yes| C[Cortex REST API\nseparate service identity]
     C --> J[Analyzer job]
     J --> R[Bounded report]
-    R --> E[DTMO enrichment evidence\nshare=false\ncompromise=false]
+    R --> E[DTMO enrichment evidence\nexternal_share_authorized=false\nlocal_compromise_proven=false]
     C -. responder path excluded .-> Z[No responder execution]
 ```
 
