@@ -14,12 +14,8 @@ This checklist is the high-level control for the post-Phase-10 industrialisation
 | Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Historical independent assurance |
 | Phase 10 | `NO-GO / BLOCKED` | Accountable production decision |
 | Phase 11 | `IN PROGRESS / ACTIVE` | Platform industrialisation |
-| Phase 11.1 | `PASS / REPOSITORY_COMPLETE` | Taranis architecture/contract |
-| Phase 11.2 | `PASS / REPOSITORY_COMPLETE` | Taranis canonical adapter |
-| Phase 11.3 | `PASS / REPOSITORY_COMPLETE` | IntelOwl enrichment integration |
-| Phase 11.4 | `PASS / REPOSITORY_COMPLETE` | OpenCTI contract, adapter and persistence integration |
-| Phase 11.5 MISP consolidation contract | `PASS / REPOSITORY_COMPLETE` | MISP service/API/licensing/identity/authority contract |
-| Phase 11.5 MISP synchronization state/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Repository persistence/authority implementation |
+| Phase 11.1–11.5 | `PASS / REPOSITORY_COMPLETE` | Accepted Taranis, IntelOwl, OpenCTI and MISP boundaries |
+| Phase 11.6 TheHive handoff contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Repository contract/policy evidence |
 | Phase 12 | `NOT STARTED` | Future production authorization |
 
 Historical Phase 8/9 evidence remains candidate-bound and is not reused for the materially changed Phase 11 integrated candidate.
@@ -42,103 +38,68 @@ Repository CI, accountable acceptance, production-equivalent validation, indepen
 - [x] Production authorization denied.
 - [x] Phase 11 successor programme active.
 
-## 3. Phase 11.1–11.2 — Taranis
+## 3. Phase 11.1–11.5 accepted integration baseline
 
-- [x] Service/API/licensing boundary accepted.
-- [x] No Taranis source vendoring before licensing approval.
-- [x] Canonical read adapter, provenance, checkpointing/reconciliation and governed execution accepted.
-- [x] Publication/share authority remains separate.
-
-**Decision:** `PASS / REPOSITORY_COMPLETE`.
-
-## 4. Phase 11.3 — IntelOwl
-
-- [x] Separate AGPL-3.0 service/API boundary accepted.
-- [x] Bounded analyzer allowlists and privacy/TLP fail-closed behavior accepted.
-- [x] Governed human execution and durable enrichment history accepted.
-- [x] No-share/no-local-compromise invariants accepted.
+- [x] Taranis service/API/licensing boundary and canonical adapter accepted.
+- [x] IntelOwl bounded enrichment integration accepted.
+- [x] OpenCTI graph contract, adapter and persistence integration accepted.
+- [x] MISP consolidation contract and synchronization-state/authority implementation accepted.
+- [x] Human publication/share authority remains separate from integrated service identities.
+- [x] Historical Phase 8/9 evidence remains candidate-bound.
 
 **Decision:** `PASS / REPOSITORY_COMPLETE`.
 
-## 5. Phase 11.4 — OpenCTI
+## 4. Phase 11.6 — TheHive — active contract slice
 
-- [x] Service/API/STIX/licensing contract accepted.
-- [x] Read-only GraphQL/STIX adapter accepted.
-- [x] Stable OpenCTI/STIX identity, markings, confidence and provenance preservation accepted.
-- [x] Canonical mapping and immutable reconciliation persistence accepted.
-- [x] PostgreSQL-before-checkpoint ordering and replay safety accepted.
-- [x] Database no-share/no-local-compromise invariants accepted.
-- [x] Exact-head CI and professional documentation accepted.
+- [x] Reviewed TheHive 5.5.16 baseline recorded.
+- [x] Public API v1 (`/api/v1`) selected; deprecated public API v0 excluded.
+- [x] TheHive remains a separate StrangeBee service; no upstream source vendoring.
+- [x] TheHive 5.3+ Community/Gold/Platinum activation requirement recorded as a deployment prerequisite for continued write operation.
+- [x] `POST /api/v1/case` identified only as a future mutation candidate.
+- [x] Automatic case creation explicitly excluded.
+- [x] Human case-handoff approval defined as separate from DTMO publication/share approval.
+- [x] Dedicated server-side RBAC and least-privilege non-human TheHive identity required for later runtime implementation.
+- [x] Stable DTMO canonical identity, handoff/idempotency identity, TheHive case identity and organization context required for reconciliation.
+- [x] Mutable title/tag/assignee values excluded as identity.
+- [x] TLP/PAP/access mappings must preserve the strongest authoritative source restriction.
+- [x] Ambiguous mutation delivery blocks blind replay.
+- [x] Attachments, raw source bodies, credentials, private enrichment and unrelated personal data excluded by default.
+- [x] TheHive case lifecycle explicitly separated from canonical CTI truth, local-compromise proof and DTMO share authority.
+- [x] Responders, Cortex execution, automatic MISP→TheHive automation, external sharing and administration excluded.
+- [x] Architecture, integration, operations/runbook, security, QA, evidence and roadmap documentation added/reconciled.
+- [ ] Dedicated TheHive contract gate green on final exact head.
+- [ ] RC4 Quality Gate green on final exact head.
+- [ ] Professional Documentation Gate green on final exact head.
+- [ ] Contract PR protected-merged with expected-head protection.
+- [ ] Phase 11.6 contract reconciled to `PASS / REPOSITORY_COMPLETE` after protected merge.
 
-**Decision:** `PASS / REPOSITORY_COMPLETE`.
+A later bounded implementation PR must add the minimum human-authorized case-handoff adapter and durable mutation reservation/reconciliation state. Live deployment remains blocked on actual license entitlement, credentials/organization scope, privacy/handling approval and later deployment-bound validation.
 
-## 6. Phase 11.5 — MISP consolidation — active
+## 5. Phase 11.7 — Cortex conditional decision
 
-### Contract slice
-
-- [x] Reviewed MISP v2.5.44 baseline recorded.
-- [x] Separate AGPL-3.0 service/API boundary defined; no MISP core source vendoring.
-- [x] Existing governed `events/restSearch` inbound and human-approved unpublished `events/add` outbound paths identified as the initial consolidated paths.
-- [x] Event/attribute/object UUID identity separation defined.
-- [x] Distribution, sharing-group and TLP/tag restrictions preserved and non-broadening rule defined.
-- [x] Ingestion cannot grant `share_approved`, publication authority or local-compromise proof.
-- [x] Human review/share approval remains authoritative for outbound sharing.
-- [x] Deterministic replay and uncertain-delivery fail-closed requirements defined.
-- [x] Automatic MISP push/pull federation excluded.
-- [x] Automatic OpenCTI↔MISP synchronization excluded.
-- [x] Contract exact-head CI, Professional Documentation Gate and protected merge accepted.
-
-**Contract decision:** `PASS / REPOSITORY_COMPLETE`.
-
-### Synchronization-state/persistence implementation — active
-
-- [x] `misp_synchronization_state` model implemented.
-- [x] One stable MISP event UUID ↔ one DTMO canonical item identity rule implemented.
-- [x] Distribution, sharing-group and normalized TLP authority envelope persisted.
-- [x] Accepted restrictions projected to canonical `metadata_json.misp_restrictions`.
-- [x] Canonical candidate and authority-state reconciliation joined in one database transaction.
-- [x] Identity collision/drift and malformed/incomplete authority state fail closed.
-- [x] Database constraints enforce known distribution/sharing semantics and `external_share_authorized=false`.
-- [x] Migration `0013_misp_synchronization_state` implemented after `0012_opencti_mapping_persistence`.
-- [x] Existing governed outbound path remains human-authorized/unpublished; no parallel publisher introduced.
-- [x] Dedicated state tests/workflow and professional documentation added.
-- [ ] Full exact-head CI matrix green on the final implementation head.
-- [ ] Professional Documentation Gate green on that same exact head.
-- [ ] Existing MISP read/export gates green on that same exact head.
-- [ ] Implementation PR protected-merged with expected-head protection.
-- [ ] Phase 11.5 lifecycle reconciled to `PASS / REPOSITORY_COMPLETE` after protected merge.
-
-## 7. Phase 11.6 — TheHive
-
-- [ ] Start only after Phase 11.5 repository completion.
-- [ ] Controlled intelligence-to-case handoff implemented and audited.
-- [ ] Canonical CTI and case-state semantics remain separate.
-
-## 8. Phase 11.7 — Cortex conditional decision
-
-- [ ] IntelOwl capability-gap assessment performed.
+- [ ] IntelOwl capability-gap assessment performed after Phase 11.6.
 - [ ] Cortex remains absent unless a validated gap justifies adoption.
 
-## 9. Phase 11.8 — Integrated runtime industrialisation
+## 6. Phase 11.8 — Integrated runtime industrialisation
 
 - [ ] Kubernetes/Helm/GitOps model accepted.
 - [ ] Workload identities/external secrets and TLS/network policy implemented.
 - [ ] HA/recovery, observability, SBOM/scanning/signing/attestation accepted.
 - [ ] Capacity, upgrade and rollback procedures tested.
 
-## 10. Phase 11.9 — Migration and compatibility
+## 7. Phase 11.9 — Migration and compatibility
 
 - [ ] Canonical intelligence/provenance/classification/governance migration tested.
 - [ ] Existing integration disposition documented with replacement and rollback paths.
 
-## 11. Phase 11.10–11.11 — new validation and assurance
+## 8. Phase 11.10–11.11 — new validation and assurance
 
 - [ ] One immutable integrated deployment identity established.
 - [ ] New production-equivalent validation complete.
 - [ ] New independent external assurance complete.
 - [ ] Release-blocking findings remediated/retested or formally dispositioned.
 
-## 12. Phase 12 — formal production GO/NO-GO
+## 9. Phase 12 — formal production GO/NO-GO
 
 - [ ] Phase 11 validation and assurance accepted.
 - [ ] Production ownership, IAM/secrets/network, recovery, monitoring/support and privacy/legal/governance approvals recorded.
@@ -146,4 +107,4 @@ Repository CI, accountable acceptance, production-equivalent validation, indepen
 
 ## Current release decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.4 and the Phase 11.5 MISP contract are repository-complete. Phase 11.5 MISP synchronization-state/persistence exact-head validation is active. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.5 are `PASS / REPOSITORY_COMPLETE`. Phase 11.6 TheHive handoff-contract exact-head validation is active. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**

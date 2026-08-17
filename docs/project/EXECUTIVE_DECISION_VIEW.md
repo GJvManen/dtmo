@@ -14,53 +14,49 @@ This document gives accountable decision makers the concise current decision pos
 | Phase 8 production-equivalent staging | `PASS / OWNER_ACCEPTED` | Historical staging evidence accepted for prior candidate |
 | Phase 9 independent assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Historical assurance accepted for prior candidate |
 | Phase 10 production authorization | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` | Production authorization not granted |
-| Phase 11.1–11.2 Taranis | `PASS / REPOSITORY_COMPLETE` | Service boundary and canonical adapter accepted |
-| Phase 11.3 IntelOwl | `PASS / REPOSITORY_COMPLETE` | Enrichment integration accepted |
-| Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE` | Contract, read adapter and persistence accepted |
-| Phase 11.5 MISP consolidation contract | `PASS / REPOSITORY_COMPLETE` | MISP service/API/licensing/authority model accepted |
-| Phase 11.5 MISP synchronization state/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Current bounded implementation gate |
+| Phase 11.1–11.5 | `PASS / REPOSITORY_COMPLETE` | Taranis, IntelOwl, OpenCTI and MISP boundaries accepted |
+| Phase 11.6 TheHive handoff contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Current bounded contract gate |
 | Phase 11 platform industrialisation | `IN PROGRESS / ACTIVE` | Highest-priority programme |
 | Phase 12 production authorization | `NOT STARTED` | New decision only after integrated validation and assurance |
 
 ## Decision interpretation
 
-The project has not received a production `GO`. Phase 11 continues to industrialise the platform before a new authorization attempt.
+The project has not received a production `GO`. Historical Phase 8 and Phase 9 evidence remains valid only for the candidate it originally covered and cannot be treated as production acceptance of the materially changed Phase 11 platform.
 
-Historical Phase 8 and Phase 9 evidence remains valid only for the candidate it originally covered and cannot be treated as production acceptance of the materially changed Phase 11 platform.
-
-The active engineering decision is whether the bounded Phase 11.5 MISP persistence implementation correctly binds stable MISP event identity and authoritative source restrictions to canonical DTMO state without creating publication authority or a second MISP synchronization path.
+The active engineering decision is whether the bounded Phase 11.6 TheHive contract safely defines service/API/licensing, case identity, TLP/PAP/access, human case-handoff authority and mutation replay behavior before any runtime case creation is introduced.
 
 ## Phase 11 required progression
 
 1. **Completed:** Taranis architecture/licensing and canonical adapter.
 2. **Completed:** IntelOwl bounded enrichment integration.
 3. **Completed:** OpenCTI contract, read adapter and canonical mapping/persistence integration.
-4. **Contract completed; implementation active:** MISP synchronization-state/persistence and authority enforcement.
-5. Add TheHive incident/case handoff only after Phase 11.5 repository completion.
-6. Adopt Cortex only if a validated IntelOwl capability gap remains.
-7. Industrialise the composed runtime with Kubernetes/Helm/GitOps, HA, secrets, network policy, observability, backup/recovery and supply-chain controls.
-8. Complete migration/compatibility.
-9. Execute new production-equivalent validation.
-10. Execute new independent external assurance.
-11. Enter Phase 12 for the next formal production GO/NO-GO.
+4. **Completed:** MISP consolidation contract and authoritative synchronization-state implementation.
+5. **Active:** TheHive incident/case handoff contract; runtime mutation remains excluded.
+6. Implement the minimal human-authorized TheHive handoff only after the contract is protected-merged.
+7. Adopt Cortex only if a validated IntelOwl capability gap remains.
+8. Industrialise the composed runtime with Kubernetes/Helm/GitOps, HA, secrets, network policy, observability, backup/recovery and supply-chain controls.
+9. Complete migration/compatibility.
+10. Execute new production-equivalent validation.
+11. Execute new independent external assurance.
+12. Enter Phase 12 for the next formal production GO/NO-GO.
 
-## MISP decision boundary
+## TheHive decision boundary
 
-MISP v2.5.44 remains a separate AGPL-3.0 service/API. The accepted contract preserves MISP UUID identity, distribution, sharing-group and TLP/tag restrictions; human DTMO review/share approval for outbound sharing; deterministic replay protection; unpublished `events/add` destination events; and fail-closed reconciliation after uncertain delivery.
+TheHive 5.5.16 remains a separate StrangeBee service using public API v1. TheHive 5.3+ requires an activated Community, Gold or Platinum license for continued write functionality; live entitlement is deployment evidence, not a CI assumption.
 
-The active implementation adds `misp_synchronization_state`, maps one stable MISP event UUID to one DTMO canonical item, persists the authoritative source restriction envelope and projects it to canonical `metadata_json.misp_restrictions` in the same database transaction as canonical ingestion. Identity collision/drift, malformed or incomplete restrictions and attempted inbound external-share authority fail closed.
+`POST /api/v1/case` is a mutation candidate only after explicit human-authorized DTMO case handoff. A later implementation must persist stable DTMO canonical identity, handoff/idempotency identity, TheHive case identity and organization context; ambiguous delivery must block blind replay. Mutable title/tag/assignee fields are not identity.
 
-Service accounts, connectors, schedulers, IntelOwl, OpenCTI and MISP itself cannot grant DTMO share approval. Automatic MISP federation, automatic publication and OpenCTI↔MISP synchronization remain outside the boundary.
+TLP/PAP/access mapping may not broaden authoritative source restrictions. TheHive case lifecycle is not canonical CTI truth, local-compromise proof or DTMO share authority. Responders, Cortex execution, automatic MISP→TheHive automation, external sharing and administration remain excluded.
 
 ## Decision rules
 
 - Green CI is repository engineering evidence, not production authorization.
 - Historical Phase 8/9 evidence remains deployment/candidate-bound.
 - Service-to-service integrations preserve provenance, least privilege and applicable licensing boundaries.
-- Technical connectivity or platform permissions do not grant DTMO publication/share authority.
-- Source handling restrictions cannot be broadened by re-export.
+- Technical connectivity or platform permissions do not grant DTMO publication/share or case-handoff authority.
+- Source handling restrictions cannot be broadened by handoff or re-export.
 - Missing, conflicting or inaccessible mandatory evidence fails closed.
 
 ## Current decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.4 and the Phase 11.5 MISP contract are `PASS / REPOSITORY_COMPLETE`. Phase 11.5 MISP synchronization-state/persistence exact-head validation is the active bounded gate. DTMO remains not production authorized; Phase 12 starts only after Phase 11.10/11.11 evidence is accepted.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.5 are `PASS / REPOSITORY_COMPLETE`. Phase 11.6 TheHive handoff-contract exact-head validation is the active bounded gate. DTMO remains not production authorized; Phase 12 starts only after Phase 11.10/11.11 evidence is accepted.**

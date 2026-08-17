@@ -43,8 +43,8 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 MISP consolidation contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 MISP synchronization state/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.5 MISP consolidation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.6 TheHive handoff contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
 
 DTMO is not production authorized.
@@ -53,58 +53,43 @@ DTMO is not production authorized.
 
 Existing workflow families remain required. Each Phase 11 integration adds bounded integration tests without weakening previous quality, security, recovery, governance or documentation controls.
 
-The accepted **Phase 11 IntelOwl Integration Contract Gate** and **Phase 11 OpenCTI Integration Contract Gate** remain repository evidence for Phase 11.3 and Phase 11.4. The accepted **Phase 11 MISP Consolidation Contract Gate** remains contract evidence. The active implementation gate is the **Phase 11 MISP Consolidation State Gate**.
+The accepted Taranis, IntelOwl, OpenCTI and MISP gates remain repository evidence for Phase 11.1–11.5. The active implementation gate is the **Phase 11 TheHive Handoff Contract Gate**.
 
 ## Phase 11 gate sequence
 
-### 11.1 Taranis architecture and gap assessment
+### 11.1–11.5 accepted boundaries
 
 **Repository status:** `PASS / REPOSITORY_COMPLETE`.
 
-### 11.2 Taranis canonical adapter
+Accepted evidence covers Taranis architecture/adapter, IntelOwl bounded enrichment, OpenCTI graph integration and MISP authoritative governed exchange/synchronization state. Repository acceptance is not production evidence.
 
-**Repository status:** `PASS / REPOSITORY_COMPLETE`.
-
-### 11.3 IntelOwl integration
-
-**Repository status:** `PASS / REPOSITORY_COMPLETE`.
-
-### 11.4 OpenCTI integration
-
-**Repository status:** `PASS / REPOSITORY_COMPLETE`.
-
-Accepted evidence covers the service/API/STIX/licensing contract, bounded GraphQL/STIX adapter, explicit OpenCTI/STIX↔DTMO identity mapping, immutable reconciliation history, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. Repository acceptance is not live OpenCTI or production evidence.
-
-### 11.5 MISP consolidation contract
-
-**Repository status:** `PASS / REPOSITORY_COMPLETE`.
-
-The accepted contract fixes MISP v2.5.44 as the reviewed baseline, keeps MISP a separate AGPL-3.0 service/API, identifies the existing `events/restSearch` and human-approved unpublished `events/add` paths as the only initial boundaries, preserves source restrictions and human share authority, and excludes automatic federation/OpenCTI synchronization.
-
-### 11.5 MISP synchronization-state implementation — active bounded gate
+### 11.6 TheHive handoff contract — active bounded gate
 
 Required exact-head repository evidence:
 
-- `misp_synchronization_state` durably binds one DTMO canonical item to one stable MISP event UUID;
-- canonical MISP ingestion reconciles the normalized `_dtmo_misp` authority envelope in the same database transaction as the canonical item;
-- event UUID, distribution, sharing group, normalized TLP tags, authority snapshot/hash and last-seen state are preserved;
-- accepted restrictions are projected to canonical `metadata_json.misp_restrictions` for the existing governed export path;
-- event UUID collision, DTMO-item MISP identity drift, unknown distribution, missing sharing group for distribution `4`, malformed/non-authoritative restrictions and attempted inbound external-share authority fail closed;
-- database constraints enforce known distribution, required sharing-group semantics and `external_share_authorized=false`;
-- migration `0013_misp_synchronization_state` follows `0012_opencti_mapping_persistence`, upgrades and downgrades cleanly;
-- existing MISP read/export tests remain green and no second MISP API client is introduced;
-- human review/share approval remains the only outbound authority and destination events remain unpublished;
-- automatic MISP push/pull federation, automatic OpenCTI↔MISP synchronization, TheHive case creation and service-account share approval remain excluded;
-- architecture, integration, security, current-state, QA, evidence, roadmap and README/docs portal documentation remain synchronized;
-- `docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md`, Professional Documentation Gate, RC4 Quality Gate, existing MISP read/export gates and the dedicated Phase 11 MISP Consolidation State Gate all succeed on the same exact head.
+- TheHive 5.5.16 and public API v1 (`/api/v1`) are the reviewed upstream baseline;
+- TheHive remains a separate StrangeBee service and no source is vendored;
+- TheHive 5.3+ license activation requirement for continued write functionality is explicitly recorded as a deployment prerequisite;
+- `POST /api/v1/case` is not invoked automatically and remains a mutation candidate only after explicit human-approved DTMO case handoff;
+- case-handoff authority and DTMO publication/share authority are distinct server-side RBAC decisions;
+- DTMO canonical UUID, handoff request/idempotency identity, TheHive case identity and organization context are treated as stable reconciliation identities;
+- mutable title/description/tag/assignee state is not identity;
+- ambiguous mutation delivery blocks blind replay;
+- TLP/PAP/access mappings preserve or strengthen authoritative source restrictions and unknown/unrepresentable mappings fail closed;
+- a dedicated least-privilege TheHive service identity is required and runtime secrets remain outside repository evidence;
+- attachments, raw source bodies, credentials, private enrichment and unrelated personal data are excluded by default;
+- TheHive case lifecycle does not become canonical CTI truth, proof of local compromise or DTMO external-share authority;
+- responders, Cortex execution, automatic MISP→TheHive automation, external sharing and administration remain excluded;
+- architecture, integration, operations, security, current-state, QA, evidence, roadmap and README/docs portal documentation remain synchronized;
+- `docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md`, Professional Documentation Gate, RC4 Quality Gate and the dedicated Phase 11 TheHive Handoff Contract Gate all succeed on the same exact head.
 
-Repository acceptance does not establish live MISP credentials, effective production roles, remote-server trust, lawful live-data sharing, production synchronization/federation behavior, production-equivalent validation, independent assurance or production authorization.
+Repository acceptance does not establish live TheHive connectivity, activated entitlement, effective deployed permissions, target-organization configuration, privacy approval, real-data handling correctness, production-equivalent validation, independent assurance or production authorization.
 
-Only after protected merge and lifecycle reconciliation may Phase 11.5 become `PASS / REPOSITORY_COMPLETE`; Phase 11.6 remains blocked until then.
+Only after protected merge and lifecycle reconciliation may the contract become `PASS / REPOSITORY_COMPLETE`. The next bounded 11.6 slice may then implement the minimum human-authorized case-handoff adapter and durable mutation reconciliation state.
 
-### 11.6 TheHive / 11.7 Cortex decision
+### 11.7 Cortex decision
 
-Required evidence includes controlled case handoff with provenance/audit references and a documented Cortex decision based only on an accepted IntelOwl capability gap.
+Adopt Cortex only if an accepted capability-gap analysis proves IntelOwl cannot satisfy a validated requirement. TheHive integration is not itself evidence of a Cortex gap.
 
 ### 11.8 Integrated runtime
 
@@ -122,17 +107,18 @@ The integrated candidate must receive fresh production-equivalent validation and
 
 Phase 12 is `NOT STARTED`. It requires accepted Phase 11 validation/assurance plus production-specific approvals. Missing mandatory input, unresolved release-blocking findings, unaccepted residual risk or release-identity mismatch remains `NO-GO / BLOCKED`.
 
-## Security and publication invariants
+## Security and authority invariants
 
 Release gates must preserve:
 
 - ingestion/enrichment/graph/MISP synchronization creates candidate/context intelligence only;
 - external sharing requires separate human approval;
-- connectors, CI, service accounts and integrated platforms do not gain publication authority;
-- IntelOwl analyzer verdicts, OpenCTI graph mappings and MISP event presence do not imply local compromise;
+- case handoff requires separate human approval;
+- connectors, CI, service accounts and integrated platforms do not gain publication/share or case-handoff authority;
+- IntelOwl verdicts, OpenCTI graph mappings, MISP event presence and TheHive case state do not imply local compromise;
 - human and machine roles remain separated;
 - framework mappings remain explicit and do not imply blanket compliance;
-- provenance, confidence, markings and MISP distribution/sharing restrictions are preserved across service boundaries;
+- provenance, confidence, markings and source restrictions are preserved across service boundaries;
 - raw secret values are not committed as evidence;
 - external integrations use dedicated identities and bounded scopes.
 

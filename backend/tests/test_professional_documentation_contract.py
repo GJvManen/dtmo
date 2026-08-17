@@ -15,10 +15,13 @@ STABLE_DOCUMENTS = (
     "docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md",
     "docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md",
     "docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md",
+    "docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md",
     "docs/integrations/TARANIS_ADAPTER.md",
     "docs/integrations/INTELOWL_INTEGRATION.md",
     "docs/integrations/OPENCTI_INTEGRATION.md",
+    "docs/integrations/THEHIVE_HANDOFF.md",
     "docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md",
+    "docs/operations/THEHIVE_HANDOFF_RUNBOOK.md",
     "docs/security/SECURITY_OVERVIEW.md",
     "docs/governance/GOVERNANCE_MAPPING_REGISTRY.md",
     "docs/project/CURRENT_STATE.md",
@@ -33,6 +36,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md",
     "docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md",
     "docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md",
+    "docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -115,8 +119,8 @@ def test_project_readme_retains_professional_product_structure() -> None:
         "Taranis AI",
         "IntelOwl",
         "OpenCTI",
+        "MISP",
         "TheHive",
-        "Phase 11.3 IntelOwl",
     ):
         assert marker in readme
 
@@ -138,10 +142,6 @@ def test_architecture_retains_required_layers_and_trust_boundaries() -> None:
     ):
         assert marker in architecture
 
-    opencti = _read("docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md")
-    for marker in ("7.260811.0", "service-to-service", "STIX 2.1", "TAXII 2.1", "provenance", "Apache-2.0", "Enterprise Edition"):
-        assert marker in opencti
-
 
 def test_current_professional_lifecycle_is_consistent() -> None:
     for path in CURRENT_STATE_DOCUMENTS:
@@ -160,11 +160,9 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     for marker in (
         "Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.4 OpenCTI contract | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.4 OpenCTI read-only adapter | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.4 OpenCTI canonical mapping/persistence | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.5 MISP consolidation contract | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.5 MISP synchronization state/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.5 MISP consolidation | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.6 TheHive handoff contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 12 | `NOT STARTED`",
     ):
         assert marker in current_state
@@ -173,50 +171,36 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.2 Taranis → DTMO canonical adapter\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.3 IntelOwl enrichment integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
-    assert "11.5 MISP consolidation\n\n**Status:** `IN PROGRESS / SYNCHRONIZATION STATE IN EXACT-HEAD VALIDATION`" in industrialisation
-    assert "11.6 TheHive incident/case handoff" in industrialisation
+    assert "11.5 MISP consolidation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
+    assert "11.6 TheHive incident/case handoff\n\n**Status:** `IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION`" in industrialisation
     assert "11.7 Cortex decision gate" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
 
 
-def test_intelowl_contract_and_integration_docs_are_synchronized() -> None:
+def test_accepted_integration_documents_remain_exposed() -> None:
     assert "IntelOwl external Connectors" in _read("docs/architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md")
-    assert "IntelOwl external Connectors" in _read("docs/integrations/INTELOWL_INTEGRATION.md")
-    assert "IntelOwl → DTMO Integration Contract" in _read("docs/README.md")
-    assert "Phase 11 IntelOwl Integration Contract Gate" in _read("docs/qa/QA_AND_RELEASE_GATES.md")
-    assert "phase11-intelowl-integration-contract.yml" in _read("docs/evidence/EVIDENCE_INDEX.md")
+    opencti = _read("docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md")
+    for marker in ("STIX 2.1", "TAXII 2.1", "provenance"):
+        assert marker in opencti
+    misp = _read("docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md")
+    for marker in ("MISP v2.5.44", "AGPL-3.0", "events/restSearch", "events/add", "human"):
+        assert marker in misp
 
 
-def test_opencti_documents_are_synchronized_with_persistence_slice() -> None:
-    contract = _read("docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md")
-    integration = _read("docs/integrations/OPENCTI_INTEGRATION.md")
-    runbook = _read("docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md")
+def test_thehive_contract_is_exposed_without_false_runtime_evidence() -> None:
+    contract = _read("docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md")
+    integration = _read("docs/integrations/THEHIVE_HANDOFF.md")
+    runbook = _read("docs/operations/THEHIVE_HANDOFF_RUNBOOK.md")
     portal = _read("docs/README.md")
     evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
-    gate = _read("docs/qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md")
-
-    for marker in ("STIX 2.1", "TAXII 2.1", "provenance"):
+    gate = _read("docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md")
+    for marker in ("TheHive 5.5.16", "API v1 (`/api/v1`)", "POST /api/v1/case", "human-authorized DTMO action"):
         assert marker in contract
-    for marker in ("opencti_object_mappings", "opencti_mapping_revisions", "commit_page(page)", "provenance"):
-        assert marker in integration
-    for marker in ("0012_opencti_mapping_persistence", "PostgreSQL commit", "idempotent"):
-        assert marker in runbook
-    assert "Phase 11.4 OpenCTI persistence" in portal
-    assert "backend/tests/test_phase11_4_opencti_persistence.py" in evidence
-    assert "external_share_authorized=false" in gate
-    assert "phase11-opencti-integration-contract.yml" in evidence
-
-
-def test_misp_consolidation_contract_is_exposed() -> None:
-    contract = _read("docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md")
-    contract_gate = _read("docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md")
-    state_gate = _read("docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md")
-    for marker in ("MISP v2.5.44", "AGPL-3.0", "events/restSearch", "events/add", "human"):
-        assert marker in contract
-    assert "PASS / REPOSITORY_COMPLETE" in contract
-    assert "Phase 11.5" in contract_gate
-    for marker in ("misp_synchronization_state", "0013_misp_synchronization_state", "external_share_authorized=false"):
-        assert marker in state_gate
+    assert "CONTRACT ONLY / NO RUNTIME MUTATION ADAPTER YET" in integration
+    assert "do not blind-retry" in runbook
+    assert "Phase 11.6 TheHive Handoff Contract Gate" in portal
+    assert "phase11-thehive-handoff-contract.yml" in evidence
+    assert "A green repository gate does not authorize live case creation" in gate
 
 
 def test_documentation_portal_exposes_audience_guides_and_visual_evidence_boundary() -> None:

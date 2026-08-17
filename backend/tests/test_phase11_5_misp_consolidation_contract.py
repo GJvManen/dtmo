@@ -19,14 +19,9 @@ def _read(path: Path) -> str:
 
 def test_misp_contract_records_upstream_service_api_and_license_boundary() -> None:
     text = _read(CONTRACT)
-    required = (
-        "MISP v2.5.44",
-        "GNU AGPL-3.0",
-        "separate service/API consumer",
-        "does not vendor, fork, embed, or redistribute MISP core source",
-        "POST /events/restSearch",
-        "POST /events/add",
-    )
+    required = ("MISP v2.5.44", "GNU AGPL-3.0", "separate service/API consumer",
+                "does not vendor, fork, embed, or redistribute MISP core source",
+                "POST /events/restSearch", "POST /events/add")
     for marker in required:
         assert marker in text, f"missing MISP contract marker: {marker}"
 
@@ -35,11 +30,9 @@ def test_misp_contract_preserves_identity_restrictions_and_human_authority() -> 
     text = _read(CONTRACT)
     required = (
         "MISP event UUID is the stable upstream identity",
-        "distribution, sharing-group and TLP/tag restrictions",
-        "never sets DTMO `share_approved`",
+        "distribution, sharing-group and TLP/tag restrictions", "never sets DTMO `share_approved`",
         "Service accounts, connectors, schedulers, IntelOwl, OpenCTI and MISP itself cannot grant DTMO share approval",
-        "cannot be broadened on re-export",
-        "created **unpublished**",
+        "cannot be broadened on re-export", "created **unpublished**",
         "blocks automated replay until an operator reconciles",
     )
     for marker in required:
@@ -49,38 +42,30 @@ def test_misp_contract_preserves_identity_restrictions_and_human_authority() -> 
 def test_misp_contract_excludes_implicit_federation_and_false_evidence() -> None:
     text = _read(CONTRACT)
     required = (
-        "does **not** enable MISP server push/pull synchronization",
-        "OpenCTI↔MISP synchronization is likewise excluded",
-        "Authentication/authorization failures (`401`/`403`) fail closed",
-        "does **not** prove live MISP credentials",
-        "TheHive case creation",
-        "Cortex adoption",
+        "does **not** enable MISP server push/pull synchronization", "OpenCTI↔MISP synchronization is likewise excluded",
+        "Authentication/authorization failures (`401`/`403`) fail closed", "does **not** prove live MISP credentials",
+        "TheHive case creation", "Cortex adoption",
     )
     for marker in required:
         assert marker in text, f"missing MISP fail-closed/exclusion marker: {marker}"
 
 
 def test_existing_misp_paths_are_present_for_consolidation() -> None:
-    assert READ_CONNECTOR.exists()
-    assert EXPORT_API.exists()
-    assert EXPORT_GOVERNANCE.exists()
-    assert READ_INTEGRATION.exists()
-    assert EXPORT_DOC.exists()
-    assert QA_GATE.exists()
-
+    assert READ_CONNECTOR.exists() and EXPORT_API.exists() and EXPORT_GOVERNANCE.exists()
+    assert READ_INTEGRATION.exists() and EXPORT_DOC.exists() and QA_GATE.exists()
     assert "events/restSearch" in _read(READ_CONNECTOR)
     assert "events/add" in _read(EXPORT_GOVERNANCE)
     assert "Permission.SHARE_APPROVE" in _read(EXPORT_API)
     assert "service accounts cannot export intelligence to MISP" in _read(EXPORT_GOVERNANCE)
 
 
-def test_phase11_status_moves_to_misp_state_validation() -> None:
+def test_phase11_status_preserves_completed_misp_boundary() -> None:
     roadmap = _read(ROADMAP)
     state = _read(CURRENT_STATE)
     assert "11.4 OpenCTI" in roadmap
-    assert "PASS / REPOSITORY_COMPLETE" in roadmap
     assert "11.5 MISP consolidation" in roadmap
-    assert "SYNCHRONIZATION STATE IN EXACT-HEAD VALIDATION" in roadmap
+    assert "11.6 TheHive incident/case handoff" in roadmap
+    assert "PASS / REPOSITORY_COMPLETE" in roadmap
     assert "Phase 11.4" in state
     assert "PASS / REPOSITORY_COMPLETE" in state
     assert "Phase 11.5 MISP" in state

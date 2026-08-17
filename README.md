@@ -9,12 +9,10 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Production-equivalent staging:** Phase 8 `PASS / OWNER_ACCEPTED`  
 > **Independent assurance:** Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED`  
 > **Phase 10 production decision:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`  
-> **Phase 11.1 Taranis architecture/contract:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.2 Taranis adapter:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.3 IntelOwl integration:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.4 OpenCTI integration:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.5 MISP consolidation contract:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded priority:** Phase 11.5 MISP synchronization-state/persistence + authority enforcement `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
+> **Phase 11.5 MISP consolidation:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded priority:** Phase 11.6 TheHive handoff contract `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
 > **Next production authorization:** Phase 12 `NOT STARTED`  
 > **Production status:** **not production authorized**
 
@@ -26,43 +24,39 @@ DTMO is built around five principles: provenance first; fail closed; human autho
 
 ## Product capabilities
 
-The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The repository-complete baseline includes governed OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL semantics plus Phase 11 Taranis collection/canonicalization, IntelOwl enrichment and OpenCTI graph integration.
+The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The repository-complete baseline includes governed OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL semantics plus Phase 11 Taranis AI collection/canonicalization, Phase 11.3 IntelOwl enrichment, Phase 11.4 OpenCTI graph integration and Phase 11.5 governed MISP consolidation.
 
-Phase 11.5 consolidates the existing MISP read and governed-export capabilities into one explicit authority and synchronization model. DTMO remains authoritative for education-sector relevance, canonical review state, local exposure/compromise semantics, governance evidence and human publication/share approval.
+Phase 11.6 introduces TheHive only as a separate incident/case-management service boundary. The current slice is contract-only: no automatic case creation or runtime mutation adapter is accepted yet.
 
 ## Phase 11 composed intelligence pipeline
 
 ```mermaid
 flowchart LR
-    S[Approved / governed sources] --> TAR[Taranis AI\ncollection + assessment]
+    S[Approved governed sources] --> TAR[Taranis AI\ncollection + assessment]
     TAR --> D[(DTMO canonical intelligence)]
     D --> OWL[IntelOwl\nbounded enrichment]
     OWL --> D
-    O[OpenCTI\nSTIX 2.1 graph] --> A[Read-only adapter]
-    A --> D
-    M[MISP\ngoverned exchange] -->|read + source restrictions| MS[(MISP sync state)]
-    MS --> D
-    D -->|human-approved unpublished export| M
-    D -. authority remains .-> H[Human share/publication approval]
-    D --> API[FastAPI application services]
-    API --> UI[Unified DTMO console]
+    O[OpenCTI\nSTIX 2.1 graph] --> D
+    M[MISP\ngoverned exchange] <--> D
+    D --> H{Human case-handoff approval?}
+    H -->|approved| TH[TheHive\nincident/case workflow]
+    H -->|not approved| N[No case mutation]
+    D -. authority remains .-> P[Human share/publication approval]
 ```
 
-PostgreSQL remains canonical DTMO application truth. IntelOwl, OpenCTI and MISP provide attributable context/exchange services; none independently establishes local compromise or grants DTMO external-share/publication authority.
+PostgreSQL remains canonical DTMO application truth. Taranis AI, IntelOwl, OpenCTI, MISP and TheHive are separate service boundaries. None independently establishes local compromise or grants DTMO external-share/publication authority.
 
-## Phase 11.5 MISP consolidation
+## Phase 11.6 TheHive handoff contract
 
-The reviewed upstream contract baseline is **MISP v2.5.44**. MISP remains a separate **AGPL-3.0** service/API boundary; DTMO does not vendor MISP core source. The consolidation contract is repository-complete.
+The reviewed upstream baseline is **TheHive 5.5.16** using public **API v1 (`/api/v1`)**. Public API v0 is deprecated. The initial mutation candidate is `POST /api/v1/case`, but a canonical DTMO intelligence item never creates a case by itself.
 
-Existing DTMO MISP capabilities are deliberately reused rather than duplicated. The inbound connector uses `POST /events/restSearch` and preserves event/attribute/object identities, distribution, sharing-group, TLP/tag, galaxy and raw provenance context. The outbound path uses `POST /events/add` only after attributable human review/share approval, creates unpublished destination events and uses durable replay protection.
+A later implementation must require explicit human-authorized case handoff under dedicated server-side RBAC, a dedicated least-privilege non-human TheHive identity, stable DTMO↔TheHive identity mapping, durable idempotency/replay state and fail-closed TLP/PAP/access handling. Case-handoff approval and publication/share approval are distinct authorities.
 
-The active implementation adds `misp_synchronization_state`, binding a DTMO canonical item to its stable MISP event UUID and authoritative distribution/sharing-group/TLP envelope. Accepted restrictions are projected to canonical `metadata_json.misp_restrictions`, allowing the existing governed export path to enforce the same source restrictions. Identity collisions, unknown distribution, incomplete sharing-group semantics and attempts to import share authority fail closed.
+TheHive 5.3+ requires an activated Community, Gold or Platinum license for continued write functionality. Repository CI does not prove that deployment entitlement. Attachments, raw source bodies, credentials, private enrichment results and unrelated personal data are excluded by default.
 
-Migration `0013_misp_synchronization_state` follows the accepted OpenCTI persistence migration. Database constraints enforce known distribution semantics, sharing-group requirements and `external_share_authorized=false`.
+TheHive case state remains operational incident-response state; it does not replace canonical CTI truth, prove local compromise or grant external-share authority. Responders, Cortex execution, automatic MISP→TheHive automation, external sharing and administration remain outside this contract slice.
 
-Automatic MISP server push/pull synchronization, automatic OpenCTI↔MISP synchronization and automatic MISP publication remain excluded. Repository CI is not live-MISP, deployment, assurance or production evidence.
-
-See [MISP → DTMO Consolidation Contract](docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md), [MISP Read Integration](docs/integrations/MISP_READ_INTEGRATION.md), [MISP Governed Export](docs/intelligence/MISP_GOVERNED_EXPORT.md) and [Phase 11.5 MISP Consolidation State Gate](docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md).
+See [TheHive → DTMO Handoff Contract](docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md), [TheHive Handoff Integration](docs/integrations/THEHIVE_HANDOFF.md), [TheHive Handoff Operations Runbook](docs/operations/THEHIVE_HANDOFF_RUNBOOK.md) and [Phase 11.6 TheHive Handoff Contract Gate](docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md).
 
 ## Architecture
 
@@ -82,15 +76,15 @@ The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, S
 | Phase 11.2 | Taranis→DTMO canonical adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 | IntelOwl enrichment integration | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.4 | OpenCTI STIX knowledge-graph integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 contract | MISP consolidation authority/service/API/licensing model | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 implementation | MISP synchronization state/persistence and authority enforcement | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.5 | MISP consolidation and authority state | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.6 contract | TheHive incident/case handoff service/API/identity/licensing boundary | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
 
 Historical Phase 8/9 evidence remains bound to the earlier candidate. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.
 
 ## Product roadmap
 
-The fixed sequence is MISP consolidation → TheHive → conditional Cortex → Kubernetes/Helm/GitOps hardening → migration/compatibility → new validation → new independent assurance → Phase 12.
+The fixed sequence is TheHive → conditional Cortex → Kubernetes/Helm/GitOps hardening → migration/compatibility → new production-equivalent validation → new independent external assurance → Phase 12.
 
 See the [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current Project State](docs/project/CURRENT_STATE.md), [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md) and [Evidence Index](docs/evidence/EVIDENCE_INDEX.md).
 
@@ -122,6 +116,6 @@ DTMO is licensed under the **Apache License, Version 2.0**. Canonical governance
 - `docs/legal/LICENSING.md`
 - `docs/legal/THIRD_PARTY.md`
 
-Taranis AI remains a separate service behind its own licensing boundary. IntelOwl and pyIntelOwl remain separate AGPL-3.0 services. OpenCTI Community Edition is Apache-2.0 and OpenCTI Enterprise Edition is separately licensed. MISP core remains a separate AGPL-3.0 service/API boundary. Phase 11 integrations do not vendor upstream platform source into DTMO without explicit licensing approval.
+Taranis AI, IntelOwl, OpenCTI, MISP and TheHive remain separate services under their applicable licensing boundaries. IntelOwl and MISP remain separate AGPL-3.0 services; OpenCTI Community Edition is Apache-2.0 while Enterprise Edition is separately licensed; TheHive license entitlement is deployment-specific. Phase 11 integrations do not vendor upstream platform source without explicit licensing approval.
 
-Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, enrich, synchronize, publish or redistribute third-party material.
+Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, enrich, synchronize, create cases, publish or redistribute third-party material.

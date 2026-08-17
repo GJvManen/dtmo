@@ -13,16 +13,16 @@ DTMO prefers mature service integrations over rebuilding generic collection, enr
 
 ```mermaid
 flowchart LR
-    EXT[External OSINT / CERT / vendor sources] --> TAR[Taranis AI\ncollection + assessment]
-    TAR --> DTMO[DTMO\neducation CTI + vulnerability context + governance]
-    DTMO --> OWL[IntelOwl\nIOC enrichment]
+    EXT[External governed sources] --> TAR[Taranis AI\ncollection + assessment]
+    TAR --> DTMO[DTMO\ncanonical education CTI + governance]
+    DTMO --> OWL[IntelOwl\nenrichment]
     OWL --> DTMO
-    DTMO <--> OCTI[OpenCTI\nSTIX 2.1 knowledge graph]
-    DTMO --> MISP[MISP\ngoverned exchange]
+    DTMO <--> OCTI[OpenCTI\nSTIX graph]
+    DTMO <--> MISP[MISP\ngoverned exchange]
     DTMO --> HIVE[TheHive\nincident/case workflow]
 ```
 
-The target is a composed service architecture, not a source-code merger. Provenance, RBAC, human publication/share authority and fail-closed evidence rules remain explicit across every boundary.
+Provenance, RBAC, human publication/share authority and fail-closed evidence rules remain explicit across every boundary.
 
 ## Fixed priority order
 
@@ -57,54 +57,57 @@ The target is a composed service architecture, not a source-code merger. Provena
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-The accepted Phase 11.4 boundary includes the OpenCTI service/API/STIX/licensing contract, bounded read-only GraphQL/STIX adapter, explicit OpenCTI/STIX↔DTMO identity mapping, immutable reconciliation history, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. Repository acceptance remains engineering evidence only and does not prove live OpenCTI deployment or production authorization.
-
 ### 11.5 MISP consolidation
 
-**Status:** `IN PROGRESS / SYNCHRONIZATION STATE IN EXACT-HEAD VALIDATION`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-The MISP v2.5.44 service/API/licensing and authority contract is `PASS / REPOSITORY_COMPLETE`. MISP remains a separate AGPL-3.0 service/API boundary.
-
-The active bounded implementation reconciles the existing governed inbound `POST /events/restSearch` and human-approved unpublished `POST /events/add` paths through one durable authority state:
-
-- `misp_synchronization_state` binds one DTMO canonical item to one stable MISP event UUID;
-- event UUID, not title or instance-local numeric ID, remains authoritative upstream identity;
-- distribution, sharing-group and TLP restrictions are persisted as a source authority envelope;
-- the accepted envelope is projected to canonical `metadata_json.misp_restrictions`, reusing the existing governed-export enforcement path;
-- conflicting identity mappings, unknown distribution, incomplete sharing-group restrictions or attempts to import share authority fail closed;
-- database constraints enforce known distribution semantics, sharing-group requirements and `external_share_authorized=false`;
-- migration `0013_misp_synchronization_state` follows the accepted OpenCTI migration;
-- human DTMO review/share approval remains the only outbound trigger;
-- uncertain outbound delivery continues to block blind replay;
-- automatic MISP federation, automatic OpenCTI↔MISP synchronization and event publication remain excluded.
-
-```mermaid
-flowchart LR
-    M[MISP\nseparate AGPL-3.0 service] -->|events/restSearch| R[Existing governed inbound]
-    R --> V{UUID + restrictions valid?}
-    V -->|no| X[Fail closed]
-    V -->|yes| S[(MISP synchronization state)]
-    S --> D[(DTMO canonical item\nauthoritative restrictions)]
-    D --> H{Human review + share approval?}
-    H -->|no| N[No outbound side effect]
-    H -->|yes| P[Existing durable replay reservation]
-    P -->|events/add unpublished| M
-    M -->|uncertain| U[Block replay; operator reconcile]
-```
-
-Repository CI remains engineering evidence only. It does not establish live MISP connectivity, deployed credentials/RBAC, lawful data sharing, remote-server trust, federation behavior, independent assurance or production authorization.
-
-After protected acceptance of this implementation and lifecycle reconciliation, Phase 11.5 may become `PASS / REPOSITORY_COMPLETE`. Phase 11.6 remains blocked until then.
+The accepted Phase 11.5 boundary keeps MISP v2.5.44 as a separate AGPL-3.0 service/API, unifies governed `events/restSearch` inbound and human-approved unpublished `events/add` outbound behavior through durable `misp_synchronization_state`, preserves authoritative distribution/sharing-group/TLP restrictions and fails closed on identity/restriction ambiguity or uncertain outbound delivery. Automatic federation, automatic publication and automatic OpenCTI↔MISP synchronization remain excluded.
 
 ### 11.6 TheHive incident/case handoff
 
-**Status:** `PLANNED / BLOCKED BY 11.5`
+**Status:** `IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION`
+
+The first bounded Phase 11.6 slice is contract-only. It assesses TheHive 5.5.16, API v1, case identity, licensing/entitlement, TLP/PAP/access semantics, least-privilege service identity, human case-handoff authorization and mutation replay safety before any runtime adapter is added.
+
+Contract rules:
+
+- TheHive remains a separate StrangeBee service; no upstream source is vendored;
+- API v1 (`/api/v1`) is the supported integration surface and public API v0 is not used;
+- TheHive 5.3+ requires an activated Community/Gold/Platinum license for continued write functionality, so deployment entitlement is an explicit prerequisite;
+- a DTMO intelligence item, MISP event, OpenCTI object, IntelOwl result or Taranis assessment never creates a case by itself;
+- `POST /api/v1/case` is a mutation candidate only after explicit human-authorized DTMO handoff under dedicated server-side RBAC;
+- case-handoff authority is distinct from DTMO publication/share authority;
+- DTMO canonical UUID, handoff request/idempotency key, TheHive case identity and organization context must be durably mapped;
+- mutable title/tag/assignee values are never identity;
+- TLP/PAP/access mappings cannot broaden authoritative source restrictions; unknown or ambiguous mappings fail closed;
+- ambiguous mutation delivery blocks blind replay and requires reconciliation;
+- attachments, raw source bodies, credentials, private enrichment and unrelated personal data are excluded by default;
+- TheHive case lifecycle does not become canonical CTI truth, local-compromise proof or DTMO external-share authority;
+- responders, Cortex execution, automatic MISP→TheHive automation, external sharing and platform/organization administration are outside this slice.
+
+```mermaid
+flowchart LR
+    D[(DTMO canonical intelligence)] --> A{Human case-handoff approval?}
+    A -->|no| N[No TheHive mutation]
+    A -->|yes| V{Identity + provenance + TLP/PAP valid?}
+    V -->|no| X[Fail closed]
+    V -->|yes| R[(Durable handoff reservation)]
+    R --> C[TheHive API v1\nPOST /api/v1/case]
+    C -->|201 + case identity| M[(DTMO↔TheHive mapping)]
+    C -->|timeout/ambiguous| U[Block blind replay\noperator reconcile]
+    M --> H[TheHive case lifecycle]
+    H -. never grants .-> S[DTMO publication/share authority]
+```
+
+Repository CI for this contract is engineering evidence only. It does not establish live connectivity, license entitlement, deployed service-account permissions, organization/access configuration, privacy approval, real-data TLP/PAP correctness, HA/recovery, independent assurance or production authorization.
+
+After protected acceptance of the contract baseline, the next bounded 11.6 slice may implement the minimal human-authorized case-handoff adapter and durable identity/replay state.
 
 ### 11.7 Cortex decision gate
 
 **Status:** `PLANNED / CONDITIONAL`
 
-Adopt Cortex only when an accepted IntelOwl capability-gap analysis proves it is needed.
+Adopt Cortex only when an accepted capability-gap analysis proves IntelOwl cannot satisfy a validated requirement. TheHive integration does not itself justify Cortex adoption.
 
 ### 11.8 Integrated runtime industrialisation
 
@@ -140,7 +143,7 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept the **Phase 11.5 MISP synchronization-state/persistence and authority-enforcement** implementation on fully green exact-head CI.
-2. Reconcile Phase 11.5 to `PASS / REPOSITORY_COMPLETE` only after protected merge.
-3. Start exactly **11.6 TheHive**.
-4. Continue 11.7–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.
+1. Accept the **Phase 11.6 TheHive handoff contract** on fully green exact-head CI.
+2. Implement the minimal human-authorized TheHive case-handoff adapter and durable identity/replay state in a separate bounded PR.
+3. Complete Phase 11.6 before considering the conditional 11.7 Cortex decision gate.
+4. Continue 11.8–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.

@@ -1,0 +1,32 @@
+name: Phase 11 TheHive Handoff Contract Gate
+
+on:
+  pull_request:
+    paths:
+      - 'docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md'
+      - 'docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md'
+      - 'docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md'
+      - 'docs/project/CURRENT_STATE.md'
+      - 'README.md'
+      - 'docs/README.md'
+      - 'docs/security/SECURITY_OVERVIEW.md'
+      - 'docs/evidence/EVIDENCE_INDEX.md'
+      - 'backend/tests/test_thehive_handoff_contract.py'
+      - '.github/workflows/phase11-thehive-handoff-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  thehive-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Validate TheHive handoff contract and authoritative status
+        run: python -m pytest -q backend/tests/test_thehive_handoff_contract.py backend/tests/test_professional_documentation_contract.py

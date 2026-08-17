@@ -16,12 +16,8 @@ This roadmap separates production authorization from product evolution and platf
 | Phase 8 | Production-equivalent validation and accountable acceptance | `PASS / OWNER_ACCEPTED` |
 | Phase 9 | Independent external assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
 | Phase 10 | Formal production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
-| Phase 11.1 | Taranis architecture/API/licensing | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.2 | Taranis→DTMO canonical adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 | IntelOwl enrichment integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 | OpenCTI STIX knowledge-graph integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 contract | MISP service/API/licensing/authority model | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 implementation | MISP synchronization state/persistence + authority enforcement | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.1–11.5 | Taranis, IntelOwl, OpenCTI and MISP integration boundaries | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.6 contract | TheHive incident/case handoff service/API/identity/licensing boundary | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go for integrated platform | `NOT STARTED` |
 
 DTMO remains **not production authorized**. Phase 10 concluded with a no-go decision and Phase 11 remains the highest-priority programme.
@@ -34,56 +30,55 @@ Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASS
 
 The authoritative detailed programme is `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md` and the fixed order remains Taranis → IntelOwl → OpenCTI → MISP → TheHive → conditional Cortex → integrated runtime → migration/compatibility → new validation → new assurance.
 
-### Phase 11.1–11.2 — Taranis
+### Phase 11.1–11.5 — accepted integration baseline
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-### Phase 11.3 — IntelOwl
+Accepted repository evidence covers Taranis collection/assessment and canonical adaptation, IntelOwl bounded enrichment, OpenCTI graph integration and MISP governed exchange/synchronization state. These claims remain repository engineering evidence only.
 
-**Status:** `PASS / REPOSITORY_COMPLETE`
+### Phase 11.6 — TheHive incident/case handoff
 
-### Phase 11.4 — OpenCTI
+**Status:** `IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION`
 
-**Status:** `PASS / REPOSITORY_COMPLETE`
-
-Accepted repository evidence covers the OpenCTI service/API/licensing contract, bounded read-only GraphQL/STIX adapter, explicit OpenCTI/STIX↔DTMO identity mapping, immutable reconciliation history, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. This remains repository evidence only.
-
-### Phase 11.5 — MISP consolidation
-
-**Status:** `IN PROGRESS / SYNCHRONIZATION STATE IN EXACT-HEAD VALIDATION`
-
-The MISP v2.5.44 contract is `PASS / REPOSITORY_COMPLETE`. MISP remains a separate AGPL-3.0 service/API boundary. The active implementation consolidates the existing governed `events/restSearch` inbound and human-approved unpublished `events/add` outbound paths without creating a second MISP client.
+The current slice is contract-only. The reviewed upstream baseline is TheHive 5.5.16 using public API v1 (`/api/v1`). Public API v0 is not used.
 
 Active repository scope:
 
-- durable `misp_synchronization_state` binds one DTMO canonical item to one stable MISP event UUID;
-- distribution, sharing-group and normalized TLP restrictions are retained as an authoritative source envelope;
-- accepted restrictions are projected to canonical `metadata_json.misp_restrictions` for the established governed-export path;
-- canonical MISP candidate persistence and authority-state reconciliation happen in the same database transaction;
-- event UUID collision/drift, unknown distribution, missing sharing-group context, malformed/non-authoritative restrictions and inbound share-authority attempts fail closed;
-- migration `0013_misp_synchronization_state` follows `0012_opencti_mapping_persistence`;
-- database constraints preserve known distribution/sharing semantics and `external_share_authorized=false`;
-- human DTMO review/share approval remains the only outbound authority;
-- automatic event publication, MISP server push/pull federation and OpenCTI↔MISP automatic synchronization remain excluded.
+- TheHive remains a separate StrangeBee service; no upstream source is vendored;
+- TheHive 5.3+ activated Community/Gold/Platinum license requirement is recorded as a live-deployment prerequisite for continued write operation;
+- `POST /api/v1/case` is a future mutation candidate, not an automatic ingestion side effect;
+- explicit human case-handoff approval under dedicated server-side RBAC is mandatory;
+- case-handoff authority remains separate from DTMO publication/share authority;
+- a later implementation must durably map DTMO canonical UUID, handoff/idempotency identity, TheHive case identity and organization context;
+- mutable title/description/tag/assignee fields are not identity;
+- TLP/PAP/access mappings cannot broaden authoritative source restrictions and unknown/unrepresentable mappings fail closed;
+- ambiguous case-creation delivery blocks blind replay and requires reconciliation;
+- a dedicated least-privilege non-human TheHive identity is required for any runtime adapter;
+- attachments, raw source bodies, credentials, private enrichment and unrelated personal data are excluded by default;
+- TheHive case lifecycle does not become canonical CTI truth, proof of local compromise or DTMO external-share authority;
+- responders, Cortex execution, automatic MISP→TheHive automation, external sharing and administration remain excluded.
 
 ```mermaid
 flowchart LR
-    M[MISP events/restSearch] --> N[Normalize UUID + restrictions]
-    N --> V{Authority envelope valid?}
-    V -->|no| X[Fail transaction]
-    V -->|yes| S[(MISP synchronization state)]
-    S --> D[(DTMO canonical item\nmisp_restrictions)]
-    D --> H{Human review + share approval?}
-    H -->|no| Z[No outbound action]
-    H -->|yes| E[Governed events/add\npublished=false]
-    E --> M
+    D[(DTMO canonical intelligence)] --> A{Human case-handoff approval?}
+    A -->|no| N[No TheHive mutation]
+    A -->|yes| V{Identity + provenance + TLP/PAP valid?}
+    V -->|no| X[Fail closed]
+    V -->|yes| R[(Durable handoff reservation)]
+    R --> T[TheHive API v1\nPOST /api/v1/case]
+    T -->|success| M[(DTMO↔TheHive case mapping)]
+    T -->|ambiguous| U[Block blind replay]
+    M --> H[TheHive case lifecycle]
+    H -. cannot grant .-> S[DTMO share/publication authority]
 ```
 
-Only after protected acceptance and lifecycle reconciliation may Phase 11.5 become `PASS / REPOSITORY_COMPLETE`. Phase 11.6 TheHive remains blocked until then.
+Repository contract acceptance cannot establish live TheHive connectivity, activated entitlement, effective deployed permissions, target-organization/access configuration, privacy approval, real-data handling correctness, production-equivalent validation, independent assurance or production authorization.
 
-### Phase 11.6–11.11
+After protected contract acceptance, the next bounded 11.6 slice may implement the minimum human-authorized case-handoff adapter and durable mutation reservation/reconciliation state.
 
-Subsequent phases remain blocked by the fixed order. They cover TheHive handoff, conditional Cortex, Kubernetes/Helm/GitOps and platform hardening, migration/compatibility, new production-equivalent validation and new independent external assurance.
+### Phase 11.7–11.11
+
+Subsequent phases remain governed by the fixed order. Cortex is adopted only if an accepted IntelOwl capability gap exists. Phase 11.8 covers Kubernetes/Helm/GitOps and platform hardening; 11.9 migration/compatibility; 11.10 fresh production-equivalent validation; 11.11 fresh independent assurance.
 
 ## Phase 12 — formal production GO/NO-GO
 
@@ -93,7 +88,7 @@ Phase 12 starts only after one immutable integrated Phase 11 candidate has accep
 
 ## Product and platform boundary
 
-DTMO remains the education-sector CTI and decision-support layer with vulnerability context, provenance, canonical evidence semantics, explicit governance/framework relationships, governed Administration/RBAC and human-controlled external-sharing authority. Generic collection, IOC enrichment, CTI graph and case-management functions are integrated from mature projects instead of duplicated inside DTMO.
+DTMO remains the education-sector CTI and decision-support layer with vulnerability context, provenance, canonical evidence semantics, explicit governance/framework relationships, governed Administration/RBAC and human-controlled external-sharing and case-handoff authority. Generic collection, IOC enrichment, CTI graph, exchange and case-management functions are integrated from mature projects instead of duplicated inside DTMO.
 
 ## Delivery and documentation discipline
 
