@@ -1,6 +1,6 @@
 # DTMO Production Readiness Checklist
 
-Last reconciled: **2026-08-16**  
+Last reconciled: **2026-08-17**  
 Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository enhancements**
 
 This checklist is the high-level control for the post-Phase-10 industrialisation programme and the future Phase 12 production authorization decision.
@@ -18,7 +18,8 @@ This checklist is the high-level control for the post-Phase-10 industrialisation
 | Phase 11.2 | `PASS / REPOSITORY_COMPLETE` | Taranis canonical adapter |
 | Phase 11.3 | `PASS / REPOSITORY_COMPLETE` | IntelOwl enrichment integration |
 | Phase 11.4 | `PASS / REPOSITORY_COMPLETE` | OpenCTI contract, adapter and persistence integration |
-| Phase 11.5 MISP consolidation contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | MISP service/API/licensing/identity/authority contract |
+| Phase 11.5 MISP consolidation contract | `PASS / REPOSITORY_COMPLETE` | MISP service/API/licensing/identity/authority contract |
+| Phase 11.5 MISP synchronization state/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Repository persistence/authority implementation |
 | Phase 12 | `NOT STARTED` | Future production authorization |
 
 Historical Phase 8/9 evidence remains candidate-bound and is not reused for the materially changed Phase 11 integrated candidate.
@@ -77,27 +78,35 @@ Repository CI, accountable acceptance, production-equivalent validation, indepen
 
 - [x] Reviewed MISP v2.5.44 baseline recorded.
 - [x] Separate AGPL-3.0 service/API boundary defined; no MISP core source vendoring.
-- [x] Existing governed `events/restSearch` inbound and human-approved unpublished `events/add` outbound paths identified as the only initial paths to consolidate.
+- [x] Existing governed `events/restSearch` inbound and human-approved unpublished `events/add` outbound paths identified as the initial consolidated paths.
 - [x] Event/attribute/object UUID identity separation defined.
 - [x] Distribution, sharing-group and TLP/tag restrictions preserved and non-broadening rule defined.
 - [x] Ingestion cannot grant `share_approved`, publication authority or local-compromise proof.
 - [x] Human review/share approval remains authoritative for outbound sharing.
 - [x] Deterministic replay and uncertain-delivery fail-closed requirements defined.
-- [x] Automatic MISP push/pull federation excluded from the contract slice.
-- [x] Automatic OpenCTI↔MISP synchronization excluded from the contract slice.
-- [x] Architecture, security, QA, evidence, roadmap and portal documentation reconciled.
-- [ ] Full exact-head CI matrix green on the final contract head.
+- [x] Automatic MISP push/pull federation excluded.
+- [x] Automatic OpenCTI↔MISP synchronization excluded.
+- [x] Contract exact-head CI, Professional Documentation Gate and protected merge accepted.
+
+**Contract decision:** `PASS / REPOSITORY_COMPLETE`.
+
+### Synchronization-state/persistence implementation — active
+
+- [x] `misp_synchronization_state` model implemented.
+- [x] One stable MISP event UUID ↔ one DTMO canonical item identity rule implemented.
+- [x] Distribution, sharing-group and normalized TLP authority envelope persisted.
+- [x] Accepted restrictions projected to canonical `metadata_json.misp_restrictions`.
+- [x] Canonical candidate and authority-state reconciliation joined in one database transaction.
+- [x] Identity collision/drift and malformed/incomplete authority state fail closed.
+- [x] Database constraints enforce known distribution/sharing semantics and `external_share_authorized=false`.
+- [x] Migration `0013_misp_synchronization_state` implemented after `0012_opencti_mapping_persistence`.
+- [x] Existing governed outbound path remains human-authorized/unpublished; no parallel publisher introduced.
+- [x] Dedicated state tests/workflow and professional documentation added.
+- [ ] Full exact-head CI matrix green on the final implementation head.
 - [ ] Professional Documentation Gate green on that same exact head.
-- [ ] Contract PR protected-merged with expected-head protection.
-
-### Next bounded implementation slice — only after contract acceptance
-
-- [ ] Single reconciled synchronization-state/persistence model implemented.
-- [ ] Inbound identity/revision replay behavior persisted and tested.
-- [ ] Outbound reservation/success/uncertain state persisted and tested.
-- [ ] Authority enforcement uses existing human approval path rather than a parallel publisher.
-- [ ] Operations/runbook and recovery behavior documented and tested.
-- [ ] Phase 11.5 reconciled to `PASS / REPOSITORY_COMPLETE` only after all required slices are accepted.
+- [ ] Existing MISP read/export gates green on that same exact head.
+- [ ] Implementation PR protected-merged with expected-head protection.
+- [ ] Phase 11.5 lifecycle reconciled to `PASS / REPOSITORY_COMPLETE` after protected merge.
 
 ## 7. Phase 11.6 — TheHive
 
@@ -137,4 +146,4 @@ Repository CI, accountable acceptance, production-equivalent validation, indepen
 
 ## Current release decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.4 are repository-complete. Phase 11.5 MISP consolidation contract validation is active. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.4 and the Phase 11.5 MISP contract are repository-complete. Phase 11.5 MISP synchronization-state/persistence exact-head validation is active. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**

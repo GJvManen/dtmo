@@ -1,0 +1,54 @@
+name: Phase 11 MISP Consolidation State Gate
+
+on:
+  pull_request:
+    paths:
+      - 'backend/dtmo/persistence/misp.py'
+      - 'backend/dtmo/connectors/misp.py'
+      - 'backend/dtmo/governance/misp_export.py'
+      - 'database/migrations/versions/0013_misp_synchronization_state.py'
+      - 'backend/tests/test_phase11_5_misp_consolidation_state.py'
+      - 'docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md'
+      - 'docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md'
+      - 'docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md'
+      - 'docs/project/CURRENT_STATE.md'
+      - 'README.md'
+      - 'docs/README.md'
+      - '.github/workflows/phase11-misp-consolidation-state.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  misp-consolidation-state:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Verify exact-head checkout
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - run: python -m pip install -e '.[test]'
+      - name: Validate MISP consolidation state, read and governed export contracts
+        run: >-
+          python -m pytest -q
+          backend/tests/test_phase11_5_misp_consolidation_state.py
+          backend/tests/test_e8_6_misp_read_connector.py
+          backend/tests/test_e8_7_misp_governed_export.py
+      - name: Ruff
+        run: >-
+          python -m ruff check
+          backend/dtmo/persistence/misp.py
+          database/migrations/versions/0013_misp_synchronization_state.py
+          backend/tests/test_phase11_5_misp_consolidation_state.py
+      - name: Mypy
+        run: python -m mypy backend/dtmo/persistence/misp.py
+      - name: Compile
+        run: python -m compileall -q backend/dtmo database/migrations/versions

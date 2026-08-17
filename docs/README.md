@@ -17,11 +17,12 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.4 OpenCTI persistence/integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 MISP consolidation contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.5 MISP consolidation contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 MISP synchronization state/persistence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **not production authorized** |
 
-The active bounded programme step is **Phase 11.5 MISP consolidation contract validation**. Phase 10 did not grant production authorization. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.
+The active bounded programme step is **Phase 11.5 MISP synchronization-state/persistence and authority enforcement**. Phase 10 did not grant production authorization. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.
 
 ## Start here
 
@@ -30,37 +31,39 @@ The active bounded programme step is **Phase 11.5 MISP consolidation contract va
 | Executive / sponsor | [Executive Status](project/EXECUTIVE_STATUS.md), [Executive Decision View](project/EXECUTIVE_DECISION_VIEW.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
 | Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current State](project/CURRENT_STATE.md), [Production Roadmap](roadmap/PRODUCTION_ROADMAP.md) |
 | Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [IntelOwl Governed Enrichment Workflow](user/INTELOWL_ENRICHMENT_WORKFLOW.md), [MISP Read Integration](integrations/MISP_READ_INTEGRATION.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
-| Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md), [OpenCTI Integration Operations Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
+| Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md), [Phase 11.5 MISP State Gate](qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
 | Architecture / engineering | [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md), [OpenCTI → DTMO Integration Contract](architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md), [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md), [Taranis → DTMO Contract](architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md), [MISP Governed Export](intelligence/MISP_GOVERNED_EXPORT.md) |
-| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Phase 11.4 OpenCTI Contract Gate](qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md), [Phase 11.5 MISP Consolidation Contract Gate](qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
-| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [IntelOwl Enrichment Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md), [MISP Read Integration](integrations/MISP_READ_INTEGRATION.md), [MISP Governed Export](intelligence/MISP_GOVERNED_EXPORT.md), [OpenCTI Integration Operations Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md) |
+| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Phase 11.4 OpenCTI Contract Gate](qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md), [Phase 11.5 MISP Consolidation Contract Gate](qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md), [Phase 11.5 MISP State Gate](qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md), [Production Checklist](project/PRODUCTION_CHECKLIST.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
+| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [MISP Read Integration](integrations/MISP_READ_INTEGRATION.md), [MISP Governed Export](intelligence/MISP_GOVERNED_EXPORT.md), [OpenCTI Integration Operations Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md) |
 
 The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for accepted operator journeys. These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
 
-No synthetic screenshot is promoted for the Phase 11.5 contract slice because the bounded change defines service/API/authority behavior and introduces no accepted operator GUI surface.
+No synthetic screenshot is promoted for this Phase 11.5 implementation slice because it changes persistence and trust-boundary behavior without introducing an accepted operator GUI surface.
 
 ## Phase 11 programme documentation
 
 - [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) defines the fixed Taranis → IntelOwl → OpenCTI → MISP → TheHive → conditional Cortex → runtime-industrialisation sequence.
 - [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md) and [IntelOwl Enrichment Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md) document repository-complete Phase 11.3.
 - Phase 11.4 OpenCTI persistence and integration are `PASS / REPOSITORY_COMPLETE`; the accepted [OpenCTI contract](architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md), [integration guide](integrations/OPENCTI_INTEGRATION.md), [operations runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md) and [Phase 11.4 OpenCTI Contract Gate](qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md) remain authoritative accepted-boundary references.
-- [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md) is the active Phase 11.5 service/API/licensing/authority baseline.
-- [MISP Read Integration](integrations/MISP_READ_INTEGRATION.md) and [MISP Governed Export](intelligence/MISP_GOVERNED_EXPORT.md) are the existing bounded paths to be consolidated rather than duplicated.
+- [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md) is `PASS / REPOSITORY_COMPLETE` and defines the accepted MISP service/API/licensing/authority boundary.
+- [MISP Read Integration](integrations/MISP_READ_INTEGRATION.md) and [MISP Governed Export](intelligence/MISP_GOVERNED_EXPORT.md) remain the existing bounded API paths; the active implementation joins them through durable synchronization authority state rather than duplicating them.
+- [Phase 11.5 MISP State Gate](qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md) defines the exact-head implementation acceptance boundary.
 - [Evidence Index](evidence/EVIDENCE_INDEX.md) keeps repository evidence separate from deployment, assurance and production authorization evidence.
 
 ## Phase 11.5 MISP trust boundary
 
 ```mermaid
 flowchart LR
-    M[MISP\nseparate AGPL-3.0 service] -->|REST read| R[Governed inbound]
-    R --> V{Identity + restrictions + provenance valid?}
+    M[MISP\nseparate AGPL-3.0 service] -->|events/restSearch| R[Governed inbound]
+    R --> V{UUID + restriction envelope valid?}
     V -->|no| X[Reject fail closed]
-    V -->|yes| D[(DTMO canonical intelligence)]
+    V -->|yes| S[(misp_synchronization_state)]
+    S --> D[(DTMO canonical intelligence\nmisp_restrictions)]
     D --> H{Human review + share approval?}
     H -->|no| N[No outbound action]
-    H -->|yes| E[Governed unpublished export]
+    H -->|yes| E[Governed unpublished events/add]
     E --> M
     M -->|uncertain| U[Block replay; operator reconcile]
     O[OpenCTI / IntelOwl / schedulers] -. cannot grant .-> H
@@ -73,10 +76,13 @@ flowchart LR
 - credentials/tokens never belong in repository evidence, logs or screenshots;
 - MISP UUID identity remains distinct from DTMO canonical UUID identity;
 - MISP distribution, sharing-group and TLP/tag restrictions are attributable constraints and cannot be broadened on re-export;
+- `misp_synchronization_state` preserves the accepted source authority envelope;
+- canonical `metadata_json.misp_restrictions` is the shared restriction boundary used by the existing governed export path;
 - import never grants DTMO share/publication authority or local-compromise proof;
+- identity collisions, malformed/unknown restriction state and external-share authority from inbound data fail closed;
 - service accounts, collectors, schedulers, IntelOwl, OpenCTI and MISP cannot grant DTMO sharing authority;
 - uncertain outbound delivery blocks automatic replay pending operator reconciliation;
-- automatic MISP federation and OpenCTI↔MISP synchronization are outside the active contract boundary;
+- automatic MISP federation and OpenCTI↔MISP synchronization remain outside Phase 11.5;
 - Taranis, IntelOwl, OpenCTI and MISP remain separate services under their applicable licensing boundaries.
 
 ## Evidence and history model

@@ -23,6 +23,7 @@ from dtmo.governance import (
 from dtmo.intelligence import IntelligenceType
 from dtmo.lake.minio_store import MinioObjectStore
 from dtmo.lake.service import IntelligenceLake
+from dtmo.persistence.misp import reconcile_misp_state
 from dtmo.persistence.repository import IntelligenceRepository
 from dtmo.persistence.session import Database
 from dtmo.search.service import OpenSearchService
@@ -112,6 +113,18 @@ async def _persist_intelligence(
         for entry in request.provenance
     ]
     item, inserted = await repository.ingest_candidate(payload)
+
+    if request.source_id == "misp":
+        projection = request.raw_payload.get("_dtmo_misp")
+        if not isinstance(projection, dict):
+            raise ValueError("MISP canonical ingestion requires authoritative normalized restrictions")
+        await session.run_sync(
+            lambda sync_session: reconcile_misp_state(
+                sync_session,
+                item_id=item.id,
+                projection=projection,
+            )
+        )
 
     # PUT-by-ID in OpenSearch is idempotent. Always attempt indexing so that an
     # operator can replay a connector after a previous index outage or mapping

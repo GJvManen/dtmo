@@ -1,6 +1,6 @@
 # DTMO Roadmap — Production Readiness and Product Evolution
 
-Last updated: **2026-08-16**
+Last updated: **2026-08-17**
 
 ## Purpose
 
@@ -19,12 +19,12 @@ This roadmap separates production authorization from product evolution and platf
 | Phase 11.1 | Taranis architecture/API/licensing | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.2 | Taranis→DTMO canonical adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 | IntelOwl enrichment integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 contract | OpenCTI service/API/STIX/identity/security/licensing | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 adapter | Read-only OpenCTI GraphQL/STIX adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 persistence | Canonical mapping/reconciliation/operational integration | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.4 | OpenCTI STIX knowledge-graph integration | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 contract | MISP service/API/licensing/authority model | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 implementation | MISP synchronization state/persistence + authority enforcement | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go for integrated platform | `NOT STARTED` |
 
-DTMO remains **not production authorized**. Phase 10 concluded with a no-go decision and Phase 11 is the highest-priority programme.
+DTMO remains **not production authorized**. Phase 10 concluded with a no-go decision and Phase 11 remains the highest-priority programme.
 
 ## Historical readiness evidence
 
@@ -44,25 +44,46 @@ The authoritative detailed programme is `docs/roadmap/PLATFORM_INDUSTRIALISATION
 
 ### Phase 11.4 — OpenCTI
 
-**Status:** `IN PROGRESS / CANONICAL PERSISTENCE IN EXACT-HEAD VALIDATION`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-The contract and bounded read-only adapter are accepted. The active final repository slice adds:
+Accepted repository evidence covers the OpenCTI service/API/licensing contract, bounded read-only GraphQL/STIX adapter, explicit OpenCTI/STIX↔DTMO identity mapping, immutable reconciliation history, database-enforced no-share/no-local-compromise invariants and PostgreSQL-before-checkpoint ordering. This remains repository evidence only.
 
-- explicit DTMO-item ↔ OpenCTI internal ID ↔ STIX ID mapping;
-- immutable SHA-256-keyed reconciliation history;
-- fail-closed identity drift/ambiguity handling;
-- marking, confidence, timestamp, external-reference and provenance preservation;
-- database-enforced no-share/no-local-compromise invariants;
-- migration `0012_opencti_mapping_persistence`;
-- PostgreSQL commit before durable checkpoint advance;
-- idempotent replay if checkpoint replacement fails after a successful DB commit;
-- no connector registration, MISP synchronization, enrichment, TheHive case creation, report publication or arbitrary OpenCTI mutation.
+### Phase 11.5 — MISP consolidation
 
-After protected acceptance and lifecycle reconciliation, Phase 11.4 may become `PASS / REPOSITORY_COMPLETE`; only then does Phase 11.5 MISP consolidation start.
+**Status:** `IN PROGRESS / SYNCHRONIZATION STATE IN EXACT-HEAD VALIDATION`
 
-### Phase 11.5–11.11
+The MISP v2.5.44 contract is `PASS / REPOSITORY_COMPLETE`. MISP remains a separate AGPL-3.0 service/API boundary. The active implementation consolidates the existing governed `events/restSearch` inbound and human-approved unpublished `events/add` outbound paths without creating a second MISP client.
 
-Subsequent phases remain blocked by the fixed order. They cover MISP consolidation, TheHive handoff, conditional Cortex, Kubernetes/Helm/GitOps and platform hardening, migration/compatibility, new production-equivalent validation and new independent external assurance.
+Active repository scope:
+
+- durable `misp_synchronization_state` binds one DTMO canonical item to one stable MISP event UUID;
+- distribution, sharing-group and normalized TLP restrictions are retained as an authoritative source envelope;
+- accepted restrictions are projected to canonical `metadata_json.misp_restrictions` for the established governed-export path;
+- canonical MISP candidate persistence and authority-state reconciliation happen in the same database transaction;
+- event UUID collision/drift, unknown distribution, missing sharing-group context, malformed/non-authoritative restrictions and inbound share-authority attempts fail closed;
+- migration `0013_misp_synchronization_state` follows `0012_opencti_mapping_persistence`;
+- database constraints preserve known distribution/sharing semantics and `external_share_authorized=false`;
+- human DTMO review/share approval remains the only outbound authority;
+- automatic event publication, MISP server push/pull federation and OpenCTI↔MISP automatic synchronization remain excluded.
+
+```mermaid
+flowchart LR
+    M[MISP events/restSearch] --> N[Normalize UUID + restrictions]
+    N --> V{Authority envelope valid?}
+    V -->|no| X[Fail transaction]
+    V -->|yes| S[(MISP synchronization state)]
+    S --> D[(DTMO canonical item\nmisp_restrictions)]
+    D --> H{Human review + share approval?}
+    H -->|no| Z[No outbound action]
+    H -->|yes| E[Governed events/add\npublished=false]
+    E --> M
+```
+
+Only after protected acceptance and lifecycle reconciliation may Phase 11.5 become `PASS / REPOSITORY_COMPLETE`. Phase 11.6 TheHive remains blocked until then.
+
+### Phase 11.6–11.11
+
+Subsequent phases remain blocked by the fixed order. They cover TheHive handoff, conditional Cortex, Kubernetes/Helm/GitOps and platform hardening, migration/compatibility, new production-equivalent validation and new independent external assurance.
 
 ## Phase 12 — formal production GO/NO-GO
 
