@@ -7,7 +7,7 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. RC13 is `PASS / OWNER_ACCEPTED`; E8.1–E8.10 are `PASS / REPOSITORY_COMPLETE`. Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.2 Taranis, Phase 11.3 IntelOwl, Phase 11.4 OpenCTI and Phase 11.5 MISP consolidation are `PASS / REPOSITORY_COMPLETE`. The Phase 11.6 TheHive contract baseline is accepted; the active bounded objective is **the minimal human-authorized TheHive case-handoff adapter plus durable mutation reservation/reconciliation state**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.6 are `PASS / REPOSITORY_COMPLETE`. The active bounded objective is **Phase 11.7 Cortex decision gate**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
 ## Lifecycle position
 
@@ -20,75 +20,63 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1�
 | Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
 | Phase 10 | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
 | Phase 11 | `IN PROGRESS / ACTIVE` |
-| Phase 11.1 Taranis architecture/contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 MISP consolidation | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.6 TheHive contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.6 TheHive handoff implementation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.1–11.2 Taranis | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 IntelOwl | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.7 Cortex decision gate | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.8 integrated runtime industrialisation | `NOT STARTED` |
 | Phase 12 | `NOT STARTED` |
 
 ## Accepted Phase 11 capabilities
 
-Phase 11.2 provides repository-complete Taranis collection/canonicalization with durable checkpointing and provenance. Phase 11.3 provides bounded IntelOwl enrichment with human review authority and no-share/no-local-compromise invariants. Phase 11.4 provides bounded OpenCTI graph integration with explicit OpenCTI/STIX↔DTMO identity mapping and durable reconciliation. Phase 11.5 provides one governed MISP inbound/outbound authority model with durable synchronization state, authoritative distribution/sharing-group/TLP restrictions and human-approved unpublished export.
+Taranis provides governed collection/canonicalization; IntelOwl provides bounded human-authorized enrichment with immutable history; OpenCTI provides bounded graph integration and durable identity reconciliation; MISP provides governed inbound/outbound exchange with authoritative restriction state; TheHive provides minimal explicit human-authorized case handoff with durable mutation reservation/reconciliation and no blind replay after ambiguity.
 
-Taranis, IntelOwl, OpenCTI and MISP remain separate service boundaries. None gains DTMO human publication/share authority and none establishes local compromise by itself.
+All remain separate service boundaries. None gains DTMO human publication/share authority or establishes local compromise by itself. TheHive case-handoff authority remains distinct from publication/share authority.
 
-## Active Phase 11.6 TheHive implementation
+## Active Phase 11.7 Cortex decision
 
-The accepted TheHive baseline remains TheHive 5.5.16 using public API v1 (`/api/v1`). TheHive remains a separate StrangeBee service; DTMO does not vendor upstream source or assume license entitlement.
+Phase 11.7 is conditional: Cortex may be adopted only if an attributable, validated requirement remains unmet after the accepted IntelOwl integration. The current repository decision review finds **no validated IntelOwl capability gap for the approved DTMO enrichment scope**.
 
-The active bounded implementation adds exactly one external mutation surface: explicit human-authorized `POST /api/v1/case`. A dedicated `handoff:case` permission is separate from `approve:share`; routine service accounts do not receive human handoff authority.
+The accepted IntelOwl boundary already covers the defined generic enrichment needs: CVE/IP/domain/URL/hash analysis through approved analyzers/playbooks, explicit allowlisting, human authorization before disclosure, TLP/handling checks, stable job/analyzer identity, partial-result semantics, durable enrichment provenance, outage isolation and hard no-share/no-local-compromise invariants.
 
-Before mutation, DTMO validates canonical identity, repository provenance, deterministic severity and explicit TLP/PAP mapping. It commits a durable reservation in `thehive_handoff_state` before calling TheHive. The reservation binds the request UUID, canonical item UUID, human principal, organization and handling envelope.
-
-A confirmed stable TheHive case identity marks the reservation `delivered`. Timeout/network ambiguity or a nominal success without stable case identity marks it `ambiguous` and blocks automated replay. Definitive bounded failures are recorded `failed`. Mutable title, description, tags or assignee values are never identity.
-
-The adapter transmits only a bounded canonical title, human-approved summary, deterministic severity, explicit TLP/PAP, bounded tags and DTMO UUID reference. Attachments, raw source bodies, credentials, private enrichment results and unrelated personal data are excluded.
+IntelOwl Connectors and external side-effect actions remain excluded deliberately. This is an authority and scope boundary, not evidence of an enrichment capability defect. Cortex responders would introduce a new mutation/response authority and are not justified by the mere presence of TheHive.
 
 ```mermaid
 flowchart LR
-    D[(DTMO canonical intelligence)] --> A{Human handoff:case permission?}
-    A -->|no| N[No TheHive mutation]
-    A -->|yes| V{Identity + provenance + TLP/PAP valid?}
-    V -->|no| X[Fail closed]
-    V -->|yes| R[(Commit durable reservation)]
-    R --> C[TheHive API v1\nPOST /api/v1/case]
-    C -->|stable identity| M[(Delivered mapping)]
-    C -->|ambiguous| U[(Ambiguous state)]
-    U --> B[Block blind replay]
-    M --> H[TheHive case lifecycle]
-    H -. does not grant .-> S[DTMO share/publication authority]
+    R[Validated enrichment requirements] --> I[IntelOwl accepted Phase 11.3 boundary]
+    I --> G{Validated material gap?}
+    G -->|no| N[No Cortex adoption]
+    G -->|future attributable evidence| A[New bounded gap assessment]
+    A --> C{Cortex uniquely justified?}
+    C -->|yes| P[Separate architecture/licensing/security PR]
+    C -->|no| N
 ```
+
+The authoritative decision record is `docs/architecture/CORTEX_DECISION_GATE.md`. No Cortex runtime, source, token, analyzer, responder, deployment configuration or production evidence is introduced in this slice.
 
 ## Runtime and licensing boundary
 
-`DTMO_FEATURE_THEHIVE_HANDOFF` is disabled by default. When enabled, runtime requires an API base, secret token and explicit organization scope. Production configuration requires HTTPS. These repository configuration checks do not prove live connectivity, actual organization permissions or license entitlement.
+Accepted services continue to use separate service/API boundaries and runtime secrets. Repository CI cannot prove live provider coverage, external-service entitlements, deployed permissions, organization membership, privacy approval or production-equivalent behavior.
 
-TheHive 5.3+ requires an activated Community, Gold or Platinum license for continued write operation after the initial trial. Deployment entitlement, credentials, organization scope and privacy/handling approval remain external prerequisites for live integration validation.
-
-## Data and authority model
-
-PostgreSQL remains canonical DTMO application/intelligence/RBAC state. TheHive case lifecycle is operational incident-response state and does not replace canonical CTI truth. TheHive case creation does not prove compromise, change DTMO governance conclusions or grant external-share authority.
-
-Database constraints preserve unique handoff request identity, unique confirmed TheHive case identity and hard no-share/no-local-compromise invariants. TheHive unavailability affects only the explicit handoff path and must not make unrelated DTMO read or ingestion paths unavailable.
+Cortex is not added to the composed runtime in Phase 11.7. Any future proposal requires a separate licensing and architecture review before source redistribution, service deployment or responder execution could be accepted.
 
 ## Governance and evidence boundary
 
-Repository CI for this slice can prove synthetic adapter, route, RBAC, state-machine, migration and documentation behavior. It cannot prove live TheHive connectivity, activated license entitlement, deployed permissions, organization/access configuration, privacy approval, correct TLP/PAP mapping on real data, HA/recovery, staging acceptance, independent assurance or production authorization.
+Repository acceptance of Phase 11.7 proves only that the conditional decision is documented, attributable to the accepted IntelOwl requirement set and internally consistent. It does not prove live analyzer quality or that IntelOwl satisfies future requirements that have not yet been defined.
 
 Historical Phase 8/9 evidence remains valid only for the earlier candidate and is not reused for the materially changed Phase 11 platform. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent assurance remain required before Phase 12.
 
 ## Phase 11 fixed order
 
-1. Taranis AI — `PASS / REPOSITORY_COMPLETE` through Phase 11.2;
-2. IntelOwl — `PASS / REPOSITORY_COMPLETE` for Phase 11.3;
-3. OpenCTI — `PASS / REPOSITORY_COMPLETE` for Phase 11.4;
-4. MISP consolidation — `PASS / REPOSITORY_COMPLETE` for Phase 11.5;
-5. TheHive — active Phase 11.6 bounded runtime handoff implementation;
-6. Cortex — conditional only if IntelOwl leaves a validated capability gap;
-7. Kubernetes/Helm/GitOps and integrated runtime hardening;
+1. Taranis AI — `PASS / REPOSITORY_COMPLETE`;
+2. IntelOwl — `PASS / REPOSITORY_COMPLETE`;
+3. OpenCTI — `PASS / REPOSITORY_COMPLETE`;
+4. MISP — `PASS / REPOSITORY_COMPLETE`;
+5. TheHive — `PASS / REPOSITORY_COMPLETE`;
+6. Cortex — active conditional decision gate; current proposed decision is no adoption because no validated IntelOwl gap is established;
+7. Kubernetes/Helm/GitOps and integrated runtime hardening — next after protected Phase 11.7 acceptance;
 8. migration/compatibility;
 9. new production-equivalent validation;
 10. new independent external assurance;

@@ -22,7 +22,7 @@ flowchart LR
     DTMO --> HIVE[TheHive\nincident/case workflow]
 ```
 
-Provenance, RBAC, human publication/share authority and fail-closed evidence rules remain explicit across every boundary.
+Cortex is intentionally absent from the target unless Phase 11.7 demonstrates a validated IntelOwl capability gap. Provenance, RBAC, human publication/share authority and fail-closed evidence rules remain explicit across every boundary.
 
 ## Fixed priority order
 
@@ -41,17 +41,15 @@ Provenance, RBAC, human publication/share authority and fail-closed evidence rul
 
 ## Phase 11 — Platform industrialisation
 
-### 11.1 Taranis AI architecture and gap assessment
-
-**Status:** `PASS / REPOSITORY_COMPLETE`
-
-### 11.2 Taranis → DTMO canonical adapter
+### 11.1–11.2 Taranis AI
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
 ### 11.3 IntelOwl enrichment integration
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
+
+The accepted boundary provides bounded human-authorized generic enrichment, explicit analyzer allowlisting, TLP/handling checks, stable job/analyzer identity, partial-result semantics, durable enrichment history and database-enforced no-share/no-local-compromise invariants.
 
 ### 11.4 OpenCTI knowledge-graph integration
 
@@ -61,58 +59,42 @@ Provenance, RBAC, human publication/share authority and fail-closed evidence rul
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-The accepted Phase 11.5 boundary keeps MISP v2.5.44 as a separate AGPL-3.0 service/API, unifies governed `events/restSearch` inbound and human-approved unpublished `events/add` outbound behavior through durable `misp_synchronization_state`, preserves authoritative distribution/sharing-group/TLP restrictions and fails closed on identity/restriction ambiguity or uncertain outbound delivery. Automatic federation, automatic publication and automatic OpenCTI↔MISP synchronization remain excluded.
+MISP remains a separate AGPL-3.0 service/API with governed inbound/outbound exchange, durable synchronization state, authoritative distribution/sharing-group/TLP restrictions and human-approved unpublished export.
 
 ### 11.6 TheHive incident/case handoff
 
-**Status:** `IN PROGRESS / BOUNDED HANDOFF IMPLEMENTATION IN EXACT-HEAD VALIDATION`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-The Phase 11.6 contract baseline is `PASS / REPOSITORY_COMPLETE`. It fixed TheHive 5.5.16, API v1, separate-service/licensing boundaries, dedicated human case-handoff authority, stable identity, replay safety, handling constraints and explicit exclusions before mutation code was added.
+The accepted Phase 11.6 boundary provides only the minimal human-authorized `POST /api/v1/case` path, dedicated `handoff:case` permission, durable reservation before mutation, stable request/item/case/organization identity, `reserved`/`delivered`/`ambiguous`/`failed` reconciliation, blocked blind replay after ambiguity, minimized payloads and hard no-share/no-local-compromise invariants. Responders, Cortex, automatic MISP→TheHive automation, external sharing and administration remain excluded.
 
-The active bounded implementation now realizes only the minimal human-authorized case handoff:
-
-- `POST /api/v1/case` is the only accepted external mutation;
-- DTMO exposes a dedicated `handoff:case` server-side RBAC permission, distinct from `approve:share`;
-- service accounts cannot authorize a handoff;
-- canonical item identity and provenance are required before mutation;
-- severity, TLP and PAP use deterministic explicit mappings and unknown values fail closed;
-- a durable `thehive_handoff_state` reservation is committed before the external request;
-- request UUID, canonical item UUID, human principal, organization and authority envelope are persisted;
-- a stable returned TheHive identity transitions the reservation to `delivered`;
-- timeout/network ambiguity or a success response without stable identity transitions it to `ambiguous` and automated replay is blocked;
-- definitive bounded failures become `failed`;
-- database constraints enforce unique request/case identity plus no-share/no-local-compromise invariants;
-- payloads are minimized to title, human-approved summary, deterministic severity, explicit TLP/PAP, bounded tags and DTMO UUID reference;
-- attachments, raw source bodies, credentials, private enrichment, unrelated personal data, tasks/observables, responders, Cortex, automatic MISP→TheHive automation, case deletion, external sharing and administration remain excluded.
-
-```mermaid
-flowchart LR
-    D[(DTMO canonical intelligence)] --> A{Human handoff:case authority?}
-    A -->|no| N[No TheHive mutation]
-    A -->|yes| V{Identity + provenance + TLP/PAP valid?}
-    V -->|no| X[Fail closed]
-    V -->|yes| R[(Commit durable reservation)]
-    R --> C[TheHive API v1\nPOST /api/v1/case]
-    C -->|stable case identity| M[(Delivered mapping)]
-    C -->|timeout / malformed identity| U[(Ambiguous state)]
-    U --> B[Block blind replay\nmanual reconcile]
-    M --> H[TheHive case lifecycle]
-    H -. never grants .-> S[DTMO publication/share authority]
-```
-
-The feature remains disabled by default. Production configuration requires HTTPS API base, runtime token and explicit organization scope when enabled. TheHive 5.3+ still requires an activated Community/Gold/Platinum license for continued write functionality. Repository CI does not establish live connectivity, entitlement, deployed service-account permissions, organization/access configuration, privacy approval, real-data TLP/PAP correctness, HA/recovery, independent assurance or production authorization.
-
-Phase 11.6 is not complete until this implementation is accepted on fully green exact-head CI and the authoritative documentation set is repository-complete.
+Live TheHive use still requires actual entitlement, credentials, effective permissions, organization scope, privacy/handling approval and later deployment-bound validation; repository acceptance does not invent that evidence.
 
 ### 11.7 Cortex decision gate
 
-**Status:** `PLANNED / CONDITIONAL`
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
 
-Adopt Cortex only when an accepted capability-gap analysis proves IntelOwl cannot satisfy a validated requirement. TheHive integration does not itself justify Cortex adoption.
+The conditional decision record is `docs/architecture/CORTEX_DECISION_GATE.md`. The current review finds **no validated IntelOwl capability gap for the approved DTMO enrichment requirement set** and therefore proposes **no Cortex adoption** in the current Phase 11 candidate.
+
+The decision is based on the accepted IntelOwl capabilities for observable enrichment, analyzer/playbook governance, human authorization, TLP/handling control, stable job identity, partial-result handling, provenance and bounded outage behavior. IntelOwl Connectors remain deliberately excluded because they create external side effects; that exclusion is an authority boundary, not a validated enrichment defect.
+
+Cortex analyzers/responders would add a new service, secret, identity, licensing/maintenance and mutation/response authority boundary. Responders are outside the accepted enrichment requirement and TheHive case handoff does not itself justify Cortex.
+
+```mermaid
+flowchart LR
+    R[Validated enrichment requirements] --> I[IntelOwl accepted boundary]
+    I --> G{Validated material gap?}
+    G -->|no| N[Do not adopt Cortex]
+    G -->|future evidence| A[New bounded gap assessment]
+    A --> C{Cortex uniquely justified?}
+    C -->|yes| P[Separate architecture/security/licensing PR]
+    C -->|no| N
+```
+
+Phase 11.7 is complete only after the decision record, QA contract, current-state documentation and exact-head CI are protected-merged. A future Cortex proposal requires a new attributable requirement and cannot reopen this decision by preference alone.
 
 ### 11.8 Integrated runtime industrialisation
 
-**Status:** `PLANNED`
+**Status:** `PLANNED / NEXT AFTER 11.7 ACCEPTANCE`
 
 Kubernetes, Helm, GitOps, immutable images, workload identities/external secrets, TLS/network policy, HA/recovery, centralized observability, SBOM/scanning/signing/attestation, capacity and upgrade/rollback procedures are required across the composed platform.
 
@@ -144,7 +126,7 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept the **Phase 11.6 bounded TheHive handoff implementation** on fully green exact-head CI.
-2. Mark Phase 11.6 repository-complete only after runtime, persistence, RBAC, operations and documentation gates all pass.
-3. Evaluate Phase 11.7 Cortex only after Phase 11.6 acceptance and only against a validated IntelOwl capability gap.
-4. Continue 11.8–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.
+1. Accept the **Phase 11.7 Cortex decision gate** on fully green exact-head CI.
+2. If accepted, record Cortex as not adopted for the current candidate because no validated IntelOwl gap exists.
+3. Start exactly Phase 11.8 integrated runtime industrialisation.
+4. Continue 11.9–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.

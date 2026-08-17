@@ -53,14 +53,15 @@ def test_thehive_contract_is_fail_closed_and_idempotent() -> None:
         assert marker in text
 
 
-def test_phase11_status_preserves_accepted_contract_and_active_implementation() -> None:
+def test_phase11_status_preserves_accepted_thehive_and_active_cortex_decision() -> None:
     roadmap = _read(ROADMAP)
     state = _read(CURRENT_STATE)
     assert "11.5 MISP consolidation" in roadmap
     assert "11.6 TheHive incident/case handoff" in roadmap
-    assert "BOUNDED HANDOFF IMPLEMENTATION IN EXACT-HEAD VALIDATION" in roadmap
-    assert "Phase 11.5 MISP consolidation | `PASS / REPOSITORY_COMPLETE`" in state
-    assert "Phase 11.6 TheHive contract | `PASS / REPOSITORY_COMPLETE`" in state
-    assert "Phase 11.6 TheHive handoff implementation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in state
+    assert "11.7 Cortex decision gate" in roadmap
+    assert "**Status:** `PASS / REPOSITORY_COMPLETE`" in roadmap
+    assert "Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE`" in state
+    assert "Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE`" in state
+    assert "Phase 11.7 Cortex decision gate | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in state
     assert CONTRACT_GATE.exists()
     assert IMPLEMENTATION_GATE.exists()
