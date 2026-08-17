@@ -16,6 +16,7 @@ STABLE_DOCUMENTS = (
     "docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md",
     "docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md",
     "docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md",
+    "docs/architecture/CORTEX_DECISION_GATE.md",
     "docs/integrations/TARANIS_ADAPTER.md",
     "docs/integrations/INTELOWL_INTEGRATION.md",
     "docs/integrations/OPENCTI_INTEGRATION.md",
@@ -40,6 +41,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md",
     "docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md",
     "docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md",
+    "docs/qa/PHASE11_7_CORTEX_DECISION_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -75,6 +77,7 @@ OBSOLETE_CURRENT_STATE_MARKERS = (
     "Phase 10 `NOT STARTED`",
     "Phase 10 `IN PROGRESS / DECISION REQUIRED`",
     "IN PROGRESS / ACCOUNTABLE PRODUCTION DECISION REQUIRED",
+    "BOUNDED HANDOFF IMPLEMENTATION IN EXACT-HEAD VALIDATION",
 )
 
 
@@ -161,12 +164,13 @@ def test_current_professional_lifecycle_is_consistent() -> None:
 
     current_state = _read("docs/project/CURRENT_STATE.md")
     for marker in (
-        "Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.5 MISP consolidation | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.6 TheHive contract | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.6 TheHive handoff implementation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.1–11.2 Taranis | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.3 IntelOwl | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.7 Cortex decision gate | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.8 integrated runtime industrialisation | `NOT STARTED`",
         "Phase 12 | `NOT STARTED`",
     ):
         assert marker in current_state
@@ -176,8 +180,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.3 IntelOwl enrichment integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.5 MISP consolidation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
-    assert "11.6 TheHive incident/case handoff\n\n**Status:** `IN PROGRESS / BOUNDED HANDOFF IMPLEMENTATION IN EXACT-HEAD VALIDATION`" in industrialisation
-    assert "11.7 Cortex decision gate" in industrialisation
+    assert "11.6 TheHive incident/case handoff\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
+    assert "11.7 Cortex decision gate\n\n**Status:** `IN PROGRESS / DECISION GATE IN EXACT-HEAD VALIDATION`" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
 
 
@@ -202,7 +206,7 @@ def test_thehive_bounded_implementation_is_exposed_without_false_live_evidence()
     gate = _read("docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md")
     for marker in ("TheHive 5.5.16", "API v1 (`/api/v1`)", "POST /api/v1/case", "handoff:case"):
         assert marker in contract
-    assert "BOUNDED HUMAN-AUTHORIZED HANDOFF / EXACT-HEAD VALIDATION REQUIRED" in integration
+    assert "PASS / REPOSITORY_COMPLETE — ACCEPTED IMPLEMENTATION BASELINE" in integration
     assert "do not blind-retry" in runbook.lower()
     assert "ambiguous" in user
     assert "DTMO_FEATURE_THEHIVE_HANDOFF" in admin
