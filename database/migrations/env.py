@@ -7,6 +7,7 @@ from sqlalchemy import engine_from_config, pool
 
 from dtmo.config import get_settings
 from dtmo.persistence.models import Base
+from dtmo.persistence import thehive as _thehive  # noqa: F401
 
 config = context.config
 if config.config_file_name is not None:
