@@ -1,6 +1,6 @@
 # DTMO — Dutch Threat Monitoring for Education
 
-DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector security teams. It combines governed threat-source operations, canonical intelligence, provenance, vulnerability intelligence, investigation, visual analytics, role-based Administration and Governance evidence in one controlled application.
+DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector security teams. It combines governed threat-source operations, canonical intelligence, provenance, vulnerability intelligence, investigation, visual analytics, role-based administration and governance evidence in one controlled application.
 
 > **Software baseline:** `16.0.0rc12` with accepted post-RC13, E8 and Phase 11 repository enhancements  
 > **Engineering baseline:** Phases 1–7 `PASS`  
@@ -9,7 +9,9 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Production-equivalent staging:** Phase 8 `PASS / OWNER_ACCEPTED`  
 > **Independent assurance:** Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED`  
 > **Phase 10 production decision:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`  
-> **Phase 11.1–11.5:** `PASS / REPOSITORY_COMPLETE`  
+> **Phase 11.3 IntelOwl integration:** `PASS / REPOSITORY_COMPLETE`  
+> **Phase 11.4 OpenCTI integration:** `PASS / REPOSITORY_COMPLETE`  
+> **Phase 11.5 MISP consolidation:** `PASS / REPOSITORY_COMPLETE`  
 > **Active bounded priority:** Phase 11.6 TheHive handoff contract `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
 > **Next production authorization:** Phase 12 `NOT STARTED`  
 > **Production status:** **not production authorized**
@@ -103,6 +105,17 @@ The local Compose topology is a development/reference environment only.
 
 ## Open source and responsible use
 
-DTMO is licensed under the **Apache License, Version 2.0**. Taranis AI, IntelOwl, OpenCTI, MISP and TheHive remain separate services under their applicable licensing boundaries. IntelOwl and MISP remain separate AGPL-3.0 services; OpenCTI Community Edition is Apache-2.0 while Enterprise Edition is separately licensed; TheHive license entitlement is deployment-specific. Phase 11 integrations do not vendor upstream platform source without explicit licensing approval.
+DTMO is licensed under the **Apache License, Version 2.0**. Canonical governance and legal entry points remain:
+
+- `LICENSE`
+- `NOTICE`
+- `SECURITY.md`
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
+- `SUPPORTED_VERSIONS.md`
+- `docs/legal/LICENSING.md`
+- `docs/legal/THIRD_PARTY.md`
+
+Taranis AI, IntelOwl, OpenCTI, MISP and TheHive remain separate services under their applicable licensing boundaries. IntelOwl and MISP remain separate AGPL-3.0 services; OpenCTI Community Edition is Apache-2.0 while Enterprise Edition is separately licensed; TheHive license entitlement is deployment-specific. Phase 11 integrations do not vendor upstream platform source without explicit licensing approval.
 
 Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, enrich, synchronize, create cases, publish or redistribute third-party material.
