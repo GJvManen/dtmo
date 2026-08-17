@@ -85,11 +85,11 @@ The later owner-required connector is analyzer-only and remains a separate Corte
 
 Phase 11.8 is delivered as bounded sub-slices so each runtime control has exact-head evidence and professional documentation.
 
-#### 11.8a Kubernetes/Helm/GitOps runtime foundation
+#### 11.8a Runtime foundation
 
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
 
-This slice introduces a governed Helm chart and GitOps-owned values for the DTMO application workload. The chart requires an immutable image digest; references an existing Secret rather than storing credentials in Git; runs non-root with read-only root filesystem, RuntimeDefault seccomp, dropped capabilities and no privilege escalation; disables service-account token automounting; supplies resource limits/requests and health probes; defines two replicas plus a PodDisruptionBudget; and enables fail-closed NetworkPolicy with explicit external CIDR allowlisting.
+This slice introduces a governed Kubernetes/Helm/GitOps runtime foundation for the DTMO application workload. The chart requires an immutable image digest; references an existing Secret rather than storing credentials in Git; runs non-root with read-only root filesystem, RuntimeDefault seccomp, dropped capabilities and no privilege escalation; disables service-account token automounting; supplies resource limits/requests and health probes; defines two replicas plus a PodDisruptionBudget; and enables fail-closed NetworkPolicy with explicit external CIDR allowlisting.
 
 ```mermaid
 flowchart LR
