@@ -53,7 +53,7 @@ DTMO is not production authorized.
 
 Existing workflow families remain required. Each Phase 11 integration adds bounded integration tests without weakening previous quality, security, recovery, governance or documentation controls.
 
-The Phase 11 IntelOwl and OpenCTI integration gates remain repository evidence for accepted Phase 11.3/11.4. The accepted Phase 11 MISP Consolidation Contract Gate remains contract evidence. The active implementation gate is the **Phase 11 MISP Consolidation State Gate**.
+The accepted **Phase 11 IntelOwl Integration Contract Gate** and **Phase 11 OpenCTI Integration Contract Gate** remain repository evidence for Phase 11.3 and Phase 11.4. The accepted **Phase 11 MISP Consolidation Contract Gate** remains contract evidence. The active implementation gate is the **Phase 11 MISP Consolidation State Gate**.
 
 ## Phase 11 gate sequence
 
