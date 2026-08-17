@@ -23,6 +23,7 @@ class Permission(StrEnum):
     READ_INTELLIGENCE = "read:intelligence"
     INGEST_INTELLIGENCE = "ingest:intelligence"
     REVIEW_INTELLIGENCE = "review:intelligence"
+    CASE_HANDOFF = "handoff:case"
     SHARE_APPROVE = "approve:share"
     MANAGE_CONNECTORS = "manage:connectors"
     MANAGE_USERS = "manage:users"
@@ -37,6 +38,7 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
         {
             Permission.READ_INTELLIGENCE,
             Permission.REVIEW_INTELLIGENCE,
+            Permission.CASE_HANDOFF,
             Permission.REVOKE_TOKENS,
             Permission.EXPORT_REPORTS,
         }
@@ -53,6 +55,7 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.READ_INTELLIGENCE,
             Permission.INGEST_INTELLIGENCE,
             Permission.REVIEW_INTELLIGENCE,
+            Permission.CASE_HANDOFF,
             Permission.EXPORT_REPORTS,
         }
     ),
@@ -76,6 +79,7 @@ ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {
             Permission.READ_INTELLIGENCE,
             Permission.INGEST_INTELLIGENCE,
             Permission.REVIEW_INTELLIGENCE,
+            Permission.CASE_HANDOFF,
         }
     ),
     Role.REVIEWER: frozenset(
