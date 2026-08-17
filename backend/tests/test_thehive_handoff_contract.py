@@ -29,7 +29,7 @@ def test_thehive_handoff_contract_exists_and_is_bounded() -> None:
         assert marker in text
 
 
-def test_phase11_status_preserves_accepted_thehive_and_active_cortex_decision() -> None:
+def test_phase11_status_preserves_accepted_thehive_and_cortex_history() -> None:
     roadmap = _read(ROADMAP)
     state = _read(CURRENT_STATE)
     assert "11.5 MISP consolidation" in roadmap
@@ -38,15 +38,14 @@ def test_phase11_status_preserves_accepted_thehive_and_active_cortex_decision() 
     assert "**Status:** `PASS / REPOSITORY_COMPLETE`" in roadmap
     assert "Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE`" in state
     assert "Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE`" in state
-    # Preserve the accepted 11.7 decision as historical evidence while allowing
-    # the attributable owner requirement to advance through bounded Phase 11.7b.
+    # Preserve accepted 11.7/11.7b evidence after the roadmap advances to 11.8.
     assert (
         "Phase 11.7 Cortex decision gate | "
         "`PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`"
     ) in state
     assert (
-        "Phase 11.7b Cortex analyzer connector | "
-        "`IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`"
+        "Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE`"
     ) in state
+    assert "Phase 11.8a runtime foundation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in state
     assert CONTRACT_GATE.exists()
     assert IMPLEMENTATION_GATE.exists()
