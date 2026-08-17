@@ -17,12 +17,15 @@ STABLE_DOCUMENTS = (
     "docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md",
     "docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md",
     "docs/architecture/CORTEX_DECISION_GATE.md",
+    "docs/architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md",
     "docs/integrations/TARANIS_ADAPTER.md",
     "docs/integrations/INTELOWL_INTEGRATION.md",
     "docs/integrations/OPENCTI_INTEGRATION.md",
     "docs/integrations/THEHIVE_HANDOFF.md",
+    "docs/integrations/CORTEX_ANALYZER_CONNECTOR.md",
     "docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md",
     "docs/operations/THEHIVE_HANDOFF_RUNBOOK.md",
+    "docs/operations/CORTEX_ANALYZER_RUNBOOK.md",
     "docs/user/THEHIVE_CASE_HANDOFF.md",
     "docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md",
     "docs/security/SECURITY_OVERVIEW.md",
@@ -42,6 +45,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md",
     "docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md",
     "docs/qa/PHASE11_7_CORTEX_DECISION_GATE.md",
+    "docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -169,8 +173,9 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.7 Cortex decision gate | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
-        "Phase 11.8 integrated runtime industrialisation | `NOT STARTED`",
+        "Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`",
+        "Phase 11.7b Cortex analyzer connector | `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`",
+        "Phase 11.8 integrated runtime industrialisation | `NOT STARTED / BLOCKED BY 11.7b`",
         "Phase 12 | `NOT STARTED`",
     ):
         assert marker in current_state
@@ -181,7 +186,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.5 MISP consolidation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.6 TheHive incident/case handoff\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
-    assert "11.7 Cortex decision gate\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in industrialisation
+    assert "11.7 Cortex decision gate\n\n**Status:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`" in industrialisation
+    assert "11.7b Cortex analyzer connector\n\n**Status:** `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
 
 
@@ -193,6 +199,9 @@ def test_accepted_integration_documents_remain_exposed() -> None:
     misp = _read("docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md")
     for marker in ("MISP v2.5.44", "AGPL-3.0", "events/restSearch", "events/add", "human"):
         assert marker in misp
+    cortex = _read("docs/architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md")
+    for marker in ("POST /api/analyzer/{ANALYZER_ID}/run", "responders", "external_share_authorized", "local compromise"):
+        assert marker in cortex
 
 
 def test_thehive_bounded_implementation_is_exposed_without_false_live_evidence() -> None:
@@ -221,6 +230,8 @@ def test_documentation_portal_exposes_audience_guides_and_visual_evidence_bounda
     assert "product/PRODUCT_GUIDE.md" in portal
     assert "The governed screenshot catalogue now contains UI-01 through UI-10" in portal
     assert "documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness" in portal
+    assert "CORTEX_ANALYZER_CONNECTOR.md" in portal
+    assert "PHASE11_7B_CORTEX_CONNECTOR_GATE.md" in portal
 
 
 def test_stable_professional_documents_do_not_become_operational_run_logs() -> None:
