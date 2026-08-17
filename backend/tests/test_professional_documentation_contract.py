@@ -176,7 +176,7 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         assert marker in current_state
 
     industrialisation = _read("docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md")
-    assert "11.2 Taranis → DTMO canonical adapter\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
+    assert "11.1–11.2 Taranis AI\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.3 IntelOwl enrichment integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.5 MISP consolidation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
