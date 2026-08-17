@@ -274,12 +274,12 @@ async def review_intelligence_item(
     }
 
 
-@router.post("/intelligence/{item_id}/approve-share")
-async def approve_share(
+@router.post("/intelligence/{item_id}/share-approval")
+async def approve_intelligence_item_sharing(
     item_id: UUID,
     principal: Annotated[
         Principal,
-        Depends(require_permission(Permission.APPROVE_SHARE)),
+        Depends(require_permission(Permission.SHARE_APPROVE)),
     ],
     session: Annotated[AsyncSession, Depends(get_session)],
     request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
@@ -294,6 +294,7 @@ async def approve_share(
             )
         )
     except GovernedDecisionError as exc:
+        await session.commit()
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
     return {
         "id": str(result.item_id),
@@ -303,49 +304,68 @@ async def approve_share(
     }
 
 
+@router.post("/security/tokens/revoke", response_model=TokenRevocationResponse)
+async def revoke_token(
+    request: TokenRevocationRequest,
+    principal: Annotated[
+        Principal,
+        Depends(require_permission(Permission.REVOKE_TOKENS)),
+    ],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
+    request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
+) -> TokenRevocationResponse:
+    store = TokenStateStore.from_url(settings.redis_url)
+    try:
+        result = await session.run_sync(
+            lambda sync_session: revoke_token_with_audit(
+                sync_session,
+                store=store,
+                principal=principal,
+                jti=request.jti,
+                expires_at=request.expires_at,
+                reason=request.reason,
+                request_id=request_id,
+            )
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except TokenStateError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
+    return TokenRevocationResponse(
+        jti=result.jti,
+        expires_at=result.expires_at,
+        audit_event_id=str(result.audit_event_id),
+    )
+
+
 @router.get("/intelligence/search", response_model=SearchResponse)
 async def search_intelligence(
     principal: Annotated[
         Principal,
         Depends(require_permission(Permission.READ_INTELLIGENCE)),
     ],
-    q: Annotated[str | None, Query(max_length=500)] = None,
-    severity: Annotated[str | None, Query(max_length=32)] = None,
-    item_type: Annotated[str | None, Query(max_length=64)] = None,
-    source_id: Annotated[str | None, Query(max_length=64)] = None,
-    sort: Annotated[str, Query(max_length=32)] = "newest",
-    page: Annotated[int, Query(ge=1)] = 1,
-    page_size: Annotated[int, Query(ge=1, le=100)] = 25,
+    q: str = Query(min_length=2, max_length=300),
+    severity: str | None = Query(default=None, max_length=32),
+    minimum_relevance: int = Query(default=0, ge=0, le=100),
+    size: int = Query(default=50, ge=1, le=200),
 ) -> SearchResponse:
     del principal
-    return await search_service.search(
-        q=q,
-        severity=severity,
-        item_type=item_type,
-        source_id=source_id,
-        sort=sort,
-        page=page,
-        page_size=page_size,
-    )
-
-
-@router.post("/tokens/revoke", response_model=TokenRevocationResponse)
-async def revoke_token(
-    request: TokenRevocationRequest,
-    principal: Annotated[
-        Principal,
-        Depends(require_permission(Permission.MANAGE_USERS)),
-    ],
-    settings: Annotated[Settings, Depends(get_settings)],
-    x_request_id: Annotated[str, Header(alias="X-Request-ID", min_length=1, max_length=255)],
-) -> TokenRevocationResponse:
     try:
-        return await revoke_token_with_audit(
-            database=database,
-            settings=settings,
-            principal=principal,
-            token_id=request.token_id,
-            request_id=x_request_id,
+        results = await search_service.search(
+            q,
+            severity=severity,
+            minimum_relevance=minimum_relevance,
+            size=size,
         )
-    except TokenStateError as exc:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"search backend unavailable: {type(exc).__name__}",
+        ) from exc
+    return SearchResponse(query=q, count=len(results), results=results)
+
+
+async def close_services() -> None:
+    await database.close()
+    await search_service.close()
