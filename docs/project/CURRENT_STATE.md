@@ -7,7 +7,7 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. RC13 is `PASS / OWNER_ACCEPTED`; E8.1–E8.10 are `PASS / REPOSITORY_COMPLETE`. Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.6 are `PASS / REPOSITORY_COMPLETE`. The active bounded objective is **Phase 11.7 Cortex decision gate**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.6 are `PASS / REPOSITORY_COMPLETE`. The original Phase 11.7 Cortex no-adoption decision is an accepted historical decision baseline. On 2026-08-17 the accountable owner added Cortex connector integration as a new attributable requirement. The sole active bounded objective is therefore **Phase 11.7b Cortex analyzer connector**, currently `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`.
 
 ## Lifecycle position
 
@@ -25,8 +25,9 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1�
 | Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.7 Cortex decision gate | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.8 integrated runtime industrialisation | `NOT STARTED` |
+| Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
+| Phase 11.7b Cortex analyzer connector | `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION` |
+| Phase 11.8 integrated runtime industrialisation | `NOT STARTED / BLOCKED BY 11.7b` |
 | Phase 12 | `NOT STARTED` |
 
 ## Accepted Phase 11 capabilities
@@ -35,36 +36,33 @@ Taranis provides governed collection/canonicalization; IntelOwl provides bounded
 
 All remain separate service boundaries. None gains DTMO human publication/share authority or establishes local compromise by itself. TheHive case-handoff authority remains distinct from publication/share authority.
 
-## Active Phase 11.7 Cortex decision
+## Active Phase 11.7b Cortex connector
 
-Phase 11.7 is conditional: Cortex may be adopted only if an attributable, validated requirement remains unmet after the accepted IntelOwl integration. The current repository decision review finds **no validated IntelOwl capability gap for the approved DTMO enrichment scope**.
+The accountable owner explicitly required a Cortex connector after the original conditional Phase 11.7 decision had been accepted. This is recorded as new attributable scope rather than rewriting the earlier no-adoption decision.
 
-The accepted IntelOwl boundary already covers the defined generic enrichment needs: CVE/IP/domain/URL/hash analysis through approved analyzers/playbooks, explicit allowlisting, human authorization before disclosure, TLP/handling checks, stable job/analyzer identity, partial-result semantics, durable enrichment provenance, outage isolation and hard no-share/no-local-compromise invariants.
+The active bounded connector is analyzer-only. DTMO uses an explicit Cortex API base, bearer API key, analyzer allowlist and observable datatype allowlist. Only `POST /api/analyzer/{ANALYZER_ID}/run` and `GET /api/job/{JOB_ID}/waitreport` are in scope. Stable job identity is mandatory, returned analyzer identity must match when present, result size is bounded, and malformed output fails closed.
 
-IntelOwl Connectors and external side-effect actions remain excluded deliberately. This is an authority and scope boundary, not evidence of an enrichment capability defect. Cortex responders would introduce a new mutation/response authority and are not justified by the mere presence of TheHive.
+Cortex result metadata explicitly retains `external_share_authorized=false` and `local_compromise_proven=false`. Responders, external side effects, Cortex administration, file/attachment analysis, dynamic analyzer enablement and automatic IntelOwl fallback/replacement remain excluded.
 
 ```mermaid
 flowchart LR
-    R[Validated enrichment requirements] --> I[IntelOwl accepted Phase 11.3 boundary]
-    I --> G{Validated material gap?}
-    G -->|no| N[No Cortex adoption]
-    G -->|future attributable evidence| A[New bounded gap assessment]
-    A --> C{Cortex uniquely justified?}
-    C -->|yes| P[Separate architecture/licensing/security PR]
-    C -->|no| N
+    D[DTMO canonical observable] --> A{Type + analyzer + TLP approved?}
+    A -->|no| X[Fail closed]
+    A -->|yes| C[Cortex analyzer API]
+    C --> J[Stable Cortex job]
+    J --> R[Bounded report]
+    R --> E[DTMO enrichment evidence\nno share authority\nno compromise proof]
 ```
-
-The authoritative decision record is `docs/architecture/CORTEX_DECISION_GATE.md`. No Cortex runtime, source, token, analyzer, responder, deployment configuration or production evidence is introduced in this slice.
 
 ## Runtime and licensing boundary
 
-Accepted services continue to use separate service/API boundaries and runtime secrets. Repository CI cannot prove live provider coverage, external-service entitlements, deployed permissions, organization membership, privacy approval or production-equivalent behavior.
+Cortex remains a separate service with a separate runtime API key and organization boundary. StrangeBee documents Cortex as fully open source and not requiring a Cortex product license; individual analyzers and external providers can carry their own licenses, subscriptions or data-handling terms and must be approved separately. No upstream Cortex or Cortex-Analyzers source is vendored by this integration.
 
-Cortex is not added to the composed runtime in Phase 11.7. Any future proposal requires a separate licensing and architecture review before source redistribution, service deployment or responder execution could be accepted.
+Repository CI cannot prove live Cortex reachability, analyzer/provider coverage, provider entitlement, deployed organization permissions, privacy approval or production-equivalent behavior.
 
 ## Governance and evidence boundary
 
-Repository acceptance of Phase 11.7 proves only that the conditional decision is documented, attributable to the accepted IntelOwl requirement set and internally consistent. It does not prove live analyzer quality or that IntelOwl satisfies future requirements that have not yet been defined.
+The accepted Phase 11.7 no-adoption decision remains historical evidence tied to the requirements available at that time. Phase 11.7b is a later owner-required scope addition and therefore receives its own architecture contract, runbook, QA gate and exact-head evidence.
 
 Historical Phase 8/9 evidence remains valid only for the earlier candidate and is not reused for the materially changed Phase 11 platform. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent assurance remain required before Phase 12.
 
@@ -75,9 +73,10 @@ Historical Phase 8/9 evidence remains valid only for the earlier candidate and i
 3. OpenCTI — `PASS / REPOSITORY_COMPLETE`;
 4. MISP — `PASS / REPOSITORY_COMPLETE`;
 5. TheHive — `PASS / REPOSITORY_COMPLETE`;
-6. Cortex — active conditional decision gate; current proposed decision is no adoption because no validated IntelOwl gap is established;
-7. Kubernetes/Helm/GitOps and integrated runtime hardening — next after protected Phase 11.7 acceptance;
-8. migration/compatibility;
-9. new production-equivalent validation;
-10. new independent external assurance;
-11. Phase 12 formal production GO/NO-GO.
+6. original Cortex conditional decision — `PASS / REPOSITORY_COMPLETE` historical baseline;
+7. owner-required Cortex analyzer connector — active Phase 11.7b;
+8. Kubernetes/Helm/GitOps and integrated runtime hardening — next after protected Phase 11.7b acceptance;
+9. migration/compatibility;
+10. new production-equivalent validation;
+11. new independent external assurance;
+12. Phase 12 formal production GO/NO-GO.
