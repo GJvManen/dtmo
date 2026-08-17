@@ -21,6 +21,7 @@ STABLE_DOCUMENTS = (
     "docs/integrations/INTELOWL_INTEGRATION.md",
     "docs/integrations/OPENCTI_INTEGRATION.md",
     "docs/integrations/THEHIVE_HANDOFF.md",
+    "docs/integrations/CORTEX_ANALYZER_CONNECTOR.md",
     "docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md",
     "docs/operations/THEHIVE_HANDOFF_RUNBOOK.md",
     "docs/user/THEHIVE_CASE_HANDOFF.md",
@@ -42,6 +43,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md",
     "docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md",
     "docs/qa/PHASE11_7_CORTEX_DECISION_GATE.md",
+    "docs/qa/PHASE11_7A_CORTEX_ANALYZER_CONNECTOR_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -169,7 +171,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.7 Cortex decision gate | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.7A Cortex analyzer connector | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 11.8 integrated runtime industrialisation | `NOT STARTED`",
         "Phase 12 | `NOT STARTED`",
     ):
@@ -181,7 +184,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.5 MISP consolidation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.6 TheHive incident/case handoff\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
-    assert "11.7 Cortex decision gate\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in industrialisation
+    assert "11.7 Cortex decision gate\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
+    assert "11.7A Cortex analyzer connector re-entry\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
 
 
@@ -193,6 +197,9 @@ def test_accepted_integration_documents_remain_exposed() -> None:
     misp = _read("docs/architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md")
     for marker in ("MISP v2.5.44", "AGPL-3.0", "events/restSearch", "events/add", "human"):
         assert marker in misp
+    cortex = _read("docs/integrations/CORTEX_ANALYZER_CONNECTOR.md")
+    for marker in ("analyzer-only", "AGPL-3.0", "responders", "read-only enrichment evidence"):
+        assert marker in cortex
 
 
 def test_thehive_bounded_implementation_is_exposed_without_false_live_evidence() -> None:
