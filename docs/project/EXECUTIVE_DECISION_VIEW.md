@@ -15,7 +15,8 @@ This document gives accountable decision makers the concise current decision pos
 | Phase 9 independent assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Historical assurance accepted for prior candidate |
 | Phase 10 production authorization | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` | Production authorization not granted |
 | Phase 11.1–11.5 | `PASS / REPOSITORY_COMPLETE` | Taranis, IntelOwl, OpenCTI and MISP boundaries accepted |
-| Phase 11.6 TheHive handoff contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Current bounded contract gate |
+| Phase 11.6 TheHive contract | `PASS / REPOSITORY_COMPLETE` | Service/API/licensing/authority baseline accepted |
+| Phase 11.6 TheHive implementation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Current bounded handoff/state gate |
 | Phase 11 platform industrialisation | `IN PROGRESS / ACTIVE` | Highest-priority programme |
 | Phase 12 production authorization | `NOT STARTED` | New decision only after integrated validation and assurance |
 
@@ -23,7 +24,7 @@ This document gives accountable decision makers the concise current decision pos
 
 The project has not received a production `GO`. Historical Phase 8 and Phase 9 evidence remains valid only for the candidate it originally covered and cannot be treated as production acceptance of the materially changed Phase 11 platform.
 
-The active engineering decision is whether the bounded Phase 11.6 TheHive contract safely defines service/API/licensing, case identity, TLP/PAP/access, human case-handoff authority and mutation replay behavior before any runtime case creation is introduced.
+The active engineering decision is whether the bounded TheHive implementation safely realizes the already accepted contract without transferring human authority or inventing deployment evidence.
 
 ## Phase 11 required progression
 
@@ -31,9 +32,9 @@ The active engineering decision is whether the bounded Phase 11.6 TheHive contra
 2. **Completed:** IntelOwl bounded enrichment integration.
 3. **Completed:** OpenCTI contract, read adapter and canonical mapping/persistence integration.
 4. **Completed:** MISP consolidation contract and authoritative synchronization-state implementation.
-5. **Active:** TheHive incident/case handoff contract; runtime mutation remains excluded.
-6. Implement the minimal human-authorized TheHive handoff only after the contract is protected-merged.
-7. Adopt Cortex only if a validated IntelOwl capability gap remains.
+5. **Completed:** TheHive service/API/identity/licensing/authority contract.
+6. **Active:** minimal human-authorized TheHive case handoff plus durable reservation/reconciliation state.
+7. Adopt Cortex only if a validated IntelOwl capability gap remains after Phase 11.6 acceptance.
 8. Industrialise the composed runtime with Kubernetes/Helm/GitOps, HA, secrets, network policy, observability, backup/recovery and supply-chain controls.
 9. Complete migration/compatibility.
 10. Execute new production-equivalent validation.
@@ -44,9 +45,11 @@ The active engineering decision is whether the bounded Phase 11.6 TheHive contra
 
 TheHive 5.5.16 remains a separate StrangeBee service using public API v1. TheHive 5.3+ requires an activated Community, Gold or Platinum license for continued write functionality; live entitlement is deployment evidence, not a CI assumption.
 
-`POST /api/v1/case` is a mutation candidate only after explicit human-authorized DTMO case handoff. A later implementation must persist stable DTMO canonical identity, handoff/idempotency identity, TheHive case identity and organization context; ambiguous delivery must block blind replay. Mutable title/tag/assignee fields are not identity.
+The implementation permits only explicit human-authorized `POST /api/v1/case`. `handoff:case` is distinct from share/publication approval and service accounts cannot authorize it. DTMO commits durable request/item/principal/organization state before external mutation. Stable returned case identity is required for `delivered`; uncertain delivery becomes `ambiguous` and blocks blind replay.
 
-TLP/PAP/access mapping may not broaden authoritative source restrictions. TheHive case lifecycle is not canonical CTI truth, local-compromise proof or DTMO share authority. Responders, Cortex execution, automatic MISP→TheHive automation, external sharing and administration remain excluded.
+TLP/PAP handling fails closed. A requested TLP cannot broaden a known authoritative TLP tag. Authoritative MISP distribution/sharing-group restrictions currently block handoff because no deployment-approved TheHive access-membership mapping exists. DTMO does not infer one.
+
+TheHive case lifecycle is not canonical CTI truth, local-compromise proof or DTMO share authority. Responders, task/observable creation, Cortex execution, automatic MISP→TheHive automation, case deletion, external sharing and administration remain excluded.
 
 ## Decision rules
 
@@ -59,4 +62,4 @@ TLP/PAP/access mapping may not broaden authoritative source restrictions. TheHiv
 
 ## Current decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.5 are `PASS / REPOSITORY_COMPLETE`. Phase 11.6 TheHive handoff-contract exact-head validation is the active bounded gate. DTMO remains not production authorized; Phase 12 starts only after Phase 11.10/11.11 evidence is accepted.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.5 and the Phase 11.6 TheHive contract are `PASS / REPOSITORY_COMPLETE`. The bounded Phase 11.6 TheHive handoff implementation is the active exact-head gate. DTMO remains not production authorized; Phase 12 starts only after Phase 11.10/11.11 evidence is accepted.**
