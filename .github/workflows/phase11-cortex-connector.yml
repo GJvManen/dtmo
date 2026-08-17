@@ -1,0 +1,35 @@
+name: Phase 11 Cortex Connector Gate
+
+on:
+  pull_request:
+    paths:
+      - 'backend/dtmo/config.py'
+      - 'backend/dtmo/integrations/cortex.py'
+      - 'backend/tests/test_phase11_7b_cortex_connector.py'
+      - 'docs/architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md'
+      - 'docs/integrations/CORTEX_ANALYZER_CONNECTOR.md'
+      - 'docs/operations/CORTEX_ANALYZER_RUNBOOK.md'
+      - 'docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md'
+      - 'docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md'
+      - 'docs/project/CURRENT_STATE.md'
+      - 'docs/README.md'
+      - 'docs/security/SECURITY_OVERVIEW.md'
+      - 'docs/evidence/EVIDENCE_INDEX.md'
+      - '.github/workflows/phase11-cortex-connector.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cortex-connector:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Validate bounded Cortex analyzer connector
+        run: python -m pytest -q backend/tests/test_phase11_7b_cortex_connector.py
