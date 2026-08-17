@@ -1,0 +1,35 @@
+name: Phase 11 Runtime Foundation Gate
+
+on:
+  pull_request:
+    paths:
+      - 'deploy/helm/**'
+      - 'deploy/gitops/**'
+      - 'backend/tests/test_phase11_8_runtime_foundation.py'
+      - 'docs/architecture/PHASE11_8_RUNTIME_FOUNDATION.md'
+      - 'docs/administration/KUBERNETES_RUNTIME_CONFIGURATION.md'
+      - 'docs/operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md'
+      - 'docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md'
+      - 'docs/project/CURRENT_STATE.md'
+      - 'docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md'
+      - 'docs/evidence/EVIDENCE_INDEX.md'
+      - 'docs/README.md'
+      - 'README.md'
+      - '.github/workflows/phase11-runtime-foundation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-foundation:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Validate Phase 11.8 runtime foundation
+        run: python -m pytest -q backend/tests/test_phase11_8_runtime_foundation.py
