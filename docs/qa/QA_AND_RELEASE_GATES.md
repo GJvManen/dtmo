@@ -2,32 +2,18 @@
 
 ## Purpose
 
-DTMO uses layered acceptance gates so engineering confidence, accountable functional acceptance, external staging evidence, independent assurance, platform-integration evidence and production authorization remain separate claims. The model is fail-closed: configured checks or documented intentions are not evidence.
+DTMO uses layered acceptance gates so repository engineering, accountable functional acceptance, deployment-bound validation, independent assurance and production authorization remain separate claims. The model is fail-closed: configured checks or documented intentions are not evidence.
 
 ## Core release principles
 
-1. **Exact-head evidence** — automated pull-request evidence belongs to the exact final PR head.
+1. **Exact-head evidence** — pull-request evidence belongs to the exact final PR head.
 2. **New commit, new evidence** — a new commit invalidates earlier exact-head CI for that PR.
 3. **No inferred PASS** — queued, in-progress, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
 4. **Expected-head merge protection** — protected merge must reject a moved head.
-5. **Evidence classes remain separate** — CI, owner acceptance, real staging, independent assurance, platform-integration evidence and production authorization are not interchangeable.
-6. **Historical evidence is immutable** — later decisions may supersede current status without rewriting historical run records.
-7. **One bounded Phase 11 objective per PR** — unrelated architecture work is not stacked behind red CI.
+5. **Evidence classes remain separate** — CI, owner acceptance, production-equivalent validation, independent assurance and production authorization are not interchangeable.
+6. **Historical evidence is immutable** — later lifecycle changes do not rewrite original evidence claims.
+7. **One bounded Phase 11 objective per PR** — unrelated work is not stacked behind red CI.
 8. **Professional documentation is a merge criterion** — code/integration work cannot merge when affected authoritative documentation or documentation-contract tests are stale.
-
-## Gate families
-
-| Gate family | Primary objective | Evidence boundary |
-|---|---|---|
-| Build & quality | Packaging, lint, typing, unit/integration correctness | Repository CI |
-| Security & identity | Authentication, authorization, privileged actions and secret boundaries | Repository CI + deployed validation + assurance |
-| Data integrity & recovery | Migrations, persistence, integrity and recovery | Repository CI + deployed validation/assurance |
-| Connector reliability | Contract/state/retry/timeout/replay/freshness/provenance/failure isolation | Repository CI + deployed validation |
-| Governance | Mapping truth and authority separation | Repository CI + governance review |
-| Platform integration | API/data-model interoperability, provenance, identity, replay/dedupe and migration | Phase 11 repository + integration evidence |
-| Integrated runtime | Kubernetes/Helm/GitOps, secrets, network, HA/recovery, observability and supply-chain controls | Phase 11 deployed validation |
-| Independent assurance | Independent assessment of integrated candidate | Phase 11 external assurance |
-| Production decision | Formal accountable go/no-go for integrated candidate | Phase 12 |
 
 ## Current acceptance status
 
@@ -36,104 +22,96 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Phases 1–7 | `PASS` |
 | RC13 functional console | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | `PASS / REPOSITORY_COMPLETE` |
-| Phase 8 | `PASS / OWNER_ACCEPTED` |
-| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
+| Phase 8 | `PASS / OWNER_ACCEPTED` — historical candidate |
+| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` — historical candidate |
 | Phase 10 | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
-| Phase 11.1 Taranis | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.2 Taranis adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 MISP consolidation | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.6 TheHive contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.6 TheHive handoff implementation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11 | `IN PROGRESS / ACTIVE` |
+| Phase 11.1–11.7b | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8a runtime foundation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.9 migration/compatibility | `NOT STARTED` |
+| Phase 11.10 production-equivalent validation | `NOT STARTED` |
+| Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 | `NOT STARTED` |
 
 DTMO is not production authorized.
 
-## Repository-controlled evidence
+## Gate families
 
-Existing workflow families remain required. Each Phase 11 integration adds bounded integration tests without weakening previous quality, security, recovery, governance or documentation controls.
+| Gate family | Primary objective | Evidence boundary |
+|---|---|---|
+| Build & quality | Packaging, lint, typing, tests | Repository CI |
+| Security & identity | Authentication, authorization, privileged actions, secrets | Repository CI + later deployed validation/assurance |
+| Data integrity & recovery | Migration, persistence, integrity and recovery | Repository CI + later deployed validation/assurance |
+| Connector reliability | Contract/state/retry/timeout/replay/provenance/failure isolation | Repository CI + later deployed validation |
+| Governance | Mapping truth and authority separation | Repository CI + governance review |
+| Platform integration | API/data-model interoperability and service-boundary controls | Phase 11 repository evidence |
+| Integrated runtime | Kubernetes/Helm/GitOps, secrets, network, HA/recovery, observability, supply chain | Phase 11 repository + later deployed evidence |
+| Independent assurance | Independent assessment of integrated candidate | Phase 11.11 external assurance |
+| Production decision | Formal accountable go/no-go for integrated candidate | Phase 12 |
 
-The accepted Taranis, IntelOwl, OpenCTI, MISP and TheHive-contract gates remain repository evidence for the accepted Phase 11 boundaries. The active implementation gate is the **Phase 11 TheHive Handoff Implementation Gate**.
+## Accepted Phase 11.1–11.7b boundaries
 
-## Phase 11 gate sequence
+Taranis AI, IntelOwl, OpenCTI, MISP, TheHive and Cortex repository integration boundaries are accepted as `PASS / REPOSITORY_COMPLETE`. Their accepted contracts remain regression-protected and do not become deployment or production evidence.
 
-### 11.1–11.5 accepted boundaries
+The original Phase 11.7 Cortex no-adoption decision remains a historical accepted baseline. The later owner-required Phase 11.7b analyzer connector is a separate accepted repository boundary.
 
-**Repository status:** `PASS / REPOSITORY_COMPLETE`.
-
-Accepted evidence covers Taranis architecture/adapter, IntelOwl bounded enrichment, OpenCTI graph integration and MISP authoritative governed exchange/synchronization state. Repository acceptance is not production evidence.
-
-### 11.6 TheHive contract
-
-**Repository status:** `PASS / REPOSITORY_COMPLETE`.
-
-The accepted contract fixed TheHive 5.5.16/API v1, separate service/licensing boundary, dedicated human case-handoff authority, stable identity, no-blind-replay semantics, data minimization, TLP/PAP/access fail-closed rules and explicit exclusions before runtime mutation code.
-
-### 11.6 TheHive bounded handoff implementation — active gate
+## Active Phase 11.8a runtime foundation gate
 
 Required exact-head repository evidence:
 
-- `handoff:case` is a dedicated server-side permission distinct from `approve:share`;
-- only human roles explicitly assigned that permission can authorize handoff and service accounts cannot;
-- `POST /api/v1/case` is the only accepted external mutation;
-- the feature is disabled by default;
-- canonical intelligence identity and repository provenance are present before mutation;
-- severity, TLP and PAP mappings are deterministic and unknown values fail closed;
-- requested TLP cannot broaden a known authoritative TLP restriction;
-- authoritative MISP distribution/sharing-group restrictions block the bounded handoff until a deployment-approved TheHive access mapping exists;
-- payload content is minimized to approved case fields and excludes credentials, attachments, raw source bodies, private enrichment and unrelated personal data;
-- `thehive_handoff_state` is committed before the external mutation;
-- request UUID and confirmed TheHive case identity are durable unique identities;
-- `reserved`, `delivered`, `ambiguous` and `failed` state transitions are bounded and attributable;
-- timeout/network ambiguity or a nominal success without stable case identity becomes `ambiguous` and blocks automatic replay;
-- a confirmed stable identity is required before `delivered` state;
-- arbitrary upstream response content is not persisted as outcome evidence; only minimized case identity/number/organization are retained;
-- database constraints enforce no-share and no-local-compromise authority;
-- production settings require HTTPS API base, runtime secret token and explicit organization when the feature is enabled;
-- TheHive write/license entitlement remains a deployment prerequisite rather than a CI inference;
-- architecture, integration, operations, security, user/admin, current-state, QA, evidence, roadmap and README/docs portal documentation remain synchronized;
-- `docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md`, Professional Documentation Gate, RC4 Quality Gate and the dedicated Phase 11 TheHive Handoff Implementation Gate all succeed on the same exact head.
+- Helm chart renders the DTMO application workload from reviewed Git state;
+- an immutable image digest is mandatory and mutable tag-only deployment is rejected;
+- GitOps values contain non-secret desired state only;
+- runtime configuration consumes an existing Kubernetes Secret and does not embed secret material in manifests;
+- workload runs non-root with read-only root filesystem and dropped Linux capabilities;
+- automatic service-account token mounting is disabled;
+- readiness/liveness probes and explicit resources are present;
+- a PodDisruptionBudget protects the stateless application workload;
+- NetworkPolicy is fail-closed/default-deny and external egress requires explicit CIDR allowlisting;
+- accepted service-to-service licensing, provenance, RBAC and human-authority boundaries remain unchanged;
+- architecture, administration, operations, current-state, QA, evidence, roadmap, README/docs portal and applicable security/governance documentation remain synchronized;
+- `docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md`, Professional Documentation Gate, RC4 Quality Gate and the dedicated Phase 11 Runtime Foundation Gate succeed on the same exact head.
 
-Repository acceptance does not establish live TheHive connectivity, activated entitlement, effective deployed permissions, target-organization configuration, privacy approval, real-data handling correctness, production-equivalent validation, independent assurance or production authorization.
+Repository acceptance does **not** establish target-cluster admission behavior, cloud IAM/workload identity, live secret-provider permissions, ingress/TLS, stateful/multi-zone HA, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity, exercised upgrade/rollback, production-equivalent validation, independent assurance or production authorization.
 
-Only after protected merge and lifecycle reconciliation may Phase 11.6 become `PASS / REPOSITORY_COMPLETE` and the programme evaluate the conditional 11.7 Cortex decision gate.
+## Subsequent bounded Phase 11.8 slices
 
-### 11.7 Cortex decision
+After protected 11.8a acceptance, continue one bounded PR at a time for:
 
-Adopt Cortex only if an accepted capability-gap analysis proves IntelOwl cannot satisfy a validated requirement. TheHive integration is not itself evidence of a Cortex gap.
+1. workload identity/external secrets plus ingress/TLS and finer network segmentation;
+2. stateful/multi-zone HA and failure/disruption controls;
+3. centralized metrics/logs/traces and operational alerting;
+4. backup/recovery objectives and exercised restore evidence;
+5. supply-chain SBOM/scanning/signing/attestation;
+6. capacity, upgrade and rollback procedures with exercised evidence.
 
-### 11.8 Integrated runtime
+The exact split may be refined only while preserving one bounded objective per PR and the fixed Phase 11 order.
 
-Required evidence includes Kubernetes/Helm/GitOps, immutable images, workload identities/external secrets, TLS/network policies, database/queue/storage durability and recovery, centralized observability, SBOM/scanning/signing/attestation, capacity, upgrade and rollback tests.
+## Phase 11.9 migration and compatibility
 
-### 11.9 Migration and compatibility
+Required evidence includes migration correctness/rollback and preservation of canonical intelligence, provenance, classification, governance and accepted service identities.
 
-Required evidence includes migration correctness/rollback and preservation of canonical intelligence/provenance/classification/governance.
+## Phase 11.10–11.11 integrated validation and assurance
 
-### 11.10–11.11 Integrated validation and assurance
-
-The integrated candidate must receive fresh production-equivalent validation and fresh independent external assurance against the same immutable deployment identity. Prior Phase 8/9 evidence remains historical and cannot satisfy these gates by itself.
+The integrated candidate must receive fresh production-equivalent validation and fresh independent external assurance against the same immutable deployment identity. Prior Phase 8/9 evidence remains historical and cannot satisfy these gates.
 
 ## Phase 12 production-decision model
 
-Phase 12 is `NOT STARTED`. It requires accepted Phase 11 validation/assurance plus production-specific approvals. Missing mandatory input, unresolved release-blocking findings, unaccepted residual risk or release-identity mismatch remains `NO-GO / BLOCKED`.
+Phase 12 is `NOT STARTED`. It requires accepted Phase 11.10/11.11 evidence plus production-specific ownership, IAM/secrets/network/recovery/monitoring/privacy/legal/change approvals. Missing mandatory evidence, unresolved release-blocking findings or release-identity mismatch remains `NO-GO / BLOCKED`.
 
 ## Security and authority invariants
 
-Release gates must preserve:
+Release gates preserve:
 
-- ingestion/enrichment/graph/MISP synchronization creates candidate/context intelligence only;
 - external sharing requires separate human approval;
-- case handoff requires separate human approval;
-- connectors, CI, service accounts and integrated platforms do not gain publication/share or case-handoff authority;
-- IntelOwl verdicts, OpenCTI graph mappings, MISP event presence and TheHive case state do not imply local compromise;
+- TheHive case handoff requires separate human approval;
+- connectors, CI, Kubernetes service accounts and integrated platforms do not gain publication/share or case-handoff authority;
+- enrichment/graph/exchange/case state does not itself imply local compromise;
 - human and machine roles remain separated;
-- framework mappings remain explicit and do not imply blanket compliance;
-- provenance, confidence, markings and source restrictions are preserved across service boundaries;
+- provenance, confidence, markings and source restrictions remain preserved across service boundaries;
 - raw secret values are not committed as evidence;
-- external integrations use dedicated identities and bounded scopes.
+- external services remain separate identities and licensing/provider boundaries.
 
 ## Release decision rule
 
-A PR may be merged only when required exact-head workflows for the final head are `completed/success` and the PR remains mergeable. Production authorization requires an explicit accountable Phase 12 `GO`.
+A PR may be merged only when all required exact-head workflows for the final head are `completed/success` and the PR remains mergeable. Production authorization requires an explicit accountable Phase 12 `GO`.
