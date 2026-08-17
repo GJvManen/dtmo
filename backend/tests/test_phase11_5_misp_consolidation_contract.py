@@ -74,13 +74,13 @@ def test_existing_misp_paths_are_present_for_consolidation() -> None:
     assert "service accounts cannot export intelligence to MISP" in _read(EXPORT_GOVERNANCE)
 
 
-def test_phase11_status_moves_to_misp_contract_validation() -> None:
+def test_phase11_status_moves_to_misp_state_validation() -> None:
     roadmap = _read(ROADMAP)
     state = _read(CURRENT_STATE)
     assert "11.4 OpenCTI" in roadmap
     assert "PASS / REPOSITORY_COMPLETE" in roadmap
     assert "11.5 MISP consolidation" in roadmap
-    assert "CONTRACT IN EXACT-HEAD VALIDATION" in roadmap
+    assert "SYNCHRONIZATION STATE IN EXACT-HEAD VALIDATION" in roadmap
     assert "Phase 11.4" in state
     assert "PASS / REPOSITORY_COMPLETE" in state
     assert "Phase 11.5 MISP" in state
