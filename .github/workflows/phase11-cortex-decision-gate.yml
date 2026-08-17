@@ -1,0 +1,29 @@
+name: Phase 11 Cortex Decision Gate
+
+on:
+  pull_request:
+    paths:
+      - 'docs/architecture/CORTEX_DECISION_GATE.md'
+      - 'docs/qa/PHASE11_7_CORTEX_DECISION_GATE.md'
+      - 'docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md'
+      - 'docs/project/CURRENT_STATE.md'
+      - 'docs/README.md'
+      - 'backend/tests/test_phase11_7_cortex_decision_gate.py'
+      - '.github/workflows/phase11-cortex-decision-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cortex-decision:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Validate Cortex decision and authoritative status
+        run: python -m pytest -q backend/tests/test_phase11_7_cortex_decision_gate.py backend/tests/test_intelowl_integration_contract.py backend/tests/test_phase11_3_intelowl_adapter.py backend/tests/test_intelowl_governed_execution.py
