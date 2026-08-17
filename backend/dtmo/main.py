@@ -49,6 +49,7 @@ from dtmo.scheduler import ScheduledJob, SchedulerService
 from dtmo.severity_experience import router as severity_experience_router
 from dtmo.source_center import router as source_center_router
 from dtmo.source_onboarding_experience import router as source_onboarding_experience_router
+from dtmo.thehive_handoff import router as thehive_handoff_router
 from dtmo.threat_workspace import router as threat_workspace_router
 from dtmo.trace_context import begin_trace, end_trace
 from dtmo.ui import router as ui_router
@@ -155,6 +156,7 @@ app.include_router(admin_center_router)
 app.include_router(ux_preferences_router)
 app.include_router(intelligence_router)
 app.include_router(intelowl_execution_router)
+app.include_router(thehive_handoff_router)
 app.include_router(misp_export_router)
 app.include_router(misp_workspace_router)
 app.include_router(admin_sources_router)
