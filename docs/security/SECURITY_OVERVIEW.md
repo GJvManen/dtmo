@@ -7,27 +7,26 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 DTMO protects confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence. Security controls keep source trust, identity, authorization, evidence and human decision boundaries explicit and enforceable.
 
-DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.5 and the Phase 11.6 TheHive contract are `PASS / REPOSITORY_COMPLETE`. The active bounded gate is the **Phase 11.6 human-authorized TheHive case-handoff implementation**.
+DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.6 are `PASS / REPOSITORY_COMPLETE`. The accepted Phase 11.7 no-Cortex decision remains a historical baseline; the active bounded gate is **Phase 11.7b owner-required Cortex analyzer connector**.
 
 ## Identity and access control
 
 - Server-side RBAC is authoritative.
 - Human and service-account authorities remain separated.
 - Least privilege and explicit role/permission scope are enforced server-side.
-- `handoff:case` is a dedicated human permission and is separate from `approve:share`.
-- CISO, CERT, Senior Analyst and Administrator roles receive bounded case-handoff authority; Publisher alone does not.
+- `handoff:case` is a dedicated human permission and remains separate from `approve:share`.
 - Service accounts, connectors, schedulers and integrated platforms do not receive human review/share-approval or case-handoff authority.
-- TheHive runtime mutation uses a dedicated non-human identity only after DTMO human authorization.
+- Cortex uses a dedicated API-key service identity with only the approved organization/analyze/read-job capability needed by the connector.
 - Runtime secrets are never stored in repository evidence, logs or screenshots.
 - Authentication/authorization failures fail closed and never trigger privilege broadening.
 
 ## Separation of duties and publication authority
 
-Technical success is not dissemination or incident-escalation authority. Taranis publisher state, IntelOwl results, OpenCTI graph content, MISP ingest/delivery success and TheHive case state do **not** authorize DTMO external sharing or publication. Human review and governed DTMO share approval remain authoritative. TheHive case-handoff approval is a separate human authority.
+Technical success is not dissemination or incident-escalation authority. Taranis publisher state, IntelOwl/Cortex analyzer results, OpenCTI graph content, MISP ingest/delivery success and TheHive case state do **not** authorize DTMO external sharing or publication. Human review and governed DTMO share approval remain authoritative. TheHive case-handoff approval is a separate human authority.
 
 ## Threat and vulnerability management
 
-DTMO threat and vulnerability management keeps CTI, enrichment, vulnerability context and local security conclusions separate and provenance-backed. Taranis, IntelOwl, OpenCTI and MISP may contribute source, enrichment, graph or exchange context, but none of those external service results independently proves DTMO-local exposure, exploitability, compromise or attribution certainty. Vulnerability prioritization and governance mappings therefore remain explicit, reviewable and bounded to the evidence available to DTMO.
+DTMO threat and vulnerability management keeps CTI, enrichment, vulnerability context and local security conclusions separate and provenance-backed. Taranis, IntelOwl, Cortex, OpenCTI and MISP may contribute source, enrichment, graph or exchange context, but none of those external service results independently proves DTMO-local exposure, exploitability, compromise or attribution certainty. Vulnerability prioritization and governance mappings therefore remain explicit, reviewable and bounded to the evidence available to DTMO.
 
 Phase 11 integration changes preserve this governance boundary: service-to-service processing cannot grant publication/share authority, case-handoff authority or local-compromise status. Missing, conflicting or unrepresentable security evidence fails closed rather than being inferred.
 
@@ -35,67 +34,59 @@ Phase 11 integration changes preserve this governance boundary: service-to-servi
 
 Phase 11.3 IntelOwl remains a separate AGPL-3.0 service/API boundary. Phase 11.4 OpenCTI remains a separate service/API boundary with Community Apache-2.0 and separately licensed Enterprise features. Phase 11.5 MISP remains a separate AGPL-3.0 service/API boundary with authoritative distribution/sharing-group/TLP restrictions and human-approved unpublished export. Phase 11.6 keeps TheHive as a separate StrangeBee service/API boundary with deployment-specific license entitlement.
 
+The Phase 11.7b Cortex integration adds another separate service/API identity boundary. StrangeBee documents Cortex itself as fully open source and not requiring a Cortex product license. Individual analyzers and the third-party services they call can carry independent licenses, subscriptions and disclosure terms; every enabled analyzer must therefore remain explicitly allowlisted and separately approved.
+
 None of these services independently establishes DTMO-local exploitability, exposure or compromise.
 
-## Phase 11.6 TheHive security boundary
+## Phase 11.7b Cortex security boundary
 
-Reviewed upstream baseline: **TheHive 5.5.16**, public API v1 (`/api/v1`). TheHive remains a separate StrangeBee service. DTMO does not vendor TheHive source or treat repository integration as license entitlement.
-
-The active repository implementation allows only an explicit human-authorized `POST /api/v1/case` mutation. `DTMO_FEATURE_THEHIVE_HANDOFF` is disabled by default. Production configuration requires an HTTPS API base, runtime token and explicit organization when enabled, but repository validation does not prove the actual tenant entitlement or permission scope.
+Only analyzer execution is in scope. DTMO uses `POST /api/analyzer/{ANALYZER_ID}/run` for one explicitly approved non-file observable and `GET /api/job/{JOB_ID}/waitreport` to retrieve a bounded report. API-key bearer authentication is required. The feature is disabled by default and production configuration requires HTTPS, a runtime API token and a non-empty analyzer allowlist.
 
 Security invariants:
 
-- `handoff:case` authority is distinct from publication/share authority;
-- routine integration uses a dedicated non-human TheHive identity scoped to the approved organization and minimum accepted API permissions;
-- the service identity cannot authorize the human handoff itself;
-- platform administration, organization administration, ownership transfer, external sharing, responders, Cortex execution, task/observable creation, case deletion and arbitrary bulk mutations are excluded;
-- canonical item identity and repository provenance are required before mutation;
-- deterministic severity and explicit TLP/PAP mappings are required and unknown values fail closed;
-- a durable reservation is committed before the external request;
-- DTMO canonical UUID, handoff request/idempotency identity, human principal, TheHive case identity and organization context are durably mapped;
-- mutable titles, descriptions, tags, assignees and status values are not identity;
-- attachments, raw source bodies, credentials, private enrichment results and unrelated personal data are excluded by default;
-- authentication/authorization/write-boundary failures do not trigger privilege broadening;
-- timeout/network ambiguity or nominal success without stable identity creates an `ambiguous` state;
-- ambiguous mutation delivery blocks blind replay and requires reconciliation;
-- database constraints enforce `external_share_authorized=false` and `local_compromise_proven=false` on handoff state;
-- TheHive unavailability must not make unrelated DTMO read paths unavailable;
-- TheHive case state does not become canonical CTI truth, local-compromise proof or DTMO external-share authority.
+- analyzer IDs and observable datatypes are explicit allowlists;
+- personal-data datatypes are excluded from the bounded baseline;
+- explicit TLP values must be in the Cortex 0..3 range and upstream handling may not be broadened;
+- stable Cortex job identity is mandatory;
+- returned analyzer identity must match the requested analyzer when present;
+- malformed or oversized reports fail closed;
+- report metadata is forced to `external_share_authorized=false` and `local_compromise_proven=false`;
+- Cortex output is enrichment evidence only and never becomes canonical compromise proof;
+- responders, external side-effect actions, organization/user administration, analyzer enable/disable/update and job deletion remain excluded;
+- file/attachment analysis and raw-body transfer are excluded from this slice;
+- automatic fallback from IntelOwl to Cortex or from Cortex to IntelOwl is prohibited because alternate-provider selection must remain explicit and governed;
+- API credentials and provider secrets are not persisted in result payloads or documentation evidence.
 
 ```mermaid
 flowchart LR
-    H[Human DTMO user\nhandoff:case permission] --> A{Approve handoff?}
-    A -->|no| N[No TheHive mutation]
-    A -->|yes| V{Identity + provenance + TLP/PAP valid?}
+    D[DTMO canonical observable] --> V{Allowed type + analyzer + TLP?}
     V -->|no| X[Fail closed]
-    V -->|yes| R[(Commit durable reservation)]
-    I[Dedicated TheHive service identity\nleast privilege] --> C[TheHive API v1]
-    R --> C
-    C -->|stable identity| M[(Delivered DTMO↔TheHive mapping)]
-    C -->|ambiguous| U[(Ambiguous state)]
-    U --> B[Block blind replay]
-    M --> L[TheHive case lifecycle]
-    L -. cannot grant .-> S[DTMO share/publication authority]
+    V -->|yes| C[Cortex REST API\nseparate API-key identity]
+    C --> J[Stable analyzer job]
+    J --> R[Bounded report]
+    R --> E[DTMO enrichment evidence\nshare=false\ncompromise=false]
+    C -. prohibited .-> Z[Responders / side effects / admin]
 ```
+
+## TheHive security boundary
+
+The accepted Phase 11.6 TheHive path remains only explicit human-authorized `POST /api/v1/case` with `handoff:case`, durable mutation reservation/reconciliation, stable identity, no blind replay after ambiguity, minimized payloads and hard no-share/no-local-compromise invariants. Cortex analyzer integration does not inherit or expand TheHive case-handoff authority.
 
 ## Data protection and privacy
 
-TheHive case records may contain sensitive incident context and personal data. DTMO applies purpose limitation, minimization, source handling restrictions and existing retention/governance controls. Technical reachability or API permission does not establish lawful authority to send data.
+Technical reachability or API permission does not establish lawful authority to send data to Cortex or any analyzer provider.
 
-- Only analyst-approved, case-relevant summary data may cross the boundary.
-- Apply explicit effective TLP/PAP; uncertain mappings block the handoff.
-- Avoid raw source bodies and unnecessary personal data.
-- Never transmit or persist credentials in case content.
-- Preserve a traceable DTMO canonical UUID reference.
-- Attachments and private enrichment results are outside this slice.
+- Only approved observable values may cross the boundary.
+- Personal-data observable classes remain excluded from Phase 11.7b.
+- Analyzer/provider terms and disclosure destination must be reviewed before allowlisting.
+- Source handling and TLP restrictions cannot be broadened by connector configuration.
+- Credentials, raw source bodies, private notes and unrelated personal data must not be embedded in analyzer messages or result metadata.
 
 ## Persistence, auditability and integrity
 
-PostgreSQL remains canonical DTMO application/RBAC/intelligence state. TheHive is authoritative only for its case lifecycle after an accepted handoff.
+PostgreSQL remains canonical DTMO application/RBAC/intelligence state. Cortex job state and reports are external enrichment evidence only. The connector binds the DTMO canonical item ID to the returned Cortex job/analyzer identity in normalized metadata and hard-sets no-share/no-local-compromise flags.
 
-Migration `0014_thehive_handoff_state` adds durable mutation reservation/reconciliation state. Database constraints preserve unique request identity, unique confirmed TheHive case identity, bounded lifecycle states and hard no-share/no-local-compromise invariants. The repository commits `reserved` before external mutation; confirmed stable identity becomes `delivered`; uncertain delivery becomes `ambiguous`; definitive bounded failures become `failed`.
-
-Actor, request, canonical item, organization, authority envelope and sanitized outcome are attributable without persisting the runtime token.
+This bounded slice does not yet introduce a new Cortex persistence table or automatic replay state. Later persistence or orchestration changes require a separate bounded PR and exact-head acceptance.
 
 ## Supply chain and licensing security
 
@@ -103,12 +94,13 @@ Actor, request, canonical item, organization, authority envelope and sanitized o
 - DTMO is Apache-2.0.
 - IntelOwl/pyIntelOwl and MISP remain separate AGPL-3.0 services.
 - OpenCTI Community Edition is Apache-2.0; Enterprise Edition is separately licensed.
-- TheHive is a separate licensed StrangeBee service; Community/Gold/Platinum entitlement must be verified for the deployed instance.
-- Source vendoring, bundling or redistribution of upstream components requires explicit licensing/legal review.
+- TheHive is a separate licensed StrangeBee service; deployed entitlement must be verified.
+- Cortex remains a separate fully open-source service according to StrangeBee documentation; analyzer code and third-party provider terms require separate review.
+- No Cortex or Cortex-Analyzers source is vendored by Phase 11.7b.
 - Repository CI is engineering evidence only and does not establish production authorization.
 
 ## Evidence boundary
 
-The Phase 11.6 implementation can establish synthetic repository evidence for route, RBAC, persistence, state-machine, migration and documentation consistency only. It cannot establish live TheHive connectivity, effective service-account permissions, license entitlement, organization/access configuration, privacy approval, real-data TLP/PAP correctness, HA/recovery, production-equivalent validation, independent assurance or production authorization.
+The Phase 11.7b gate can establish synthetic repository evidence for request validation, configuration guardrails, endpoint/authentication behavior, identity validation, bounded report normalization and documentation consistency only. It cannot establish live Cortex connectivity, effective organization permissions, enabled analyzer quality, provider entitlement, lawful disclosure, network controls, HA/recovery, production-equivalent validation, independent assurance or production authorization.
 
 Historical Phase 8/9 evidence remains candidate-bound. Fresh Phase 11.10 and 11.11 evidence is required for the integrated Phase 11 candidate before Phase 12.
