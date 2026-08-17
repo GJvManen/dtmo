@@ -23,6 +23,12 @@ DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — P
 
 Technical success is not dissemination or incident-escalation authority. Taranis publisher state, IntelOwl results, OpenCTI graph content, MISP ingest/delivery success and TheHive case state do **not** authorize DTMO external sharing or publication. Human review and governed DTMO share approval remain authoritative. TheHive case-handoff approval is a separate human authority.
 
+## Threat and vulnerability management
+
+DTMO threat and vulnerability management keeps CTI, enrichment, vulnerability context and local security conclusions separate and provenance-backed. Taranis, IntelOwl, OpenCTI and MISP may contribute source, enrichment, graph or exchange context, but none of those external service results independently proves DTMO-local exposure, exploitability, compromise or attribution certainty. Vulnerability prioritization and governance mappings therefore remain explicit, reviewable and bounded to the evidence available to DTMO.
+
+Phase 11 integration changes preserve this governance boundary: service-to-service processing cannot grant publication/share authority, case-handoff authority or local-compromise status. Missing, conflicting or unrepresentable security evidence fails closed rather than being inferred.
+
 ## Accepted Phase 11 service boundaries
 
 Phase 11.3 IntelOwl remains a separate AGPL-3.0 service/API boundary. Phase 11.4 OpenCTI remains a separate service/API boundary with Community Apache-2.0 and separately licensed Enterprise features. Phase 11.5 MISP remains a separate AGPL-3.0 service/API boundary with authoritative distribution/sharing-group/TLP restrictions and human-approved unpublished export.
