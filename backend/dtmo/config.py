@@ -62,6 +62,12 @@ class Settings(BaseSettings):
     intelowl_max_poll_attempts: int = Field(default=12, ge=1, le=120)
     intelowl_poll_interval_seconds: float = Field(default=1.0, ge=0.0, le=60.0)
     intelowl_max_result_bytes: int = Field(default=1_000_000, ge=1024, le=20_000_000)
+    cortex_api_base: str = ""
+    cortex_api_token: SecretStr = SecretStr("")
+    cortex_allowed_observable_types: str = "ip,domain,url,hash,hostname,fqdn"
+    cortex_allowed_analyzers: str = ""
+    cortex_wait_seconds: int = Field(default=30, ge=1, le=300)
+    cortex_max_result_bytes: int = Field(default=1_000_000, ge=1024, le=20_000_000)
     opencti_api_base: str = ""
     opencti_api_token: SecretStr = SecretStr("")
     opencti_page_size: int = Field(default=100, ge=1, le=500)
@@ -80,6 +86,7 @@ class Settings(BaseSettings):
     feature_ail_connector: bool = False
     feature_taranis_connector: bool = False
     feature_intelowl_enrichment: bool = False
+    feature_cortex_analysis: bool = False
     feature_opencti_read: bool = False
     feature_thehive_handoff: bool = False
     feature_ai_analyst: bool = False
@@ -143,6 +150,13 @@ class Settings(BaseSettings):
                 raise ValueError("production IntelOwl integration requires a runtime API token")
             if not self.intelowl_allowed_analyzers.strip():
                 raise ValueError("production IntelOwl integration requires an explicit analyzer allowlist")
+        if self.feature_cortex_analysis:
+            if not self.cortex_api_base.startswith("https://"):
+                raise ValueError("production Cortex integration requires an HTTPS API base")
+            if not self.cortex_api_token.get_secret_value().strip():
+                raise ValueError("production Cortex integration requires a runtime API token")
+            if not self.cortex_allowed_analyzers.strip():
+                raise ValueError("production Cortex integration requires an explicit analyzer allowlist")
         if self.feature_opencti_read:
             if not self.opencti_api_base.startswith("https://"):
                 raise ValueError("production OpenCTI integration requires an HTTPS API base")
