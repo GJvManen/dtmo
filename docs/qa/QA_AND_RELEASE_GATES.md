@@ -44,7 +44,8 @@ DTMO uses layered acceptance gates so engineering confidence, accountable functi
 | Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.5 MISP consolidation | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.6 TheHive handoff contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.6 TheHive contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.6 TheHive handoff implementation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | `NOT STARTED` |
 
 DTMO is not production authorized.
@@ -53,7 +54,7 @@ DTMO is not production authorized.
 
 Existing workflow families remain required. Each Phase 11 integration adds bounded integration tests without weakening previous quality, security, recovery, governance or documentation controls.
 
-The accepted Taranis, IntelOwl, OpenCTI and MISP gates remain repository evidence for Phase 11.1–11.5. The active implementation gate is the **Phase 11 TheHive Handoff Contract Gate**.
+The accepted Taranis, IntelOwl, OpenCTI, MISP and TheHive-contract gates remain repository evidence for the accepted Phase 11 boundaries. The active implementation gate is the **Phase 11 TheHive Handoff Implementation Gate**.
 
 ## Phase 11 gate sequence
 
@@ -63,29 +64,40 @@ The accepted Taranis, IntelOwl, OpenCTI and MISP gates remain repository evidenc
 
 Accepted evidence covers Taranis architecture/adapter, IntelOwl bounded enrichment, OpenCTI graph integration and MISP authoritative governed exchange/synchronization state. Repository acceptance is not production evidence.
 
-### 11.6 TheHive handoff contract — active bounded gate
+### 11.6 TheHive contract
+
+**Repository status:** `PASS / REPOSITORY_COMPLETE`.
+
+The accepted contract fixed TheHive 5.5.16/API v1, separate service/licensing boundary, dedicated human case-handoff authority, stable identity, no-blind-replay semantics, data minimization, TLP/PAP/access fail-closed rules and explicit exclusions before runtime mutation code.
+
+### 11.6 TheHive bounded handoff implementation — active gate
 
 Required exact-head repository evidence:
 
-- TheHive 5.5.16 and public API v1 (`/api/v1`) are the reviewed upstream baseline;
-- TheHive remains a separate StrangeBee service and no source is vendored;
-- TheHive 5.3+ license activation requirement for continued write functionality is explicitly recorded as a deployment prerequisite;
-- `POST /api/v1/case` is not invoked automatically and remains a mutation candidate only after explicit human-approved DTMO case handoff;
-- case-handoff authority and DTMO publication/share authority are distinct server-side RBAC decisions;
-- DTMO canonical UUID, handoff request/idempotency identity, TheHive case identity and organization context are treated as stable reconciliation identities;
-- mutable title/description/tag/assignee state is not identity;
-- ambiguous mutation delivery blocks blind replay;
-- TLP/PAP/access mappings preserve or strengthen authoritative source restrictions and unknown/unrepresentable mappings fail closed;
-- a dedicated least-privilege TheHive service identity is required and runtime secrets remain outside repository evidence;
-- attachments, raw source bodies, credentials, private enrichment and unrelated personal data are excluded by default;
-- TheHive case lifecycle does not become canonical CTI truth, proof of local compromise or DTMO external-share authority;
-- responders, Cortex execution, automatic MISP→TheHive automation, external sharing and administration remain excluded;
-- architecture, integration, operations, security, current-state, QA, evidence, roadmap and README/docs portal documentation remain synchronized;
-- `docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md`, Professional Documentation Gate, RC4 Quality Gate and the dedicated Phase 11 TheHive Handoff Contract Gate all succeed on the same exact head.
+- `handoff:case` is a dedicated server-side permission distinct from `approve:share`;
+- only human roles explicitly assigned that permission can authorize handoff and service accounts cannot;
+- `POST /api/v1/case` is the only accepted external mutation;
+- the feature is disabled by default;
+- canonical intelligence identity and repository provenance are present before mutation;
+- severity, TLP and PAP mappings are deterministic and unknown values fail closed;
+- requested TLP cannot broaden a known authoritative TLP restriction;
+- authoritative MISP distribution/sharing-group restrictions block the bounded handoff until a deployment-approved TheHive access mapping exists;
+- payload content is minimized to approved case fields and excludes credentials, attachments, raw source bodies, private enrichment and unrelated personal data;
+- `thehive_handoff_state` is committed before the external mutation;
+- request UUID and confirmed TheHive case identity are durable unique identities;
+- `reserved`, `delivered`, `ambiguous` and `failed` state transitions are bounded and attributable;
+- timeout/network ambiguity or a nominal success without stable case identity becomes `ambiguous` and blocks automatic replay;
+- a confirmed stable identity is required before `delivered` state;
+- arbitrary upstream response content is not persisted as outcome evidence; only minimized case identity/number/organization are retained;
+- database constraints enforce no-share and no-local-compromise authority;
+- production settings require HTTPS API base, runtime secret token and explicit organization when the feature is enabled;
+- TheHive write/license entitlement remains a deployment prerequisite rather than a CI inference;
+- architecture, integration, operations, security, user/admin, current-state, QA, evidence, roadmap and README/docs portal documentation remain synchronized;
+- `docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md`, Professional Documentation Gate, RC4 Quality Gate and the dedicated Phase 11 TheHive Handoff Implementation Gate all succeed on the same exact head.
 
 Repository acceptance does not establish live TheHive connectivity, activated entitlement, effective deployed permissions, target-organization configuration, privacy approval, real-data handling correctness, production-equivalent validation, independent assurance or production authorization.
 
-Only after protected merge and lifecycle reconciliation may the contract become `PASS / REPOSITORY_COMPLETE`. The next bounded 11.6 slice may then implement the minimum human-authorized case-handoff adapter and durable mutation reconciliation state.
+Only after protected merge and lifecycle reconciliation may Phase 11.6 become `PASS / REPOSITORY_COMPLETE` and the programme evaluate the conditional 11.7 Cortex decision gate.
 
 ### 11.7 Cortex decision
 
