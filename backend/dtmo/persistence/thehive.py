@@ -94,7 +94,11 @@ class TheHiveHandoffRepository:
         state.status = "delivered"
         state.thehive_case_id = result.case_id
         state.thehive_case_number = str(result.case_number) if result.case_number is not None else None
-        state.outcome = dict(result.raw_result)
+        state.outcome = {
+            "case_id": result.case_id,
+            "case_number": result.case_number,
+            "organization": result.organization,
+        }
         state.error_detail = None
         state.updated_at = utc_now()
         await self.session.commit()
