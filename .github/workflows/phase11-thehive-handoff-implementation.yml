@@ -1,0 +1,52 @@
+name: Phase 11 TheHive Handoff Implementation Gate
+
+on:
+  pull_request:
+    paths:
+      - 'backend/dtmo/auth/policy.py'
+      - 'backend/dtmo/config.py'
+      - 'backend/dtmo/integrations/thehive.py'
+      - 'backend/dtmo/persistence/thehive.py'
+      - 'backend/dtmo/thehive_handoff.py'
+      - 'backend/dtmo/main.py'
+      - 'database/migrations/env.py'
+      - 'database/migrations/versions/0014_thehive_handoff_state.py'
+      - 'backend/tests/test_phase11_6_thehive_handoff_adapter.py'
+      - 'backend/tests/test_phase11_6_thehive_handoff_state.py'
+      - 'backend/tests/test_thehive_handoff_contract.py'
+      - 'backend/tests/test_professional_documentation_contract.py'
+      - 'docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md'
+      - 'docs/integrations/THEHIVE_HANDOFF.md'
+      - 'docs/operations/THEHIVE_HANDOFF_RUNBOOK.md'
+      - 'docs/user/THEHIVE_CASE_HANDOFF.md'
+      - 'docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md'
+      - 'docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md'
+      - 'docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md'
+      - 'docs/project/CURRENT_STATE.md'
+      - 'docs/security/SECURITY_OVERVIEW.md'
+      - 'docs/evidence/EVIDENCE_INDEX.md'
+      - 'README.md'
+      - 'docs/README.md'
+      - '.github/workflows/phase11-thehive-handoff-implementation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  thehive-handoff-implementation:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Validate bounded TheHive adapter, state and authoritative status
+        run: >-
+          python -m pytest -q
+          backend/tests/test_phase11_6_thehive_handoff_adapter.py
+          backend/tests/test_phase11_6_thehive_handoff_state.py
+          backend/tests/test_thehive_handoff_contract.py
+          backend/tests/test_professional_documentation_contract.py
