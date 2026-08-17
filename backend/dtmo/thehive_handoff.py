@@ -14,6 +14,7 @@ from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal
 from dtmo.config import Settings, get_settings
 from dtmo.integrations.thehive import (
+    TLP_MAP,
     TheHiveAmbiguousDelivery,
     TheHiveCaseAdapter,
     TheHivePolicyError,
@@ -58,6 +59,31 @@ def _response(state: TheHiveHandoffState) -> TheHiveHandoffResponse:
     )
 
 
+def validate_authoritative_handling(item: IntelligenceItem, requested_tlp: str) -> None:
+    """Reject any handoff that would broaden or cannot represent known source restrictions."""
+
+    requested = requested_tlp.strip().lower()
+    requested_rank = TLP_MAP.get(requested)
+    if requested_rank is None:
+        raise TheHivePolicyError("unknown TLP mapping")
+
+    source_ranks: list[int] = []
+    for raw_tag in item.tags:
+        tag = str(raw_tag).strip().lower()
+        if tag.startswith("tlp:"):
+            tag = tag.removeprefix("tlp:")
+        if tag in TLP_MAP:
+            source_ranks.append(TLP_MAP[tag])
+    if source_ranks and requested_rank < max(source_ranks):
+        raise TheHivePolicyError("requested TLP would broaden an authoritative source restriction")
+
+    misp_restrictions = item.metadata_json.get("misp_restrictions")
+    if isinstance(misp_restrictions, dict) and misp_restrictions.get("restriction_authoritative") is True:
+        raise TheHivePolicyError(
+            "authoritative MISP distribution/sharing-group restrictions require a deployment-approved TheHive access mapping"
+        )
+
+
 @router.post(
     "/items/{item_id}/cases",
     response_model=TheHiveHandoffResponse,
@@ -87,6 +113,7 @@ async def handoff_case(
         raise HTTPException(status_code=422, detail="TheHive handoff requires canonical provenance")
 
     try:
+        validate_authoritative_handling(item, request.tlp)
         payload = build_case_payload(
             canonical_id=str(item.id),
             title=item.title,
@@ -101,7 +128,11 @@ async def handoff_case(
             api_token=settings.thehive_api_token.get_secret_value(),
             organization=settings.thehive_organization,
         )
-        repository = TheHiveHandoffRepository(session)
+    except TheHivePolicyError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    repository = TheHiveHandoffRepository(session)
+    try:
         state = await repository.reserve(
             request_id=request.request_id,
             item_id=item_id,
@@ -117,23 +148,25 @@ async def handoff_case(
                 "local_compromise_proven": False,
             },
         )
-        timeout = httpx.Timeout(settings.connector_timeout_seconds)
-        try:
-            async with httpx.AsyncClient(timeout=timeout, follow_redirects=False) as client:
-                result = await adapter.create_case(client, payload)
-        except TheHiveAmbiguousDelivery as exc:
-            await repository.mark_ambiguous(state, str(exc))
-            raise HTTPException(status_code=502, detail="TheHive delivery ambiguous; manual reconciliation required") from exc
-        except TheHivePolicyError as exc:
-            await repository.mark_failed(state, str(exc))
-            raise HTTPException(status_code=422, detail=str(exc)) from exc
-        except httpx.HTTPError as exc:
-            await repository.mark_failed(state, "TheHive upstream request failed before confirmed delivery")
-            raise HTTPException(status_code=502, detail="TheHive upstream request failed") from exc
-        state = await repository.mark_delivered(state, result)
-        return _response(state)
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    timeout = httpx.Timeout(settings.connector_timeout_seconds)
+    try:
+        async with httpx.AsyncClient(timeout=timeout, follow_redirects=False) as client:
+            result = await adapter.create_case(client, payload)
+    except TheHiveAmbiguousDelivery as exc:
+        await repository.mark_ambiguous(state, str(exc))
+        raise HTTPException(status_code=502, detail="TheHive delivery ambiguous; manual reconciliation required") from exc
+    except TheHivePolicyError as exc:
+        await repository.mark_failed(state, str(exc))
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except httpx.HTTPError as exc:
+        await repository.mark_failed(state, "TheHive upstream request failed before confirmed delivery")
+        raise HTTPException(status_code=502, detail="TheHive upstream request failed") from exc
+
+    state = await repository.mark_delivered(state, result)
+    return _response(state)
 
 
 @router.get("/items/{item_id}/handoffs", response_model=list[TheHiveHandoffResponse])
