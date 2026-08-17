@@ -13,7 +13,9 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 8 production-equivalent staging | `PASS / OWNER_ACCEPTED` |
 | Phase 9 independent assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
 | Phase 10 production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
-| Phase 11.1–11.5 | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 MISP consolidation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.6 TheHive handoff contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **not production authorized** |
@@ -41,7 +43,7 @@ No synthetic screenshot is promoted for the Phase 11.6 contract slice because no
 ## Phase 11 programme documentation
 
 - [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) defines the fixed Taranis → IntelOwl → OpenCTI → MISP → TheHive → conditional Cortex → runtime-industrialisation sequence.
-- Phase 11.3 IntelOwl, Phase 11.4 OpenCTI and Phase 11.5 MISP are `PASS / REPOSITORY_COMPLETE` and remain accepted repository engineering boundaries only.
+- Phase 11.3 IntelOwl integration, Phase 11.4 OpenCTI integration and Phase 11.5 MISP consolidation are `PASS / REPOSITORY_COMPLETE` and remain accepted repository engineering boundaries only.
 - [TheHive → DTMO Handoff Contract](architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md) defines the active Phase 11.6 service/API/identity/licensing/authority baseline.
 - [TheHive Handoff Integration](integrations/THEHIVE_HANDOFF.md) explains the contract-only integration surface and candidate `POST /api/v1/case` path.
 - [TheHive Handoff Operations Runbook](operations/THEHIVE_HANDOFF_RUNBOOK.md) defines prerequisites, fail-closed operation and ambiguous-delivery reconciliation before any runtime enablement.
