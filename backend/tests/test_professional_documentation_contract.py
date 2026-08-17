@@ -181,7 +181,7 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.5 MISP consolidation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.6 TheHive incident/case handoff\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
-    assert "11.7 Cortex decision gate\n\n**Status:** `IN PROGRESS / DECISION GATE IN EXACT-HEAD VALIDATION`" in industrialisation
+    assert "11.7 Cortex decision gate\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
 
 
