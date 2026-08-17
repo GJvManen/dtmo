@@ -22,6 +22,8 @@ STABLE_DOCUMENTS = (
     "docs/integrations/THEHIVE_HANDOFF.md",
     "docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md",
     "docs/operations/THEHIVE_HANDOFF_RUNBOOK.md",
+    "docs/user/THEHIVE_CASE_HANDOFF.md",
+    "docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md",
     "docs/security/SECURITY_OVERVIEW.md",
     "docs/governance/GOVERNANCE_MAPPING_REGISTRY.md",
     "docs/project/CURRENT_STATE.md",
@@ -37,6 +39,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md",
     "docs/qa/PHASE11_5_MISP_CONSOLIDATION_STATE_GATE.md",
     "docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md",
+    "docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -162,7 +165,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "Phase 11.3 IntelOwl integration | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.4 OpenCTI integration | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.5 MISP consolidation | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.6 TheHive handoff contract | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.6 TheHive contract | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.6 TheHive handoff implementation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 12 | `NOT STARTED`",
     ):
         assert marker in current_state
@@ -172,7 +176,7 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.3 IntelOwl enrichment integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.4 OpenCTI knowledge-graph integration\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.5 MISP consolidation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
-    assert "11.6 TheHive incident/case handoff\n\n**Status:** `IN PROGRESS / CONTRACT IN EXACT-HEAD VALIDATION`" in industrialisation
+    assert "11.6 TheHive incident/case handoff\n\n**Status:** `IN PROGRESS / BOUNDED HANDOFF IMPLEMENTATION IN EXACT-HEAD VALIDATION`" in industrialisation
     assert "11.7 Cortex decision gate" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
 
@@ -187,20 +191,25 @@ def test_accepted_integration_documents_remain_exposed() -> None:
         assert marker in misp
 
 
-def test_thehive_contract_is_exposed_without_false_runtime_evidence() -> None:
+def test_thehive_bounded_implementation_is_exposed_without_false_live_evidence() -> None:
     contract = _read("docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md")
     integration = _read("docs/integrations/THEHIVE_HANDOFF.md")
     runbook = _read("docs/operations/THEHIVE_HANDOFF_RUNBOOK.md")
+    user = _read("docs/user/THEHIVE_CASE_HANDOFF.md")
+    admin = _read("docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md")
     portal = _read("docs/README.md")
     evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
-    gate = _read("docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md")
-    for marker in ("TheHive 5.5.16", "API v1 (`/api/v1`)", "POST /api/v1/case", "human-authorized DTMO action"):
+    gate = _read("docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md")
+    for marker in ("TheHive 5.5.16", "API v1 (`/api/v1`)", "POST /api/v1/case", "handoff:case"):
         assert marker in contract
-    assert "CONTRACT ONLY / NO RUNTIME MUTATION ADAPTER YET" in integration
-    assert "do not blind-retry" in runbook
-    assert "Phase 11.6 TheHive Handoff Contract Gate" in portal
-    assert "phase11-thehive-handoff-contract.yml" in evidence
-    assert "A green repository gate does not authorize live case creation" in gate
+    assert "BOUNDED HUMAN-AUTHORIZED HANDOFF / EXACT-HEAD VALIDATION REQUIRED" in integration
+    assert "do not blind-retry" in runbook.lower()
+    assert "ambiguous" in user
+    assert "DTMO_FEATURE_THEHIVE_HANDOFF" in admin
+    assert "Phase 11.6 TheHive Handoff Implementation Gate" in portal
+    assert "phase11-thehive-handoff-implementation.yml" in evidence
+    assert "does **not** prove" in gate
+    assert "not production authorized" in portal
 
 
 def test_documentation_portal_exposes_audience_guides_and_visual_evidence_boundary() -> None:

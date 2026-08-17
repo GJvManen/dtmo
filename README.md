@@ -12,7 +12,8 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Phase 11.3 IntelOwl integration:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.4 OpenCTI integration:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.5 MISP consolidation:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded priority:** Phase 11.6 TheHive handoff contract `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
+> **Phase 11.6 TheHive contract:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded priority:** Phase 11.6 TheHive human-authorized handoff implementation `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
 > **Next production authorization:** Phase 12 `NOT STARTED`  
 > **Production status:** **not production authorized**
 
@@ -26,7 +27,7 @@ DTMO is built around five principles: provenance first; fail closed; human autho
 
 The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The repository-complete baseline includes governed OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL semantics plus Phase 11 Taranis AI collection/canonicalization, Phase 11.3 IntelOwl enrichment, Phase 11.4 OpenCTI graph integration and Phase 11.5 governed MISP consolidation.
 
-Phase 11.6 introduces TheHive only as a separate incident/case-management service boundary. The current slice is contract-only: no automatic case creation or runtime mutation adapter is accepted yet.
+Phase 11.6 now contains an accepted TheHive service/API/identity/licensing contract and an active bounded implementation of explicit human-authorized case handoff. The implementation is not autonomous incident escalation and is not production authorization.
 
 ## Phase 11 composed intelligence pipeline
 
@@ -38,25 +39,30 @@ flowchart LR
     OWL --> D
     O[OpenCTI\nSTIX 2.1 graph] --> D
     M[MISP\ngoverned exchange] <--> D
-    D --> H{Human case-handoff approval?}
-    H -->|approved| TH[TheHive\nincident/case workflow]
+    D --> H{Human handoff:case authority?}
+    H -->|approved| R[(Durable handoff reservation)]
     H -->|not approved| N[No case mutation]
+    R --> TH[TheHive API v1\nPOST /api/v1/case]
     D -. authority remains .-> P[Human share/publication approval]
 ```
 
 PostgreSQL remains canonical DTMO application truth. Taranis AI, IntelOwl, OpenCTI, MISP and TheHive are separate service boundaries. None independently establishes local compromise or grants DTMO external-share/publication authority.
 
-## Phase 11.6 TheHive handoff contract
+## Phase 11.6 TheHive handoff implementation
 
-The reviewed upstream baseline is **TheHive 5.5.16** using public **API v1 (`/api/v1`)**. Public API v0 is deprecated. The initial mutation candidate is `POST /api/v1/case`, but a canonical DTMO intelligence item never creates a case by itself.
+The reviewed upstream baseline is **TheHive 5.5.16** using public **API v1 (`/api/v1`)**. The accepted contract allows only an explicit human-authorized `POST /api/v1/case` mutation in the active implementation.
 
-A later implementation must require explicit human-authorized case handoff under dedicated server-side RBAC, a dedicated least-privilege non-human TheHive identity, stable DTMO↔TheHive identity mapping, durable idempotency/replay state and fail-closed TLP/PAP/access handling. Case-handoff approval and publication/share approval are distinct authorities.
+The dedicated DTMO permission is `handoff:case`, separate from `approve:share`. Service accounts cannot authorize handoff. Before any external request DTMO validates canonical identity, repository provenance and explicit severity/TLP/PAP mappings, then commits a durable `thehive_handoff_state` reservation. Stable case identity marks the reservation `delivered`; timeout/network ambiguity or a success response without stable identity marks it `ambiguous` and blocks automated replay.
 
-TheHive 5.3+ requires an activated Community, Gold or Platinum license for continued write functionality. Repository CI does not prove that deployment entitlement. Attachments, raw source bodies, credentials, private enrichment results and unrelated personal data are excluded by default.
+The payload is minimized to bounded canonical title, human-approved summary, deterministic severity, explicit TLP/PAP, bounded tags and a DTMO UUID reference. Attachments, raw source bodies, credentials, private enrichment results and unrelated personal data remain excluded.
 
-TheHive case state remains operational incident-response state; it does not replace canonical CTI truth, prove local compromise or grant external-share authority. Responders, Cortex execution, automatic MISP→TheHive automation, external sharing and administration remain outside this contract slice.
+Migration `0014_thehive_handoff_state` enforces unique request/case identities and no-share/no-local-compromise invariants. TheHive case state remains operational incident-response state; it does not replace canonical CTI truth, prove local compromise or grant external-share authority.
 
-See [TheHive → DTMO Handoff Contract](docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md), [TheHive Handoff Integration](docs/integrations/THEHIVE_HANDOFF.md), [TheHive Handoff Operations Runbook](docs/operations/THEHIVE_HANDOFF_RUNBOOK.md) and [Phase 11.6 TheHive Handoff Contract Gate](docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md).
+The feature is disabled by default. Live enablement requires runtime API base/token/organization configuration plus real TheHive license entitlement, permissions and privacy/handling approval. Repository CI cannot prove those deployment facts.
+
+Responders, Cortex execution, task/observable creation, automatic MISP→TheHive automation, case deletion, external sharing and administration remain outside this slice.
+
+See [TheHive → DTMO Handoff Contract](docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md), [TheHive Handoff Integration](docs/integrations/THEHIVE_HANDOFF.md), [TheHive Case Handoff User Workflow](docs/user/THEHIVE_CASE_HANDOFF.md), [TheHive Handoff Configuration](docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md), [TheHive Handoff Operations Runbook](docs/operations/THEHIVE_HANDOFF_RUNBOOK.md) and [Phase 11.6 TheHive Handoff Implementation Gate](docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md).
 
 ## Architecture
 
@@ -77,7 +83,8 @@ The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, S
 | Phase 11.3 | IntelOwl enrichment integration | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.4 | OpenCTI STIX knowledge-graph integration | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.5 | MISP consolidation and authority state | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.6 contract | TheHive incident/case handoff service/API/identity/licensing boundary | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.6 contract | TheHive service/API/identity/licensing/authority boundary | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.6 implementation | Human-authorized case handoff + durable reservation/reconciliation state | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
 
 Historical Phase 8/9 evidence remains bound to the earlier candidate. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.

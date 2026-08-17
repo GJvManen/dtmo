@@ -68,6 +68,9 @@ class Settings(BaseSettings):
     opencti_max_pages: int = Field(default=10, ge=1, le=100)
     opencti_allowed_entity_types: str = "indicator,vulnerability,malware,campaign,infrastructure,intrusion-set,threat-actor,attack-pattern"
     opencti_checkpoint_path: str = "/var/lib/dtmo/checkpoints/opencti.json"
+    thehive_api_base: str = ""
+    thehive_api_token: SecretStr = SecretStr("")
+    thehive_organization: str = ""
     publish_requires_human_approval: bool = True
     feature_live_connectors: bool = False
     feature_opencve_connector: bool = False
@@ -78,6 +81,7 @@ class Settings(BaseSettings):
     feature_taranis_connector: bool = False
     feature_intelowl_enrichment: bool = False
     feature_opencti_read: bool = False
+    feature_thehive_handoff: bool = False
     feature_ai_analyst: bool = False
 
     @property
@@ -148,6 +152,13 @@ class Settings(BaseSettings):
                 raise ValueError("production OpenCTI integration requires an explicit entity-type allowlist")
             if not self.opencti_checkpoint_path.startswith("/"):
                 raise ValueError("production OpenCTI integration requires an absolute durable checkpoint path")
+        if self.feature_thehive_handoff:
+            if not self.thehive_api_base.startswith("https://"):
+                raise ValueError("production TheHive handoff requires an HTTPS API base")
+            if not self.thehive_api_token.get_secret_value().strip():
+                raise ValueError("production TheHive handoff requires a runtime API token")
+            if not self.thehive_organization.strip():
+                raise ValueError("production TheHive handoff requires an explicit organization scope")
         return self
 
 
