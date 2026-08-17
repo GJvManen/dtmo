@@ -36,10 +36,34 @@ The active bounded programme step is **Phase 11.8a Kubernetes/Helm/GitOps runtim
 | Architecture / engineering | [Phase 11.8 Runtime Foundation](architecture/PHASE11_8_RUNTIME_FOUNDATION.md), [Cortex → DTMO Integration Contract](architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md), [TheHive → DTMO Handoff Contract](architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md), [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md), [OpenCTI → DTMO Integration Contract](architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md), [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md), [Taranis → DTMO Contract](architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.8 Runtime Foundation](architecture/PHASE11_8_RUNTIME_FOUNDATION.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
-| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Phase 11.8 Runtime Foundation Gate](qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md), [Phase 11.7b Cortex Connector Gate](qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md), [Phase 11.6 TheHive Handoff Implementation Gate](qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
-| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [Phase 11.8 Runtime Foundation Runbook](operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md), [Cortex Analyzer Runbook](operations/CORTEX_ANALYZER_RUNBOOK.md), [TheHive Handoff Operations Runbook](operations/THEHIVE_HANDOFF_RUNBOOK.md) |
+| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Phase 11.8 Runtime Foundation Gate](qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md), [Phase 11.7b Cortex Connector Gate](qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md), [Phase 11.7 Cortex Decision Gate](qa/PHASE11_7_CORTEX_DECISION_GATE.md), [Phase 11.6 TheHive Handoff Implementation Gate](qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md), [Phase 11.5 MISP Consolidation Contract Gate](qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md), [Phase 11.4 OpenCTI Contract Gate](qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
+| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [Phase 11.8 Runtime Foundation Runbook](operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md), [IntelOwl Enrichment Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md), [OpenCTI Integration Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md), [Cortex Analyzer Runbook](operations/CORTEX_ANALYZER_RUNBOOK.md), [TheHive Handoff Operations Runbook](operations/THEHIVE_HANDOFF_RUNBOOK.md) |
 
 The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for accepted operator journeys. These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. No synthetic screenshot is promoted for Kubernetes, GitOps, Cortex or any other integration without an accepted live operator surface; Mermaid architecture/trust-boundary diagrams are documentation models, not production evidence.
+
+## Accepted Phase 11 integration reference paths
+
+These stable references remain exposed while Phase 11.8 advances so earlier accepted integration contracts stay discoverable and regression gates do not confuse lifecycle progression with document removal.
+
+- `architecture/CORTEX_DECISION_GATE.md`
+- `architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md`
+- `integrations/CORTEX_ANALYZER_CONNECTOR.md`
+- `qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`
+- `architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md`
+- `operations/INTELOWL_ENRICHMENT_RUNBOOK.md`
+- `user/INTELOWL_ENRICHMENT_WORKFLOW.md`
+- `architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md`
+- `integrations/OPENCTI_INTEGRATION.md`
+- `operations/OPENCTI_INTEGRATION_RUNBOOK.md`
+- `qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md`
+- `architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md`
+- `qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md`
+- `architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md`
+- `integrations/THEHIVE_HANDOFF.md`
+- `operations/THEHIVE_HANDOFF_RUNBOOK.md`
+- `user/THEHIVE_CASE_HANDOFF.md`
+- `administration/THEHIVE_HANDOFF_CONFIGURATION.md`
+- `qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md`
 
 ## Phase 11.8 programme documentation
 
