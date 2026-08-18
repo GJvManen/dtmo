@@ -1,6 +1,6 @@
 # DTMO Security Overview
 
-Last updated: **2026-08-17**  
+Last updated: **2026-08-18**  
 Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository enhancements**
 
 ## Security objectives
@@ -28,6 +28,12 @@ DTMO preserves separation of duties across human approval, service execution, ru
 Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/API/identity boundaries under their applicable licensing/provider terms. Kubernetes placement does not merge those products into DTMO and does not transfer license rights, source-code ownership or human authority.
 
 PostgreSQL remains canonical DTMO application/RBAC/intelligence truth. External services contribute bounded collection, enrichment, graph, exchange or case-workflow evidence only. None independently proves DTMO-local exposure, exploitability or compromise.
+
+## Threat and vulnerability management
+
+Threat and vulnerability management remains evidence-led and provenance-bound. DTMO preserves the accepted governance mapping for vulnerability and threat-management controls while Phase 11 changes only the platform runtime and integration architecture. Vulnerability intelligence, dependency/container findings and external-service analyzer output are inputs to governed assessment; they do not independently prove local exploitability, compromise or remediation completion.
+
+The Phase 11.8 runtime foundation strengthens this boundary by requiring immutable image identity and by keeping later supply-chain controls explicit rather than inferred. SBOM generation, vulnerability-policy enforcement, image signing, provenance attestation and admission verification remain separate Phase 11.8 acceptance work. Any future finding must retain source provenance, affected asset or image identity, assessment state and human remediation/acceptance authority. Missing or ambiguous provenance fails closed.
 
 ## Phase 11.8a runtime security boundary
 
