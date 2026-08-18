@@ -4,7 +4,7 @@ Last updated: **2026-08-18**
 
 ## Purpose
 
-This roadmap separates production authorization from product evolution and platform industrialisation. Repository engineering, accountable acceptance, deployment-bound validation, independent assurance and production authorization remain distinct evidence classes.
+This roadmap separates production authorization from product evolution and platform industrialisation. Repository engineering, release supply-chain evidence, accountable acceptance, deployment-bound validation, independent assurance and production authorization remain distinct evidence classes.
 
 ## Current position
 
@@ -16,8 +16,8 @@ This roadmap separates production authorization from product evolution and platf
 | Phase 8 | Production-equivalent validation | `PASS / OWNER_ACCEPTED` — historical candidate |
 | Phase 9 | Independent external assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` — historical candidate |
 | Phase 10 | Formal production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
-| Phase 11.1–11.8b | Accepted service/runtime boundaries | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8c | Ingress/TLS and network segmentation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.1–11.8f | Accepted service/runtime boundaries | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8g | Software supply-chain hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.9 | Migration and compatibility | `NOT STARTED` |
 | Phase 11.10 | New production-equivalent validation | `NOT STARTED` |
 | Phase 11.11 | New independent external assurance | `NOT STARTED` |
@@ -31,64 +31,41 @@ Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASS
 
 ## Phase 11 platform industrialisation
 
-The authoritative detailed programme is `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`. The controlled order is Taranis → IntelOwl → OpenCTI → MISP → TheHive → Cortex historical decision / later owner-required connector → integrated runtime → migration/compatibility → new validation → new assurance.
+The authoritative detailed programme is `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`. The controlled order is Taranis → IntelOwl → OpenCTI → MISP → TheHive → Cortex historical decision/later bounded connector → integrated runtime → migration/compatibility → fresh validation → fresh assurance.
 
-### Phase 11.1–11.8b — accepted repository baseline
-
-**Status:** `PASS / REPOSITORY_COMPLETE`
-
-Accepted repository evidence covers Taranis collection/assessment and canonical adaptation, IntelOwl bounded enrichment, OpenCTI graph integration, MISP governed exchange, TheHive human-authorized case handoff, the later owner-required Cortex analyzer connector, the Helm/GitOps runtime foundation and provider-neutral workload identity/external-secret delivery. These are repository engineering boundaries only.
-
-The original Phase 11.7 no-adoption decision is preserved as historical evidence for its then-current requirements rather than rewritten after the later owner requirement.
-
-### Phase 11.8 — integrated runtime industrialisation
-
-**Status:** `IN PROGRESS / ACTIVE`
-
-#### 11.8a Runtime foundation
+### Phase 11.1–11.8f accepted repository baseline
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-Accepted repository controls include immutable image digest enforcement, non-root/read-only workload hardening, disabled service-account token automounting, resource/probe defaults, PodDisruptionBudget, `ClusterIP` service exposure and fail-closed/default-deny NetworkPolicy.
+Accepted repository evidence covers the service integrations and the runtime foundation through workload identity/secrets, ingress/network, HA/disruption, observability and recovery hardening. These are bounded engineering claims only.
 
-#### 11.8b Workload identity and external secret delivery
-
-**Status:** `PASS / REPOSITORY_COMPLETE`
-
-Accepted repository controls include provider-neutral ServiceAccount identity annotations, opt-in ExternalSecret delivery, explicit SecretStore/ClusterSecretStore and remote-key mappings, and no credential or secret value in Git.
-
-#### 11.8c Ingress/TLS and network segmentation
+### Phase 11.8g software supply-chain hardening
 
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
 
-Current bounded repository scope:
-
-- ingress disabled by default;
-- explicit ingress class and hostname required when enabled;
-- TLS mandatory for enabled ingress;
-- explicit Kubernetes TLS Secret reference with private key material remaining outside Git;
-- DTMO application Service remains `ClusterIP`;
-- NetworkPolicy remains mandatory for ingress exposure;
-- ingress-controller reachability requires both explicit namespace and pod selectors.
+The active repository scope requires exact-head build identity, Python and container CycloneDX SBOMs, governed vulnerability evidence, SHA-256 artifact identity, and a governed release path for cryptographically signed provenance and SBOM attestations.
 
 ```mermaid
 flowchart LR
-    C[External client] -->|TLS| I[Approved ingress controller]
-    T[Kubernetes TLS Secret] --> I
-    I -->|namespace + pod selectors| N[DTMO NetworkPolicy]
-    N --> S[ClusterIP Service]
-    S --> P[DTMO pod]
+    S[Accepted source] --> B[Build]
+    B --> A[Immutable artifact subject]
+    A --> E[SBOM + vulnerability evidence]
+    A --> H[SHA-256]
+    H --> P[Signed provenance/SBOM]
+    P --> V[Consumer verification]
 ```
 
-This slice does not prove DNS ownership, certificate validity, live ingress-controller admission, cloud load-balancer/WAF policy, CNI enforcement, stateful/multi-zone HA, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity or exercised upgrade/rollback. Those remain later bounded Phase 11.8 slices or later deployment-bound validation.
+PR CI validates the mechanism and candidate scan outputs only. Actual signed release evidence exists only after the governed release workflow executes for the exact subject. Signed provenance does not prove vulnerability absence, deployment admission or production readiness.
 
-Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing/identity boundaries. Kubernetes placement and network reachability do not grant publication/share authority, case-handoff authority or local-compromise proof.
+### Remaining Phase 11.8
+
+After protected 11.8g acceptance, continue capacity/resource planning and upgrade/rollback exercise controls as separate bounded work. Phase 11.9 does not start before all required Phase 11.8 controls are accepted.
 
 ### Phase 11.9 — Migration and compatibility
 
 **Status:** `NOT STARTED`
 
-Migration work begins only after the required bounded Phase 11.8 hardening slices are accepted. It must preserve canonical intelligence, provenance, classification/governance state and accepted service identity/reconciliation semantics with explicit rollback paths.
+Migration must preserve canonical intelligence, provenance, classification/governance state and accepted service identity/reconciliation semantics with explicit rollback paths.
 
 ### Phase 11.10 — New production-equivalent validation
 
@@ -108,10 +85,10 @@ Run fresh independent assurance against the same immutable integrated candidate 
 
 Phase 12 starts only after accepted Phase 11.10/11.11 evidence plus required production ownership, IAM/secrets/network/recovery/monitoring/privacy/legal/change approvals for the same release identity.
 
-## Product and platform boundary
+## Product and authority boundary
 
-DTMO remains the education-sector CTI and decision-support layer. Generic collection, enrichment, graph, exchange and case-management capabilities remain separate mature services. Provenance, RBAC, human publication/share authority, separate case-handoff authority and fail-closed evidence rules remain authoritative across the integrated runtime.
+DTMO remains the education-sector CTI and decision-support layer. Generic collection, enrichment, graph, exchange and case-management capabilities remain separate services. Supply-chain metadata/signatures do not alter licensing boundaries, grant publication/share or case authority, or establish local compromise.
 
-## Delivery and documentation discipline
+## Delivery discipline
 
-Each material change requires one bounded pull request with explicit acceptance criteria, exact-head CI, expected-head protection, architecture/security/licensing/evidence boundaries and synchronized professional documentation. A code/integration PR is not mergeable if affected current-state, architecture, integration, security, QA/evidence, roadmap or user/admin documentation is stale.
+Each material change requires one bounded pull request with explicit acceptance criteria, exact-head CI, expected-head protection and synchronized professional documentation. A code/integration PR is not mergeable when affected current-state, architecture, security, governance, operations, QA/evidence, roadmap or user/admin documentation is stale.
