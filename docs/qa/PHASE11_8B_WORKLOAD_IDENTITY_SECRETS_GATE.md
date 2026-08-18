@@ -17,7 +17,7 @@ The exact PR head must demonstrate that:
 
 ## Non-claims
 
-A green repository gate is not evidence of live workload identity federation, cloud IAM permissions, secret-store reachability, controller installation/admission, secret rotation/revocation, HA, production-equivalent runtime behavior, independent assurance or production authorization.
+A green repository gate **does not prove** live workload identity federation, cloud IAM permissions, secret-store reachability, controller installation/admission, secret rotation/revocation, HA, production-equivalent runtime behavior, independent assurance or production authorization. Repository CI remains repository engineering evidence only and must not be promoted to deployment, external-assurance or production evidence.
 
 ## Required evidence
 
