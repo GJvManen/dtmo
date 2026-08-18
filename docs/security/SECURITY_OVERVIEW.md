@@ -19,6 +19,10 @@ DTMO is **not production authorized**. Phase 10 concluded `NO-GO / BLOCKED — P
 - Runtime secrets are never stored in repository evidence, logs or screenshots.
 - Authentication/authorization failures and missing required runtime identity evidence fail closed.
 
+## Separation of duties
+
+DTMO preserves separation of duties across human approval, service execution, runtime administration and evidence acceptance. Publication/share approval, TheHive case-handoff approval, Kubernetes/GitOps deployment authority and independent assurance are distinct authorities; possession of a service credential, workload identity or deployment permission does not confer any other authority. Service identities execute only their bounded technical functions, while accountable human decisions remain attributable and independently reviewable.
+
 ## Accepted service and licensing boundaries
 
 Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/API/identity boundaries under their applicable licensing/provider terms. Kubernetes placement does not merge those products into DTMO and does not transfer license rights, source-code ownership or human authority.
