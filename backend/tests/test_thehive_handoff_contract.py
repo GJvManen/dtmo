@@ -38,14 +38,17 @@ def test_phase11_status_preserves_accepted_thehive_and_cortex_history() -> None:
     assert "**Status:** `PASS / REPOSITORY_COMPLETE`" in roadmap
     assert "Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE`" in state
     assert "Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE`" in state
-    # Preserve accepted 11.7/11.7b evidence after the roadmap advances to 11.8.
+    # Preserve accepted 11.7/11.7b evidence while Phase 11.8 advances.
     assert (
         "Phase 11.7 Cortex decision gate | "
         "`PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`"
     ) in state
+    assert "Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE`" in state
+    # 11.8a is accepted history; 11.8b is the sole active bounded slice.
+    assert "Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE`" in state
     assert (
-        "Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE`"
+        "Phase 11.8b workload identity + external secrets | "
+        "`IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`"
     ) in state
-    assert "Phase 11.8a runtime foundation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in state
     assert CONTRACT_GATE.exists()
     assert IMPLEMENTATION_GATE.exists()
