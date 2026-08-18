@@ -1,6 +1,9 @@
 {{- if not .Values.image.digest }}
 {{- fail "image.digest is required; mutable image tags are not accepted for Phase 11.8" }}
 {{- end }}
+{{- if and .Values.externalSecret.enabled (not .Values.externalSecret.targetName) }}
+{{- fail "externalSecret.targetName is required when externalSecret.enabled=true" }}
+{{- end }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -8,6 +11,10 @@ metadata:
   labels:
     app.kubernetes.io/name: dtmo
     app.kubernetes.io/instance: {{ .Release.Name }}
+{{- with .Values.serviceAccount.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
 automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
 ---
 apiVersion: apps/v1
@@ -52,7 +59,7 @@ spec:
               containerPort: 8000
           envFrom:
             - secretRef:
-                name: {{ required "existingSecret is required" .Values.existingSecret }}
+                name: {{ ternary .Values.externalSecret.targetName (required "existingSecret is required" .Values.existingSecret) .Values.externalSecret.enabled }}
           securityContext:
             allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}
             readOnlyRootFilesystem: {{ .Values.securityContext.readOnlyRootFilesystem }}
