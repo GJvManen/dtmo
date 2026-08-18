@@ -1,0 +1,69 @@
+name: Phase 11 Supply Chain Hardening Gate
+
+on:
+  pull_request:
+    paths:
+      - 'Dockerfile'
+      - 'pyproject.toml'
+      - '.github/workflows/phase11-supply-chain-hardening.yml'
+      - '.github/workflows/release-artifact-attestation.yml'
+      - 'docs/security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md'
+      - 'docs/operations/PHASE11_8G_SUPPLY_CHAIN_RUNBOOK.md'
+      - 'docs/qa/PHASE11_8G_SUPPLY_CHAIN_GATE.md'
+      - 'backend/tests/test_phase11_8g_supply_chain_contract.py'
+
+permissions:
+  contents: read
+
+jobs:
+  supply-chain-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact PR head
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install project and test dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Run Phase 11.8g contract
+        run: python -m pytest -q backend/tests/test_phase11_8g_supply_chain_contract.py
+      - name: Build distributable wheel
+        run: |
+          mkdir -p artifacts/dist
+          python -m pip wheel . --no-deps --wheel-dir artifacts/dist
+          sha256sum artifacts/dist/*.whl > artifacts/dist/SHA256SUMS
+      - name: Generate CycloneDX dependency SBOM and vulnerability evidence
+        run: |
+          python -m pip_audit --format cyclonedx-json --output artifacts/python-sbom.cdx.json
+          python -m pip_audit --format json --output artifacts/python-vulnerabilities.json
+      - name: Build candidate container image
+        run: docker build --pull -t dtmo:phase11-8g-${{ github.event.pull_request.head.sha }} .
+      - name: Scan candidate image for HIGH/CRITICAL vulnerabilities
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: dtmo:phase11-8g-${{ github.event.pull_request.head.sha }}
+          format: json
+          output: artifacts/container-vulnerabilities.json
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+      - name: Generate container CycloneDX SBOM
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: dtmo:phase11-8g-${{ github.event.pull_request.head.sha }}
+          format: cyclonedx
+          output: artifacts/container-sbom.cdx.json
+          exit-code: '0'
+      - name: Upload non-sensitive supply-chain evidence
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: phase11-8g-supply-chain-${{ github.event.pull_request.head.sha }}
+          path: artifacts/
+          if-no-files-found: error
