@@ -5,13 +5,13 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 ## Management summary
 
-DTMO has an accepted repository-controlled engineering baseline, RC13 `PASS / OWNER_ACCEPTED` functional product and E8.1–E8.10 `PASS / REPOSITORY_COMPLETE` product baseline. Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate they covered.
+DTMO has an accepted repository-controlled engineering baseline, RC13 `PASS / OWNER_ACCEPTED` functional acceptance and E8.1–E8.10 `PASS / REPOSITORY_COMPLETE` product evolution. Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate they actually covered. Those historical evidence classes are not transferred to the materially changed Phase 11 platform.
 
 Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The highest-priority programme is **Phase 11 Platform Industrialisation**. Phase 11.1–11.5 and the Phase 11.6 TheHive contract are `PASS / REPOSITORY_COMPLETE`. The sole active bounded objective is the **minimal human-authorized TheHive case-handoff implementation with durable reservation/reconciliation state**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+The highest-priority programme is **Phase 11 Platform Industrialisation**, `IN PROGRESS / ACTIVE`. Phase 11.1–11.7b are `PASS / REPOSITORY_COMPLETE`; the original Phase 11.7 Cortex no-adoption decision remains preserved as a historical decision baseline, while the later owner-required 11.7b analyzer connector is accepted separately. The sole active bounded objective is **Phase 11.8a runtime foundation**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
-A new Phase 12 production GO/NO-GO occurs only after the materially changed integrated platform completes fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance.
+Phase 12 remains `NOT STARTED` and can only begin after fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance against the same immutable integrated candidate.
 
 ## Current decision position
 
@@ -19,37 +19,40 @@ A new Phase 12 production GO/NO-GO occurs only after the materially changed inte
 |---|---|---|
 | Engineering baseline | `PASS` | Repository foundation accepted |
 | Functional product | `PASS / OWNER_ACCEPTED` | Canonical console journey accepted |
-| E8 product evolution | `PASS / REPOSITORY_COMPLETE` | Vulnerability/CTI scope accepted in repository |
-| Phase 8 | `PASS / OWNER_ACCEPTED` | Historical staging acceptance for prior candidate |
-| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Historical independent assurance for prior candidate |
+| E8 product evolution | `PASS / REPOSITORY_COMPLETE` | Repository product baseline accepted |
+| Phase 8 | `PASS / OWNER_ACCEPTED` | Historical candidate-bound staging evidence |
+| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Historical candidate-bound assurance evidence |
 | Phase 10 | `NO-GO / BLOCKED` | Production authorization not granted |
-| Phase 11.1–11.5 | `PASS / REPOSITORY_COMPLETE` | Taranis, IntelOwl, OpenCTI and MISP boundaries accepted |
-| Phase 11.6 TheHive contract | `PASS / REPOSITORY_COMPLETE` | Service/API/identity/licensing/authority baseline accepted |
-| Phase 11.6 TheHive implementation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Active human-authorized case-handoff/state gate |
-| Phase 12 | `NOT STARTED` | New production decision only after integrated validation/assurance |
+| Phase 11.1–11.7b | `PASS / REPOSITORY_COMPLETE` | Accepted service/integration boundaries |
+| Phase 11.8a runtime foundation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Active Kubernetes/Helm/GitOps foundation gate |
+| Phase 11.9–11.11 | `NOT STARTED` | Follow only after bounded 11.8 completion |
+| Phase 12 | `NOT STARTED` | New formal production decision |
 
-## Active Phase 11.6 control objective
+## Active Phase 11.8a control objective
 
-TheHive remains a separate StrangeBee service. The reviewed baseline is TheHive 5.5.16 using public API v1. The accepted contract now permits one bounded runtime mutation path: explicit human-authorized `POST /api/v1/case`.
+Phase 11.8a establishes the governed DTMO application runtime foundation only: Helm and GitOps-owned configuration, immutable image digest enforcement, existing-secret consumption without secret material in Git, non-root/read-only runtime hardening, disabled service-account token automounting, health probes/resources, a PodDisruptionBudget and fail-closed NetworkPolicy with explicit external CIDR allowlisting.
 
-The implementation introduces a dedicated `handoff:case` permission, distinct from publication/share approval, and keeps service accounts outside the human authorization boundary. Before mutation DTMO requires canonical identity, provenance and explicit severity/TLP/PAP handling, then commits a durable reservation. A stable returned TheHive case identity is required for `delivered`; uncertain delivery becomes `ambiguous` and blocks blind replay.
+```mermaid
+flowchart LR
+    G[Reviewed Git revision] --> H[Helm render]
+    H --> K[Kubernetes API]
+    I[Immutable image digest] --> K
+    S[External secret process] --> X[Existing Kubernetes Secret]
+    X --> K
+    K --> P[DTMO pods\nnon-root + read-only]
+    N[Default-deny NetworkPolicy] -. constrains .-> P
+```
 
-The persisted handoff outcome is minimized and database constraints prevent handoff state from granting external-share authority or becoming local-compromise proof. Known authoritative MISP distribution/sharing-group restrictions currently block TheHive handoff because no deployment-approved cross-service access mapping exists; DTMO does not infer one.
+This slice does not establish live-cluster admission behavior, workload identity/external-secret provider integration, ingress/TLS, multi-zone/stateful HA, centralized observability, recovery objectives, SBOM/scanning/signing/attestation, capacity or exercised upgrade/rollback. Those remain later bounded Phase 11.8 objectives.
 
-The feature remains disabled by default. Live use requires actual TheHive entitlement, HTTPS endpoint, runtime token, target organization, least-privilege service permissions and privacy/handling approval. Repository CI cannot prove those deployment facts.
+## Security, authority and licensing boundaries
 
-Responders, Cortex execution, task/observable creation, automatic MISP→TheHive automation, case deletion, external sharing and platform/organization administration remain outside this bounded slice.
-
-## Strategic architecture and licensing
-
-The fixed order remains Taranis → IntelOwl → OpenCTI → MISP consolidation → TheHive → conditional Cortex → Kubernetes/Helm/GitOps hardening → migration/compatibility → new production-equivalent validation → new independent assurance → Phase 12.
-
-Taranis, IntelOwl, OpenCTI, MISP and TheHive remain separate services under their applicable licensing boundaries. No upstream source vendoring is implied by repository integration work.
+Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate services under their applicable licensing/provider boundaries. Kubernetes placement does not transfer service ownership, grant DTMO publication/share authority, grant case-handoff authority, or prove local compromise. Provenance, RBAC, human/service identity separation and fail-closed handling remain mandatory.
 
 ## Evidence boundaries
 
-Repository CI for this slice can establish synthetic adapter, RBAC, persistence, migration, state-machine and documentation behavior only. It does not prove live TheHive connectivity, activated license entitlement, deployed permissions, target-organization/access configuration, lawful real-data transfer, production-equivalent validation, independent assurance or production authorization. Historical Phase 8/9 evidence remains candidate-bound and cannot be reused for the materially changed Phase 11 platform.
+Repository CI for Phase 11.8a is repository engineering evidence only. It cannot prove target-cluster behavior, cloud IAM, effective CNI enforcement, secret-provider permissions, availability, recovery, production-equivalent characteristics, independent assurance or production authorization. Historical Phase 8/9 evidence remains candidate-bound.
 
 ## Executive recommendation
 
-Continue only the active Phase 11.6 implementation slice. Merge only when its dedicated implementation gate, RC4, Professional Documentation and all required exact-head checks are green with expected-head protection. After protected acceptance, mark Phase 11.6 repository-complete and evaluate Phase 11.7 Cortex only if a validated IntelOwl capability gap exists.
+Continue only the active Phase 11.8a PR. Merge only after the dedicated runtime-foundation gate, RC4, Professional Documentation and all required exact-head checks are green on the same final head with expected-head protection. Do not start the next 11.8 slice before protected acceptance.

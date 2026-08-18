@@ -1,0 +1,14 @@
+# GitOps-owned production-like overrides. Secrets are never committed here.
+replicaCount: 2
+image:
+  repository: ghcr.io/gjvmanen/dtmo
+  # Pin to an immutable sha256 digest before reconciliation.
+  digest: ""
+existingSecret: dtmo-runtime
+networkPolicy:
+  enabled: true
+  # External destinations must be explicitly approved and encoded as CIDRs.
+  egressCIDRs: []
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1

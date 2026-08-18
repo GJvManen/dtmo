@@ -17,14 +17,17 @@ flowchart LR
     TAR --> DTMO[DTMO\ncanonical education CTI + governance]
     DTMO --> OWL[IntelOwl\nenrichment]
     OWL --> DTMO
-    DTMO --> CTX[Cortex\nowner-required bounded analyzer connector]
+    DTMO --> CTX[Cortex\nbounded analyzer connector]
     CTX --> DTMO
     DTMO <--> OCTI[OpenCTI\nSTIX graph]
     DTMO <--> MISP[MISP\ngoverned exchange]
     DTMO --> HIVE[TheHive\nincident/case workflow]
+    GIT[Reviewed Git revision] --> HELM[Helm + GitOps]
+    HELM --> K8S[Kubernetes runtime]
+    K8S -. hosts .-> DTMO
 ```
 
-Cortex was originally excluded after the Phase 11.7 decision found no validated IntelOwl capability gap. On 2026-08-17 the accountable owner added Cortex connector integration as a new attributable requirement. That historical decision remains preserved; bounded Phase 11.7b now implements an analyzer-only connector before Phase 11.8 resumes. Provenance, RBAC, human publication/share authority and fail-closed evidence rules remain explicit across every boundary.
+The original 11.7 Cortex no-adoption decision remains preserved as historical evidence. The later owner-required 11.7b analyzer connector is separately accepted. Phase 11.8 is now active. Provenance, RBAC, human publication/share authority, service licensing boundaries and fail-closed evidence rules remain explicit across every runtime boundary.
 
 ## Fixed priority order
 
@@ -35,7 +38,7 @@ Cortex was originally excluded after the Phase 11.7 decision found no validated 
 5. 11.5 MISP consolidation and authoritative governed sharing model.
 6. 11.6 TheHive incident/case handoff.
 7. 11.7 Cortex conditional decision gate.
-8. 11.7b owner-required Cortex analyzer connector, added 2026-08-17.
+8. 11.7b owner-required Cortex analyzer connector.
 9. 11.8 Kubernetes/Helm/GitOps plus HA/secrets/network/observability/recovery/supply-chain hardening.
 10. 11.9 migration/compatibility.
 11. 11.10 new production-equivalent validation.
@@ -52,8 +55,6 @@ Cortex was originally excluded after the Phase 11.7 decision found no validated 
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-The accepted boundary provides bounded human-authorized generic enrichment, explicit analyzer allowlisting, TLP/handling checks, stable job/analyzer identity, partial-result semantics, durable enrichment history and database-enforced no-share/no-local-compromise invariants.
-
 ### 11.4 OpenCTI knowledge-graph integration
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
@@ -62,48 +63,51 @@ The accepted boundary provides bounded human-authorized generic enrichment, expl
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-MISP remains a separate AGPL-3.0 service/API with governed inbound/outbound exchange, durable synchronization state, authoritative distribution/sharing-group/TLP restrictions and human-approved unpublished export.
-
 ### 11.6 TheHive incident/case handoff
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
-
-The accepted Phase 11.6 boundary provides only the minimal human-authorized `POST /api/v1/case` path, dedicated `handoff:case` permission, durable reservation before mutation, stable request/item/case/organization identity, `reserved`/`delivered`/`ambiguous`/`failed` reconciliation, blocked blind replay after ambiguity, minimized payloads and hard no-share/no-local-compromise invariants. Responders, automatic MISP→TheHive automation, external sharing and administration remain excluded.
-
-Live TheHive use still requires actual entitlement, credentials, effective permissions, organization scope, privacy/handling approval and later deployment-bound validation; repository acceptance does not invent that evidence.
 
 ### 11.7 Cortex decision gate
 
 **Status:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`
 
-The accepted decision record `docs/architecture/CORTEX_DECISION_GATE.md` found no validated IntelOwl capability gap for the then-approved enrichment requirement set and therefore did not adopt Cortex at that point. This historical claim is preserved rather than rewritten.
+The accepted decision record found no validated IntelOwl capability gap for the then-approved enrichment requirement set. That historical claim is preserved rather than rewritten.
 
 ### 11.7b Cortex analyzer connector
 
-**Status:** `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-On 2026-08-17 the accountable owner explicitly required a Cortex connector. The new attributable requirement activates a separate bounded integration under issue #282.
-
-The connector is analyzer-only. It uses Cortex REST API bearer authentication, explicit analyzer and datatype allowlists, explicit TLP values, stable job/analyzer identity checks and bounded result import. Cortex output remains enrichment evidence only and cannot grant DTMO publication/share authority or prove local compromise. Responders, external side-effect actions, Cortex administration, automatic IntelOwl fallback/replacement and source vendoring remain excluded.
-
-Cortex remains a separate service boundary. Live API keys, organization permissions, analyzer/provider configuration, provider terms and lawful disclosure authorization remain deployment evidence, not CI claims.
-
-```mermaid
-flowchart LR
-    D[DTMO canonical observable] --> G{Approved analyzer/type/TLP?}
-    G -->|no| X[Fail closed]
-    G -->|yes| C[Cortex analyzer API]
-    C --> J[Stable job identity]
-    J --> R[Bounded report]
-    R --> E[DTMO enrichment evidence]
-    C -. excluded .-> Z[Responders / side effects]
-```
+The later owner-required connector is analyzer-only and remains a separate Cortex service/API boundary. It preserves explicit analyzer/datatype/TLP validation, stable identity, bounded result import, no-share/no-local-compromise semantics and excludes responders, external side effects, administration, automatic IntelOwl replacement and source vendoring. Live provider permissions and lawful disclosure remain deployment evidence, not CI claims.
 
 ### 11.8 Integrated runtime industrialisation
 
-**Status:** `PLANNED / NEXT AFTER 11.7b ACCEPTANCE`
+**Status:** `IN PROGRESS / ACTIVE`
 
-Kubernetes, Helm, GitOps, immutable images, workload identities/external secrets, TLS/network policy, HA/recovery, centralized observability, SBOM/scanning/signing/attestation, capacity and upgrade/rollback procedures are required across the composed platform, including the accepted Cortex service boundary if Phase 11.7b merges.
+Phase 11.8 is delivered as bounded sub-slices so each runtime control has exact-head evidence and professional documentation.
+
+#### 11.8a Runtime foundation
+
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
+
+This slice introduces a governed Kubernetes/Helm/GitOps runtime foundation for the DTMO application workload. The chart requires an immutable image digest; references an existing Secret rather than storing credentials in Git; runs non-root with read-only root filesystem, RuntimeDefault seccomp, dropped capabilities and no privilege escalation; disables service-account token automounting; supplies resource limits/requests and health probes; defines two replicas plus a PodDisruptionBudget; and enables fail-closed NetworkPolicy with explicit external CIDR allowlisting.
+
+```mermaid
+flowchart LR
+    C[Reviewed commit] --> V[GitOps values\nno secret material]
+    V --> H[Helm render]
+    I[Immutable sha256 image] --> H
+    H --> K[Kubernetes API]
+    S[Approved external-secret process] --> X[Existing Secret]
+    X --> K
+    K --> P[DTMO pods]
+    N[Default-deny NetworkPolicy] -. constrains .-> P
+```
+
+Repository validation does not prove live cluster behavior, CNI enforcement, cloud IAM, secret-provider entitlement or production availability.
+
+#### Remaining Phase 11.8 bounded slices
+
+Subsequent PRs must independently cover stateful/multi-zone HA; workload identity and external-secret implementation; ingress/TLS and finer network segmentation; centralized metrics/logs/traces; backup/restore and recovery exercises; SBOM/vulnerability scanning/signing/provenance attestations; capacity; and upgrade/rollback exercises. None is accepted by 11.8a.
 
 ### 11.9 Migration and compatibility
 
@@ -133,7 +137,7 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept the **Phase 11.7b Cortex analyzer connector** on fully green exact-head CI.
-2. Preserve the earlier Phase 11.7 no-adoption decision as historical evidence tied to its then-current requirements.
-3. After protected Phase 11.7b acceptance, resume exactly Phase 11.8 integrated runtime industrialisation.
-4. Continue 11.9–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.
+1. Accept **Phase 11.8a runtime foundation** only on fully green exact-head CI.
+2. Continue the remaining Phase 11.8 hardening slices one bounded PR at a time.
+3. Start 11.9 only after all required 11.8 controls have been accepted.
+4. Continue 11.10–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.

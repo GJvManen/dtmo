@@ -6,7 +6,7 @@ Last updated: **2026-08-17**
 
 This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED`; Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED`; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.6 are `PASS / REPOSITORY_COMPLETE`; Phase 11.7 is an accepted historical Cortex decision baseline; Phase 11.7b Cortex analyzer connector is `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`; Phase 11.8 is blocked by 11.7b; Phase 12 is `NOT STARTED`. DTMO is not production authorized.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.7b are `PASS / REPOSITORY_COMPLETE` with the original Phase 11.7 Cortex decision retained as a historical baseline; Phase 11.8a Kubernetes/Helm/GitOps runtime foundation is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
 
 ## Authoritative current-state sources
 
@@ -14,39 +14,35 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `docs/README.md`
 - `docs/project/CURRENT_STATE.md`
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`
+- `docs/architecture/PHASE11_8_RUNTIME_FOUNDATION.md`
+- `docs/administration/KUBERNETES_RUNTIME_CONFIGURATION.md`
+- `docs/operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md`
+- `docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md`
+- `deploy/helm/dtmo/Chart.yaml`
+- `deploy/helm/dtmo/values.yaml`
+- `deploy/helm/dtmo/templates/runtime.yaml`
+- `deploy/gitops/phase11-8/values.yaml`
+- `backend/tests/test_phase11_8_runtime_foundation.py`
+- `.github/workflows/phase11-runtime-foundation.yml`
 - `docs/architecture/CORTEX_DECISION_GATE.md`
 - `docs/architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md`
 - `docs/integrations/CORTEX_ANALYZER_CONNECTOR.md`
 - `docs/operations/CORTEX_ANALYZER_RUNBOOK.md`
 - `docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`
-- `backend/dtmo/integrations/cortex.py`
-- `backend/tests/test_phase11_7b_cortex_connector.py`
-- `.github/workflows/phase11-cortex-connector.yml`
 - `docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md`
-- `docs/integrations/THEHIVE_HANDOFF.md`
-- `docs/operations/THEHIVE_HANDOFF_RUNBOOK.md`
-- `docs/user/THEHIVE_CASE_HANDOFF.md`
-- `docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md`
-- `docs/qa/PHASE11_6_THEHIVE_HANDOFF_CONTRACT_GATE.md`
-- `docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md`
 - `.github/workflows/phase11-thehive-handoff-implementation.yml`
 - `docs/security/SECURITY_OVERVIEW.md`
 - `docs/qa/QA_AND_RELEASE_GATES.md`
-- `docs/roadmap/PRODUCTION_ROADMAP.md`
-- `docs/project/PRODUCTION_READINESS_REPORT.md`
-- `docs/project/PRODUCTION_CHECKLIST.md`
-- `docs/project/EXECUTIVE_STATUS.md`
-- `docs/project/DOCUMENTATION_STATUS.md`
 - `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`
 
 ## Evidence hierarchy
 
-1. **Repository-controlled engineering evidence** — exact-head CI, contracts, migrations and synthetic integration tests.
+1. **Repository-controlled engineering evidence** — exact-head CI, contracts, migrations and synthetic integration/runtime tests.
 2. **Accountable functional evidence** — explicit owner acceptance of product behavior.
 3. **Real-environment evidence** — production-equivalent validation bound to an immutable deployment identity.
 4. **Independent assurance evidence** — external assessment independent from repository CI.
 5. **Formal production authorization** — accountable GO/NO-GO for a specific candidate.
-6. **Platform-integration evidence** — service contracts, adapters, mappings, migrations and interoperability evidence; never production authorization by itself.
+6. **Platform-integration evidence** — service contracts, adapters, mappings, migrations, Helm/GitOps contracts and interoperability evidence; never production authorization by itself.
 
 ## Lifecycle evidence map
 
@@ -54,21 +50,13 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 
 **Status:** `PASS`.
 
-### RC13
+### RC13 and E8
 
-**Status:** `PASS / OWNER_ACCEPTED`.
+RC13 remains `PASS / OWNER_ACCEPTED`; accepted historical repository/owner evidence remains unchanged and is not upgraded by Phase 11 work.
 
-### E8.1–E8.10
+### Phase 8–9
 
-**Status:** `PASS / REPOSITORY_COMPLETE`.
-
-### Phase 8
-
-**Status:** `PASS / OWNER_ACCEPTED` for the earlier candidate.
-
-### Phase 9
-
-**Status:** `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate.
+Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only. These records are historical and cannot satisfy Phase 11.10 or 11.11.
 
 ### Phase 10
 
@@ -80,44 +68,37 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 
 Accepted repository evidence covers Taranis, IntelOwl, OpenCTI, MISP and TheHive service boundaries, identity/provenance preservation, durable reconciliation/state, fail-closed authority controls and human publication/share/case-handoff authority. These are repository engineering claims only.
 
-The accepted TheHive implementation evidence includes `backend/tests/test_phase11_6_thehive_handoff_adapter.py`, `backend/tests/test_phase11_6_thehive_handoff_state.py` and `.github/workflows/phase11-thehive-handoff-implementation.yml`. A green gate does not prove live TheHive entitlement, permissions or production authorization.
+The accepted TheHive implementation remains regression-protected by `.github/workflows/phase11-thehive-handoff-implementation.yml`; retaining this reference records repository evidence only and does not imply live TheHive entitlement, permissions or production authorization.
 
 ### Phase 11.7 Cortex decision
 
 **Status:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`.
 
-The accepted decision record concluded that Cortex was not adopted under the requirement set then available because no validated IntelOwl capability gap existed. That point-in-time claim remains preserved.
+The accepted point-in-time record concluded that Cortex was not adopted under the requirement set then available because no validated IntelOwl capability gap existed. That claim remains preserved.
 
 ### Phase 11.7b Cortex analyzer connector
 
-**Status:** `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-The accountable owner added Cortex connector integration as a new attributable requirement on 2026-08-17. The active repository evidence target covers:
+Accepted repository evidence covers the later attributable owner-required analyzer-only connector, including separate service/API identity, API-key authentication, explicit analyzer/datatype/TLP validation, stable job identity, bounded result import and explicit no-share/no-local-compromise metadata. Live provider permissions, lawful disclosure and runtime behavior remain deployment evidence.
 
-- separate Cortex service/API identity boundary and no upstream source vendoring;
-- API-key bearer authentication;
-- production HTTPS/token/analyzer-allowlist guardrails;
-- explicit observable datatype and analyzer allowlists;
-- analyzer-only `POST /api/analyzer/{ANALYZER_ID}/run` execution;
-- bounded `GET /api/job/{JOB_ID}/waitreport` retrieval;
-- explicit Cortex TLP 0..3 validation before network I/O;
-- stable job identity and analyzer-identity checks;
-- bounded JSON report size and malformed-result fail-closed behavior;
-- explicit `external_share_authorized=false` and `local_compromise_proven=false` result metadata;
-- responder, external side-effect, administrative, file/attachment and automatic provider-fallback exclusions;
-- synchronized architecture, integration, security, operations, QA, roadmap and documentation-portal material.
+### Phase 11.8a Kubernetes/Helm/GitOps runtime foundation
 
-Dedicated repository evidence is:
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
-- `backend/tests/test_phase11_7b_cortex_connector.py`;
-- `.github/workflows/phase11-cortex-connector.yml`;
-- `docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`.
+The bounded repository evidence target covers governed Helm/GitOps configuration, mandatory immutable image digests, existing-secret consumption without secret material in Git, non-root/read-only runtime hardening, disabled service-account token automounting, resource/probe defaults, application PDB foundation and default-deny NetworkPolicy with explicit external CIDR configuration.
 
-A green connector gate does **not** prove live Cortex connectivity, effective organization/service-account permissions, enabled analyzer quality, provider subscriptions, lawful disclosure, runtime secrets, network policy, HA/recovery, production-equivalent validation, independent assurance or production authorization.
+Dedicated repository evidence is `backend/tests/test_phase11_8_runtime_foundation.py`, `.github/workflows/phase11-runtime-foundation.yml` and `docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md`.
 
-### Phase 11.8–11.9
+A green 11.8a gate does **not** prove live Kubernetes admission, CNI enforcement, cloud IAM, external-secret controller permissions, stateful/multi-zone HA, ingress/TLS, centralized observability, backup/restore, recovery objectives, SBOM/vulnerability scanning, image signing, provenance attestations, capacity, exercised upgrades/rollbacks, production-equivalent validation, independent assurance or production authorization.
 
-After protected Phase 11.7b acceptance, evidence covers Kubernetes/Helm/GitOps runtime hardening and migration/compatibility in fixed order. Cortex must participate in the same secrets, network, observability, recovery and supply-chain controls if the connector is accepted.
+### Remaining Phase 11.8
+
+Subsequent bounded PRs must independently establish the deferred HA, secrets/workload identity, network/TLS, observability, recovery, supply-chain, capacity and upgrade/rollback controls. 11.9 does not start until the required 11.8 controls are accepted.
+
+### Phase 11.9
+
+Migration and compatibility evidence follows completed Phase 11.8 runtime industrialisation.
 
 ### Phase 11.10–11.11
 
@@ -129,15 +110,16 @@ Fresh production-equivalent validation and fresh independent assurance must targ
 
 ## Evidence transfer rule
 
-Historical Phase 8/9 acceptance remains candidate-bound and cannot be transferred automatically to the materially changed Phase 11 platform. The historical Phase 11.7 Cortex decision is also not rewritten to manufacture a later requirement.
+Historical Phase 8/9 acceptance remains candidate-bound and cannot be transferred automatically to the materially changed Phase 11 platform. The historical Phase 11.7 Cortex decision is also not rewritten to manufacture the later owner requirement.
 
 ## Governance and handling rules
 
-Framework claims remain governed by explicit provenance-backed mappings. External service state does not establish local exploitability, compromise, case necessity or dissemination authority without separate attributable evidence.
+Framework claims remain governed by explicit provenance-backed mappings. External service or Kubernetes runtime state does not establish local exploitability, compromise, case necessity or dissemination authority without separate attributable evidence.
 
 - Exact-head evidence belongs only to the exact state tested.
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
 - Credentials/tokens and unnecessary personal data do not belong in repository evidence.
 - Human review/share approval and human case-handoff approval remain separate from technical execution.
 - Cortex analyzer output is enrichment evidence only.
+- Kubernetes placement does not collapse service licensing/authority boundaries.
 - Historical immutable run records are never rewritten to manufacture later acceptance.

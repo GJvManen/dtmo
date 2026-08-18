@@ -18,6 +18,7 @@ STABLE_DOCUMENTS = (
     "docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md",
     "docs/architecture/CORTEX_DECISION_GATE.md",
     "docs/architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md",
+    "docs/architecture/PHASE11_8_RUNTIME_FOUNDATION.md",
     "docs/integrations/TARANIS_ADAPTER.md",
     "docs/integrations/INTELOWL_INTEGRATION.md",
     "docs/integrations/OPENCTI_INTEGRATION.md",
@@ -26,8 +27,10 @@ STABLE_DOCUMENTS = (
     "docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md",
     "docs/operations/THEHIVE_HANDOFF_RUNBOOK.md",
     "docs/operations/CORTEX_ANALYZER_RUNBOOK.md",
+    "docs/operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md",
     "docs/user/THEHIVE_CASE_HANDOFF.md",
     "docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md",
+    "docs/administration/KUBERNETES_RUNTIME_CONFIGURATION.md",
     "docs/security/SECURITY_OVERVIEW.md",
     "docs/governance/GOVERNANCE_MAPPING_REGISTRY.md",
     "docs/project/CURRENT_STATE.md",
@@ -46,6 +49,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md",
     "docs/qa/PHASE11_7_CORTEX_DECISION_GATE.md",
     "docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md",
+    "docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -174,8 +178,11 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`",
-        "Phase 11.7b Cortex analyzer connector | `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`",
-        "Phase 11.8 integrated runtime industrialisation | `NOT STARTED / BLOCKED BY 11.7b`",
+        "Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8a runtime foundation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.9 migration/compatibility | `NOT STARTED`",
+        "Phase 11.10 production-equivalent validation | `NOT STARTED`",
+        "Phase 11.11 independent external assurance | `NOT STARTED`",
         "Phase 12 | `NOT STARTED`",
     ):
         assert marker in current_state
@@ -187,7 +194,9 @@ def test_current_professional_lifecycle_is_consistent() -> None:
     assert "11.5 MISP consolidation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.6 TheHive incident/case handoff\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
     assert "11.7 Cortex decision gate\n\n**Status:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`" in industrialisation
-    assert "11.7b Cortex analyzer connector\n\n**Status:** `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`" in industrialisation
+    assert "11.7b Cortex analyzer connector\n\n**Status:** `PASS / REPOSITORY_COMPLETE`" in industrialisation
+    assert "11.8 Integrated runtime industrialisation" in industrialisation
+    assert "11.8a Runtime foundation\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in industrialisation
     assert "Phase 12 — Production GO/NO-GO" in industrialisation
 
 
@@ -232,6 +241,10 @@ def test_documentation_portal_exposes_audience_guides_and_visual_evidence_bounda
     assert "documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness" in portal
     assert "CORTEX_ANALYZER_CONNECTOR.md" in portal
     assert "PHASE11_7B_CORTEX_CONNECTOR_GATE.md" in portal
+    assert "PHASE11_8_RUNTIME_FOUNDATION.md" in portal
+    assert "KUBERNETES_RUNTIME_CONFIGURATION.md" in portal
+    assert "PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md" in portal
+    assert "PHASE11_8_RUNTIME_FOUNDATION_GATE.md" in portal
 
 
 def test_stable_professional_documents_do_not_become_operational_run_logs() -> None:

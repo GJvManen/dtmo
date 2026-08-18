@@ -6,16 +6,16 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Engineering baseline:** Phases 1–7 `PASS`  
 > **Functional acceptance:** RC13 `PASS / OWNER_ACCEPTED`  
 > **Product evolution:** E8.1–E8.10 `PASS / REPOSITORY_COMPLETE`  
-> **Production-equivalent staging:** Phase 8 `PASS / OWNER_ACCEPTED`  
-> **Independent assurance:** Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED`  
+> **Historical staging evidence:** Phase 8 `PASS / OWNER_ACCEPTED`  
+> **Historical independent assurance:** Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED`  
 > **Phase 10 production decision:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`  
 > **Phase 11.3 IntelOwl integration:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.4 OpenCTI integration:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.5 MISP consolidation:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.6 TheHive:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.7 Cortex decision:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`  
-> **Active bounded priority:** Phase 11.7b Cortex analyzer connector `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION`  
-> **Phase 11.8 runtime industrialisation:** `NOT STARTED / BLOCKED BY 11.7b`  
+> **Phase 11.7b Cortex analyzer connector:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded priority:** Phase 11.8a Kubernetes/Helm/GitOps runtime foundation `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
 > **Next production authorization:** Phase 12 `NOT STARTED`  
 > **Production status:** **not production authorized**
 
@@ -27,9 +27,9 @@ DTMO is built around five principles: provenance first; fail closed; human autho
 
 ## Product capabilities
 
-The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The repository-complete baseline includes governed OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL semantics plus Phase 11 Taranis AI collection/canonicalization, IntelOwl enrichment, OpenCTI graph integration, governed MISP consolidation and human-authorized TheHive case handoff.
+The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The repository-complete baseline includes governed OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL semantics plus Phase 11 Taranis AI collection/canonicalization, IntelOwl enrichment, OpenCTI graph integration, governed MISP consolidation, human-authorized TheHive case handoff and the accepted bounded Cortex analyzer connector.
 
-The original Phase 11.7 decision did not adopt Cortex because no validated IntelOwl capability gap existed at that time. On 2026-08-17 the accountable owner added Cortex connector integration as a new attributable requirement. Phase 11.7b now adds a bounded analyzer-only connector without rewriting that historical decision.
+The original Phase 11.7 decision did not adopt Cortex because no validated IntelOwl capability gap existed at that time. The later owner-required Phase 11.7b connector was accepted separately without rewriting that historical decision.
 
 ## Phase 11 composed intelligence pipeline
 
@@ -39,7 +39,7 @@ flowchart LR
     TAR --> D[(DTMO canonical intelligence)]
     D --> OWL[IntelOwl\nbounded enrichment]
     OWL --> D
-    D --> CTX[Cortex\nowner-required analyzer connector]
+    D --> CTX[Cortex\nbounded analyzer connector]
     CTX --> D
     O[OpenCTI\nSTIX 2.1 graph] --> D
     M[MISP\ngoverned exchange] <--> D
@@ -52,19 +52,29 @@ flowchart LR
 
 PostgreSQL remains canonical DTMO application truth. Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive are separate service boundaries. None independently establishes local compromise or grants DTMO external-share/publication authority.
 
-## Phase 11.7b Cortex analyzer connector
+## Phase 11.8a Kubernetes/Helm/GitOps runtime foundation
 
-The bounded connector lives in `backend/dtmo/integrations/cortex.py` and uses the official Cortex REST API. It accepts only explicit non-file observable datatypes and analyzer IDs from configured allowlists, requires an explicit TLP value and uses API-key bearer authentication.
+The active bounded slice introduces `deploy/helm/dtmo` plus GitOps-owned overrides under `deploy/gitops/phase11-8`. The chart requires an immutable image digest, consumes an existing runtime Secret instead of storing secrets in Git, runs DTMO non-root with a read-only root filesystem and dropped capabilities, disables service-account token automounting, defines probes/resources, supplies a PodDisruptionBudget and enables fail-closed NetworkPolicy with explicit external CIDR allowlisting.
 
-Only `POST /api/analyzer/{ANALYZER_ID}/run` and `GET /api/job/{JOB_ID}/waitreport` are in scope. Stable job identity is mandatory, analyzer identity is checked when returned, result size is bounded and malformed output fails closed. Imported report metadata explicitly sets `external_share_authorized=false` and `local_compromise_proven=false`.
+```mermaid
+flowchart LR
+    G[Reviewed Git revision] --> V[GitOps values]
+    V --> H[Helm render]
+    I[Immutable image digest] --> H
+    S[Approved external-secret process] --> X[Existing Secret]
+    X --> K[Kubernetes API]
+    H --> K
+    K --> P[DTMO pods\nnon-root + read-only]
+    N[Default-deny NetworkPolicy] -. constrains .-> P
+```
 
-Responders, external side-effect actions, Cortex administration, file/attachment analysis, dynamic analyzer enablement, automatic fallback from IntelOwl and upstream source vendoring are excluded. The feature is disabled by default. Production configuration requires HTTPS, a runtime API key and an explicit analyzer allowlist.
+This foundation is not evidence of stateful/multi-zone HA, live workload identity, secret-provider entitlement, ingress/TLS, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity or exercised upgrade/rollback. Those remain later bounded Phase 11.8 slices.
 
-See [Cortex → DTMO Integration Contract](docs/architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md), [Cortex Analyzer Connector](docs/integrations/CORTEX_ANALYZER_CONNECTOR.md), [Cortex Analyzer Runbook](docs/operations/CORTEX_ANALYZER_RUNBOOK.md) and [Phase 11.7b Cortex Connector Gate](docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md).
+See [Phase 11.8 Runtime Foundation Architecture](docs/architecture/PHASE11_8_RUNTIME_FOUNDATION.md), [Kubernetes Runtime Configuration](docs/administration/KUBERNETES_RUNTIME_CONFIGURATION.md), [Runtime Foundation Runbook](docs/operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md) and [Phase 11.8 Runtime Foundation Gate](docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md).
 
 ## Architecture
 
-The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, SQLAlchemy/Alembic, PostgreSQL, Redis, OpenSearch, S3-compatible object storage, Prometheus/Grafana, Nginx and a Docker Compose reference topology. The Phase 11 target is a composed service architecture: Taranis AI for collection/assessment, IntelOwl and bounded Cortex analysis for enrichment, OpenCTI for STIX graph, MISP for governed exchange and TheHive for incident/case handoff.
+The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, SQLAlchemy/Alembic, PostgreSQL, Redis, OpenSearch, S3-compatible object storage, Prometheus/Grafana, Nginx and a Docker Compose reference topology. Phase 11 industrialisation adds a governed Kubernetes/Helm/GitOps runtime target while preserving the separate Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive service boundaries.
 
 ## Current maturity and release position
 
@@ -73,8 +83,8 @@ The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, S
 | Phases 1–7 | Repository-controlled engineering baseline | `PASS` |
 | RC13 | Unified-console functional acceptance | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | Vulnerability & CTI product evolution | `PASS / REPOSITORY_COMPLETE` |
-| Phase 8 | Production-equivalent staging validation | `PASS / OWNER_ACCEPTED` |
-| Phase 9 | Independent assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` |
+| Phase 8 | Production-equivalent staging validation | `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE` |
+| Phase 9 | Independent assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE` |
 | Phase 10 | Formal production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
 | Phase 11.1–11.2 | Taranis architecture + canonical adapter | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.3 | IntelOwl enrichment integration | `PASS / REPOSITORY_COMPLETE` |
@@ -82,15 +92,15 @@ The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, S
 | Phase 11.5 | MISP consolidation and authority state | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.6 | TheHive incident/case handoff | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.7 | Cortex conditional decision | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
-| Phase 11.7b | Owner-required Cortex analyzer connector | `IN PROGRESS / OWNER-REQUIRED EXACT-HEAD VALIDATION` |
-| Phase 11.8 | Kubernetes/Helm/GitOps runtime industrialisation | `NOT STARTED / BLOCKED BY 11.7b` |
+| Phase 11.7b | Owner-required Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8a | Kubernetes/Helm/GitOps runtime foundation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
 
 Historical Phase 8/9 evidence remains bound to the earlier candidate. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.
 
 ## Product roadmap
 
-The controlled sequence is accepted TheHive → historical Cortex decision → owner-required bounded Cortex connector → Kubernetes/Helm/GitOps hardening → migration/compatibility → new production-equivalent validation → new independent external assurance → Phase 12.
+The controlled sequence is accepted service integration → Phase 11.8 runtime industrialisation → 11.9 migration/compatibility → 11.10 new production-equivalent validation → 11.11 new independent external assurance → Phase 12.
 
 See the [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current Project State](docs/project/CURRENT_STATE.md), [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md) and [Evidence Index](docs/evidence/EVIDENCE_INDEX.md).
 
@@ -122,6 +132,6 @@ DTMO is licensed under the **Apache License, Version 2.0**. Canonical governance
 - `docs/legal/LICENSING.md`
 - `docs/legal/THIRD_PARTY.md`
 
-Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate services under their applicable licensing and provider boundaries. IntelOwl and MISP remain separate AGPL-3.0 services; OpenCTI Community Edition is Apache-2.0 while Enterprise Edition is separately licensed; TheHive license entitlement is deployment-specific. StrangeBee documents Cortex itself as fully open source and not requiring a Cortex product license, while individual analyzers and external providers can impose separate licensing, subscription or data-handling terms. Phase 11 integrations do not vendor upstream platform source without explicit licensing approval.
+Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate services under their applicable licensing and provider boundaries. IntelOwl and MISP remain separate AGPL-3.0 services; OpenCTI Community Edition is Apache-2.0 while Enterprise Edition is separately licensed; TheHive license entitlement is deployment-specific. Cortex itself remains a separate open-source service while individual analyzers and external providers can impose separate licensing, subscription or data-handling terms. Phase 11 integrations do not vendor upstream platform source without explicit licensing approval.
 
 Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, enrich, synchronize, create cases, publish or redistribute third-party material.
