@@ -6,7 +6,7 @@ Last updated: **2026-08-18**
 
 This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.8c are `PASS / REPOSITORY_COMPLETE`, with the original Phase 11.7 Cortex decision retained as a historical baseline; Phase 11.8d HA/disruption hardening is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.8e are `PASS / REPOSITORY_COMPLETE`, with the original Phase 11.7 Cortex decision retained as a historical baseline; Phase 11.8f backup/restore/recovery hardening is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
 
 ## Authoritative current-state sources
 
@@ -18,6 +18,8 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `docs/architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md`
 - `docs/architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md`
 - `docs/architecture/PHASE11_8D_HA_DISRUPTION.md`
+- `docs/architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md`
+- `docs/architecture/PHASE11_8F_RECOVERY_HARDENING.md`
 - `docs/administration/KUBERNETES_RUNTIME_CONFIGURATION.md`
 - `docs/administration/WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md`
 - `docs/administration/INGRESS_TLS_NETWORK_SEGMENTATION.md`
@@ -25,23 +27,32 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `docs/operations/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_RUNBOOK.md`
 - `docs/operations/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md`
 - `docs/operations/PHASE11_8D_HA_DISRUPTION_RUNBOOK.md`
+- `docs/operations/PHASE11_8E_OBSERVABILITY_RUNBOOK.md`
+- `docs/operations/PHASE11_8F_RECOVERY_RUNBOOK.md`
 - `docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md`
 - `docs/qa/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_GATE.md`
 - `docs/qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md`
 - `docs/qa/PHASE11_8D_HA_DISRUPTION_GATE.md`
+- `docs/qa/PHASE11_8E_OBSERVABILITY_GATE.md`
+- `docs/qa/PHASE11_8F_RECOVERY_GATE.md`
 - `deploy/helm/dtmo/Chart.yaml`
 - `deploy/helm/dtmo/values.yaml`
 - `deploy/helm/dtmo/templates/runtime.yaml`
 - `deploy/helm/dtmo/templates/external-secret.yaml`
 - `deploy/helm/dtmo/templates/ingress.yaml`
+- `deploy/helm/dtmo/templates/observability.yaml`
 - `backend/tests/test_phase11_8_runtime_foundation.py`
 - `backend/tests/test_phase11_8b_workload_identity_secrets.py`
 - `backend/tests/test_phase11_8c_ingress_tls_network_segmentation.py`
 - `backend/tests/test_phase11_8d_ha_disruption.py`
+- `tests/test_phase11_8e_observability_contract.py`
+- `tests/test_phase11_8f_recovery_contract.py`
 - `.github/workflows/phase11-runtime-foundation.yml`
 - `.github/workflows/phase11-workload-identity-secrets.yml`
 - `.github/workflows/phase11-ingress-tls-network.yml`
 - `.github/workflows/phase11-ha-disruption.yml`
+- `.github/workflows/phase11-observability-hardening.yml`
+- `.github/workflows/phase11-recovery-hardening.yml`
 - `docs/architecture/CORTEX_DECISION_GATE.md`
 - `docs/architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md`
 - `docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md`
@@ -109,17 +120,35 @@ Repository acceptance does **not** prove DNS ownership, certificate validity, in
 
 ### Phase 11.8d HA and disruption hardening
 
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-The bounded repository evidence target requires at least two DTMO replicas and defaults to three, spreads application replicas across availability-zone and hostname topology domains with fail-closed `DoNotSchedule` constraints, requires host anti-affinity, preserves a non-zero PodDisruptionBudget and defines explicit graceful termination. PostgreSQL, Redis, OpenSearch and object-storage HA remain deployment-specific stateful requirements rather than inferred repository capabilities.
+Accepted repository evidence requires at least two DTMO replicas and defaults to three, spreads application replicas across availability-zone and hostname topology domains with fail-closed `DoNotSchedule` constraints, requires host anti-affinity, preserves a non-zero PodDisruptionBudget and defines explicit graceful termination. PostgreSQL, Redis, OpenSearch and object-storage HA remain deployment-specific stateful requirements rather than inferred repository capabilities.
 
 Dedicated repository evidence is `backend/tests/test_phase11_8d_ha_disruption.py`, `.github/workflows/phase11-ha-disruption.yml` and `docs/qa/PHASE11_8D_HA_DISRUPTION_GATE.md`.
 
-A green 11.8d gate does **not** prove live multi-zone placement, node/zone failure survival, stateful quorum/failover, provider replication, storage durability, recovery objectives, centralized observability, production-equivalent behavior, independent assurance or production authorization.
+Repository acceptance does **not** prove live multi-zone placement, node/zone failure survival, stateful quorum/failover, provider replication or storage durability.
+
+### Phase 11.8e Observability hardening
+
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Accepted repository evidence establishes opt-in metrics discovery through the ServiceMonitor contract, structured JSON logging and opt-in tracing/OTLP configuration. Dedicated evidence is `tests/test_phase11_8e_observability_contract.py`, `.github/workflows/phase11-observability-hardening.yml` and `docs/qa/PHASE11_8E_OBSERVABILITY_GATE.md`.
+
+This acceptance does **not** prove live metric ingestion, log completeness, trace continuity, alert delivery, retention, SLO attainment or production observability.
+
+### Phase 11.8f Backup, restore and recovery hardening
+
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+
+The bounded repository evidence target defines PostgreSQL, Redis, OpenSearch and object storage as explicit recovery domains and requires accountable backup ownership, retention, restore verification, recovery-exercise cadence and measurable RPO/RTO evidence. Backup success or achieved recovery objectives are never inferred from repository CI or configuration.
+
+Dedicated repository evidence is `tests/test_phase11_8f_recovery_contract.py`, `.github/workflows/phase11-recovery-hardening.yml`, `docs/architecture/PHASE11_8F_RECOVERY_HARDENING.md`, `docs/operations/PHASE11_8F_RECOVERY_RUNBOOK.md` and `docs/qa/PHASE11_8F_RECOVERY_GATE.md`.
+
+A green repository gate does **not** prove successful live backups, point-in-time recovery, achieved RPO/RTO, provider durability, disaster failover, production-equivalent behavior, independent assurance or production authorization. Missing deployment-bound recovery evidence remains fail closed.
 
 ### Remaining Phase 11.8
 
-Subsequent bounded PRs must independently establish centralized observability, recovery, supply-chain, capacity and upgrade/rollback controls. 11.9 does not start until the required 11.8 controls are accepted.
+Subsequent bounded PRs must independently establish supply-chain, capacity and upgrade/rollback controls. 11.9 does not start until the required 11.8 controls are accepted.
 
 ### Phase 11.9
 
@@ -139,12 +168,12 @@ Historical Phase 8/9 acceptance remains candidate-bound and cannot be transferre
 
 ## Governance and handling rules
 
-Framework claims remain governed by explicit provenance-backed mappings. External service, workload identity, secret-provider, ingress, HA configuration or Kubernetes runtime state does not establish local exploitability, compromise, case necessity or dissemination authority without separate attributable evidence.
+Framework claims remain governed by explicit provenance-backed mappings. External service, workload identity, secret-provider, ingress, HA, observability, recovery configuration or Kubernetes runtime state does not establish local exploitability, compromise, case necessity or dissemination authority without separate attributable evidence.
 
 - Exact-head evidence belongs only to the exact state tested.
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
 - Credentials/tokens, TLS private keys and unnecessary personal data do not belong in repository evidence.
 - Human review/share approval and human case-handoff approval remain separate from technical execution.
 - Cortex analyzer output is enrichment evidence only.
-- Kubernetes placement, workload identity, network reachability and availability configuration do not collapse service licensing/authority boundaries.
+- Kubernetes placement, workload identity, network reachability, observability and recovery configuration do not collapse service licensing/authority boundaries.
 - Historical immutable run records are never rewritten to manufacture later acceptance.
