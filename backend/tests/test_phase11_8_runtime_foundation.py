@@ -18,7 +18,7 @@ def test_runtime_foundation_is_secure_by_default() -> None:
     values = _read(VALUES)
     template = _read(TEMPLATE)
     for marker in (
-        "replicaCount: 2",
+        "replicaCount: 3",
         "automountServiceAccountToken: false",
         "runAsNonRoot: true",
         "readOnlyRootFilesystem: true",
@@ -26,7 +26,7 @@ def test_runtime_foundation_is_secure_by_default() -> None:
         'drop: ["ALL"]',
         "existingSecret: dtmo-runtime",
         "enabled: true",
-        "minAvailable: 1",
+        "minAvailable: 2",
     ):
         assert marker in values
     for marker in (
