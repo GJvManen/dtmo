@@ -75,7 +75,7 @@ Accepted repository evidence covers Taranis, IntelOwl, OpenCTI, MISP, TheHive an
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Protected exact-head merge of PR #287 accepted governed Helm/GitOps configuration, mandatory immutable image digests, existing-secret consumption without secret material in Git, non-root/read-only runtime hardening, disabled service-account token automounting, resource/probe defaults, application PDB foundation and default-deny NetworkPolicy. This is repository engineering evidence only.
+Protected exact-head acceptance established governed Helm/GitOps configuration, mandatory immutable image digests, existing-secret consumption without secret material in Git, non-root/read-only runtime hardening, disabled service-account token automounting, resource/probe defaults, application PDB foundation and default-deny NetworkPolicy. This is repository engineering evidence only.
 
 ### Phase 11.8b Workload identity and external secret delivery
 
