@@ -71,7 +71,7 @@ Accepted repository evidence covers Taranis, IntelOwl, OpenCTI, MISP, TheHive an
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Accepted repository evidence covers the governed Helm/GitOps runtime foundation, workload identity/external-secret delivery, TLS ingress/network segmentation, application HA/disruption controls and opt-in observability boundaries. These controls remain repository engineering evidence and do not prove live provider enforcement, production availability or production authorization.
+Accepted repository evidence covers the governed Helm/GitOps runtime foundation, workload identity/external-secret delivery, TLS ingress/network segmentation, application HA/disruption controls and opt-in observability boundaries. The accepted workload-identity and secret-delivery evidence includes `.github/workflows/phase11-workload-identity-secrets.yml`; this preserves the accepted repository-evidence chain and does not imply live cloud IAM, external secret retrieval, rotation, revocation or production deployment evidence. These controls remain repository engineering evidence and do not prove live provider enforcement, production availability or production authorization.
 
 ### Phase 11.8f Backup, restore and recovery hardening
 
@@ -117,7 +117,7 @@ Framework claims remain governed by explicit provenance-backed mappings. Externa
 
 - Exact-head evidence belongs only to the exact state tested.
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
-- Credentials/tokens, TLS private keys, long-lived signing keys and unnecessary personal data do not belong in repository evidence.
+- Sensitive authentication material, TLS private keys, signing key material and unnecessary personal data do not belong in repository evidence.
 - Human review/share approval and human case-handoff approval remain separate from technical execution.
 - Cortex analyzer output is enrichment evidence only.
 - Kubernetes placement, workload identity, network reachability, observability, recovery and artifact-attestation configuration do not collapse service licensing/authority boundaries.
