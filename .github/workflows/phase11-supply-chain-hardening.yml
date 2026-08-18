@@ -43,9 +43,20 @@ jobs:
           python -m pip_audit --format json --output artifacts/python-vulnerabilities.json
       - name: Build candidate container image
         run: docker build --pull -t dtmo:phase11-8g-${{ github.event.pull_request.head.sha }} .
-      - name: Verify candidate runtime package identity
+      - name: Verify minimal candidate runtime package surface
         run: |
-          docker run --rm --entrypoint python dtmo:phase11-8g-${{ github.event.pull_request.head.sha }} -c "from importlib.metadata import version; assert version('msgpack') == '1.2.1'; assert tuple(map(int, version('setuptools').split('.')[:2])) >= (78, 1); print('msgpack=' + version('msgpack')); print('setuptools=' + version('setuptools'))"
+          docker run --rm --entrypoint python dtmo:phase11-8g-${{ github.event.pull_request.head.sha }} -c "from importlib.metadata import PackageNotFoundError, version; names=('pip','setuptools','msgpack'); present=[]; [(present.append((n, version(n))) if True else None) for n in names if not (lambda: False)()]" 2>/dev/null && exit 1 || true
+          docker run --rm --entrypoint python dtmo:phase11-8g-${{ github.event.pull_request.head.sha }} -c "from importlib.metadata import PackageNotFoundError, version; names=('pip','setuptools','msgpack'); [(lambda n: (version(n), (_ for _ in ()).throw(AssertionError(n))))(n) for n in names]" 2>/dev/null && exit 1 || true
+          docker run --rm --entrypoint python dtmo:phase11-8g-${{ github.event.pull_request.head.sha }} - <<'PY'
+          from importlib.metadata import PackageNotFoundError, version
+          for name in ('pip', 'setuptools', 'msgpack'):
+              try:
+                  detected = version(name)
+              except PackageNotFoundError:
+                  print(f'{name}=absent-from-runtime')
+              else:
+                  raise SystemExit(f'build-only package remains in runtime: {name}={detected}')
+          PY
       - name: Generate Trivy-owned container CycloneDX SBOM
         uses: aquasecurity/trivy-action@v0.36.0
         with:
