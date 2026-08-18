@@ -1,0 +1,24 @@
+{{- if .Values.observability.metrics.serviceMonitor.enabled }}
+{{- if not .Values.observability.metrics.enabled }}
+{{- fail "observability.metrics.enabled must be true when ServiceMonitor is enabled" }}
+{{- end }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-dtmo
+  labels:
+    app.kubernetes.io/name: dtmo
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- with .Values.observability.metrics.serviceMonitor.additionalLabels }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dtmo
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  endpoints:
+    - port: http
+      path: {{ .Values.observability.metrics.path }}
+      interval: {{ .Values.observability.metrics.serviceMonitor.interval }}
+{{- end }}
