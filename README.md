@@ -55,7 +55,7 @@ PostgreSQL remains canonical DTMO application truth. Taranis AI, IntelOwl, Corte
 
 ## Phase 11.8 Kubernetes runtime industrialisation
 
-Phase 11.8a–11.8f are accepted repository engineering evidence for the governed Helm/GitOps runtime foundation, workload identity/external secret delivery, TLS ingress/network segmentation, HA/disruption controls, observability boundaries and recovery requirements. Those accepted controls remain repository evidence and do not themselves establish production authorization.
+Phase 11.8a–11.8f are accepted repository engineering evidence for the governed Helm/GitOps runtime foundation, workload identity/external secret delivery, **ingress/TLS** and network segmentation, HA/disruption controls, observability boundaries and recovery requirements. Those accepted controls remain repository evidence and do not themselves establish production authorization.
 
 The active **Phase 11.8g** slice establishes software supply-chain controls around the build subject: CycloneDX SBOM generation for Python dependencies and the candidate container, known-vulnerability auditing/scanning, SHA-256 artifact identities, and a release path for cryptographically signed provenance and SBOM attestations using short-lived OIDC-backed signing rather than repository-stored long-lived signing keys.
 
