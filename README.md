@@ -15,7 +15,8 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Phase 11.6 TheHive:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.7 Cortex decision:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`  
 > **Phase 11.7b Cortex analyzer connector:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded priority:** Phase 11.8a Kubernetes/Helm/GitOps runtime foundation `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
+> **Phase 11.8a runtime foundation:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded priority:** Phase 11.8b workload identity and external secret delivery `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
 > **Next production authorization:** Phase 12 `NOT STARTED`  
 > **Production status:** **not production authorized**
 
@@ -52,25 +53,28 @@ flowchart LR
 
 PostgreSQL remains canonical DTMO application truth. Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive are separate service boundaries. None independently establishes local compromise or grants DTMO external-share/publication authority.
 
-## Phase 11.8a Kubernetes/Helm/GitOps runtime foundation
+## Phase 11.8 Kubernetes runtime industrialisation
 
-The active bounded slice introduces `deploy/helm/dtmo` plus GitOps-owned overrides under `deploy/gitops/phase11-8`. The chart requires an immutable image digest, consumes an existing runtime Secret instead of storing secrets in Git, runs DTMO non-root with a read-only root filesystem and dropped capabilities, disables service-account token automounting, defines probes/resources, supplies a PodDisruptionBudget and enables fail-closed NetworkPolicy with explicit external CIDR allowlisting.
+Phase 11.8a is accepted repository engineering evidence for the governed Helm/GitOps runtime foundation: immutable image digest, existing-secret consumption, non-root/read-only workload hardening, disabled service-account token automounting, probes/resources, PodDisruptionBudget and fail-closed NetworkPolicy.
+
+The active **Phase 11.8b** slice adds a provider-neutral workload-identity attachment point through explicit ServiceAccount annotations while keeping token automount disabled. It optionally renders an `ExternalSecret` that requires an explicit SecretStore/ClusterSecretStore, target Secret and per-variable remote mappings. No identity credential or secret value is stored in Git; DTMO consumes only the resulting Kubernetes Secret and does not call the secret provider directly.
 
 ```mermaid
 flowchart LR
-    G[Reviewed Git revision] --> V[GitOps values]
-    V --> H[Helm render]
-    I[Immutable image digest] --> H
-    S[Approved external-secret process] --> X[Existing Secret]
-    X --> K[Kubernetes API]
-    H --> K
-    K --> P[DTMO pods\nnon-root + read-only]
-    N[Default-deny NetworkPolicy] -. constrains .-> P
+    G[Reviewed Git revision] --> H[Helm render]
+    H --> SA[DTMO ServiceAccount\nno token automount]
+    A[Deployment-owned identity annotation] --> SA
+    SA -. workload identity .-> I[External identity authority]
+    I --> P[Approved secret provider]
+    E[External Secrets controller] --> P
+    H --> E
+    E --> S[Kubernetes Secret]
+    S --> D[DTMO pod]
 ```
 
-This foundation is not evidence of stateful/multi-zone HA, live workload identity, secret-provider entitlement, ingress/TLS, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity or exercised upgrade/rollback. Those remain later bounded Phase 11.8 slices.
+This repository work is not evidence of cloud IAM correctness, live secret retrieval/rotation/revocation, controller installation, stateful/multi-zone HA, ingress/TLS, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity or exercised upgrade/rollback. Those remain later bounded Phase 11.8 slices.
 
-See [Phase 11.8 Runtime Foundation Architecture](docs/architecture/PHASE11_8_RUNTIME_FOUNDATION.md), [Kubernetes Runtime Configuration](docs/administration/KUBERNETES_RUNTIME_CONFIGURATION.md), [Runtime Foundation Runbook](docs/operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md) and [Phase 11.8 Runtime Foundation Gate](docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md).
+See [Phase 11.8b Workload Identity and External Secrets](docs/architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md), [Workload Identity and External Secret Administration](docs/administration/WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md), [Phase 11.8b Runbook](docs/operations/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_RUNBOOK.md) and [Phase 11.8b Gate](docs/qa/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_GATE.md).
 
 ## Architecture
 
@@ -93,7 +97,8 @@ The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, S
 | Phase 11.6 | TheHive incident/case handoff | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.7 | Cortex conditional decision | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
 | Phase 11.7b | Owner-required Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8a | Kubernetes/Helm/GitOps runtime foundation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.8a | Kubernetes/Helm/GitOps runtime foundation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8b | Workload identity and external secret delivery | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
 
 Historical Phase 8/9 evidence remains bound to the earlier candidate. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.

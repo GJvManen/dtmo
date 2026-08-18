@@ -1,6 +1,6 @@
 # DTMO Platform Industrialisation Roadmap
 
-Last updated: **2026-08-17**  
+Last updated: **2026-08-18**  
 Programme state: **`ACTIVE / HIGHEST PRIORITY`**
 
 ## Purpose
@@ -24,10 +24,11 @@ flowchart LR
     DTMO --> HIVE[TheHive\nincident/case workflow]
     GIT[Reviewed Git revision] --> HELM[Helm + GitOps]
     HELM --> K8S[Kubernetes runtime]
-    K8S -. hosts .-> DTMO
+    IAM[Workload identity] --> K8S
+    SEC[External secret provider] --> K8S
 ```
 
-The original 11.7 Cortex no-adoption decision remains preserved as historical evidence. The later owner-required 11.7b analyzer connector is separately accepted. Phase 11.8 is now active. Provenance, RBAC, human publication/share authority, service licensing boundaries and fail-closed evidence rules remain explicit across every runtime boundary.
+The original 11.7 Cortex no-adoption decision remains preserved as historical evidence. The later owner-required 11.7b analyzer connector is separately accepted. Phase 11.8 is active. Provenance, RBAC, human publication/share authority, service licensing boundaries and fail-closed evidence rules remain explicit across every runtime boundary.
 
 ## Fixed priority order
 
@@ -71,13 +72,9 @@ The original 11.7 Cortex no-adoption decision remains preserved as historical ev
 
 **Status:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`
 
-The accepted decision record found no validated IntelOwl capability gap for the then-approved enrichment requirement set. That historical claim is preserved rather than rewritten.
-
 ### 11.7b Cortex analyzer connector
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
-
-The later owner-required connector is analyzer-only and remains a separate Cortex service/API boundary. It preserves explicit analyzer/datatype/TLP validation, stable identity, bounded result import, no-share/no-local-compromise semantics and excludes responders, external side effects, administration, automatic IntelOwl replacement and source vendoring. Live provider permissions and lawful disclosure remain deployment evidence, not CI claims.
 
 ### 11.8 Integrated runtime industrialisation
 
@@ -87,27 +84,34 @@ Phase 11.8 is delivered as bounded sub-slices so each runtime control has exact-
 
 #### 11.8a Runtime foundation
 
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+Protected exact-head acceptance established the governed Kubernetes/Helm/GitOps application runtime foundation: immutable image digest, existing-secret consumption, non-root/read-only workload hardening, disabled service-account token automounting, probes/resources, PodDisruptionBudget and fail-closed NetworkPolicy. This remains repository engineering evidence only.
+
+#### 11.8b Workload identity and external secret delivery
+
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
 
-This slice introduces a governed Kubernetes/Helm/GitOps runtime foundation for the DTMO application workload. The chart requires an immutable image digest; references an existing Secret rather than storing credentials in Git; runs non-root with read-only root filesystem, RuntimeDefault seccomp, dropped capabilities and no privilege escalation; disables service-account token automounting; supplies resource limits/requests and health probes; defines two replicas plus a PodDisruptionBudget; and enables fail-closed NetworkPolicy with explicit external CIDR allowlisting.
+This bounded slice adds provider-neutral ServiceAccount annotations for deployment-owned workload identity while keeping Kubernetes service-account token automount disabled. External secret delivery remains opt-in and fail closed: enabling it requires an explicit SecretStore/ClusterSecretStore name, explicit target Secret and explicit per-variable remote-key mappings. No identity credential or secret value is stored in Git, and DTMO consumes only the resulting Kubernetes Secret.
 
 ```mermaid
 flowchart LR
-    C[Reviewed commit] --> V[GitOps values\nno secret material]
-    V --> H[Helm render]
-    I[Immutable sha256 image] --> H
-    H --> K[Kubernetes API]
-    S[Approved external-secret process] --> X[Existing Secret]
-    X --> K
-    K --> P[DTMO pods]
-    N[Default-deny NetworkPolicy] -. constrains .-> P
+    G[Reviewed GitOps revision] --> H[Helm]
+    H --> SA[DTMO ServiceAccount]
+    A[Deployment-owned identity annotation] --> SA
+    SA -. workload identity .-> I[External identity authority]
+    I --> P[Secret provider]
+    E[External Secrets controller] --> P
+    H --> E
+    E --> S[Kubernetes Secret]
+    S --> D[DTMO pod]
 ```
 
-Repository validation does not prove live cluster behavior, CNI enforcement, cloud IAM, secret-provider entitlement or production availability.
+Repository validation does not prove controller installation, cloud IAM, provider ACLs, secret retrieval/rotation/revocation or production availability.
 
 #### Remaining Phase 11.8 bounded slices
 
-Subsequent PRs must independently cover stateful/multi-zone HA; workload identity and external-secret implementation; ingress/TLS and finer network segmentation; centralized metrics/logs/traces; backup/restore and recovery exercises; SBOM/vulnerability scanning/signing/provenance attestations; capacity; and upgrade/rollback exercises. None is accepted by 11.8a.
+Subsequent PRs must independently cover ingress/TLS and finer network segmentation; stateful/multi-zone HA; centralized metrics/logs/traces; backup/restore and recovery exercises; SBOM/vulnerability scanning/signing/provenance attestations; capacity; and upgrade/rollback exercises. None is accepted by 11.8b.
 
 ### 11.9 Migration and compatibility
 
@@ -137,7 +141,7 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept **Phase 11.8a runtime foundation** only on fully green exact-head CI.
+1. Accept **Phase 11.8b workload identity and external secret delivery** only on fully green exact-head CI.
 2. Continue the remaining Phase 11.8 hardening slices one bounded PR at a time.
 3. Start 11.9 only after all required 11.8 controls have been accepted.
 4. Continue 11.10–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.

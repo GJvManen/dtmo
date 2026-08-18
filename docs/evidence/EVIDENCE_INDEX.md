@@ -1,12 +1,12 @@
 # DTMO Evidence Index
 
-Last updated: **2026-08-17**
+Last updated: **2026-08-18**
 
 ## Purpose
 
 This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.7b are `PASS / REPOSITORY_COMPLETE` with the original Phase 11.7 Cortex decision retained as a historical baseline; Phase 11.8a Kubernetes/Helm/GitOps runtime foundation is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.7b and Phase 11.8a are `PASS / REPOSITORY_COMPLETE`, with the original Phase 11.7 Cortex decision retained as a historical baseline; Phase 11.8b workload identity/external secret delivery is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
 
 ## Authoritative current-state sources
 
@@ -15,20 +15,23 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `docs/project/CURRENT_STATE.md`
 - `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`
 - `docs/architecture/PHASE11_8_RUNTIME_FOUNDATION.md`
+- `docs/architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md`
 - `docs/administration/KUBERNETES_RUNTIME_CONFIGURATION.md`
+- `docs/administration/WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md`
 - `docs/operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md`
+- `docs/operations/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_RUNBOOK.md`
 - `docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md`
+- `docs/qa/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_GATE.md`
 - `deploy/helm/dtmo/Chart.yaml`
 - `deploy/helm/dtmo/values.yaml`
 - `deploy/helm/dtmo/templates/runtime.yaml`
-- `deploy/gitops/phase11-8/values.yaml`
+- `deploy/helm/dtmo/templates/external-secret.yaml`
 - `backend/tests/test_phase11_8_runtime_foundation.py`
+- `backend/tests/test_phase11_8b_workload_identity_secrets.py`
 - `.github/workflows/phase11-runtime-foundation.yml`
+- `.github/workflows/phase11-workload-identity-secrets.yml`
 - `docs/architecture/CORTEX_DECISION_GATE.md`
 - `docs/architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md`
-- `docs/integrations/CORTEX_ANALYZER_CONNECTOR.md`
-- `docs/operations/CORTEX_ANALYZER_RUNBOOK.md`
-- `docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`
 - `docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md`
 - `.github/workflows/phase11-thehive-handoff-implementation.yml`
 - `docs/security/SECURITY_OVERVIEW.md`
@@ -62,39 +65,31 @@ Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASS
 
 **Status:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`.
 
-### Phase 11.1–11.6
+### Phase 11.1–11.7b
+
+**Status:** `PASS / REPOSITORY_COMPLETE` except the original 11.7 decision, which remains `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`.
+
+Accepted repository evidence covers Taranis, IntelOwl, OpenCTI, MISP, TheHive and the later bounded Cortex analyzer connector. The accepted TheHive implementation evidence includes the repository workflow `.github/workflows/phase11-thehive-handoff-implementation.yml`; this reference preserves the historical repository-evidence chain and does not imply live TheHive deployment evidence. Service identity/licensing boundaries, provenance, RBAC, human publication/share authority and fail-closed semantics remain authoritative.
+
+### Phase 11.8a Runtime foundation
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Accepted repository evidence covers Taranis, IntelOwl, OpenCTI, MISP and TheHive service boundaries, identity/provenance preservation, durable reconciliation/state, fail-closed authority controls and human publication/share/case-handoff authority. These are repository engineering claims only.
+Protected exact-head acceptance established governed Helm/GitOps configuration, mandatory immutable image digests, existing-secret consumption without secret material in Git, non-root/read-only runtime hardening, disabled service-account token automounting, resource/probe defaults, application PDB foundation and default-deny NetworkPolicy. This is repository engineering evidence only.
 
-The accepted TheHive implementation remains regression-protected by `.github/workflows/phase11-thehive-handoff-implementation.yml`; retaining this reference records repository evidence only and does not imply live TheHive entitlement, permissions or production authorization.
-
-### Phase 11.7 Cortex decision
-
-**Status:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`.
-
-The accepted point-in-time record concluded that Cortex was not adopted under the requirement set then available because no validated IntelOwl capability gap existed. That claim remains preserved.
-
-### Phase 11.7b Cortex analyzer connector
-
-**Status:** `PASS / REPOSITORY_COMPLETE`.
-
-Accepted repository evidence covers the later attributable owner-required analyzer-only connector, including separate service/API identity, API-key authentication, explicit analyzer/datatype/TLP validation, stable job identity, bounded result import and explicit no-share/no-local-compromise metadata. Live provider permissions, lawful disclosure and runtime behavior remain deployment evidence.
-
-### Phase 11.8a Kubernetes/Helm/GitOps runtime foundation
+### Phase 11.8b Workload identity and external secret delivery
 
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
-The bounded repository evidence target covers governed Helm/GitOps configuration, mandatory immutable image digests, existing-secret consumption without secret material in Git, non-root/read-only runtime hardening, disabled service-account token automounting, resource/probe defaults, application PDB foundation and default-deny NetworkPolicy with explicit external CIDR configuration.
+The bounded repository evidence target covers provider-neutral ServiceAccount identity annotations, continued service-account-token automount disablement, opt-in ExternalSecret rendering, explicit SecretStore/ClusterSecretStore reference, explicit target Secret, explicit per-variable remote mappings and no identity credential or secret value in Git.
 
-Dedicated repository evidence is `backend/tests/test_phase11_8_runtime_foundation.py`, `.github/workflows/phase11-runtime-foundation.yml` and `docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md`.
+Dedicated repository evidence is `backend/tests/test_phase11_8b_workload_identity_secrets.py`, `.github/workflows/phase11-workload-identity-secrets.yml` and `docs/qa/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_GATE.md`.
 
-A green 11.8a gate does **not** prove live Kubernetes admission, CNI enforcement, cloud IAM, external-secret controller permissions, stateful/multi-zone HA, ingress/TLS, centralized observability, backup/restore, recovery objectives, SBOM/vulnerability scanning, image signing, provenance attestations, capacity, exercised upgrades/rollbacks, production-equivalent validation, independent assurance or production authorization.
+A green 11.8b gate does **not** prove live workload identity federation, cloud IAM correctness, External Secrets controller installation/admission, provider ACLs, secret retrieval, rotation/revocation, stateful/multi-zone HA, ingress/TLS, centralized observability, backup/restore, recovery objectives, SBOM/scanning/signing/attestation, capacity, upgrade/rollback, production-equivalent validation, independent assurance or production authorization.
 
 ### Remaining Phase 11.8
 
-Subsequent bounded PRs must independently establish the deferred HA, secrets/workload identity, network/TLS, observability, recovery, supply-chain, capacity and upgrade/rollback controls. 11.9 does not start until the required 11.8 controls are accepted.
+Subsequent bounded PRs must independently establish the deferred network/TLS, HA, observability, recovery, supply-chain, capacity and upgrade/rollback controls. 11.9 does not start until the required 11.8 controls are accepted.
 
 ### Phase 11.9
 
@@ -114,12 +109,12 @@ Historical Phase 8/9 acceptance remains candidate-bound and cannot be transferre
 
 ## Governance and handling rules
 
-Framework claims remain governed by explicit provenance-backed mappings. External service or Kubernetes runtime state does not establish local exploitability, compromise, case necessity or dissemination authority without separate attributable evidence.
+Framework claims remain governed by explicit provenance-backed mappings. External service, workload identity, secret-provider or Kubernetes runtime state does not establish local exploitability, compromise, case necessity or dissemination authority without separate attributable evidence.
 
 - Exact-head evidence belongs only to the exact state tested.
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
 - Credentials/tokens and unnecessary personal data do not belong in repository evidence.
 - Human review/share approval and human case-handoff approval remain separate from technical execution.
 - Cortex analyzer output is enrichment evidence only.
-- Kubernetes placement does not collapse service licensing/authority boundaries.
+- Kubernetes placement and workload identity do not collapse service licensing/authority boundaries.
 - Historical immutable run records are never rewritten to manufacture later acceptance.
