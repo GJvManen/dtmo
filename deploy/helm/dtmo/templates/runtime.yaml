@@ -4,6 +4,17 @@
 {{- if and .Values.externalSecret.enabled (not .Values.externalSecret.targetName) }}
 {{- fail "externalSecret.targetName is required when externalSecret.enabled=true" }}
 {{- end }}
+{{- if .Values.ingress.enabled }}
+{{- if not .Values.networkPolicy.enabled }}
+{{- fail "networkPolicy.enabled must remain true when ingress.enabled=true" }}
+{{- end }}
+{{- if empty .Values.networkPolicy.ingressController.namespaceSelector }}
+{{- fail "networkPolicy.ingressController.namespaceSelector is required when ingress.enabled=true" }}
+{{- end }}
+{{- if empty .Values.networkPolicy.ingressController.podSelector }}
+{{- fail "networkPolicy.ingressController.podSelector is required when ingress.enabled=true" }}
+{{- end }}
+{{- end }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -128,10 +139,20 @@ spec:
     - Ingress
     - Egress
   ingress:
+{{- if .Values.ingress.enabled }}
     - from:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: {{ .Release.Namespace }}
+{{ toYaml .Values.networkPolicy.ingressController.namespaceSelector | indent 14 }}
+          podSelector:
+            matchLabels:
+{{ toYaml .Values.networkPolicy.ingressController.podSelector | indent 14 }}
+      ports:
+        - protocol: TCP
+          port: 8000
+{{- else }}
+    []
+{{- end }}
   egress:
     - to:
         - namespaceSelector:
