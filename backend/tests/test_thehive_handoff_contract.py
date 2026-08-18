@@ -38,20 +38,23 @@ def test_phase11_status_preserves_accepted_thehive_and_cortex_history() -> None:
     assert "**Status:** `PASS / REPOSITORY_COMPLETE`" in roadmap
     assert "Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE`" in state
     assert "Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE`" in state
-    # Preserve accepted 11.7/11.7b evidence while Phase 11.8 advances.
     assert (
         "Phase 11.7 Cortex decision gate | "
         "`PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`"
     ) in state
     assert "Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE`" in state
-    # 11.8a through 11.8e are accepted history; 11.8f is the sole active bounded slice.
-    assert "Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE`" in state
-    assert "Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE`" in state
-    assert "Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE`" in state
-    assert "Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE`" in state
-    assert "Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE`" in state
+    # Preserve accepted runtime evidence while only the current bounded slice advances.
+    for marker in (
+        "Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8f backup / restore / recovery hardening | `PASS / REPOSITORY_COMPLETE`",
+    ):
+        assert marker in state
     assert (
-        "Phase 11.8f backup / restore / recovery hardening | "
+        "Phase 11.8g software supply-chain hardening | "
         "`IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`"
     ) in state
     assert CONTRACT_GATE.exists()
