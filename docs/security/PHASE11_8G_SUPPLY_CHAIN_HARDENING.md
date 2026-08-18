@@ -27,7 +27,7 @@ flowchart LR
 
 - PR validation runs on the exact pull-request head and produces non-sensitive engineering evidence only.
 - Python dependencies are audited and a CycloneDX JSON dependency SBOM is generated from the resolved CI environment.
-- Python build/install tooling is used only while constructing the image. `pip`, `setuptools` and the build-only `msgpack` package surface are removed from the final runtime after application dependencies are installed; CI verifies their absence before scanning.
+- The **minimal runtime** boundary excludes Python build/install tooling from the final candidate. `pip`, `setuptools` and the build-only `msgpack` package surface are removed after application dependencies are installed; CI verifies their absence before scanning.
 - Trivy generates the candidate container CycloneDX SBOM from the final built runtime image. The resulting SBOM remains provenance-bound to that exact candidate and is retained as engineering evidence.
 - The Trivy-owned container SBOM is scanned for known `HIGH` and `CRITICAL` OS/library vulnerabilities; detected governed findings fail closed. No vulnerability waiver, ignore rule or severity downgrade is introduced by this flow.
 - Release artifacts receive SHA-256 identities before attestation.
