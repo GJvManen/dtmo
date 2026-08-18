@@ -29,7 +29,11 @@ DTMO uses layered acceptance gates so repository engineering, accountable functi
 | Phase 11.1–11.7b | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8c ingress/TLS + network segmentation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8f backup / restore / recovery hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8g software supply-chain hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.9 migration/compatibility | `NOT STARTED` |
 | Phase 11.10 production-equivalent validation | `NOT STARTED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
@@ -51,38 +55,37 @@ DTMO is not production authorized.
 | Independent assurance | Independent assessment of integrated candidate | Phase 11.11 external assurance |
 | Production decision | Formal accountable go/no-go for integrated candidate | Phase 12 |
 
-## Accepted Phase 11.1–11.8b boundaries
+## Accepted Phase 11.1–11.8f boundaries
 
 Taranis AI, IntelOwl, OpenCTI, MISP, TheHive and Cortex repository integration boundaries are accepted as `PASS / REPOSITORY_COMPLETE`. Their accepted contracts remain regression-protected and do not become deployment or production evidence.
 
-The original Phase 11.7 Cortex no-adoption decision remains a historical accepted baseline. The later owner-required Phase 11.7b analyzer connector is a separate accepted repository boundary. Phase 11.8a establishes the secure Helm/GitOps runtime foundation; Phase 11.8b establishes provider-neutral workload identity and external secret delivery. Neither proves live deployment behavior.
+The original Phase 11.7 Cortex no-adoption decision remains a historical accepted baseline. The later owner-required Phase 11.7b analyzer connector is a separate accepted repository boundary. Phase 11.8a through 11.8f establish the runtime foundation, workload identity/secrets, ingress/network, HA/disruption, observability and recovery repository boundaries. None proves production behavior by itself.
 
-## Active Phase 11.8c ingress/TLS and network segmentation gate
+## Active Phase 11.8g software supply-chain gate
 
 Required exact-head repository evidence:
 
-- ingress is disabled by default;
-- an enabled ingress requires explicit ingress class and hostname;
-- TLS is mandatory and requires an explicit Kubernetes TLS Secret reference;
-- the DTMO application Service remains `ClusterIP`;
-- NetworkPolicy must remain enabled when ingress is enabled;
-- north-south application traffic is admitted only from an ingress-controller peer constrained by both explicit namespace and pod selectors;
-- TLS private keys and secret values are not stored in Git;
-- accepted service-to-service licensing, provenance, RBAC and human-authority boundaries remain unchanged;
-- architecture, administration, operations, current-state, QA, evidence, roadmap, README/docs portal and applicable security/governance documentation remain synchronized;
-- `docs/qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md`, Professional Documentation Gate, RC4 Quality Gate and the dedicated Phase 11 Ingress TLS and Network Gate succeed on the same exact head.
+- exact pull-request head checkout is enforced;
+- a distributable DTMO wheel is built and SHA-256 identified;
+- resolved Python dependencies are audited and emitted as CycloneDX JSON SBOM evidence;
+- the candidate container image builds from the exact head;
+- the container is scanned for governed `HIGH` and `CRITICAL` known OS/library vulnerabilities and findings fail closed;
+- a CycloneDX container SBOM is emitted;
+- the governed release workflow re-runs build/SBOM/vulnerability controls for the release subject;
+- release provenance and SBOM attestations are cryptographically signed through short-lived OIDC-backed signing, without repository-stored long-lived signing keys;
+- PR CI does not claim a release attestation exists until the release workflow actually executes for the exact release subject;
+- service-to-service licensing, provenance, RBAC and human publication/share authority remain unchanged;
+- `docs/security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md`, `docs/operations/PHASE11_8G_SUPPLY_CHAIN_RUNBOOK.md`, `docs/qa/PHASE11_8G_SUPPLY_CHAIN_GATE.md`, current-state, evidence, roadmap and README/docs portal remain synchronized;
+- Professional Documentation, RC4 Quality and the dedicated Phase 11 Supply Chain Hardening Gate succeed on the same exact head.
 
-Repository acceptance does **not** establish DNS ownership, certificate validity, ingress-controller admission, cloud load-balancer/WAF behavior, CNI enforcement, external routing, stateful/multi-zone HA, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity, exercised upgrade/rollback, production-equivalent validation, independent assurance or production authorization.
+Repository acceptance does **not** prove future release signing, registry integrity, deployment attestation verification, absence of all vulnerabilities, production-equivalent behavior, independent assurance or production authorization.
 
 ## Subsequent bounded Phase 11.8 slices
 
-After protected 11.8c acceptance, continue one bounded PR at a time for:
+After protected 11.8g acceptance, continue one bounded PR at a time for:
 
-1. stateful/multi-zone HA and failure/disruption controls;
-2. centralized metrics/logs/traces and operational alerting;
-3. backup/recovery objectives and exercised restore evidence;
-4. supply-chain SBOM/scanning/signing/attestation;
-5. capacity, upgrade and rollback procedures with exercised evidence.
+1. capacity/resource planning and measurable saturation boundaries;
+2. upgrade and rollback procedures with exercised repository/deployment evidence.
 
 The exact split may be refined only while preserving one bounded objective per PR and the fixed Phase 11 order.
 
@@ -108,8 +111,9 @@ Release gates preserve:
 - enrichment/graph/exchange/case state does not itself imply local compromise;
 - human and machine roles remain separated;
 - provenance, confidence, markings and source restrictions remain preserved across service boundaries;
-- raw secret values and TLS private keys are not committed as evidence;
+- raw secret values, TLS private keys and long-lived signing keys are not committed as evidence;
 - network reachability does not grant application or human authority;
+- signed artifact provenance does not grant production authorization;
 - external services remain separate identities and licensing/provider boundaries.
 
 ## Release decision rule
