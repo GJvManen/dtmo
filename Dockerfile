@@ -19,9 +19,22 @@ RUN python -m pip install --upgrade \
         'setuptools>=78.1.1' \
         'msgpack>=1.2.1' \
     && python -m pip install . \
-    && python -m pip install --upgrade \
+    && python -m pip install --upgrade --force-reinstall \
         'setuptools>=78.1.1' \
-        'msgpack>=1.2.1'
+        'msgpack>=1.2.1' \
+    && python - <<'PY'
+from importlib.metadata import distributions, version
+from pathlib import Path
+
+for name, minimum in (("msgpack", "1.2.1"), ("setuptools", "78.1.1")):
+    active = version(name)
+    stale = []
+    for dist in distributions():
+        if (dist.metadata.get("Name") or "").lower() == name:
+            stale.append((dist.version, str(Path(dist._path))))
+    print(f"{name}={active}; metadata={stale}")
+    assert len(stale) == 1, f"duplicate/stale {name} metadata: {stale}"
+PY
 
 USER dtmo
 EXPOSE 8000
