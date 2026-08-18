@@ -8,12 +8,22 @@ image:
 serviceAccount:
   create: true
   automountServiceAccountToken: false
+  annotations: {}
 
 service:
   type: ClusterIP
   port: 8000
 
 existingSecret: dtmo-runtime
+
+externalSecret:
+  enabled: false
+  refreshInterval: 1h
+  secretStoreRef:
+    name: ""
+    kind: ClusterSecretStore
+  targetName: dtmo-runtime
+  remoteKeys: {}
 
 podSecurityContext:
   runAsNonRoot: true
