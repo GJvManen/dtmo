@@ -4,14 +4,24 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
 
-RUN useradd --create-home --uid 10001 dtmo
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --uid 10001 dtmo
 WORKDIR /app
 
 COPY pyproject.toml README.md alembic.ini ./
 COPY backend ./backend
 COPY database ./database
 COPY tools/provision_grafana_reader.py ./tools/provision_grafana_reader.py
-RUN pip install --upgrade pip && pip install .
+RUN python -m pip install --upgrade \
+        pip \
+        'setuptools>=78.1.1' \
+        'msgpack>=1.2.1' \
+    && python -m pip install . \
+    && python -m pip install --upgrade \
+        'setuptools>=78.1.1' \
+        'msgpack>=1.2.1'
 
 USER dtmo
 EXPOSE 8000
