@@ -4,6 +4,12 @@
 {{- if and .Values.externalSecret.enabled (not .Values.externalSecret.targetName) }}
 {{- fail "externalSecret.targetName is required when externalSecret.enabled=true" }}
 {{- end }}
+{{- if lt (int .Values.replicaCount) 2 }}
+{{- fail "replicaCount must be at least 2 for Phase 11.8d availability hardening" }}
+{{- end }}
+{{- if and .Values.podDisruptionBudget.enabled (lt (int .Values.podDisruptionBudget.minAvailable) 1) }}
+{{- fail "podDisruptionBudget.minAvailable must be at least 1" }}
+{{- end }}
 {{- if .Values.ingress.enabled }}
 {{- if not .Values.networkPolicy.enabled }}
 {{- fail "networkPolicy.enabled must remain true when ingress.enabled=true" }}
@@ -52,8 +58,36 @@ spec:
         app.kubernetes.io/name: dtmo
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
+      terminationGracePeriodSeconds: {{ .Values.availability.terminationGracePeriodSeconds }}
       serviceAccountName: {{ .Release.Name }}-dtmo
       automountServiceAccountToken: false
+{{- if .Values.availability.topologySpread.enabled }}
+      topologySpreadConstraints:
+        - maxSkew: {{ .Values.availability.topologySpread.zoneMaxSkew }}
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: dtmo
+              app.kubernetes.io/instance: {{ .Release.Name }}
+        - maxSkew: {{ .Values.availability.topologySpread.hostnameMaxSkew }}
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: dtmo
+              app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+{{- if .Values.availability.podAntiAffinity.enabled }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: dtmo
+                  app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
       securityContext:
         runAsNonRoot: {{ .Values.podSecurityContext.runAsNonRoot }}
         runAsUser: {{ .Values.podSecurityContext.runAsUser }}
