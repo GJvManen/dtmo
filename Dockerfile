@@ -14,26 +14,28 @@ COPY pyproject.toml README.md alembic.ini ./
 COPY backend ./backend
 COPY database ./database
 COPY tools/provision_grafana_reader.py ./tools/provision_grafana_reader.py
-RUN python -m pip install --upgrade \
-        pip \
-        'setuptools>=78.1.1' \
-        'msgpack>=1.2.1' \
+RUN python -m pip install --upgrade pip 'setuptools>=78.1.1' \
     && python -m pip install . \
-    && python -m pip install --upgrade --force-reinstall \
-        'setuptools>=78.1.1' \
-        'msgpack>=1.2.1' \
+    && rm -rf \
+        /usr/local/lib/python3.12/site-packages/pip \
+        /usr/local/lib/python3.12/site-packages/pip-*.dist-info \
+        /usr/local/lib/python3.12/site-packages/setuptools \
+        /usr/local/lib/python3.12/site-packages/setuptools-*.dist-info \
+        /usr/local/lib/python3.12/site-packages/msgpack \
+        /usr/local/lib/python3.12/site-packages/msgpack-*.dist-info \
+        /usr/local/bin/pip \
+        /usr/local/bin/pip3 \
+        /usr/local/bin/pip3.12 \
     && python - <<'PY'
-from importlib.metadata import distributions, version
-from pathlib import Path
+from importlib.metadata import PackageNotFoundError, version
 
-for name, minimum in (("msgpack", "1.2.1"), ("setuptools", "78.1.1")):
-    active = version(name)
-    stale = []
-    for dist in distributions():
-        if (dist.metadata.get("Name") or "").lower() == name:
-            stale.append((dist.version, str(Path(dist._path))))
-    print(f"{name}={active}; metadata={stale}")
-    assert len(stale) == 1, f"duplicate/stale {name} metadata: {stale}"
+for name in ("pip", "setuptools", "msgpack"):
+    try:
+        detected = version(name)
+    except PackageNotFoundError:
+        print(f"{name}=absent-from-runtime")
+    else:
+        raise AssertionError(f"build-only package remains in runtime: {name}={detected}")
 PY
 
 USER dtmo
