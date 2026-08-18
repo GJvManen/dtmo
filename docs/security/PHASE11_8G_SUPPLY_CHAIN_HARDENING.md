@@ -33,6 +33,7 @@ flowchart LR
 - Release provenance and SBOM attestations use GitHub Actions OIDC-backed signing through `actions/attest`; long-lived signing keys are not stored in the repository.
 - Signing is a release-path operation, not a way to promote every PR test build into release evidence.
 - An attestation proves a signed relationship between an artifact and build metadata/SBOM; it does **not prove** that the artifact is vulnerability-free, safe to deploy, production-equivalent or production-authorized.
+- Supply-chain evidence does not create or grant **production authorization**. That remains a later accountable Phase 12 decision after fresh Phase 11.10 validation and Phase 11.11 independent assurance for the same immutable candidate.
 - Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex remain separate service/licensing boundaries. Supply-chain metadata grants no publication/share, case, responder or compromise authority.
 - Missing SBOM, scan, subject digest, provenance or signature evidence fails closed for any release candidate that claims Phase 11.8g compliance.
 
