@@ -19,6 +19,10 @@ DTMO is **not production authorized**. Phase 10 remains `NO-GO / BLOCKED — PLA
 - External analyzer, graph, exchange, case, build or signing state does not itself prove DTMO-local exposure, exploitability or compromise.
 - Missing, conflicting or unverifiable mandatory evidence fails closed.
 
+## Separation of duties
+
+Human publication/share approval, case handoff, service execution, CI build identity and release signing remain distinct authority domains. A connector, analyzer, Kubernetes workload, CI job or signed artifact cannot self-grant analyst approval or production authority. Release attestations establish artifact provenance only; accountable production authorization remains a later Phase 12 decision after fresh Phase 11.10 validation and Phase 11.11 independent assurance for the same immutable candidate.
+
 ## Accepted Phase 11.8 security baseline
 
 Phase 11.8a–11.8f accepted repository controls cover immutable runtime image identity, non-root/read-only workloads, disabled service-account token automounting, external secret delivery boundaries, TLS ingress and network segmentation, application HA/disruption controls, opt-in observability and explicit recovery-domain requirements. These are repository engineering controls and do not prove provider enforcement, live availability, successful recovery or production readiness.
@@ -31,6 +35,7 @@ The active slice adds a governed software-artifact evidence chain:
 - Python and container CycloneDX SBOM generation;
 - Python dependency and container known-vulnerability evidence;
 - fail-closed container `HIGH`/`CRITICAL` vulnerability policy;
+- minimal runtime package surface with build-only Python tooling removed after dependency installation;
 - SHA-256 artifact subject identity;
 - release provenance and SBOM attestations signed through short-lived OIDC-backed identity;
 - consumer verification against expected repository/workflow/release identity;
@@ -39,7 +44,7 @@ The active slice adds a governed software-artifact evidence chain:
 ```mermaid
 flowchart LR
     S[Accepted source revision] --> B[Exact-head build]
-    B --> A[Wheel + container]
+    B --> A[Wheel + minimal runtime container]
     A --> SB[SBOM]
     A --> V[Vulnerability evidence]
     A --> H[SHA-256 subject]
