@@ -28,7 +28,7 @@ flowchart LR
 - RPO and RTO are deployment-owned policy targets and must be verified against measured recovery evidence.
 - Restore evidence must preserve provenance and must not expose credentials, secret values, personal data or restricted CTI payloads.
 - Application availability, publication/share authority, case authority and responder authority are not expanded by recovery tooling.
-- Missing backup ownership, restore verification or recovery evidence fails closed for later production-equivalent acceptance.
+- Missing backup ownership, restore verification or recovery evidence must **fail closed** for later production-equivalent acceptance; absence of evidence can never be interpreted as successful recovery capability.
 
 ## Evidence boundary
 
