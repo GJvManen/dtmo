@@ -47,7 +47,7 @@ def test_phase11_status_preserves_accepted_thehive_and_cortex_history() -> None:
     # 11.8a is accepted history; 11.8b is the sole active bounded slice.
     assert "Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE`" in state
     assert (
-        "Phase 11.8b workload identity + external secrets | "
+        "Phase 11.8b workload identity / external secrets | "
         "`IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`"
     ) in state
     assert CONTRACT_GATE.exists()
