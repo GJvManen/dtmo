@@ -44,12 +44,14 @@ def test_phase11_status_preserves_accepted_thehive_and_cortex_history() -> None:
         "`PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`"
     ) in state
     assert "Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE`" in state
-    # 11.8a/11.8b/11.8c are accepted history; 11.8d is the sole active bounded slice.
+    # 11.8a through 11.8e are accepted history; 11.8f is the sole active bounded slice.
     assert "Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE`" in state
     assert "Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE`" in state
     assert "Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE`" in state
+    assert "Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE`" in state
+    assert "Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE`" in state
     assert (
-        "Phase 11.8d HA / disruption hardening | "
+        "Phase 11.8f backup / restore / recovery hardening | "
         "`IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`"
     ) in state
     assert CONTRACT_GATE.exists()

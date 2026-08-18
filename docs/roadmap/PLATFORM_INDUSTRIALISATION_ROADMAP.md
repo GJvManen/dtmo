@@ -28,6 +28,8 @@ flowchart LR
     SEC[External secret provider] --> K8S
     TLS[TLS ingress boundary] --> K8S
     HA[Zone + host spread] --> K8S
+    OBS[Metrics + logs + traces] --> K8S
+    REC[Backup + restore + recovery] --> K8S
 ```
 
 The original 11.7 Cortex no-adoption decision remains preserved as historical evidence. The later owner-required 11.7b analyzer connector is separately accepted. Phase 11.8 is active. Provenance, RBAC, human publication/share authority, service licensing boundaries and fail-closed evidence rules remain explicit across every runtime boundary.
@@ -104,28 +106,38 @@ The accepted slice establishes optional TLS-only Kubernetes Ingress and narrows 
 
 #### 11.8d HA and disruption hardening
 
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+Accepted repository evidence requires at least two application replicas, defaults to three, spreads pods across availability zones and hosts with `DoNotSchedule`, requires host anti-affinity, preserves a non-zero PodDisruptionBudget and defines graceful termination. Stateful PostgreSQL, Redis, OpenSearch and object-storage replication/quorum/failover remain deployment-specific requirements and are not inferred from application scheduling controls.
+
+#### 11.8e Observability hardening
+
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+Accepted repository evidence establishes opt-in metrics discovery, structured JSON logging and opt-in distributed tracing boundaries. It does not prove live telemetry ingestion, log completeness, trace continuity, alert delivery, retention or SLO attainment.
+
+#### 11.8f Backup, restore and recovery hardening
+
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
 
-This bounded slice requires at least two application replicas, defaults to three, spreads pods across availability zones and hosts with `DoNotSchedule`, requires host anti-affinity, preserves a non-zero PodDisruptionBudget and defines graceful termination. Stateful PostgreSQL, Redis, OpenSearch and object-storage replication/quorum/failover remain deployment-specific requirements and are not inferred from application scheduling controls.
+This bounded slice defines PostgreSQL, Redis, OpenSearch and object storage as explicit recovery domains. Deployment owners must establish backup method, retention, restore verification, recovery-exercise cadence and measurable RPO/RTO evidence. Backup success is never inferred from CI or configuration alone; missing recovery evidence fails closed.
 
 ```mermaid
 flowchart LR
-    U[Ingress / service traffic] --> A[DTMO zone A]
-    U --> B[DTMO zone B]
-    U --> C[DTMO zone C]
-    A --> S[(Stateful service boundary)]
-    B --> S
-    C --> S
-    P[PodDisruptionBudget] -. guards voluntary disruption .-> A
-    P -. guards voluntary disruption .-> B
-    P -. guards voluntary disruption .-> C
+    PG[(PostgreSQL)] --> B[Deployment-owned backups]
+    REDIS[(Redis)] --> B
+    OS[(OpenSearch)] --> B
+    OBJ[(Object storage)] --> B
+    B --> R[Restore verification]
+    R --> X[Recovery exercise]
+    X --> E[Governed evidence]
 ```
 
-Repository acceptance does not prove real zone-failure survival, stateful quorum/failover, storage durability, recovery objectives, production-equivalent behavior, independent assurance or production authorization.
+Repository acceptance does not prove successful live backups, point-in-time recovery, achieved RPO/RTO, provider durability, disaster failover, production-equivalent behavior, independent assurance or production authorization.
 
 #### Remaining Phase 11.8 bounded slices
 
-Subsequent PRs must independently cover centralized metrics/logs/traces; backup/restore and recovery exercises; SBOM/vulnerability scanning/signing/provenance attestations; capacity; and upgrade/rollback exercises. None is accepted by 11.8d.
+Subsequent PRs must independently cover SBOM/vulnerability scanning/signing/provenance attestations; capacity; and upgrade/rollback exercises. None is accepted by 11.8f.
 
 ### 11.9 Migration and compatibility
 
@@ -155,7 +167,7 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept **Phase 11.8d HA and disruption hardening** only on fully green exact-head CI.
+1. Accept **Phase 11.8f backup, restore and recovery hardening** only on fully green exact-head CI.
 2. Continue remaining Phase 11.8 hardening one bounded PR at a time.
 3. Start 11.9 only after all required 11.8 controls have been accepted.
 4. Continue 11.10–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.

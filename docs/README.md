@@ -22,11 +22,13 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8d HA / disruption hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8f backup / restore / recovery hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **not production authorized** |
 
-The active bounded programme step is **Phase 11.8d HA and disruption hardening**. Earlier Phase 8/9 evidence remains historical and candidate-bound. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.
+The active bounded programme step is **Phase 11.8f backup, restore and recovery hardening**. Earlier Phase 8/9 evidence remains historical and candidate-bound. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.
 
 ## Start here
 
@@ -36,13 +38,13 @@ The active bounded programme step is **Phase 11.8d HA and disruption hardening**
 | Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current State](project/CURRENT_STATE.md) |
 | Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [IntelOwl Governed Enrichment Workflow](user/INTELOWL_ENRICHMENT_WORKFLOW.md), [TheHive Case Handoff Workflow](user/THEHIVE_CASE_HANDOFF.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
 | Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Ingress/TLS and Network Segmentation Administration](administration/INGRESS_TLS_NETWORK_SEGMENTATION.md), [Workload Identity and External Secret Administration](administration/WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md), [Kubernetes Runtime Configuration](administration/KUBERNETES_RUNTIME_CONFIGURATION.md), [TheHive Handoff Configuration](administration/THEHIVE_HANDOFF_CONFIGURATION.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
-| Architecture / engineering | [Phase 11.8d HA and Disruption Hardening](architecture/PHASE11_8D_HA_DISRUPTION.md), [Phase 11.8c Ingress/TLS and Network Segmentation](architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md), [Phase 11.8b Workload Identity and External Secrets](architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md), [Phase 11.8 Runtime Foundation](architecture/PHASE11_8_RUNTIME_FOUNDATION.md), [Cortex → DTMO Integration Contract](architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md), [TheHive → DTMO Handoff Contract](architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md), [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md), [OpenCTI → DTMO Integration Contract](architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md), [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md), [Taranis → DTMO Contract](architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md) |
-| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.8d HA and Disruption Hardening](architecture/PHASE11_8D_HA_DISRUPTION.md), [Phase 11.8c Ingress/TLS and Network Segmentation](architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md), [Phase 11.8b Workload Identity and External Secrets](architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md) |
+| Architecture / engineering | [Phase 11.8f Recovery Hardening](architecture/PHASE11_8F_RECOVERY_HARDENING.md), [Phase 11.8e Observability Hardening](architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md), [Phase 11.8d HA and Disruption Hardening](architecture/PHASE11_8D_HA_DISRUPTION.md), [Phase 11.8c Ingress/TLS and Network Segmentation](architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md), [Phase 11.8b Workload Identity and External Secrets](architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md), [Phase 11.8 Runtime Foundation](architecture/PHASE11_8_RUNTIME_FOUNDATION.md), [Cortex → DTMO Integration Contract](architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md), [TheHive → DTMO Handoff Contract](architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md), [MISP → DTMO Consolidation Contract](architecture/MISP_DTMO_CONSOLIDATION_CONTRACT.md), [OpenCTI → DTMO Integration Contract](architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md), [IntelOwl → DTMO Integration Contract](architecture/INTELOWL_DTMO_INTEGRATION_CONTRACT.md), [Taranis → DTMO Contract](architecture/TARANIS_DTMO_INTEGRATION_CONTRACT.md) |
+| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.8f Recovery Hardening](architecture/PHASE11_8F_RECOVERY_HARDENING.md), [Phase 11.8e Observability Hardening](architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md), [Phase 11.8d HA and Disruption Hardening](architecture/PHASE11_8D_HA_DISRUPTION.md), [Phase 11.8c Ingress/TLS and Network Segmentation](architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md), [Phase 11.8b Workload Identity and External Secrets](architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
-| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Phase 11.8d HA and Disruption Gate](qa/PHASE11_8D_HA_DISRUPTION_GATE.md), [Phase 11.8c Ingress/TLS and Network Segmentation Gate](qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md), [Phase 11.8b Workload Identity and External Secrets Gate](qa/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_GATE.md), [Phase 11.8 Runtime Foundation Gate](qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md), [Phase 11.7b Cortex Connector Gate](qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md), [Phase 11.7 Cortex Decision Gate](qa/PHASE11_7_CORTEX_DECISION_GATE.md), [Phase 11.6 TheHive Handoff Implementation Gate](qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md), [Phase 11.5 MISP Consolidation Contract Gate](qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md), [Phase 11.4 OpenCTI Contract Gate](qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
-| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [Phase 11.8d HA and Disruption Runbook](operations/PHASE11_8D_HA_DISRUPTION_RUNBOOK.md), [Phase 11.8c Ingress/TLS and Network Runbook](operations/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md), [Phase 11.8b Workload Identity and External Secrets Runbook](operations/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_RUNBOOK.md), [Phase 11.8 Runtime Foundation Runbook](operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md), [IntelOwl Enrichment Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md), [OpenCTI Integration Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md), [Cortex Analyzer Runbook](operations/CORTEX_ANALYZER_RUNBOOK.md), [TheHive Handoff Operations Runbook](operations/THEHIVE_HANDOFF_RUNBOOK.md) |
+| QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Phase 11.8f Recovery Gate](qa/PHASE11_8F_RECOVERY_GATE.md), [Phase 11.8e Observability Gate](qa/PHASE11_8E_OBSERVABILITY_GATE.md), [Phase 11.8d HA and Disruption Gate](qa/PHASE11_8D_HA_DISRUPTION_GATE.md), [Phase 11.8c Ingress/TLS and Network Segmentation Gate](qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md), [Phase 11.8b Workload Identity and External Secrets Gate](qa/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_GATE.md), [Phase 11.8 Runtime Foundation Gate](qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md), [Phase 11.7b Cortex Connector Gate](qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md), [Phase 11.7 Cortex Decision Gate](qa/PHASE11_7_CORTEX_DECISION_GATE.md), [Phase 11.6 TheHive Handoff Implementation Gate](qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md), [Phase 11.5 MISP Consolidation Contract Gate](qa/PHASE11_5_MISP_CONSOLIDATION_CONTRACT_GATE.md), [Phase 11.4 OpenCTI Contract Gate](qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
+| Operations | [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md), [Phase 11.8f Recovery Runbook](operations/PHASE11_8F_RECOVERY_RUNBOOK.md), [Phase 11.8e Observability Runbook](operations/PHASE11_8E_OBSERVABILITY_RUNBOOK.md), [Phase 11.8d HA and Disruption Runbook](operations/PHASE11_8D_HA_DISRUPTION_RUNBOOK.md), [Phase 11.8c Ingress/TLS and Network Runbook](operations/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md), [Phase 11.8b Workload Identity and External Secrets Runbook](operations/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_RUNBOOK.md), [Phase 11.8 Runtime Foundation Runbook](operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md), [IntelOwl Enrichment Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md), [OpenCTI Integration Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md), [Cortex Analyzer Runbook](operations/CORTEX_ANALYZER_RUNBOOK.md), [TheHive Handoff Operations Runbook](operations/THEHIVE_HANDOFF_RUNBOOK.md) |
 
-The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for accepted operator journeys. These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. No synthetic screenshot is promoted for Kubernetes, GitOps, workload identity, external secrets, ingress/TLS, network segmentation, HA/disruption, Cortex or any other integration without an accepted live operator surface; Mermaid architecture/trust-boundary diagrams are documentation models, not production evidence.
+The governed screenshot catalogue now contains UI-01 through UI-10 and remains the controlled visual reference for accepted operator journeys. These governed screenshots are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. No synthetic screenshot is promoted for Kubernetes, GitOps, workload identity, external secrets, ingress/TLS, network segmentation, HA/disruption, observability, recovery, Cortex or any other integration without an accepted live operator surface; Mermaid architecture/trust-boundary diagrams are documentation models, not production evidence.
 
 ## Accepted Phase 11 integration reference paths
 
@@ -74,30 +76,27 @@ These stable references remain exposed while Phase 11.8 advances so earlier acce
 - [Phase 11.8 Runtime Foundation](architecture/PHASE11_8_RUNTIME_FOUNDATION.md) records accepted 11.8a repository engineering evidence.
 - [Phase 11.8b Workload Identity and External Secrets](architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md) records accepted 11.8b machine-identity and secret-delivery evidence.
 - [Phase 11.8c Ingress/TLS and Network Segmentation](architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md) records accepted 11.8c north-south trust-boundary evidence.
-- [Ingress/TLS and Network Segmentation Administration](administration/INGRESS_TLS_NETWORK_SEGMENTATION.md) defines the accepted TLS-only enablement and explicit controller selectors.
-- [Phase 11.8c Ingress/TLS and Network Runbook](operations/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md) defines live validation, failure handling and rollback for the accepted boundary.
-- [Phase 11.8c Ingress/TLS and Network Segmentation Gate](qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md) defines accepted repository evidence.
-- [Phase 11.8d HA and Disruption Hardening](architecture/PHASE11_8D_HA_DISRUPTION.md) defines the active application scheduling/disruption and stateful-HA trust boundary.
-- [Phase 11.8d HA and Disruption Runbook](operations/PHASE11_8D_HA_DISRUPTION_RUNBOOK.md) defines validation, failure handling and rollback without claiming live failover.
-- [Phase 11.8d HA and Disruption Gate](qa/PHASE11_8D_HA_DISRUPTION_GATE.md) defines exact-head repository acceptance for this bounded slice.
+- [Phase 11.8d HA and Disruption Hardening](architecture/PHASE11_8D_HA_DISRUPTION.md) records accepted 11.8d application scheduling/disruption and stateful-HA boundary evidence.
+- [Phase 11.8e Observability Hardening](architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md) records accepted 11.8e opt-in metrics, structured logging and tracing contracts without claiming live monitoring.
+- [Phase 11.8f Recovery Hardening](architecture/PHASE11_8F_RECOVERY_HARDENING.md) defines the active backup/restore/recovery trust and evidence boundary.
+- [Phase 11.8f Recovery Runbook](operations/PHASE11_8F_RECOVERY_RUNBOOK.md) defines accountable backup ownership, restore verification, recovery exercises and failure handling.
+- [Phase 11.8f Recovery Gate](qa/PHASE11_8F_RECOVERY_GATE.md) defines exact-head repository acceptance for the active bounded recovery slice.
 - [Evidence Index](evidence/EVIDENCE_INDEX.md) keeps repository evidence separate from live deployment, assurance and production authorization evidence.
 
-## Phase 11.8d availability boundary
+## Phase 11.8f recovery boundary
 
 ```mermaid
 flowchart LR
-    U[Ingress / service traffic] --> A[DTMO replica zone A]
-    U --> B[DTMO replica zone B]
-    U --> C[DTMO replica zone C]
-    A --> S[(Stateful service boundary)]
-    B --> S
-    C --> S
-    P[PodDisruptionBudget] -. constrains voluntary disruption .-> A
-    P -. constrains voluntary disruption .-> B
-    P -. constrains voluntary disruption .-> C
+    PG[(PostgreSQL)] --> B[Deployment-owned backup]
+    R[(Redis)] --> B
+    O[(OpenSearch)] --> B
+    S[(Object storage)] --> B
+    B --> V[Restore verification]
+    V --> X[Recovery exercise]
+    X --> E[Governed evidence]
 ```
 
-The model documents desired scheduling and disruption controls only. It does not prove live availability-zone placement, node or zone failure survival, stateful quorum/failover or provider durability.
+The model documents accountable recovery requirements only. It does not prove successful live backups, point-in-time recovery, achieved RPO/RTO, provider durability or disaster failover.
 
 ## Security and authority invariants
 
@@ -113,15 +112,18 @@ The model documents desired scheduling and disruption controls only. It does not
 - external secret delivery is explicit and fail closed;
 - external ingress is disabled by default and TLS-only when enabled;
 - ingress-controller reachability requires explicit namespace and pod selectors;
-- application replicas are spread across configured zone/host topology domains with fail-closed scheduling constraints;
-- stateful HA is deployment-specific and is never inferred from stateless application scheduling;
+- application replicas use accepted zone/host scheduling and disruption controls;
+- observability export remains opt-in and diagnostic telemetry does not create business authority;
+- recovery ownership, retention, restore verification and exercise evidence remain deployment-owned;
+- backup success and achieved RPO/RTO are never inferred from repository CI;
+- missing required recovery evidence fails closed;
 - repository CI remains engineering evidence only.
 
 ## Evidence and history model
 
 Professional current-state documentation describes the present controlled state. Historical records under `docs/development/` and earlier Phase 8/9 evidence remain scoped to the candidate and moment they originally covered; they are not rewritten or reused as evidence for the materially changed Phase 11 candidate. The accepted Phase 11.7 Cortex decision record also remains historical.
 
-Repository CI and documentation-contract tests do not prove live Kubernetes admission, workload identity federation, cloud IAM, external-secret permissions, secret rotation/revocation, DNS ownership, certificate validity, ingress-controller behavior, CNI policy enforcement, live multi-zone placement, stateful failover, production availability, recovery objectives, independent assurance or production readiness.
+Repository CI and documentation-contract tests do not prove live Kubernetes admission, workload identity federation, cloud IAM, external-secret permissions, secret rotation/revocation, DNS ownership, certificate validity, ingress-controller behavior, CNI policy enforcement, live multi-zone placement, stateful failover, telemetry ingestion, successful live backups, achieved recovery objectives, independent assurance or production readiness.
 
 ## Maintenance rule
 

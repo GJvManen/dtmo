@@ -1,0 +1,29 @@
+name: Phase 11 Recovery Hardening Gate
+
+on:
+  pull_request:
+    paths:
+      - 'docs/architecture/PHASE11_8F_RECOVERY_HARDENING.md'
+      - 'docs/operations/PHASE11_8F_RECOVERY_RUNBOOK.md'
+      - 'docs/qa/PHASE11_8F_RECOVERY_GATE.md'
+      - 'tests/test_phase11_8f_recovery_contract.py'
+      - '.github/workflows/phase11-recovery-hardening.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  recovery-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact PR head
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install pytest
+      - name: Run Phase 11.8f recovery contract
+        run: pytest -q tests/test_phase11_8f_recovery_contract.py

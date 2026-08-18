@@ -21,6 +21,8 @@ STABLE_DOCUMENTS = (
     "docs/architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md",
     "docs/architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md",
     "docs/architecture/PHASE11_8D_HA_DISRUPTION.md",
+    "docs/architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md",
+    "docs/architecture/PHASE11_8F_RECOVERY_HARDENING.md",
     "docs/integrations/TARANIS_ADAPTER.md",
     "docs/integrations/INTELOWL_INTEGRATION.md",
     "docs/integrations/OPENCTI_INTEGRATION.md",
@@ -33,6 +35,8 @@ STABLE_DOCUMENTS = (
     "docs/operations/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_RUNBOOK.md",
     "docs/operations/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md",
     "docs/operations/PHASE11_8D_HA_DISRUPTION_RUNBOOK.md",
+    "docs/operations/PHASE11_8E_OBSERVABILITY_RUNBOOK.md",
+    "docs/operations/PHASE11_8F_RECOVERY_RUNBOOK.md",
     "docs/user/THEHIVE_CASE_HANDOFF.md",
     "docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md",
     "docs/administration/KUBERNETES_RUNTIME_CONFIGURATION.md",
@@ -60,6 +64,8 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_GATE.md",
     "docs/qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md",
     "docs/qa/PHASE11_8D_HA_DISRUPTION_GATE.md",
+    "docs/qa/PHASE11_8E_OBSERVABILITY_GATE.md",
+    "docs/qa/PHASE11_8F_RECOVERY_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -169,7 +175,9 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.8d HA / disruption hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8f backup / restore / recovery hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 11.9 migration/compatibility | `NOT STARTED`",
         "Phase 11.10 production-equivalent validation | `NOT STARTED`",
         "Phase 11.11 independent external assurance | `NOT STARTED`",
@@ -190,7 +198,9 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "11.8a Runtime foundation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
         "11.8b Workload identity and external secret delivery\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
         "11.8c Ingress/TLS and network segmentation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
-        "11.8d HA and disruption hardening\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "11.8d HA and disruption hardening\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
+        "11.8e Observability hardening\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
+        "11.8f Backup, restore and recovery hardening\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 12 — Production GO/NO-GO",
     ):
         assert marker in industrialisation
@@ -250,6 +260,26 @@ def test_phase11_8d_ha_disruption_boundary_is_professionally_exposed() -> None:
     assert "does not prove" in gate.lower()
     assert "PHASE11_8D_HA_DISRUPTION" in portal
     assert "phase11-ha-disruption.yml" in evidence
+
+
+def test_phase11_8e_observability_boundary_is_professionally_exposed() -> None:
+    architecture = _read("docs/architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md")
+    runbook = _read("docs/operations/PHASE11_8E_OBSERVABILITY_RUNBOOK.md")
+    gate = _read("docs/qa/PHASE11_8E_OBSERVABILITY_GATE.md")
+    for marker in ("metrics", "structured", "traces", "fail closed", "does not prove"):
+        assert marker.lower() in (architecture + gate).lower()
+    assert "rollback" in runbook.lower()
+
+
+def test_phase11_8f_recovery_boundary_is_professionally_exposed() -> None:
+    architecture = _read("docs/architecture/PHASE11_8F_RECOVERY_HARDENING.md")
+    runbook = _read("docs/operations/PHASE11_8F_RECOVERY_RUNBOOK.md")
+    gate = _read("docs/qa/PHASE11_8F_RECOVERY_GATE.md")
+    for marker in ("PostgreSQL", "Redis", "OpenSearch", "object storage", "RPO", "RTO", "fail closed"):
+        assert marker.lower() in (architecture + gate).lower()
+    assert "restore" in runbook.lower()
+    assert "recovery exercise" in runbook.lower()
+    assert "does not prove" in gate.lower()
 
 
 def test_thehive_bounded_implementation_is_exposed_without_false_live_evidence() -> None:
