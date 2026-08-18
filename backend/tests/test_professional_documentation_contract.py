@@ -160,7 +160,7 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`",
         "Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.8b workload identity + external secrets | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.8b workload identity / external secrets | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 11.9 migration/compatibility | `NOT STARTED`",
         "Phase 11.10 production-equivalent validation | `NOT STARTED`",
         "Phase 11.11 independent external assurance | `NOT STARTED`",
