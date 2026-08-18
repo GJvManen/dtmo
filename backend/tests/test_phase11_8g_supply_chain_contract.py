@@ -9,11 +9,17 @@ def read(path: str) -> str:
 
 def test_pr_supply_chain_gate_is_exact_head_and_fail_closed() -> None:
     workflow = read(".github/workflows/phase11-supply-chain-hardening.yml")
+    dockerfile = read("Dockerfile")
     assert "github.event.pull_request.head.sha" in workflow
     assert "Verify exact PR head" in workflow
     assert "pip_audit --format cyclonedx-json" in workflow
     assert "python-vulnerabilities.json" in workflow
     assert "aquasecurity/trivy-action@v0.36.0" in workflow
+    assert "Verify minimal candidate runtime package surface" in workflow
+    assert "build-only packages present=" in workflow
+    assert "/site-packages/pip" in dockerfile
+    assert "/site-packages/setuptools" in dockerfile
+    assert "/site-packages/msgpack" in dockerfile
     assert "Generate Trivy-owned container CycloneDX SBOM" in workflow
     assert "scan-type: sbom" in workflow
     assert "scan-ref: artifacts/container-sbom.cdx.json" in workflow
@@ -51,6 +57,7 @@ def test_professional_supply_chain_boundaries_are_documented() -> None:
         "does not prove",
     ):
         assert marker in security or marker in gate
+    assert "minimal runtime" in security
     assert "rollback" in runbook
     assert "long-lived signing key" in runbook
     assert "production authorization" in security
