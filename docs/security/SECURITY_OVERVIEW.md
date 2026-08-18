@@ -9,7 +9,7 @@ DTMO protects confidentiality, integrity, availability, provenance, accountabili
 
 DTMO is **not production authorized**. Phase 10 remains `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.8f are `PASS / REPOSITORY_COMPLETE`. The active bounded gate is **Phase 11.8g software supply-chain hardening**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
-## Identity, authority and service boundaries
+## Identity and access control
 
 - Server-side RBAC remains authoritative.
 - Human and service identities remain separate.
