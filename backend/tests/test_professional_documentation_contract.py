@@ -23,6 +23,7 @@ STABLE_DOCUMENTS = (
     "docs/architecture/PHASE11_8D_HA_DISRUPTION.md",
     "docs/architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md",
     "docs/architecture/PHASE11_8F_RECOVERY_HARDENING.md",
+    "docs/security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md",
     "docs/integrations/TARANIS_ADAPTER.md",
     "docs/integrations/INTELOWL_INTEGRATION.md",
     "docs/integrations/OPENCTI_INTEGRATION.md",
@@ -37,6 +38,7 @@ STABLE_DOCUMENTS = (
     "docs/operations/PHASE11_8D_HA_DISRUPTION_RUNBOOK.md",
     "docs/operations/PHASE11_8E_OBSERVABILITY_RUNBOOK.md",
     "docs/operations/PHASE11_8F_RECOVERY_RUNBOOK.md",
+    "docs/operations/PHASE11_8G_SUPPLY_CHAIN_RUNBOOK.md",
     "docs/user/THEHIVE_CASE_HANDOFF.md",
     "docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md",
     "docs/administration/KUBERNETES_RUNTIME_CONFIGURATION.md",
@@ -66,6 +68,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_8D_HA_DISRUPTION_GATE.md",
     "docs/qa/PHASE11_8E_OBSERVABILITY_GATE.md",
     "docs/qa/PHASE11_8F_RECOVERY_GATE.md",
+    "docs/qa/PHASE11_8G_SUPPLY_CHAIN_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -177,7 +180,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.8f backup / restore / recovery hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.8f backup / restore / recovery hardening | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8g software supply-chain hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 11.9 migration/compatibility | `NOT STARTED`",
         "Phase 11.10 production-equivalent validation | `NOT STARTED`",
         "Phase 11.11 independent external assurance | `NOT STARTED`",
@@ -200,7 +204,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "11.8c Ingress/TLS and network segmentation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
         "11.8d HA and disruption hardening\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
         "11.8e Observability hardening\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
-        "11.8f Backup, restore and recovery hardening\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "11.8f Backup, restore and recovery hardening\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
+        "11.8g Software supply-chain hardening\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 12 — Production GO/NO-GO",
     ):
         assert marker in industrialisation
@@ -282,6 +287,21 @@ def test_phase11_8f_recovery_boundary_is_professionally_exposed() -> None:
     assert "does not prove" in gate.lower()
 
 
+def test_phase11_8g_supply_chain_boundary_is_professionally_exposed() -> None:
+    security = _read("docs/security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md")
+    runbook = _read("docs/operations/PHASE11_8G_SUPPLY_CHAIN_RUNBOOK.md")
+    gate = _read("docs/qa/PHASE11_8G_SUPPLY_CHAIN_GATE.md")
+    portal = _read("docs/README.md")
+    evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
+    for marker in ("CycloneDX", "vulnerability", "SHA-256", "signed", "provenance", "fail closed"):
+        assert marker.lower() in (security + gate).lower()
+    assert "rollback" in runbook.lower()
+    assert "does not prove" in gate.lower()
+    assert "PHASE11_8G_SUPPLY_CHAIN_HARDENING" in portal
+    assert "phase11-supply-chain-hardening.yml" in evidence
+    assert "release-artifact-attestation.yml" in evidence
+
+
 def test_thehive_bounded_implementation_is_exposed_without_false_live_evidence() -> None:
     contract = _read("docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md")
     for marker in ("TheHive 5.5.16", "API v1 (`/api/v1`)", "POST /api/v1/case", "handoff:case"):
@@ -307,6 +327,9 @@ def test_documentation_portal_exposes_audience_guides_and_visual_evidence_bounda
         "PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md", "INGRESS_TLS_NETWORK_SEGMENTATION.md",
         "PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md", "PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md",
         "PHASE11_8D_HA_DISRUPTION.md", "PHASE11_8D_HA_DISRUPTION_RUNBOOK.md", "PHASE11_8D_HA_DISRUPTION_GATE.md",
+        "PHASE11_8E_OBSERVABILITY_HARDENING.md", "PHASE11_8E_OBSERVABILITY_RUNBOOK.md", "PHASE11_8E_OBSERVABILITY_GATE.md",
+        "PHASE11_8F_RECOVERY_HARDENING.md", "PHASE11_8F_RECOVERY_RUNBOOK.md", "PHASE11_8F_RECOVERY_GATE.md",
+        "PHASE11_8G_SUPPLY_CHAIN_HARDENING.md", "PHASE11_8G_SUPPLY_CHAIN_RUNBOOK.md", "PHASE11_8G_SUPPLY_CHAIN_GATE.md",
     ):
         assert marker in portal
 
