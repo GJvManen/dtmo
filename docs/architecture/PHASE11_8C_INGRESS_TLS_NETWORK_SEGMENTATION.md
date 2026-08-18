@@ -13,7 +13,7 @@ This bounded Phase 11.8 slice establishes a governed north-south entry boundary 
 - NetworkPolicy remains enabled when ingress is enabled.
 - The ingress peer must be constrained by both an explicit namespace selector and an explicit pod selector.
 - DTMO application pods do not gain publication/share authority, case authority, responder authority or evidence authority through network reachability.
-- Missing or ambiguous ingress/TLS/network policy configuration **fails closed**.
+- Missing or ambiguous ingress/TLS/network policy configuration **fails closed**; this is the architecture's explicit **fail closed** boundary.
 
 ## Trust boundary
 
