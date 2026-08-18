@@ -65,6 +65,20 @@ availability:
     enabled: true
   terminationGracePeriodSeconds: 30
 
+observability:
+  metrics:
+    enabled: false
+    path: /metrics
+    serviceMonitor:
+      enabled: false
+      interval: 30s
+      additionalLabels: {}
+  tracing:
+    enabled: false
+    otlpEndpoint: ""
+  logging:
+    format: json
+
 networkPolicy:
   enabled: true
   ingressController:
