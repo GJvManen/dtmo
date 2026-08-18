@@ -1,13 +1,13 @@
 # DTMO Current Project State
 
-Last reconciled: **2026-08-17**  
+Last reconciled: **2026-08-18**  
 Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 repository enhancements**
 
 ## Executive summary
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.7b are now `PASS / REPOSITORY_COMPLETE`, with the original 11.7 Cortex no-adoption decision preserved as a historical decision baseline and the later owner-required 11.7b Cortex analyzer connector accepted separately. The sole active bounded objective is now **Phase 11.8a runtime foundation**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.7b are `PASS / REPOSITORY_COMPLETE`. Phase 11.8a runtime foundation is now `PASS / REPOSITORY_COMPLETE` after protected exact-head merge of PR #287. The sole active bounded objective is **Phase 11.8b workload identity and external secret delivery**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
 ## Lifecycle position
 
@@ -27,7 +27,8 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1�
 | Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
 | Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8a runtime foundation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8b workload identity / external secrets | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.9 migration/compatibility | `NOT STARTED` |
 | Phase 11.10 production-equivalent validation | `NOT STARTED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
@@ -39,28 +40,32 @@ Taranis provides governed collection/canonicalization; IntelOwl provides bounded
 
 All remain separate service and licensing boundaries. None gains DTMO human publication/share authority or establishes local compromise by itself. TheHive case-handoff authority remains distinct from publication/share authority.
 
-## Active Phase 11.8a runtime foundation
+## Accepted Phase 11.8a runtime foundation
 
-The first bounded 11.8 slice establishes a governed Helm/GitOps Kubernetes foundation for the DTMO application workload. The chart requires an immutable image digest, references an existing runtime Secret rather than storing secret material in Git, runs non-root with a read-only root filesystem and dropped capabilities, disables service-account token automounting, supplies probes/resources, applies a PodDisruptionBudget and enables fail-closed NetworkPolicy with explicit external CIDR allowlisting.
+The accepted 11.8a slice establishes the governed Helm/GitOps Kubernetes foundation for the DTMO application workload: immutable image digest, existing-secret consumption, non-root/read-only workload hardening, disabled service-account token automounting, probes/resources, PodDisruptionBudget and fail-closed NetworkPolicy. Repository acceptance does not claim live-cluster availability, HA, recovery or production readiness.
+
+## Active Phase 11.8b identity and secret-delivery boundary
+
+The active slice adds an explicit workload-identity attachment point through ServiceAccount annotations while keeping Kubernetes service-account token automount disabled. It optionally renders an ExternalSecret that references an explicitly named external SecretStore/ClusterSecretStore and explicit per-variable remote mappings. No identity credential or secret value is stored in Git, and DTMO consumes only the resulting Kubernetes Secret rather than directly calling the provider API.
 
 ```mermaid
 flowchart LR
-    G[Reviewed Git revision] --> H[Helm render]
-    H --> K[Kubernetes API]
-    I[Immutable image digest] --> K
-    S[External secret process] --> X[Existing Kubernetes Secret]
-    X --> K
-    K --> P[DTMO pods\nnon-root + read-only]
-    N[Default-deny NetworkPolicy] -. constrains .-> P
-    P --> D[(PostgreSQL canonical truth)]
-    P --> E[Approved Phase 11 service endpoints]
+    G[Reviewed GitOps revision] --> H[Helm render]
+    H --> SA[DTMO ServiceAccount\nno token automount]
+    A[Deployment-owned identity annotation] --> SA
+    SA -. workload identity .-> IAM[External identity authority]
+    IAM --> STORE[Approved secret provider]
+    ES[External Secrets controller] --> STORE
+    H --> ES
+    ES --> KS[Kubernetes Secret]
+    KS --> P[DTMO pod]
 ```
 
-This foundation does **not** yet prove stateful or multi-zone HA, live secret-provider/workload-identity integration, ingress/TLS policy, centralized metrics/logs/traces, recovery objectives, SBOM/scanning/signing/attestation, capacity, upgrade/rollback behavior or production-equivalent runtime characteristics. Those are later bounded Phase 11.8 slices.
+Workload identity and secret delivery do not grant publication/share authority, case-handoff authority, responder authority or proof of local compromise. Missing or ambiguous identity/store/secret evidence fails closed.
 
 ## Governance and evidence boundary
 
-Repository CI can prove chart, policy and documentation contracts only. It cannot prove Kubernetes admission behavior in a target cluster, cloud IAM, secret-provider permissions, CNI enforcement, runtime availability, recovery objectives, service entitlement or lawful disclosure authorization.
+Repository CI can prove chart, policy and documentation contracts only. It cannot prove Kubernetes admission behavior, cloud IAM, provider ACLs, live secret rotation/revocation, controller installation, CNI enforcement, runtime availability, recovery objectives, service entitlement or lawful disclosure authorization.
 
 Historical Phase 8/9 evidence remains valid only for the earlier candidate and is not reused for the materially changed Phase 11 platform. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent assurance remain required before Phase 12.
 
@@ -73,7 +78,7 @@ Historical Phase 8/9 evidence remains valid only for the earlier candidate and i
 5. TheHive — `PASS / REPOSITORY_COMPLETE`;
 6. original Cortex conditional decision — historical `PASS / REPOSITORY_COMPLETE`;
 7. owner-required Cortex analyzer connector — `PASS / REPOSITORY_COMPLETE`;
-8. Kubernetes/Helm/GitOps and integrated runtime hardening — active Phase 11.8, beginning with 11.8a runtime foundation;
+8. Kubernetes/Helm/GitOps and integrated runtime hardening — active Phase 11.8, with 11.8a accepted and 11.8b active;
 9. migration/compatibility;
 10. new production-equivalent validation;
 11. new independent external assurance;
