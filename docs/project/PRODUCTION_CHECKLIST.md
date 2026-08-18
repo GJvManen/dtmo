@@ -14,8 +14,8 @@ This checklist controls the post-Phase-10 industrialisation programme and future
 | Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Historical independent assurance |
 | Phase 10 | `NO-GO / BLOCKED` | Accountable production decision |
 | Phase 11 | `IN PROGRESS / ACTIVE` | Platform industrialisation |
-| Phase 11.1–11.8b | `PASS / REPOSITORY_COMPLETE` | Accepted integration/runtime boundaries |
-| Phase 11.8c ingress/TLS + network segmentation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Repository network-boundary evidence |
+| Phase 11.1–11.8f | `PASS / REPOSITORY_COMPLETE` | Accepted integration/runtime boundaries |
+| Phase 11.8g supply-chain hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Repository supply-chain evidence |
 | Phase 11.9–11.11 | `NOT STARTED` | Migration, validation and assurance |
 | Phase 12 | `NOT STARTED` | Future production authorization |
 
@@ -23,83 +23,51 @@ Historical Phase 8/9 evidence remains candidate-bound and is not reused for the 
 
 ## Evidence rules
 
-Repository CI, accountable acceptance, production-equivalent validation, independent assurance and production authorization are separate evidence classes. Missing mandatory evidence is not implicit acceptance.
+Repository CI, release signing, accountable acceptance, production-equivalent validation, independent assurance and production authorization are separate evidence classes. Missing mandatory evidence is not implicit acceptance.
 
-## 1. Accepted historical baseline
+## 1. Accepted baseline
 
 - [x] Phases 1–7 repository engineering baseline.
 - [x] RC13 functional owner acceptance.
 - [x] E8.1–E8.10 repository-complete product evolution.
-- [x] Phase 8 acceptance for the earlier candidate.
-- [x] Phase 9 independent assurance for the earlier candidate.
-- [x] Phase 10 production decision recorded as `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`.
+- [x] Historical Phase 8 and Phase 9 evidence preserved in original scope.
+- [x] Phase 10 decision remains `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`.
+- [x] Phase 11.1–11.7b service/integration boundaries accepted.
+- [x] Phase 11.8a–11.8f runtime foundation through recovery hardening accepted.
+- [x] Human publication/share authority, separate TheHive case authority, provenance, RBAC and fail-closed evidence remain preserved.
 
-## 2. Accepted Phase 11.1–11.8b baseline
+## 2. Active Phase 11.8g — software supply-chain hardening
 
-- [x] Taranis service/API/licensing boundary and canonical adapter accepted.
-- [x] IntelOwl bounded enrichment integration accepted.
-- [x] OpenCTI graph integration accepted.
-- [x] MISP consolidation and authoritative synchronization-state model accepted.
-- [x] TheHive minimal human-authorized case handoff accepted.
-- [x] Original Phase 11.7 Cortex no-adoption decision preserved as historical evidence.
-- [x] Later owner-required Phase 11.7b analyzer connector accepted separately.
-- [x] Phase 11.8a Helm/GitOps runtime foundation accepted.
-- [x] Phase 11.8b provider-neutral workload identity and external secret delivery accepted.
-- [x] Human publication/share authority remains distinct from technical service execution.
-- [x] Provenance, RBAC and fail-closed evidence rules remain preserved.
-
-**Decision:** `PASS / REPOSITORY_COMPLETE`.
-
-## 3. Active Phase 11.8c — ingress/TLS and network segmentation
-
-- [x] External ingress remains disabled by default.
-- [x] Enabling ingress requires an explicit ingress class and hostname.
-- [x] TLS is mandatory when ingress is enabled.
-- [x] A Kubernetes TLS Secret reference is required; private key material is not stored in Git.
-- [x] DTMO application Service remains `ClusterIP`.
-- [x] NetworkPolicy must remain enabled when ingress is enabled.
-- [x] Ingress-controller traffic requires explicit namespace and pod selectors.
-- [x] Architecture, administration, operations, security, QA, roadmap, current-state, evidence and portal documentation are reconciled for the bounded slice.
-- [ ] Dedicated Phase 11 Ingress TLS and Network Gate green on final exact head.
+- [x] Exact PR-head checkout is defined.
+- [x] Wheel build and SHA-256 identity are defined.
+- [x] Python CycloneDX SBOM and dependency vulnerability evidence are defined.
+- [x] Candidate container build, HIGH/CRITICAL vulnerability gate and CycloneDX SBOM are defined.
+- [x] Release workflow defines short-lived OIDC-backed signed provenance and SBOM attestations.
+- [x] Long-lived signing keys are excluded from repository configuration.
+- [x] Administration, security, governance, operations, QA, evidence, roadmap, current-state and portal documentation are reconciled.
+- [ ] Dedicated Phase 11 Supply Chain Hardening Gate green on final exact head.
 - [ ] RC4 Quality Gate green on final exact head.
 - [ ] Professional Documentation Gate green on final exact head.
 - [ ] All other required exact-head regression gates green.
 - [ ] Protected merge with expected-head protection.
 
-### Explicitly deferred to later bounded Phase 11.8 slices
+### Explicitly deferred
 
-- [ ] Stateful/multi-zone HA and disruption/failure exercises.
-- [ ] Centralized metrics, logs, traces and service-level alerting.
-- [ ] Backup/recovery objectives and exercised restore evidence.
-- [ ] SBOM, vulnerability scanning, signing and attestation.
-- [ ] Capacity, upgrade and rollback procedures with exercised evidence.
+- [ ] Capacity/resource planning and measurable saturation boundaries.
+- [ ] Upgrade and rollback procedures with exercised evidence.
+- [ ] Phase 11.9 migration/compatibility.
+- [ ] Fresh Phase 11.10 production-equivalent validation.
+- [ ] Fresh Phase 11.11 independent external assurance.
+- [ ] Phase 12 formal production GO/NO-GO.
+
+## 3. Fail-closed release conditions
+
+A candidate claiming Phase 11.8g compliance is blocked when the exact artifact digest, required SBOM, vulnerability evidence or required release attestation cannot be established for that subject. A rebuilt artifact is not assumed equivalent to a previously accepted binary.
 
 ## 4. Service and authority boundaries
 
-- [x] Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing boundaries.
-- [x] Kubernetes scheduling or ingress reachability does not grant publication/share authority.
-- [x] TheHive case-handoff authority remains separate and human-controlled.
-- [x] Connector/service output does not itself prove local compromise.
-- [x] Repository CI is not represented as target-cluster or production evidence.
-
-## 5. Phase 11.9 — Migration and compatibility
-
-- [ ] Canonical intelligence/provenance/classification/governance migration tested.
-- [ ] Existing integration disposition documented with replacement and rollback paths.
-
-## 6. Phase 11.10–11.11 — New validation and assurance
-
-- [ ] One immutable integrated deployment identity established.
-- [ ] New production-equivalent validation complete.
-- [ ] New independent external assurance complete.
-- [ ] Release-blocking findings remediated/retested or formally dispositioned.
-
-## 7. Phase 12 — Formal production GO/NO-GO
-
-- [ ] Phase 11 validation and assurance accepted.
-- [ ] Production ownership, IAM/secrets/network, recovery, monitoring/support and privacy/legal/governance approvals recorded.
-- [ ] Formal accountable `GO` or `NO-GO / BLOCKED` decision recorded.
+Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing boundaries. Supply-chain metadata, signatures and CI execution grant no publication/share, case-handoff or responder authority and do not prove local compromise.
 
 ## Current release decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.8b are `PASS / REPOSITORY_COMPLETE`. Phase 11.8c is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.8f are `PASS / REPOSITORY_COMPLETE`. Phase 11.8g is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. DTMO is not production authorized. Phase 12 is `NOT STARTED`.**
