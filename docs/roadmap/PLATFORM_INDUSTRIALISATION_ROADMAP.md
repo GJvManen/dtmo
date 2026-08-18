@@ -86,7 +86,7 @@ Phase 11.8 is delivered as bounded sub-slices so each runtime control has exact-
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-Protected merge of PR #287 accepted the governed Kubernetes/Helm/GitOps application runtime foundation: immutable image digest, existing-secret consumption, non-root/read-only workload hardening, disabled service-account token automounting, probes/resources, PodDisruptionBudget and fail-closed NetworkPolicy. This remains repository engineering evidence only.
+Protected exact-head acceptance established the governed Kubernetes/Helm/GitOps application runtime foundation: immutable image digest, existing-secret consumption, non-root/read-only workload hardening, disabled service-account token automounting, probes/resources, PodDisruptionBudget and fail-closed NetworkPolicy. This remains repository engineering evidence only.
 
 #### 11.8b Workload identity and external secret delivery
 
