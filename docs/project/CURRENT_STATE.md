@@ -7,7 +7,7 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.7b are `PASS / REPOSITORY_COMPLETE`. Phase 11.8a runtime foundation is now `PASS / REPOSITORY_COMPLETE` after protected exact-head merge of PR #287. The sole active bounded objective is **Phase 11.8b workload identity and external secret delivery**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.7b are `PASS / REPOSITORY_COMPLETE`. Phase 11.8a runtime foundation is now `PASS / REPOSITORY_COMPLETE` following protected exact-head acceptance. The sole active bounded objective is **Phase 11.8b workload identity and external secret delivery**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
 ## Lifecycle position
 
