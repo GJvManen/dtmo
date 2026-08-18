@@ -6,14 +6,14 @@ This bounded Phase 11.8 slice establishes a governed north-south entry boundary 
 
 ## Security invariants
 
-- `ingress.enabled=false` remains the fail-closed default.
+- `ingress.enabled=false` remains the **fail closed** default.
 - Enabling ingress requires an explicit `ingressClassName`, hostname and TLS Secret name.
 - Plain HTTP-only ingress is not an accepted configuration; `ingress.tls.enabled` must remain true.
 - The DTMO Service remains `ClusterIP`; the ingress controller is the only intended north-south path in this slice.
 - NetworkPolicy remains enabled when ingress is enabled.
 - The ingress peer must be constrained by both an explicit namespace selector and an explicit pod selector.
 - DTMO application pods do not gain publication/share authority, case authority, responder authority or evidence authority through network reachability.
-- Missing or ambiguous ingress/TLS/network policy configuration fails closed.
+- Missing or ambiguous ingress/TLS/network policy configuration **fails closed**.
 
 ## Trust boundary
 
