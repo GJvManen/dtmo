@@ -46,19 +46,7 @@ jobs:
       - name: Verify candidate runtime package identity
         run: |
           docker run --rm --entrypoint python dtmo:phase11-8g-${{ github.event.pull_request.head.sha }} -c "from importlib.metadata import version; assert version('msgpack') == '1.2.1'; assert tuple(map(int, version('setuptools').split('.')[:2])) >= (78, 1); print('msgpack=' + version('msgpack')); print('setuptools=' + version('setuptools'))"
-      - name: Scan candidate image for HIGH/CRITICAL vulnerabilities
-        uses: aquasecurity/trivy-action@v0.36.0
-        with:
-          version: v0.74.0
-          image-ref: dtmo:phase11-8g-${{ github.event.pull_request.head.sha }}
-          format: json
-          output: artifacts/container-vulnerabilities.json
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: os,library
-          scanners: vuln
-          severity: HIGH,CRITICAL
-      - name: Generate container CycloneDX SBOM
+      - name: Generate Trivy-owned container CycloneDX SBOM
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           version: v0.74.0
@@ -67,6 +55,19 @@ jobs:
           output: artifacts/container-sbom.cdx.json
           exit-code: '0'
           scanners: vuln
+      - name: Scan Trivy-owned SBOM for HIGH/CRITICAL vulnerabilities
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          version: v0.74.0
+          scan-type: sbom
+          scan-ref: artifacts/container-sbom.cdx.json
+          format: json
+          output: artifacts/container-vulnerabilities.json
+          exit-code: '1'
+          ignore-unfixed: true
+          scanners: vuln
+          severity: HIGH,CRITICAL
+          skip-setup-trivy: true
       - name: Upload non-sensitive supply-chain evidence
         uses: actions/upload-artifact@v4
         if: always()
