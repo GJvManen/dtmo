@@ -27,7 +27,9 @@ DTMO uses layered acceptance gates so repository engineering, accountable functi
 | Phase 10 | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
 | Phase 11 | `IN PROGRESS / ACTIVE` |
 | Phase 11.1–11.7b | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8a runtime foundation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8c ingress/TLS + network segmentation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.9 migration/compatibility | `NOT STARTED` |
 | Phase 11.10 production-equivalent validation | `NOT STARTED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
@@ -49,41 +51,38 @@ DTMO is not production authorized.
 | Independent assurance | Independent assessment of integrated candidate | Phase 11.11 external assurance |
 | Production decision | Formal accountable go/no-go for integrated candidate | Phase 12 |
 
-## Accepted Phase 11.1–11.7b boundaries
+## Accepted Phase 11.1–11.8b boundaries
 
 Taranis AI, IntelOwl, OpenCTI, MISP, TheHive and Cortex repository integration boundaries are accepted as `PASS / REPOSITORY_COMPLETE`. Their accepted contracts remain regression-protected and do not become deployment or production evidence.
 
-The original Phase 11.7 Cortex no-adoption decision remains a historical accepted baseline. The later owner-required Phase 11.7b analyzer connector is a separate accepted repository boundary.
+The original Phase 11.7 Cortex no-adoption decision remains a historical accepted baseline. The later owner-required Phase 11.7b analyzer connector is a separate accepted repository boundary. Phase 11.8a establishes the secure Helm/GitOps runtime foundation; Phase 11.8b establishes provider-neutral workload identity and external secret delivery. Neither proves live deployment behavior.
 
-## Active Phase 11.8a runtime foundation gate
+## Active Phase 11.8c ingress/TLS and network segmentation gate
 
 Required exact-head repository evidence:
 
-- Helm chart renders the DTMO application workload from reviewed Git state;
-- an immutable image digest is mandatory and mutable tag-only deployment is rejected;
-- GitOps values contain non-secret desired state only;
-- runtime configuration consumes an existing Kubernetes Secret and does not embed secret material in manifests;
-- workload runs non-root with read-only root filesystem and dropped Linux capabilities;
-- automatic service-account token mounting is disabled;
-- readiness/liveness probes and explicit resources are present;
-- a PodDisruptionBudget protects the stateless application workload;
-- NetworkPolicy is fail-closed/default-deny and external egress requires explicit CIDR allowlisting;
+- ingress is disabled by default;
+- an enabled ingress requires explicit ingress class and hostname;
+- TLS is mandatory and requires an explicit Kubernetes TLS Secret reference;
+- the DTMO application Service remains `ClusterIP`;
+- NetworkPolicy must remain enabled when ingress is enabled;
+- north-south application traffic is admitted only from an ingress-controller peer constrained by both explicit namespace and pod selectors;
+- TLS private keys and secret values are not stored in Git;
 - accepted service-to-service licensing, provenance, RBAC and human-authority boundaries remain unchanged;
 - architecture, administration, operations, current-state, QA, evidence, roadmap, README/docs portal and applicable security/governance documentation remain synchronized;
-- `docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md`, Professional Documentation Gate, RC4 Quality Gate and the dedicated Phase 11 Runtime Foundation Gate succeed on the same exact head.
+- `docs/qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md`, Professional Documentation Gate, RC4 Quality Gate and the dedicated Phase 11 Ingress TLS and Network Gate succeed on the same exact head.
 
-Repository acceptance does **not** establish target-cluster admission behavior, cloud IAM/workload identity, live secret-provider permissions, ingress/TLS, stateful/multi-zone HA, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity, exercised upgrade/rollback, production-equivalent validation, independent assurance or production authorization.
+Repository acceptance does **not** establish DNS ownership, certificate validity, ingress-controller admission, cloud load-balancer/WAF behavior, CNI enforcement, external routing, stateful/multi-zone HA, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity, exercised upgrade/rollback, production-equivalent validation, independent assurance or production authorization.
 
 ## Subsequent bounded Phase 11.8 slices
 
-After protected 11.8a acceptance, continue one bounded PR at a time for:
+After protected 11.8c acceptance, continue one bounded PR at a time for:
 
-1. workload identity/external secrets plus ingress/TLS and finer network segmentation;
-2. stateful/multi-zone HA and failure/disruption controls;
-3. centralized metrics/logs/traces and operational alerting;
-4. backup/recovery objectives and exercised restore evidence;
-5. supply-chain SBOM/scanning/signing/attestation;
-6. capacity, upgrade and rollback procedures with exercised evidence.
+1. stateful/multi-zone HA and failure/disruption controls;
+2. centralized metrics/logs/traces and operational alerting;
+3. backup/recovery objectives and exercised restore evidence;
+4. supply-chain SBOM/scanning/signing/attestation;
+5. capacity, upgrade and rollback procedures with exercised evidence.
 
 The exact split may be refined only while preserving one bounded objective per PR and the fixed Phase 11 order.
 
@@ -109,7 +108,8 @@ Release gates preserve:
 - enrichment/graph/exchange/case state does not itself imply local compromise;
 - human and machine roles remain separated;
 - provenance, confidence, markings and source restrictions remain preserved across service boundaries;
-- raw secret values are not committed as evidence;
+- raw secret values and TLS private keys are not committed as evidence;
+- network reachability does not grant application or human authority;
 - external services remain separate identities and licensing/provider boundaries.
 
 ## Release decision rule

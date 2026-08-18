@@ -1,6 +1,6 @@
 # DTMO Roadmap — Production Readiness and Product Evolution
 
-Last updated: **2026-08-17**
+Last updated: **2026-08-18**
 
 ## Purpose
 
@@ -16,8 +16,8 @@ This roadmap separates production authorization from product evolution and platf
 | Phase 8 | Production-equivalent validation | `PASS / OWNER_ACCEPTED` — historical candidate |
 | Phase 9 | Independent external assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` — historical candidate |
 | Phase 10 | Formal production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
-| Phase 11.1–11.7b | Accepted service/integration boundaries | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8a | Governed Kubernetes/Helm/GitOps runtime foundation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.1–11.8b | Accepted service/runtime boundaries | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8c | Ingress/TLS and network segmentation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.9 | Migration and compatibility | `NOT STARTED` |
 | Phase 11.10 | New production-equivalent validation | `NOT STARTED` |
 | Phase 11.11 | New independent external assurance | `NOT STARTED` |
@@ -33,11 +33,11 @@ Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASS
 
 The authoritative detailed programme is `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`. The controlled order is Taranis → IntelOwl → OpenCTI → MISP → TheHive → Cortex historical decision / later owner-required connector → integrated runtime → migration/compatibility → new validation → new assurance.
 
-### Phase 11.1–11.7b — accepted repository baseline
+### Phase 11.1–11.8b — accepted repository baseline
 
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-Accepted repository evidence covers Taranis collection/assessment and canonical adaptation, IntelOwl bounded enrichment, OpenCTI graph integration, MISP governed exchange, TheHive human-authorized case handoff and the later owner-required Cortex analyzer connector. These are repository engineering boundaries only.
+Accepted repository evidence covers Taranis collection/assessment and canonical adaptation, IntelOwl bounded enrichment, OpenCTI graph integration, MISP governed exchange, TheHive human-authorized case handoff, the later owner-required Cortex analyzer connector, the Helm/GitOps runtime foundation and provider-neutral workload identity/external-secret delivery. These are repository engineering boundaries only.
 
 The original Phase 11.7 no-adoption decision is preserved as historical evidence for its then-current requirements rather than rewritten after the later owner requirement.
 
@@ -47,33 +47,42 @@ The original Phase 11.7 no-adoption decision is preserved as historical evidence
 
 #### 11.8a Runtime foundation
 
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+Accepted repository controls include immutable image digest enforcement, non-root/read-only workload hardening, disabled service-account token automounting, resource/probe defaults, PodDisruptionBudget, `ClusterIP` service exposure and fail-closed/default-deny NetworkPolicy.
+
+#### 11.8b Workload identity and external secret delivery
+
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+Accepted repository controls include provider-neutral ServiceAccount identity annotations, opt-in ExternalSecret delivery, explicit SecretStore/ClusterSecretStore and remote-key mappings, and no credential or secret value in Git.
+
+#### 11.8c Ingress/TLS and network segmentation
+
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
 
 Current bounded repository scope:
 
-- Helm chart and GitOps-owned environment configuration;
-- immutable image digest enforcement;
-- existing-secret consumption with no secret material stored in Git;
-- non-root/read-only workload hardening and dropped capabilities;
-- disabled automatic service-account token mounting;
-- explicit probes and resources;
-- application PodDisruptionBudget;
-- fail-closed NetworkPolicy with explicit external CIDR allowlisting.
+- ingress disabled by default;
+- explicit ingress class and hostname required when enabled;
+- TLS mandatory for enabled ingress;
+- explicit Kubernetes TLS Secret reference with private key material remaining outside Git;
+- DTMO application Service remains `ClusterIP`;
+- NetworkPolicy remains mandatory for ingress exposure;
+- ingress-controller reachability requires both explicit namespace and pod selectors.
 
 ```mermaid
 flowchart LR
-    G[Reviewed Git revision] --> H[Helm render]
-    H --> K[Kubernetes API]
-    I[Immutable image digest] --> K
-    S[External secret process] --> X[Existing Secret]
-    X --> K
-    K --> P[DTMO pod]
-    N[Default-deny NetworkPolicy] -. restricts .-> P
+    C[External client] -->|TLS| I[Approved ingress controller]
+    T[Kubernetes TLS Secret] --> I
+    I -->|namespace + pod selectors| N[DTMO NetworkPolicy]
+    N --> S[ClusterIP Service]
+    S --> P[DTMO pod]
 ```
 
-The foundation does not prove live cluster admission/CNI behavior, cloud workload identity, external-secret provider integration, ingress/TLS, stateful/multi-zone HA, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity or exercised upgrade/rollback. Those remain later bounded Phase 11.8 slices.
+This slice does not prove DNS ownership, certificate validity, live ingress-controller admission, cloud load-balancer/WAF policy, CNI enforcement, stateful/multi-zone HA, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity or exercised upgrade/rollback. Those remain later bounded Phase 11.8 slices or later deployment-bound validation.
 
-Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing/identity boundaries. Kubernetes placement does not grant publication/share authority, case-handoff authority or local-compromise proof.
+Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing/identity boundaries. Kubernetes placement and network reachability do not grant publication/share authority, case-handoff authority or local-compromise proof.
 
 ### Phase 11.9 — Migration and compatibility
 

@@ -19,6 +19,7 @@ STABLE_DOCUMENTS = (
     "docs/architecture/CORTEX_DTMO_INTEGRATION_CONTRACT.md",
     "docs/architecture/PHASE11_8_RUNTIME_FOUNDATION.md",
     "docs/architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md",
+    "docs/architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md",
     "docs/integrations/TARANIS_ADAPTER.md",
     "docs/integrations/INTELOWL_INTEGRATION.md",
     "docs/integrations/OPENCTI_INTEGRATION.md",
@@ -29,10 +30,12 @@ STABLE_DOCUMENTS = (
     "docs/operations/CORTEX_ANALYZER_RUNBOOK.md",
     "docs/operations/PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md",
     "docs/operations/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_RUNBOOK.md",
+    "docs/operations/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md",
     "docs/user/THEHIVE_CASE_HANDOFF.md",
     "docs/administration/THEHIVE_HANDOFF_CONFIGURATION.md",
     "docs/administration/KUBERNETES_RUNTIME_CONFIGURATION.md",
     "docs/administration/WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md",
+    "docs/administration/INGRESS_TLS_NETWORK_SEGMENTATION.md",
     "docs/security/SECURITY_OVERVIEW.md",
     "docs/governance/GOVERNANCE_MAPPING_REGISTRY.md",
     "docs/project/CURRENT_STATE.md",
@@ -53,6 +56,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md",
     "docs/qa/PHASE11_8_RUNTIME_FOUNDATION_GATE.md",
     "docs/qa/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_GATE.md",
+    "docs/qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -120,7 +124,7 @@ def test_project_readme_retains_professional_product_structure() -> None:
         "Apache License, Version 2.0", "PostgreSQL", "OpenSearch", "Sources & Catalog",
         "Visual Analytics", "Administration", "Governance", "E8.1–E8.10", "Phase 9",
         "Phase 10", "Phase 11", "Phase 12", "Taranis AI", "IntelOwl", "OpenCTI",
-        "MISP", "TheHive", "workload identity", "external secret",
+        "MISP", "TheHive", "workload identity", "external secret", "ingress/TLS",
     ):
         assert marker.lower() in readme.lower()
 
@@ -160,7 +164,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`",
         "Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.8b workload identity / external secrets | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8c ingress/TLS + network segmentation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 11.9 migration/compatibility | `NOT STARTED`",
         "Phase 11.10 production-equivalent validation | `NOT STARTED`",
         "Phase 11.11 independent external assurance | `NOT STARTED`",
@@ -179,7 +184,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "11.7b Cortex analyzer connector\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
         "11.8 Integrated runtime industrialisation",
         "11.8a Runtime foundation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
-        "11.8b Workload identity and external secret delivery\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "11.8b Workload identity and external secret delivery\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
+        "11.8c Ingress/TLS and network segmentation\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 12 — Production GO/NO-GO",
     ):
         assert marker in industrialisation
@@ -211,6 +217,22 @@ def test_phase11_8b_secret_identity_boundary_is_professionally_exposed() -> None
     assert "phase11-workload-identity-secrets.yml" in evidence
 
 
+def test_phase11_8c_ingress_tls_network_boundary_is_professionally_exposed() -> None:
+    architecture = _read("docs/architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md")
+    admin = _read("docs/administration/INGRESS_TLS_NETWORK_SEGMENTATION.md")
+    runbook = _read("docs/operations/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md")
+    gate = _read("docs/qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md")
+    portal = _read("docs/README.md")
+    evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
+    for marker in ("TLS", "ClusterIP", "namespace selector", "pod selector", "fail closed"):
+        assert marker.lower() in architecture.lower()
+    assert "private key" in admin.lower()
+    assert "rollback" in runbook.lower()
+    assert "does not prove" in gate.lower()
+    assert "PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION" in portal
+    assert "phase11-ingress-tls-network.yml" in evidence
+
+
 def test_thehive_bounded_implementation_is_exposed_without_false_live_evidence() -> None:
     contract = _read("docs/architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md")
     for marker in ("TheHive 5.5.16", "API v1 (`/api/v1`)", "POST /api/v1/case", "handoff:case"):
@@ -233,6 +255,8 @@ def test_documentation_portal_exposes_audience_guides_and_visual_evidence_bounda
         "PHASE11_8_RUNTIME_FOUNDATION_RUNBOOK.md", "PHASE11_8_RUNTIME_FOUNDATION_GATE.md",
         "PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md", "WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md",
         "PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_RUNBOOK.md", "PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_GATE.md",
+        "PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md", "INGRESS_TLS_NETWORK_SEGMENTATION.md",
+        "PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md", "PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md",
     ):
         assert marker in portal
 

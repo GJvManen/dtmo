@@ -1,0 +1,42 @@
+{{- if .Values.ingress.enabled }}
+{{- if not .Values.ingress.className }}
+{{- fail "ingress.className is required when ingress.enabled=true" }}
+{{- end }}
+{{- if not .Values.ingress.host }}
+{{- fail "ingress.host is required when ingress.enabled=true" }}
+{{- end }}
+{{- if not .Values.ingress.tls.enabled }}
+{{- fail "ingress.tls.enabled must be true when ingress.enabled=true" }}
+{{- end }}
+{{- if not .Values.ingress.tls.secretName }}
+{{- fail "ingress.tls.secretName is required when ingress.enabled=true" }}
+{{- end }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-dtmo
+  labels:
+    app.kubernetes.io/name: dtmo
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- with .Values.ingress.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className | quote }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: {{ .Values.ingress.tls.secretName | quote }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: {{ .Values.ingress.path | quote }}
+            pathType: {{ .Values.ingress.pathType }}
+            backend:
+              service:
+                name: {{ .Release.Name }}-dtmo
+                port:
+                  number: {{ .Values.service.port }}
+{{- end }}

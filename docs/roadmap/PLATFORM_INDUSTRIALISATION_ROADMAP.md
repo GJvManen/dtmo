@@ -26,6 +26,7 @@ flowchart LR
     HELM --> K8S[Kubernetes runtime]
     IAM[Workload identity] --> K8S
     SEC[External secret provider] --> K8S
+    TLS[TLS ingress boundary] --> K8S
 ```
 
 The original 11.7 Cortex no-adoption decision remains preserved as historical evidence. The later owner-required 11.7b analyzer connector is separately accepted. Phase 11.8 is active. Provenance, RBAC, human publication/share authority, service licensing boundaries and fail-closed evidence rules remain explicit across every runtime boundary.
@@ -90,28 +91,32 @@ Protected exact-head acceptance established the governed Kubernetes/Helm/GitOps 
 
 #### 11.8b Workload identity and external secret delivery
 
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+The accepted slice adds provider-neutral ServiceAccount annotations for deployment-owned workload identity while keeping Kubernetes service-account token automount disabled. External secret delivery is opt-in and fail closed: enabling it requires an explicit SecretStore/ClusterSecretStore name, explicit target Secret and explicit per-variable remote-key mappings. No identity credential or secret value is stored in Git, and DTMO consumes only the resulting Kubernetes Secret.
+
+Repository acceptance does not prove controller installation, cloud IAM, provider ACLs, secret retrieval/rotation/revocation or production availability.
+
+#### 11.8c Ingress/TLS and network segmentation
+
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
 
-This bounded slice adds provider-neutral ServiceAccount annotations for deployment-owned workload identity while keeping Kubernetes service-account token automount disabled. External secret delivery remains opt-in and fail closed: enabling it requires an explicit SecretStore/ClusterSecretStore name, explicit target Secret and explicit per-variable remote-key mappings. No identity credential or secret value is stored in Git, and DTMO consumes only the resulting Kubernetes Secret.
+This bounded slice establishes an optional TLS-only Kubernetes Ingress and narrows application ingress to an explicitly selected ingress-controller namespace and pod set. Enabling ingress requires an explicit ingress class, hostname, TLS Secret reference, enabled NetworkPolicy, namespace selector and pod selector. The DTMO Service remains `ClusterIP`; broad same-namespace ingress is not the accepted north-south path.
 
 ```mermaid
 flowchart LR
-    G[Reviewed GitOps revision] --> H[Helm]
-    H --> SA[DTMO ServiceAccount]
-    A[Deployment-owned identity annotation] --> SA
-    SA -. workload identity .-> I[External identity authority]
-    I --> P[Secret provider]
-    E[External Secrets controller] --> P
-    H --> E
-    E --> S[Kubernetes Secret]
-    S --> D[DTMO pod]
+    C[External client] -->|TLS| I[Approved ingress controller]
+    I -->|explicit namespace + pod selectors| N[DTMO NetworkPolicy]
+    N --> S[ClusterIP Service]
+    S --> D[DTMO pods]
+    T[TLS Secret] --> I
 ```
 
-Repository validation does not prove controller installation, cloud IAM, provider ACLs, secret retrieval/rotation/revocation or production availability.
+Repository validation does not prove DNS ownership, certificate validity, ingress-controller admission, CNI enforcement, external routing, WAF/load-balancer policy or production availability.
 
 #### Remaining Phase 11.8 bounded slices
 
-Subsequent PRs must independently cover ingress/TLS and finer network segmentation; stateful/multi-zone HA; centralized metrics/logs/traces; backup/restore and recovery exercises; SBOM/vulnerability scanning/signing/provenance attestations; capacity; and upgrade/rollback exercises. None is accepted by 11.8b.
+Subsequent PRs must independently cover stateful/multi-zone HA; centralized metrics/logs/traces; backup/restore and recovery exercises; SBOM/vulnerability scanning/signing/provenance attestations; capacity; and upgrade/rollback exercises. None is accepted by 11.8c.
 
 ### 11.9 Migration and compatibility
 
@@ -141,7 +146,7 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept **Phase 11.8b workload identity and external secret delivery** only on fully green exact-head CI.
+1. Accept **Phase 11.8c ingress/TLS and network segmentation** only on fully green exact-head CI.
 2. Continue the remaining Phase 11.8 hardening slices one bounded PR at a time.
 3. Start 11.9 only after all required 11.8 controls have been accepted.
 4. Continue 11.10–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.
