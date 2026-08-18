@@ -14,6 +14,9 @@ def test_pr_supply_chain_gate_is_exact_head_and_fail_closed() -> None:
     assert "pip_audit --format cyclonedx-json" in workflow
     assert "python-vulnerabilities.json" in workflow
     assert "aquasecurity/trivy-action@v0.36.0" in workflow
+    assert "Generate Trivy-owned container CycloneDX SBOM" in workflow
+    assert "scan-type: sbom" in workflow
+    assert "scan-ref: artifacts/container-sbom.cdx.json" in workflow
     assert "severity: HIGH,CRITICAL" in workflow
     assert "exit-code: '1'" in workflow
     assert "container-sbom.cdx.json" in workflow
