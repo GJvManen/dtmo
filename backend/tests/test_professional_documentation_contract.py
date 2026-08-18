@@ -179,7 +179,7 @@ def test_current_professional_lifecycle_is_consistent() -> None:
         "11.7b Cortex analyzer connector\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
         "11.8 Integrated runtime industrialisation",
         "11.8a Runtime foundation\n\n**Status:** `PASS / REPOSITORY_COMPLETE`",
-        "11.8b Workload identity and external secrets\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "11.8b Workload identity and external secret delivery\n\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 12 — Production GO/NO-GO",
     ):
         assert marker in industrialisation
