@@ -2,11 +2,11 @@
 
 ## Scope
 
-This bounded Phase 11.8 slice strengthens application-level multi-zone scheduling and defines the stateful dependency HA boundary without claiming live provider failover. DTMO application replicas are spread across zones and hosts with fail closed scheduling constraints, protected by a PodDisruptionBudget and graceful termination settings.
+This bounded Phase 11.8 slice strengthens application-level multi-zone scheduling and defines the stateful dependency HA boundary without claiming live provider failover. DTMO application replicas are spread across availability zones and hosts with fail closed scheduling constraints, protected by a PodDisruptionBudget and graceful termination settings.
 
 ## Availability boundary
 
-The Helm contract requires at least two DTMO replicas, enables zone and hostname topology spread with `DoNotSchedule`, and uses required pod anti-affinity across hosts. These controls reduce correlated application-pod failure risk but do not prove cluster, node-pool or availability-zone resilience.
+The Helm contract requires at least two DTMO replicas, enables availability zone and hostname topology spread with `DoNotSchedule`, and uses required pod anti-affinity across hosts. These controls reduce correlated application-pod failure risk but do not prove cluster, node-pool or availability-zone resilience.
 
 Stateful services remain separate deployment responsibilities. PostgreSQL, Redis, OpenSearch and object storage must have provider-appropriate replication, quorum, failover and durability designs before production-equivalent validation. This repository slice does not vendor or manufacture stateful HA implementations.
 
