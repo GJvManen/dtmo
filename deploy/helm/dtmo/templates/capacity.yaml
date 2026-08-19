@@ -1,0 +1,31 @@
+{{- if .Values.capacity.autoscaling.enabled }}
+{{- if lt (int .Values.capacity.autoscaling.minReplicas) 2 }}{{ fail "capacity.autoscaling.minReplicas must be at least 2" }}{{- end }}
+{{- if lt (int .Values.capacity.autoscaling.maxReplicas) (int .Values.capacity.autoscaling.minReplicas) }}{{ fail "capacity.autoscaling.maxReplicas must be >= minReplicas" }}{{- end }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }}-dtmo
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }}-dtmo
+  minReplicas: {{ .Values.capacity.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.capacity.autoscaling.maxReplicas }}
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: {{ .Values.capacity.autoscaling.scaleDownStabilizationSeconds }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.capacity.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.capacity.autoscaling.targetMemoryUtilizationPercentage }}
+{{- end }}
