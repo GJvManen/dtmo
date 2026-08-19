@@ -26,7 +26,6 @@ ingress:
     secretName: ""
 
 existingSecret: dtmo-runtime
-
 externalSecret:
   enabled: false
   refreshInterval: 1h
@@ -41,7 +40,6 @@ podSecurityContext:
   runAsUser: 10001
   runAsGroup: 10001
   fsGroup: 10001
-
 securityContext:
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
@@ -56,6 +54,19 @@ resources:
     cpu: 1000m
     memory: 1Gi
 
+capacity:
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 75
+    scaleDownStabilizationSeconds: 300
+  saturation:
+    cpuWarningPercentage: 80
+    memoryWarningPercentage: 85
+    rejectProductionSizingWithoutEvidence: true
+
 availability:
   topologySpread:
     enabled: true
@@ -64,7 +75,6 @@ availability:
   podAntiAffinity:
     enabled: true
   terminationGracePeriodSeconds: 30
-
 observability:
   metrics:
     enabled: false
@@ -78,18 +88,15 @@ observability:
     otlpEndpoint: ""
   logging:
     format: json
-
 networkPolicy:
   enabled: true
   ingressController:
     namespaceSelector: {}
     podSelector: {}
   egressCIDRs: []
-
 podDisruptionBudget:
   enabled: true
   minAvailable: 2
-
 probes:
   path: /health
   initialDelaySeconds: 10
