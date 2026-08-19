@@ -15,9 +15,8 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Phase 11.6 TheHive:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.7 Cortex decision:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`  
 > **Phase 11.7b Cortex analyzer connector:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.8a runtime foundation:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.8b workload identity and external secret delivery:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded priority:** Phase 11.8c ingress/TLS and network segmentation `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
+> **Phase 11.8a–11.8f runtime hardening:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded priority:** Phase 11.8g software supply-chain hardening `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
 > **Next production authorization:** Phase 12 `NOT STARTED`  
 > **Production status:** **not production authorized**
 
@@ -56,24 +55,24 @@ PostgreSQL remains canonical DTMO application truth. Taranis AI, IntelOwl, Corte
 
 ## Phase 11.8 Kubernetes runtime industrialisation
 
-Phase 11.8a is accepted repository engineering evidence for the governed Helm/GitOps runtime foundation: immutable image digest, existing-secret consumption, non-root/read-only workload hardening, disabled service-account token automounting, probes/resources, PodDisruptionBudget and fail-closed NetworkPolicy.
+Phase 11.8a–11.8f are accepted repository engineering evidence for the governed Helm/GitOps runtime foundation, workload identity/external secret delivery, **ingress/TLS** and network segmentation, HA/disruption controls, observability boundaries and recovery requirements. Those accepted controls remain repository evidence and do not themselves establish production authorization.
 
-Phase 11.8b is accepted repository engineering evidence for provider-neutral workload identity and opt-in external secret delivery while keeping credentials and secret values out of Git and preserving explicit SecretStore/ClusterSecretStore and remote-key mappings.
-
-The active **Phase 11.8c** slice establishes an optional TLS-only Kubernetes Ingress and narrows application ingress to an explicitly selected ingress-controller namespace and pod set. Enabling ingress requires an explicit ingress class, hostname, TLS Secret reference and enabled NetworkPolicy. The DTMO Service remains `ClusterIP`; broad same-namespace ingress is not the accepted north-south path.
+The active **Phase 11.8g** slice establishes software supply-chain controls around the build subject: CycloneDX SBOM generation for Python dependencies and the candidate container, known-vulnerability auditing/scanning, SHA-256 artifact identities, and a release path for cryptographically signed provenance and SBOM attestations using short-lived OIDC-backed signing rather than repository-stored long-lived signing keys.
 
 ```mermaid
 flowchart LR
-    C[External client] -->|TLS| IC[Approved ingress controller]
-    IC -->|namespace + pod selectors| NP[DTMO NetworkPolicy]
-    NP --> S[DTMO ClusterIP Service]
-    S --> D[DTMO pod]
-    T[Kubernetes TLS Secret] --> IC
+    S[Accepted source revision] --> B[CI build]
+    B --> A[Wheel + container]
+    A --> SB[SBOM]
+    A --> V[Vulnerability scan]
+    A --> H[SHA-256 subject identity]
+    H --> P[Signed release provenance/SBOM attestation]
+    P --> X[Consumer verification]
 ```
 
-This repository work is not evidence of DNS ownership, certificate validity, live ingress-controller admission, CNI enforcement, external routing, cloud load-balancer/WAF policy, stateful/multi-zone HA, centralized observability, backup/recovery objectives, SBOM/scanning/signing/attestation, capacity or exercised upgrade/rollback. Those remain later bounded Phase 11.8 slices or later validation phases.
+PR CI validates the supply-chain mechanism and exact-head scan evidence only. It does not claim that a future release artifact has already been signed or verified by a deployment environment. Signed provenance is not proof that an artifact is vulnerability-free, production-equivalent or production-authorized. Capacity and exercised upgrade/rollback remain later bounded Phase 11.8 work.
 
-See [Phase 11.8c Ingress/TLS and Network Segmentation](docs/architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md), [Ingress/TLS and Network Segmentation Administration](docs/administration/INGRESS_TLS_NETWORK_SEGMENTATION.md), [Phase 11.8c Runbook](docs/operations/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md) and [Phase 11.8c Gate](docs/qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md).
+See [Phase 11.8g Supply-chain Hardening](docs/security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md), [Phase 11.8g Supply-chain Runbook](docs/operations/PHASE11_8G_SUPPLY_CHAIN_RUNBOOK.md), [Phase 11.8g Gate](docs/qa/PHASE11_8G_SUPPLY_CHAIN_GATE.md) and the [Evidence Index](docs/evidence/EVIDENCE_INDEX.md).
 
 ## Architecture
 
@@ -96,9 +95,11 @@ The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, S
 | Phase 11.6 | TheHive incident/case handoff | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.7 | Cortex conditional decision | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
 | Phase 11.7b | Owner-required Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8a | Kubernetes/Helm/GitOps runtime foundation | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8b | Workload identity and external secret delivery | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8c | Ingress/TLS and network segmentation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.8a–11.8f | Runtime foundation through recovery hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8g | Software supply-chain hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.9 | Migration and compatibility | `NOT STARTED` |
+| Phase 11.10 | New production-equivalent validation | `NOT STARTED` |
+| Phase 11.11 | New independent external assurance | `NOT STARTED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
 
 Historical Phase 8/9 evidence remains bound to the earlier candidate. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.

@@ -5,52 +5,45 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 ## Management summary
 
-DTMO has an accepted repository-controlled engineering baseline, RC13 `PASS / OWNER_ACCEPTED` functional acceptance and E8.1–E8.10 `PASS / REPOSITORY_COMPLETE` product evolution. Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate they actually covered. Those historical evidence classes are not transferred to the materially changed Phase 11 platform.
+DTMO retains Phases 1–7 `PASS`, RC13 `PASS / OWNER_ACCEPTED`, E8.1–E8.10 `PASS / REPOSITORY_COMPLETE`, and historical Phase 8 `PASS / OWNER_ACCEPTED` plus Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED` evidence for the earlier candidate only. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`** and DTMO is **not production authorized**.
 
-Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
+Phase 11 Platform Industrialisation is `IN PROGRESS / ACTIVE`. Phase 11.1–11.8f are `PASS / REPOSITORY_COMPLETE`. The sole active bounded objective is **Phase 11.8g software supply-chain hardening**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 12 is `NOT STARTED` and still requires fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance against the same immutable integrated candidate.
 
-The highest-priority programme is **Phase 11 Platform Industrialisation**, `IN PROGRESS / ACTIVE`. Phase 11.1–11.8b are `PASS / REPOSITORY_COMPLETE`; the original Phase 11.7 Cortex no-adoption decision remains preserved as a historical decision baseline, while the later owner-required 11.7b analyzer connector is accepted separately. The sole active bounded objective is **Phase 11.8c ingress/TLS and network segmentation**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
-
-Phase 12 remains `NOT STARTED` and can only begin after fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance against the same immutable integrated candidate.
-
-## Current decision position
+## Decision position
 
 | Decision area | Status | Consequence |
 |---|---|---|
 | Engineering baseline | `PASS` | Repository foundation accepted |
-| Functional product | `PASS / OWNER_ACCEPTED` | Canonical console journey accepted |
-| E8 product evolution | `PASS / REPOSITORY_COMPLETE` | Repository product baseline accepted |
-| Phase 8 | `PASS / OWNER_ACCEPTED` | Historical candidate-bound staging evidence |
-| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Historical candidate-bound assurance evidence |
+| Functional product | `PASS / OWNER_ACCEPTED` | Canonical product journey accepted |
+| E8 product evolution | `PASS / REPOSITORY_COMPLETE` | Repository baseline accepted |
+| Phase 8 | `PASS / OWNER_ACCEPTED` | Historical candidate-bound evidence |
+| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED` | Historical candidate-bound assurance |
 | Phase 10 | `NO-GO / BLOCKED` | Production authorization not granted |
-| Phase 11.1–11.8b | `PASS / REPOSITORY_COMPLETE` | Accepted integration/runtime boundaries |
-| Phase 11.8c ingress/TLS + network segmentation | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Active north-south network-boundary gate |
-| Phase 11.9–11.11 | `NOT STARTED` | Follow only after bounded 11.8 completion |
-| Phase 12 | `NOT STARTED` | New formal production decision |
+| Phase 11.1–11.8f | `PASS / REPOSITORY_COMPLETE` | Accepted integration/runtime boundaries |
+| Phase 11.8g | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Active supply-chain gate |
+| Phase 11.9–11.11 | `NOT STARTED` | Follow after required 11.8 completion |
+| Phase 12 | `NOT STARTED` | Formal production decision not started |
 
-## Active Phase 11.8c control objective
+## Active supply-chain control objective
 
-Phase 11.8c establishes a governed north-south DTMO application boundary only: ingress disabled by default, mandatory TLS when enabled, explicit ingress class/hostname/TLS Secret reference, `ClusterIP` application Service, mandatory NetworkPolicy and ingress-controller reachability constrained by both namespace and pod selectors.
+The active slice requires exact-head build identity, Python and container CycloneDX SBOMs, governed vulnerability evidence, SHA-256 artifact identity, and a release path for cryptographically signed provenance and SBOM attestations using short-lived OIDC-backed signing. PR CI validates the mechanism and candidate scan evidence only; it does not manufacture release-signing evidence.
 
 ```mermaid
 flowchart LR
-    C[External client] -->|TLS| I[Approved ingress controller]
-    T[Kubernetes TLS Secret] --> I
-    I -->|namespace + pod selectors| N[DTMO NetworkPolicy]
-    N --> S[ClusterIP Service]
-    S --> P[DTMO pods]
+    S[Accepted source] --> B[Exact-head build]
+    B --> A[Wheel + container]
+    A --> SB[SBOM + vulnerability evidence]
+    A --> H[SHA-256 identity]
+    H --> P[Signed release provenance/SBOM]
+    P --> V[Consumer verification]
 ```
 
-This slice does not establish DNS ownership, certificate validity, live ingress-controller admission, cloud load-balancer/WAF policy, CNI enforcement, multi-zone/stateful HA, centralized observability, recovery objectives, SBOM/scanning/signing/attestation, capacity or exercised upgrade/rollback. Those remain later bounded Phase 11.8 objectives.
+Supply-chain evidence does not grant publication/share authority, case-handoff authority, responder authority or proof of local compromise. Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing boundaries.
 
-## Security, authority and licensing boundaries
+## Evidence boundary
 
-Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate services under their applicable licensing/provider boundaries. Kubernetes placement and network reachability do not transfer service ownership, grant DTMO publication/share authority, grant case-handoff authority, or prove local compromise. Provenance, RBAC, human/service identity separation and fail-closed handling remain mandatory.
-
-## Evidence boundaries
-
-Repository CI for Phase 11.8c is repository engineering evidence only. It cannot prove live DNS, certificate, ingress-controller, load-balancer/WAF or CNI behavior, availability, recovery, production-equivalent characteristics, independent assurance or production authorization. Historical Phase 8/9 evidence remains candidate-bound.
+Repository CI does not prove future release signing, registry integrity, deployment verification, absence of all vulnerabilities, production-equivalent behavior, independent assurance or production authorization. Missing mandatory evidence fails closed. Historical Phase 8/9 evidence is not transferred to this materially changed candidate.
 
 ## Executive recommendation
 
-Continue only the active Phase 11.8c bounded slice. Merge only after the dedicated ingress/TLS/network gate, RC4, Professional Documentation and all required exact-head checks are green on the same final head with expected-head protection. Do not start the next 11.8 slice before protected acceptance.
+Continue only Phase 11.8g. Merge only after the dedicated supply-chain gate, RC4, Professional Documentation and all required exact-head checks are green on the same final head with expected-head protection. Capacity and upgrade/rollback remain later bounded Phase 11.8 work.

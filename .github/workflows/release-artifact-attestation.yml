@@ -1,0 +1,79 @@
+name: Release Artifact Supply Chain Attestation
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  build-scan-attest:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install project and audit tooling
+        run: python -m pip install -e '.[test]'
+      - name: Build release wheel and dependency SBOM
+        run: |
+          mkdir -p artifacts/dist
+          python -m pip wheel . --no-deps --wheel-dir artifacts/dist
+          sha256sum artifacts/dist/*.whl > artifacts/dist/SHA256SUMS
+          python -m pip_audit --format cyclonedx-json --output artifacts/python-sbom.cdx.json
+          python -m pip_audit --format json --output artifacts/python-vulnerabilities.json
+      - name: Build release container
+        run: |
+          docker build --pull -t dtmo:release-${{ github.sha }} .
+          docker save dtmo:release-${{ github.sha }} -o artifacts/dtmo-image.tar
+          sha256sum artifacts/dtmo-image.tar > artifacts/dtmo-image.tar.sha256
+      - name: Scan release container for HIGH/CRITICAL vulnerabilities
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: dtmo:release-${{ github.sha }}
+          format: json
+          output: artifacts/container-vulnerabilities.json
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+      - name: Generate release container CycloneDX SBOM
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: dtmo:release-${{ github.sha }}
+          format: cyclonedx
+          output: artifacts/container-sbom.cdx.json
+          exit-code: '0'
+      - name: Sign wheel provenance attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: artifacts/dist/*.whl
+      - name: Sign wheel SBOM attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: artifacts/dist/*.whl
+          sbom-path: artifacts/python-sbom.cdx.json
+      - name: Sign container archive provenance attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: artifacts/dtmo-image.tar
+      - name: Sign container archive SBOM attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: artifacts/dtmo-image.tar
+          sbom-path: artifacts/container-sbom.cdx.json
+      - name: Upload release supply-chain evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-supply-chain-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: error

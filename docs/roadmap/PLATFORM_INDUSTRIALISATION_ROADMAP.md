@@ -30,6 +30,7 @@ flowchart LR
     HA[Zone + host spread] --> K8S
     OBS[Metrics + logs + traces] --> K8S
     REC[Backup + restore + recovery] --> K8S
+    SC[SBOM + vulnerability scan + signed provenance] --> K8S
 ```
 
 The original 11.7 Cortex no-adoption decision remains preserved as historical evidence. The later owner-required 11.7b analyzer connector is separately accepted. Phase 11.8 is active. Provenance, RBAC, human publication/share authority, service licensing boundaries and fail-closed evidence rules remain explicit across every runtime boundary.
@@ -118,26 +119,32 @@ Accepted repository evidence establishes opt-in metrics discovery, structured JS
 
 #### 11.8f Backup, restore and recovery hardening
 
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+Accepted repository evidence defines PostgreSQL, Redis, OpenSearch and object storage as explicit recovery domains with accountable ownership, retention, restore-verification, recovery-exercise and measurable RPO/RTO evidence boundaries. Repository acceptance does not prove successful live backups, PITR, achieved recovery objectives, provider durability or disaster failover.
+
+#### 11.8g Software supply-chain hardening
+
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
 
-This bounded slice defines PostgreSQL, Redis, OpenSearch and object storage as explicit recovery domains. Deployment owners must establish backup method, retention, restore verification, recovery-exercise cadence and measurable RPO/RTO evidence. Backup success is never inferred from CI or configuration alone; missing recovery evidence fails closed.
+This bounded slice establishes exact-head SBOM generation, Python and container vulnerability scanning, SHA-256 artifact identities, and a governed release path for cryptographically signed provenance and SBOM attestations. PR CI validates the mechanism and candidate scan evidence; it does not claim that a future release artifact has already been signed, admitted or deployed.
 
 ```mermaid
 flowchart LR
-    PG[(PostgreSQL)] --> B[Deployment-owned backups]
-    REDIS[(Redis)] --> B
-    OS[(OpenSearch)] --> B
-    OBJ[(Object storage)] --> B
-    B --> R[Restore verification]
-    R --> X[Recovery exercise]
-    X --> E[Governed evidence]
+    S[Accepted source revision] --> B[CI build]
+    B --> A[Wheel + container]
+    A --> SB[Python + container SBOM]
+    A --> V[Vulnerability scanning]
+    A --> H[SHA-256 subject identity]
+    H --> P[Signed release provenance/SBOM attestation]
+    P --> X[Consumer verification]
 ```
 
-Repository acceptance does not prove successful live backups, point-in-time recovery, achieved RPO/RTO, provider durability, disaster failover, production-equivalent behavior, independent assurance or production authorization.
+Missing required SBOM, vulnerability, subject-identity or attestation evidence fails closed for a release candidate that claims Phase 11.8g compliance. An attestation is provenance evidence and does not prove vulnerability absence, production-equivalent behavior, independent assurance or production authorization.
 
 #### Remaining Phase 11.8 bounded slices
 
-Subsequent PRs must independently cover SBOM/vulnerability scanning/signing/provenance attestations; capacity; and upgrade/rollback exercises. None is accepted by 11.8f.
+Subsequent PRs must independently cover capacity and upgrade/rollback exercises. Neither is accepted by 11.8g.
 
 ### 11.9 Migration and compatibility
 
@@ -167,7 +174,7 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept **Phase 11.8f backup, restore and recovery hardening** only on fully green exact-head CI.
+1. Accept **Phase 11.8g software supply-chain hardening** only on fully green exact-head CI.
 2. Continue remaining Phase 11.8 hardening one bounded PR at a time.
 3. Start 11.9 only after all required 11.8 controls have been accepted.
 4. Continue 11.10–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.

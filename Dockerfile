@@ -4,14 +4,39 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
 
-RUN useradd --create-home --uid 10001 dtmo
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --uid 10001 dtmo
 WORKDIR /app
 
 COPY pyproject.toml README.md alembic.ini ./
 COPY backend ./backend
 COPY database ./database
 COPY tools/provision_grafana_reader.py ./tools/provision_grafana_reader.py
-RUN pip install --upgrade pip && pip install .
+RUN python -m pip install --upgrade pip 'setuptools>=78.1.1' \
+    && python -m pip install . \
+    && rm -rf \
+        /usr/local/lib/python3.12/site-packages/pip \
+        /usr/local/lib/python3.12/site-packages/pip-*.dist-info \
+        /usr/local/lib/python3.12/site-packages/setuptools \
+        /usr/local/lib/python3.12/site-packages/setuptools-*.dist-info \
+        /usr/local/lib/python3.12/site-packages/msgpack \
+        /usr/local/lib/python3.12/site-packages/msgpack-*.dist-info \
+        /usr/local/bin/pip \
+        /usr/local/bin/pip3 \
+        /usr/local/bin/pip3.12 \
+    && python - <<'PY'
+from importlib.metadata import PackageNotFoundError, version
+
+for name in ("pip", "setuptools", "msgpack"):
+    try:
+        detected = version(name)
+    except PackageNotFoundError:
+        print(f"{name}=absent-from-runtime")
+    else:
+        raise AssertionError(f"build-only package remains in runtime: {name}={detected}")
+PY
 
 USER dtmo
 EXPOSE 8000
