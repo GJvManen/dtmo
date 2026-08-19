@@ -1,0 +1,28 @@
+name: Phase 11 Capacity Resource Planning Gate
+on:
+  pull_request:
+    paths:
+      - 'deploy/helm/dtmo/**'
+      - 'docs/architecture/PHASE11_8H_CAPACITY_RESOURCE_PLANNING.md'
+      - 'backend/tests/test_phase11_8h_capacity_contract.py'
+      - '.github/workflows/phase11-capacity-resource-planning.yml'
+permissions:
+  contents: read
+jobs:
+  capacity-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact PR head
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Run Phase 11.8h contract
+        run: python -m pytest -q backend/tests/test_phase11_8h_capacity_contract.py
+      - name: Render Helm capacity policy
+        uses: azure/setup-helm@v4
+      - run: helm template dtmo deploy/helm/dtmo --set image.digest=sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa > /tmp/rendered.yaml
+      - run: grep -q 'kind: HorizontalPodAutoscaler' /tmp/rendered.yaml
