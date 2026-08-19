@@ -67,6 +67,18 @@ capacity:
     memoryWarningPercentage: 85
     rejectProductionSizingWithoutEvidence: true
 
+upgrade:
+  strategy:
+    maxUnavailable: 0
+    maxSurge: 1
+  revisionHistoryLimit: 5
+  progressDeadlineSeconds: 600
+  minReadySeconds: 10
+  rollback:
+    requirePriorImmutableDigest: true
+    requirePostRollbackHealthEvidence: true
+    forbidAutomaticDatabaseDownMigration: true
+
 availability:
   topologySpread:
     enabled: true
