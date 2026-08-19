@@ -40,7 +40,7 @@ jobs:
       - name: Compile
         run: python -m compileall -q backend/dtmo
       - name: Install Chromium
-        run: python -m playwright install --with-deps chromium
+        run: python -m playwright install chromium
       - name: Start bounded DTMO workspace target
         run: |
           mkdir -p artifacts
