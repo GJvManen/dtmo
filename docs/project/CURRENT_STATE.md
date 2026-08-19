@@ -1,13 +1,13 @@
 # DTMO Current Project State
 
-Last reconciled: **2026-08-18**  
+Last reconciled: **2026-08-19**  
 Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 repository enhancements**
 
 ## Executive summary
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.8f are `PASS / REPOSITORY_COMPLETE`. The sole active bounded objective is **Phase 11.8g software supply-chain hardening**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.8h are `PASS / REPOSITORY_COMPLETE`. The sole active bounded objective is **Phase 11.8i exercised upgrade/rollback**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
 ## Lifecycle position
 
@@ -33,44 +33,41 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1�
 | Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8f backup / restore / recovery hardening | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8g software supply-chain hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.8g software supply-chain hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8h capacity / resource planning | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8i exercised upgrade / rollback | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.9 migration/compatibility | `NOT STARTED` |
 | Phase 11.10 production-equivalent validation | `NOT STARTED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 | `NOT STARTED` |
 
-## Accepted Phase 11 service boundaries
+## Accepted service and runtime boundaries
 
-Taranis provides governed collection/canonicalization; IntelOwl provides bounded human-authorized enrichment with immutable history; Cortex provides bounded analyzer-only enrichment; OpenCTI provides bounded graph integration and durable identity reconciliation; MISP provides governed inbound/outbound exchange with authoritative restriction state; TheHive provides minimal explicit human-authorized case handoff with durable mutation reservation/reconciliation and no blind replay after ambiguity.
+Taranis, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed service/licensing boundaries. None gains DTMO human publication/share authority or establishes local compromise by itself. TheHive case-handoff authority remains distinct from publication/share authority.
 
-All remain separate service and licensing boundaries. None gains DTMO human publication/share authority or establishes local compromise by itself. TheHive case-handoff authority remains distinct from publication/share authority.
+Accepted Phase 11.8 controls now cover the Helm/GitOps Kubernetes runtime foundation, workload identity/external-secret delivery, TLS ingress/network segmentation, application HA/disruption controls, observability boundaries, backup/restore/recovery controls, software supply-chain hardening and capacity/resource planning. These are repository engineering controls only and do not establish live provider enforcement, production-equivalent behavior or production authorization.
 
-## Accepted Phase 11.8 runtime boundaries
+## Active Phase 11.8i upgrade/rollback boundary
 
-The accepted 11.8a slice establishes the governed Helm/GitOps Kubernetes foundation. The accepted 11.8b slice adds provider-neutral workload identity and opt-in external secret delivery. The accepted 11.8c slice adds TLS-only ingress and explicit ingress-controller namespace/pod network segmentation. The accepted 11.8d slice adds application-level zone/host spreading, anti-affinity, PodDisruptionBudget and graceful termination. The accepted 11.8e slice establishes opt-in metrics discovery, structured JSON logging and opt-in tracing boundaries. The accepted 11.8f slice defines explicit recovery domains and governed backup/restore/recovery evidence boundaries. These remain repository engineering evidence and do not establish production authorization.
-
-## Active Phase 11.8g software supply-chain boundary
-
-The active slice establishes exact-head build evidence for Python and container SBOMs, known-vulnerability scanning, SHA-256 artifact identity and a governed release path for cryptographically signed provenance and SBOM attestations. PR CI validates the mechanism and scan results; it does not claim that a future release artifact has already been signed or deployed.
+The active slice makes application rollout safety explicit: immutable baseline/candidate/rollback digests, bounded RollingUpdate settings, revision history, rollout progress deadline, minimum-ready time, post-upgrade and post-rollback health evidence, and deterministic restoration of the exact prior digest.
 
 ```mermaid
 flowchart LR
-    S[Accepted source revision] --> B[CI build]
-    B --> A[Wheel + container artifact]
-    A --> SB[SBOM]
-    A --> V[Vulnerability scan]
-    A --> H[SHA-256 subject identity]
-    H --> P[Signed provenance/SBOM attestation on release path]
-    P --> C[Consumer verification]
+    B[Prior immutable digest] --> U[Upgrade]
+    U --> C[Candidate immutable digest]
+    C --> H[Health evidence]
+    H -->|reject| R[Rollback]
+    R --> B2[Exact prior immutable digest]
+    B2 --> V[Post-rollback health evidence]
 ```
 
-Supply-chain controls do not grant publication/share authority, case-handoff authority, responder authority or proof of local compromise. Missing required SBOM, vulnerability, subject-identity or attestation evidence fails closed for a candidate that claims this control.
+Application rollback does not authorize automatic database down migration. Missing immutable identity, rollback compatibility, health evidence or accountable change authority must **fail closed**. Stateful recovery remains governed separately by Phase 11.8f.
 
 ## Governance and evidence boundary
 
-Repository CI can prove supply-chain contract, SBOM-generation, vulnerability-scan and documentation requirements only. It cannot prove that a future release attestation exists, that a registry or deployment environment verified it, that all vulnerabilities are absent, or that the candidate has production-equivalent behavior, independent assurance or production authorization.
+Repository CI may prove the upgrade/rollback contract and a deterministic synthetic digest transition only. It cannot prove a live Kubernetes rollback, data recovery, production-equivalent continuity, independent assurance or production authorization.
 
-Historical Phase 8/9 evidence remains valid only for the earlier candidate and is not reused for the materially changed Phase 11 platform. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent assurance remain required before Phase 12.
+Historical Phase 8/9 evidence remains valid only for the earlier candidate and is not reused for the materially changed Phase 11 platform. Phase 11.10 must collect fresh production-equivalent upgrade, rollback, health, saturation and recovery evidence for one immutable integrated deployment identity. Phase 11.11 then provides new independent assurance before Phase 12.
 
 ## Phase 11 fixed order
 
@@ -81,7 +78,7 @@ Historical Phase 8/9 evidence remains valid only for the earlier candidate and i
 5. TheHive — `PASS / REPOSITORY_COMPLETE`;
 6. original Cortex conditional decision — historical `PASS / REPOSITORY_COMPLETE`;
 7. owner-required Cortex analyzer connector — `PASS / REPOSITORY_COMPLETE`;
-8. Kubernetes/Helm/GitOps and integrated runtime hardening — active Phase 11.8, with 11.8a–11.8f accepted and 11.8g active;
+8. Kubernetes/Helm/GitOps and integrated runtime hardening — active Phase 11.8, with 11.8a–11.8h accepted and 11.8i active;
 9. migration/compatibility;
 10. new production-equivalent validation;
 11. new independent external assurance;

@@ -51,10 +51,12 @@ def test_phase11_status_preserves_accepted_thehive_and_cortex_history() -> None:
         "Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.8f backup / restore / recovery hardening | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8g software supply-chain hardening | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.8h capacity / resource planning | `PASS / REPOSITORY_COMPLETE`",
     ):
         assert marker in state
     assert (
-        "Phase 11.8g software supply-chain hardening | "
+        "Phase 11.8i exercised upgrade / rollback | "
         "`IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`"
     ) in state
     assert CONTRACT_GATE.exists()
