@@ -1,0 +1,62 @@
+name: Phase 11 Upgrade and Rollback Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upgrade-rollback-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Run Phase 11.8i contract tests
+        run: python -m pytest -q backend/tests/test_phase11_8i_upgrade_rollback.py
+      - name: Exercise immutable upgrade and rollback transition
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASELINE_DIGEST: sha256:1111111111111111111111111111111111111111111111111111111111111111
+          CANDIDATE_DIGEST: sha256:2222222222222222222222222222222222222222222222222222222222222222
+        run: |
+          python tools/phase11_upgrade_rollback_exercise.py \
+            --baseline "$BASELINE_DIGEST" \
+            --candidate "$CANDIDATE_DIGEST" \
+            --exact-head "$EXACT_HEAD" \
+            --output artifacts/phase11-8i-upgrade-rollback-evidence.json
+      - name: Validate exact-head rollback evidence
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path('artifacts/phase11-8i-upgrade-rollback-evidence.json')
+          e = json.loads(p.read_text(encoding='utf-8'))
+          assert e['decision'] == 'pass'
+          assert e['exact_head'] == os.environ['EXPECTED_HEAD']
+          assert e['rollback_digest'] == e['baseline_digest']
+          assert e['candidate_digest'] != e['baseline_digest']
+          assert e['immutable_digests_only'] is True
+          assert e['rollback_restores_exact_prior_digest'] is True
+          assert e['post_upgrade_health_evidence_required'] is True
+          assert e['post_rollback_health_evidence_required'] is True
+          assert e['automatic_database_down_migration_allowed'] is False
+          assert e['human_change_authority_required'] is True
+          assert e['production_equivalent_exercise_claimed'] is False
+          assert e['live_cluster_rollback_claimed'] is False
+          assert e['production_authorization_claimed'] is False
+          PY
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: phase11-8i-upgrade-rollback-evidence
+          path: artifacts/phase11-8i-upgrade-rollback-evidence.json
+          retention-days: 30
+          if-no-files-found: error
