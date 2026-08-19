@@ -10,6 +10,21 @@
 {{- if and .Values.podDisruptionBudget.enabled (lt (int .Values.podDisruptionBudget.minAvailable) 1) }}
 {{- fail "podDisruptionBudget.minAvailable must be at least 1" }}
 {{- end }}
+{{- if ne (int .Values.upgrade.strategy.maxUnavailable) 0 }}
+{{- fail "upgrade.strategy.maxUnavailable must remain 0 for Phase 11.8i" }}
+{{- end }}
+{{- if lt (int .Values.upgrade.strategy.maxSurge) 1 }}
+{{- fail "upgrade.strategy.maxSurge must be at least 1 for Phase 11.8i" }}
+{{- end }}
+{{- if lt (int .Values.upgrade.revisionHistoryLimit) 2 }}
+{{- fail "upgrade.revisionHistoryLimit must preserve at least two revisions" }}
+{{- end }}
+{{- if lt (int .Values.upgrade.progressDeadlineSeconds) 60 }}
+{{- fail "upgrade.progressDeadlineSeconds must be at least 60 seconds" }}
+{{- end }}
+{{- if lt (int .Values.upgrade.minReadySeconds) 1 }}
+{{- fail "upgrade.minReadySeconds must be at least 1 second" }}
+{{- end }}
 {{- if .Values.ingress.enabled }}
 {{- if not .Values.networkPolicy.enabled }}
 {{- fail "networkPolicy.enabled must remain true when ingress.enabled=true" }}
@@ -43,11 +58,14 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: {{ .Values.upgrade.revisionHistoryLimit }}
+  progressDeadlineSeconds: {{ .Values.upgrade.progressDeadlineSeconds }}
+  minReadySeconds: {{ .Values.upgrade.minReadySeconds }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+      maxUnavailable: {{ .Values.upgrade.strategy.maxUnavailable }}
+      maxSurge: {{ .Values.upgrade.strategy.maxSurge }}
   selector:
     matchLabels:
       app.kubernetes.io/name: dtmo
