@@ -23,7 +23,7 @@ jobs:
           cache: pip
       - run: python -m pip install -e '.[test]'
       - name: Install Chromium for Playwright
-        run: python -m playwright install --with-deps chromium
+        run: python -m playwright install chromium
       - name: Start bounded DTMO text-spacing target
         run: |
           mkdir -p artifacts
