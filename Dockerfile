@@ -1,8 +1,19 @@
+FROM node:22.22.3-bookworm-slim@sha256:e21fc383b50d5347dc7a9f1cae45b8f4e2f0d39f7ade28e4eef7d2934522b752 AS frontend-build
+
+WORKDIR /frontend
+COPY frontend/package.json ./
+RUN npm install --package-lock-only --ignore-scripts \
+    && npm ci
+COPY frontend/index.html frontend/tsconfig.json frontend/vite.config.ts ./
+COPY frontend/src ./src
+RUN npm run build
+
 FROM python:3.12-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    DTMO_FRONTEND_DIST=/app/frontend/dist
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -14,6 +25,7 @@ COPY pyproject.toml README.md alembic.ini ./
 COPY backend ./backend
 COPY database ./database
 COPY tools/provision_grafana_reader.py ./tools/provision_grafana_reader.py
+COPY --from=frontend-build /frontend/dist ./frontend/dist
 RUN python -m pip install --upgrade pip 'setuptools>=78.1.1' \
     && python -m pip install . \
     && rm -rf \
