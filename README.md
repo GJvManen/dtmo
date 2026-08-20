@@ -11,6 +11,7 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Phase 10 production decision:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`  
 > **Phase 11.1–11.9:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.10 production-equivalent validation:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`  
+> **Active bounded slice:** Phase 11.10a frontend architecture/design contract — `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT`  
 > **Phase 11.11 independent external assurance:** `NOT STARTED`  
 > **Phase 12 production decision:** `NOT STARTED`  
 > **Production status:** **not production authorized**
@@ -23,7 +24,9 @@ DTMO is built around five principles: provenance first; fail closed; human autho
 
 ## Product capabilities
 
-The canonical web application provides one operator experience for **Overview**, **Intelligence**, **Sources & Catalog**, **Visual Analytics**, **Administration** and **Governance**. The accepted repository baseline integrates governed OpenCVE and CIRCL Vulnerability-Lookup semantics with Taranis AI collection/canonicalization, IntelOwl enrichment, OpenCTI STIX knowledge-graph integration, governed MISP exchange, human-authorized TheHive case handoff and the bounded Cortex analyzer connector.
+The currently accepted canonical web application provides one operator experience for **Overview**, **Intelligence**, **Sources & Catalog**, **Visual Analytics**, **Administration** and **Governance**. The accepted repository baseline integrates governed OpenCVE and CIRCL Vulnerability-Lookup semantics with Taranis AI collection/canonicalization, IntelOwl enrichment, OpenCTI STIX knowledge-graph integration, governed MISP exchange, human-authorized TheHive case handoff and the bounded Cortex analyzer connector.
+
+The active Phase 11.10 candidate-completion programme is evolving that interface into the **DTMO Unified Operations Workbench** so normal CTI/SOC workflows can use more of the integrated framework from one canonical product. Phase 11.10a defines architecture and design contracts only; implementation begins with 11.10b after exact-head acceptance.
 
 PostgreSQL remains canonical DTMO application truth. Redis, OpenSearch and S3-compatible object storage support coordination, search and object persistence. Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service and licensing boundaries; none independently establishes local compromise or grants DTMO publication/share authority.
 
@@ -60,37 +63,41 @@ The original Phase 11.7 decision did not adopt Cortex because no validated Intel
 
 ## Phase 11 platform industrialisation baseline
 
-Phase 11.8 is `PASS / REPOSITORY_COMPLETE`. Its bounded controls cover:
-
-- Kubernetes/Helm/GitOps runtime foundations;
-- workload identity and external secret delivery;
-- ingress/TLS and network segmentation;
-- HA and disruption controls;
-- observability boundaries;
-- backup, restore and recovery controls;
-- software supply-chain hardening with SBOM, vulnerability and signed-provenance mechanisms;
-- capacity and resource planning;
-- exercised upgrade and exact prior-digest rollback contracts.
+Phase 11.8 is `PASS / REPOSITORY_COMPLETE`. Its bounded controls cover Kubernetes/Helm/GitOps runtime foundations, workload identity/external secret delivery, ingress/TLS/network segmentation, HA/disruption controls, observability, backup/restore/recovery, supply-chain hardening, capacity/resource planning and exercised exact prior-digest rollback.
 
 Phase 11.9 migration/compatibility is also `PASS / REPOSITORY_COMPLETE`. The accepted contract requires one connected Alembic migration chain, forward-first migration, backward-compatible rolling overlap, expand/migrate/contract for destructive schema evolution, and no automatic database down migration during application rollback.
 
 These are repository engineering controls. They do not by themselves establish production-equivalent behavior, independent assurance or production authorization.
 
-## Active Phase 11.10 production-equivalent validation
+## Active Phase 11.10 candidate completion and validation
 
-Phase 11.10 is the sole active production-readiness objective. It requires **fresh external evidence against one immutable integrated deployment identity** for:
+Phase 11.10 remains the sole active production-readiness stage. The owner-required next-generation interface materially changes the integrated candidate, so DTMO first completes the workbench in bounded slices before performing fresh external validation.
 
-1. immutable candidate identity;
-2. migration/compatibility;
-3. upgrade;
-4. rollback to the exact prior immutable digest plus post-rollback health;
-5. health/readiness;
-6. representative saturation/capacity behavior;
-7. recovery/continuity.
+The controlled sequence is:
+
+**11.10a architecture/design → 11.10b shell → 11.10c Command Center → 11.10d Intelligence → 11.10e IntelOwl/Cortex → 11.10f OpenCTI → 11.10g MISP → 11.10h TheHive → 11.10i Vulnerability/Exposure → 11.10j Sources/Collection → 11.10k Automation → 11.10l Governance/Evidence → 11.10m Operations/Admin → 11.10n role-aware UX/accessibility → 11.10o consolidation/full functional acceptance → candidate freeze → 11.10p fresh production-equivalent validation**.
+
+Phase 11.10a establishes the architectural invariant:
+
+**browser → DTMO API → governed integration adapter → upstream service**.
+
+The browser does not become a privileged direct client for Taranis AI, IntelOwl, OpenCTI, MISP, TheHive or Cortex. Server-side RBAC, least privilege, provenance, human publication/share authority and separate TheHive case authority remain authoritative.
+
+Architecture material:
+
+- [Frontend Architecture](docs/architecture/FRONTEND_ARCHITECTURE.md)
+- [UI/API Contract](docs/architecture/UI_API_CONTRACT.md)
+- [Unified Operations Workbench](docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md)
+- [Information Architecture](docs/ux/INFORMATION_ARCHITECTURE.md)
+- [Design System](docs/ux/DESIGN_SYSTEM.md)
+- [Phase 11.10a Frontend Architecture Gate](docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md)
+
+After 11.10o, one immutable integrated candidate is frozen. 11.10p then requires **fresh external evidence against that same deployment identity** for candidate identity, migration/compatibility, upgrade, exact prior-digest rollback plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity.
 
 ```mermaid
 flowchart LR
-    I[Immutable integrated candidate] --> M[Migration + compatibility]
+    C[11.10a-o candidate completion] --> F[Immutable integrated candidate]
+    F --> M[Migration + compatibility]
     M --> U[Upgrade]
     U --> H[Health]
     H --> S[Saturation]
@@ -100,11 +107,11 @@ flowchart LR
     V --> A[Accountable 11.10 review]
 ```
 
-Every accepted evidence item must bind to the same production-equivalent environment and candidate fingerprint. Missing, placeholder, inaccessible, historical-only or mixed-candidate evidence fails closed. Historical Phase 8/9 evidence is preserved as audit history and cannot satisfy Phase 11.10 or Phase 11.11 for the materially changed candidate.
+Every accepted external evidence item must bind to the same production-equivalent environment and candidate fingerprint. Missing, placeholder, inaccessible, historical-only or mixed-candidate evidence fails closed. Historical Phase 8/9 evidence is preserved as audit history and cannot satisfy Phase 11.10 or Phase 11.11 for the materially changed candidate.
 
-Repository CI validates only the evidence contract, manifest structure and repository-controlled behavior. It does **not** prove that the production-equivalent environment has been deployed or exercised. Phase 11.10 completes only after the full real-environment evidence package is reviewed and explicitly accepted by the accountable owner. Phase 11.11 remains blocked until then.
+Repository CI validates repository-controlled contracts only. It does **not** prove that the next-generation frontend is implemented or that a production-equivalent environment has been exercised. Phase 11.10 completes only after candidate completion, 11.10p external evidence review and explicit accountable owner acceptance. Phase 11.11 remains blocked until then.
 
-Execution material:
+Existing production-equivalent execution material remains:
 
 - [Phase 11.10 validation gate](docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md)
 - [Phase 11.10 execution runbook](docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md)
@@ -116,15 +123,18 @@ Execution material:
 
 The current reference platform uses Python 3.12+, FastAPI/Uvicorn, SQLAlchemy/Alembic, PostgreSQL, Redis, OpenSearch, S3-compatible object storage, Prometheus/Grafana and Nginx. The industrialised runtime adds governed Kubernetes/Helm/GitOps deployment while preserving service identities, workload identity, external secret delivery, ingress/TLS boundaries, RBAC, provenance and human authority.
 
+The target next-generation browser architecture uses a separately built typed component frontend behind the same governed DTMO API boundary. Preferred implementation technologies are React, TypeScript and Vite, subject to normal dependency/licensing/supply-chain review.
+
 ```mermaid
 flowchart TB
-    U[Analyst / Administrator] --> W[DTMO Web + API]
-    W --> PG[(PostgreSQL)]
-    W --> OS[(OpenSearch)]
-    W --> R[(Redis)]
-    W --> S3[(S3-compatible storage)]
-    W --> X[Governed external CTI services]
-    W --> O[Prometheus / Grafana]
+    U[Analyst / Administrator] --> W[DTMO Unified Operations Workbench]
+    W --> API[DTMO FastAPI API]
+    API --> PG[(PostgreSQL)]
+    API --> OS[(OpenSearch)]
+    API --> R[(Redis)]
+    API --> S3[(S3-compatible storage)]
+    API --> X[Governed external CTI services]
+    API --> O[Prometheus / Grafana]
 ```
 
 ## Current maturity and release position
@@ -140,13 +150,14 @@ flowchart TB
 | Phase 11.1–11.7b | Service integration programme | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8 | Integrated runtime industrialisation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.9 | Migration and compatibility | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10 | Fresh production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
+| Phase 11.10 | Candidate completion + fresh production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
+| Phase 11.10a | Frontend architecture/design contract | `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT` |
 | Phase 11.11 | Fresh independent external assurance | `NOT STARTED` |
 | Phase 12 | Formal production GO/NO-GO | `NOT STARTED` |
 
 ## Product roadmap
 
-The controlled sequence is now: **Phase 11.10 fresh production-equivalent validation → Phase 11.11 fresh independent external assurance → Phase 12 formal production GO/NO-GO**. Phase 11.11 must use the same immutable candidate accepted in Phase 11.10. A material candidate change requires a new evidence binding.
+The controlled sequence is now: **11.10a–11.10o candidate completion → 11.10p fresh production-equivalent validation → Phase 11.11 fresh independent external assurance → Phase 12 formal production GO/NO-GO**. Phase 11.11 must use the same immutable candidate accepted in Phase 11.10. A material candidate change requires a new evidence binding.
 
 See the [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md), [Current Project State](docs/project/CURRENT_STATE.md), [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md) and [Evidence Index](docs/evidence/EVIDENCE_INDEX.md).
 
@@ -172,7 +183,7 @@ python3 tools/bootstrap_local.py
 docker compose up --build
 ```
 
-The local Compose topology is a development/reference environment only. It is not Phase 11.10 production-equivalent evidence.
+The local Compose topology is a development/reference environment only. It is not Phase 11.10p production-equivalent evidence.
 
 ## Open source and responsible use
 
