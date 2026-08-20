@@ -60,7 +60,7 @@ Accepted integration and runtime documentation remains directly discoverable:
 - [11.8i exercised upgrade and rollback](architecture/PHASE11_8I_UPGRADE_ROLLBACK.md).
 - [11.9 migration compatibility architecture](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md), [runbook](operations/PHASE11_9_MIGRATION_COMPATIBILITY_RUNBOOK.md), and [gate](qa/PHASE11_9_MIGRATION_COMPATIBILITY_GATE.md).
 
-The governed screenshot catalogue contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. **No synthetic screenshot is promoted** as operational, staging, production, or live-integration evidence.
+The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. **No synthetic screenshot is promoted** as operational, staging, production, or live-integration evidence.
 
 ## Active Phase 11.10 documentation set
 
