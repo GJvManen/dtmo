@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import suppress
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -181,10 +182,8 @@ async def build_command_center_snapshot(
             latest_runs.setdefault(run.connector_id, run)
     except Exception:
         data_state = "unavailable"
-        try:
+        with suppress(Exception):
             await session.rollback()
-        except Exception:
-            pass
 
     return {
         "generated_at": now.isoformat(),
