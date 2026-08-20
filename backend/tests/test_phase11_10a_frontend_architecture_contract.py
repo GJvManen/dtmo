@@ -106,7 +106,8 @@ def test_workbench_defines_candidate_completion_sequence() -> None:
     text = _read(WORKBENCH)
     for marker in (
         "Collect → Normalize → Enrich → Correlate → Investigate → Respond → Share → Learn",
-        "11.10a frontend architecture/design contract — active",
+        "11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`",
+        "11.10b canonical application shell — active",
         "11.10o consolidation/full functional acceptance",
         "11.10p fresh production-equivalent exercise",
         "Phase 11.11 remains blocked until 11.10p is explicitly accepted",
@@ -114,12 +115,16 @@ def test_workbench_defines_candidate_completion_sequence() -> None:
         assert marker in text, f"missing workbench sequencing marker: {marker}"
 
 
-def test_authoritative_surfaces_expose_active_11_10a_without_reusing_external_evidence() -> None:
+def test_authoritative_surfaces_preserve_accepted_11_10a_and_expose_11_10b() -> None:
     for path in (ROADMAP, CURRENT_STATE, PORTAL, EVIDENCE):
         text = _read(path)
         assert "Phase 11.10" in text
         assert "11.10a" in text, f"11.10a is not exposed in {path.relative_to(ROOT)}"
-        assert "not production authorized" in text.lower() or "does not authorize production" in text.lower()
+        assert "11.10b" in text, f"11.10b is not exposed in {path.relative_to(ROOT)}"
+        assert "not production authorized" in text.lower() or "does not authorize production" in text.lower() or "production authorization" in text.lower()
+    current = _read(CURRENT_STATE)
+    assert "Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE`" in current
+    assert "Phase 11.10b canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
     roadmap = _read(ROADMAP)
     assert "11.10a Frontend architecture and design contract" in roadmap
     assert "11.10b Canonical application shell" in roadmap
