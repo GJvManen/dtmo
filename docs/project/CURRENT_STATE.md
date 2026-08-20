@@ -64,9 +64,20 @@ flowchart LR
     V --> A[11.10 evidence review]
 ```
 
-Every artifact must identify the same candidate and environment. Historical Phase 8 staging evidence remains audit history only and is not reusable for Phase 11.10 acceptance. Missing, ambiguous, mixed-candidate or historical-only evidence must **fail closed**.
+Every artifact must identify the same candidate fingerprint and production-equivalent environment. Historical Phase 8/9 evidence remains audit history only and is not reusable for Phase 11.10 acceptance. Missing, placeholder, inaccessible, mixed-candidate or historical-only evidence must **fail closed**.
 
-Repository CI may validate the Phase 11.10 evidence contract and exact-head metadata, but it cannot prove that the production-equivalent environment was deployed or exercised. Repository-green status alone therefore does not complete Phase 11.10 and does not authorize production.
+The repository execution package now provides:
+
+- `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md` — acceptance criteria;
+- `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md` — accountable execution procedure;
+- `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json` — deliberately incomplete evidence template;
+- `tools/phase11_production_equivalent_validation.py` — candidate fingerprinting and fail-closed manifest validation;
+- `backend/tests/test_phase11_10_production_equivalent_validation.py` — contract and negative-case regression coverage;
+- `.github/workflows/phase11-production-equivalent-validation.yml` — repository evidence-contract workflow.
+
+Repository CI may validate the Phase 11.10 evidence contract and exact-head metadata, but it cannot prove that the production-equivalent environment was deployed or exercised. A valid manifest proves metadata consistency only; referenced external observations still require human review. Repository-green status alone therefore does not complete Phase 11.10 and does not authorize production.
+
+Phase 11.10 may become `PASS / OWNER_ACCEPTED` only when the full real-environment evidence package is complete, bound to one candidate/environment, release-blocking findings are closed or accountably dispositioned, and the accountable owner explicitly accepts it.
 
 Phase 11.11 independent external assurance must run only after Phase 11.10 acceptance and against the same immutable integrated candidate.
 
@@ -82,5 +93,5 @@ Phase 11.11 independent external assurance must run only after Phase 11.10 accep
 8. integrated runtime industrialisation — Phase 11.8 `PASS / REPOSITORY_COMPLETE`;
 9. migration/compatibility — Phase 11.9 `PASS / REPOSITORY_COMPLETE`;
 10. production-equivalent validation — active Phase 11.10;
-11. new independent external assurance;
-12. Phase 12 formal production GO/NO-GO.
+11. new independent external assurance — Phase 11.11 `NOT STARTED`;
+12. Phase 12 formal production GO/NO-GO — `NOT STARTED`.
