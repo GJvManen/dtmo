@@ -12,7 +12,7 @@ For current project decisions use:
 
 1. `docs/project/CURRENT_STATE.md`;
 2. `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
-3. active bounded Phase 11.10 slice documentation — currently `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`, `docs/architecture/FRONTEND_ARCHITECTURE.md`, `docs/architecture/UI_API_CONTRACT.md`, `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`, `docs/ux/INFORMATION_ARCHITECTURE.md` and `docs/ux/DESIGN_SYSTEM.md`;
+3. active bounded Phase 11.10 slice documentation — currently `docs/architecture/PHASE11_10B_APPLICATION_SHELL.md`, `docs/qa/PHASE11_10B_APPLICATION_SHELL_GATE.md`, `frontend/README.md`, the accepted `docs/architecture/FRONTEND_ARCHITECTURE.md`, `docs/architecture/UI_API_CONTRACT.md`, `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`, `docs/ux/INFORMATION_ARCHITECTURE.md` and `docs/ux/DESIGN_SYSTEM.md`;
 4. `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md` and `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md` for the future 11.10p external exercise;
 5. `docs/project/PRODUCTION_READINESS_REPORT.md` and `docs/project/PRODUCTION_CHECKLIST.md`;
 6. `docs/evidence/EVIDENCE_INDEX.md` and the controlled Phase 11.10 evidence template;
@@ -34,7 +34,8 @@ Historical point-in-time records remain valid for what they originally described
 | Phase 11.1–11.7b service docs | `CURRENT / ACCEPTED` | Preserve accepted boundaries |
 | Phase 11.8 runtime docs | `CURRENT / ACCEPTED` | Preserve accepted runtime boundaries |
 | Phase 11.9 migration/compatibility docs | `CURRENT / ACCEPTED` | Preserve forward-first compatibility boundary |
-| Phase 11.10a frontend architecture/design docs | `CURRENT / ACTIVE` | Govern the next-generation workbench architecture contract |
+| Phase 11.10a frontend architecture/design docs | `CURRENT / ACCEPTED` | Preserve the accepted workbench architecture/design baseline |
+| Phase 11.10b canonical shell docs/code contract | `CURRENT / ACTIVE` | Govern canonical shell, build, routing and repository/browser acceptance |
 | Phase 11.10 external gate/runbook/evidence contract | `CURRENT / DEFERRED UNTIL 11.10p` | Govern fresh production-equivalent validation after candidate freeze |
 | Production roadmap/readiness/checklist | `CURRENT` | Reconcile on readiness-gate change |
 | Security/governance model | `CURRENT` | Reconcile on material control changes |
@@ -54,29 +55,36 @@ The professional documentation consistently distinguishes:
 - Phase 11 `IN PROGRESS / ACTIVE`;
 - Phase 11.1–11.9 `PASS / REPOSITORY_COMPLETE`;
 - Phase 11.10 `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`;
-- Phase 11.10a `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT`;
+- Phase 11.10a `PASS / REPOSITORY_COMPLETE`;
+- Phase 11.10b `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
+- Phase 11.10c `NOT STARTED`;
+- Phase 11.10p `NOT STARTED / CANDIDATE FREEZE REQUIRED`;
 - Phase 11.11 `NOT STARTED`;
 - Phase 12 `NOT STARTED`;
 - DTMO **not production authorized**.
 
-## Active Phase 11.10a documentation rule
+## Active Phase 11.10b documentation rule
 
-Documentation may define the target frontend architecture, information architecture, design system and governed UI/API boundary. It must not imply that the new shell, workspaces or integration capabilities have already been implemented or exercised.
+Documentation may describe the implemented canonical shell, its build inputs, route structure and repository/browser evidence only to the extent attributable to repository state. It must not imply that Command Center or later feature workspaces are already complete, that an upstream service was exercised, or that production-equivalent validation occurred.
 
-The active 11.10a package preserves:
+The active 11.10b package preserves:
 
-- one canonical DTMO browser product as the target;
+- one canonical built DTMO product route at `/workbench/`;
+- `/ui/console` as a temporary **compatibility path**, not a parallel feature target;
+- a committed npm dependency lockfile consumed with `npm ci`;
+- separately built React/TypeScript/Vite assets served through the DTMO origin;
 - normal request path **browser → DTMO API → governed integration adapter → upstream service**;
-- server-side RBAC and least privilege;
+- **server-side RBAC** and least privilege;
 - human/service identity separation;
 - human publication/share authority;
 - separate TheHive case authority;
 - no local-compromise inference from enrichment, graph presence or correlation;
-- accessible dark/light semantic design;
-- truthful loading/empty/stale/partial-failure/error states;
+- accessible dark/light semantic shell design;
+- truthful loading/empty/degraded state, including an explicit no-object context state;
+- no synthetic operational state in route foundations;
 - mockups/generated visuals as design artifacts only.
 
-A successful 11.10a repository gate establishes only architecture-contract consistency. It does not prove frontend implementation, live upstream behavior, production-equivalent validation, independent assurance or production authorization.
+A successful 11.10b repository/browser gate establishes shell/build/routing consistency only. It **does not prove** live upstream behavior, production-equivalent validation, independent assurance or production authorization.
 
 ## Phase 11.10p external documentation rule
 
