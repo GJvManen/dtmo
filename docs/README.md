@@ -41,6 +41,17 @@ The active bounded programme step is **Phase 11.9 migration/compatibility**. Ear
 
 Phase 11.1–11.7b integration contracts remain accepted and discoverable through their architecture/integration/runbook/gate documents. Phase 11.8 runtime industrialisation is repository-complete, including runtime foundation, identity/secrets, ingress/network, HA, observability, recovery, supply-chain, capacity and exercised upgrade/rollback controls.
 
+Accepted Phase 11.8 control documentation remains directly discoverable:
+
+- [11.8b workload identity and external secrets](architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md) (`PHASE11_8B_WORKLOAD_IDENTITY_SECRETS`)
+- [11.8c ingress, TLS and network segmentation](architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md) (`PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION`)
+- [11.8d HA and disruption hardening](architecture/PHASE11_8D_HA_DISRUPTION.md) (`PHASE11_8D_HA_DISRUPTION`)
+- [11.8e observability hardening](architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md) (`PHASE11_8E_OBSERVABILITY_HARDENING`)
+- [11.8f recovery hardening](architecture/PHASE11_8F_RECOVERY_HARDENING.md) (`PHASE11_8F_RECOVERY_HARDENING`)
+- [11.8g supply-chain hardening](security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md) (`PHASE11_8G_SUPPLY_CHAIN_HARDENING`)
+- [11.8h capacity and resource planning](architecture/PHASE11_8H_CAPACITY_RESOURCE_PLANNING.md)
+- [11.8i exercised upgrade and rollback](architecture/PHASE11_8I_UPGRADE_ROLLBACK.md)
+
 The active Phase 11.9 documentation set is:
 
 - [Migration Compatibility Architecture](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md)
