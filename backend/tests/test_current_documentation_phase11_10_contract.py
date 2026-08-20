@@ -34,6 +34,7 @@ STALE_ACTIVE_MARKERS = (
     "Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED`",
     "Phase 11.10e IntelOwl/Cortex integrated analysis | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
     "Phase 11.10f OpenCTI graph/entity workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+    "Phase 11.10g MISP Sharing & Exchange | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
     "current bounded priority is **Phase 11.10b",
     "sole active bounded objective is now **Phase 11.10b",
     "Continue only **Phase 11.10b",
@@ -46,6 +47,9 @@ STALE_ACTIVE_MARKERS = (
     "sole active bounded objective is **Phase 11.10e",
     "current bounded priority is **Phase 11.10f",
     "sole active bounded objective is **Phase 11.10f",
+    "current bounded priority is **Phase 11.10g",
+    "sole active bounded objective is **Phase 11.10g",
+    "Continue only **Phase 11.10g",
 )
 
 
@@ -80,10 +84,21 @@ def test_current_surfaces_preserve_prior_candidate_evidence_boundary() -> None:
         assert "REPOSITORY_COMPLETE" in text, path
 
 
-def test_phase11_10g_candidate_completion_truth_is_professionally_reconciled() -> None:
+def test_phase11_10h_candidate_completion_truth_is_professionally_reconciled() -> None:
     for path in CANDIDATE_COMPLETION_SURFACES:
         text = _read(path)
-        for phase in ("11.10a", "11.10b", "11.10c", "11.10d", "11.10e", "11.10f", "11.10g", "11.10p"):
+        for phase in (
+            "11.10a",
+            "11.10b",
+            "11.10c",
+            "11.10d",
+            "11.10e",
+            "11.10f",
+            "11.10g",
+            "11.10h",
+            "11.10i",
+            "11.10p",
+        ):
             assert phase in text, f"Phase {phase} missing from {path}"
         assert "production" in text.lower(), path
 
@@ -95,8 +110,9 @@ def test_phase11_10g_candidate_completion_truth_is_professionally_reconciled() -
         "Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10g MISP Sharing & Exchange | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
-        "Phase 11.10h TheHive Investigations & Cases | `NOT STARTED`",
+        "Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.10h TheHive Investigations & Cases | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.10i Vulnerability & Exposure Center | `NOT STARTED`",
         "Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED`",
     ):
         assert marker in current, marker
@@ -111,22 +127,24 @@ def test_phase11_10g_candidate_completion_truth_is_professionally_reconciled() -
         "11.10f OpenCTI",
         "11.10g MISP",
         "11.10h TheHive",
+        "11.10i Vulnerability",
         "11.10p Fresh production-equivalent validation",
     ):
         assert marker in roadmap, marker
 
 
-def test_phase11_10g_misp_sharing_package_is_professionally_discoverable() -> None:
+def test_phase11_10h_thehive_investigations_package_is_professionally_discoverable() -> None:
     required_paths = (
-        "backend/dtmo/misp_sharing_workspace.py",
-        "frontend/src/MispSharingWorkspace.tsx",
-        "frontend/src/misp-sharing.css",
-        "docs/architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md",
-        "docs/user/MISP_SHARING_EXCHANGE_WORKSPACE.md",
-        "docs/qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md",
-        "backend/tests/test_phase11_10g_misp_sharing_contract.py",
-        "backend/tests/test_phase11_10g_misp_sharing_browser.py",
-        ".github/workflows/phase11-misp-sharing-exchange.yml",
+        "backend/dtmo/thehive_handoff.py",
+        "frontend/src/InvestigationsWorkspace.tsx",
+        "frontend/src/investigations.css",
+        "docs/architecture/PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md",
+        "docs/user/THEHIVE_INVESTIGATIONS_WORKSPACE.md",
+        "docs/qa/PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md",
+        "backend/tests/test_phase11_10h_thehive_investigations_contract.py",
+        "backend/tests/test_phase11_10h_thehive_investigations_api.py",
+        "backend/tests/test_phase11_10h_thehive_investigations_browser.py",
+        ".github/workflows/phase11-thehive-investigations.yml",
     )
     for path in required_paths:
         assert (ROOT / path).is_file(), path
@@ -140,14 +158,30 @@ def test_phase11_10g_misp_sharing_package_is_professionally_discoverable() -> No
         )
     )
     for marker in (
-        "PHASE11_10G_MISP_SHARING_EXCHANGE.md",
-        "MISP_SHARING_EXCHANGE_WORKSPACE.md",
-        "PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md",
-        "phase11-misp-sharing-exchange.yml",
+        "PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md",
+        "THEHIVE_INVESTIGATIONS_WORKSPACE.md",
+        "PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md",
+        "phase11-thehive-investigations.yml",
     ):
         assert marker in combined, marker
-    for marker in ("human", "unpublished", "fail closed", "production"):
+    for marker in ("human", "reconciliation", "fail closed", "production"):
         assert marker.lower() in combined.lower(), marker
+
+
+def test_phase11_10g_misp_sharing_package_remains_professionally_discoverable() -> None:
+    required_paths = (
+        "backend/dtmo/misp_sharing_workspace.py",
+        "frontend/src/MispSharingWorkspace.tsx",
+        "frontend/src/misp-sharing.css",
+        "docs/architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md",
+        "docs/user/MISP_SHARING_EXCHANGE_WORKSPACE.md",
+        "docs/qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md",
+        "backend/tests/test_phase11_10g_misp_sharing_contract.py",
+        "backend/tests/test_phase11_10g_misp_sharing_browser.py",
+        ".github/workflows/phase11-misp-sharing-exchange.yml",
+    )
+    for path in required_paths:
+        assert (ROOT / path).is_file(), path
 
 
 def test_phase11_10f_opencti_graph_package_remains_professionally_discoverable() -> None:

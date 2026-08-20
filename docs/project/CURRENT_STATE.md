@@ -7,9 +7,9 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a–11.10f are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a–11.10g are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The sole active bounded objective is **Phase 11.10g MISP Sharing & Exchange**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10f delivered the accepted OpenCTI graph/entity workspace. Phase 11.10g makes the canonical `/workbench/sharing` route functional by composing DTMO's existing human review, independent share approval and replay-protected MISP export controls without creating publication or synchronization authority.
+The sole active bounded objective is **Phase 11.10h TheHive Investigations & Cases**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10g delivered the accepted human-governed MISP Sharing & Exchange workspace. Phase 11.10h makes the canonical `/workbench/investigations` route functional by composing DTMO's accepted Phase 11.6 TheHive case-handoff and durable reconciliation controls with a read-only canonical investigation-state projection.
 
 Fresh production-equivalent execution remains deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
 
@@ -49,8 +49,8 @@ Fresh production-equivalent execution remains deferred until 11.10a–11.10o are
 | Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10g MISP Sharing & Exchange | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10h TheHive Investigations & Cases | `NOT STARTED` |
+| Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10h TheHive Investigations & Cases | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.10i Vulnerability & Exposure Center | `NOT STARTED` |
 | Phase 11.10j Sources & Collection Control Center | `NOT STARTED` |
 | Phase 11.10k Automation & Playbooks | `NOT STARTED` |
@@ -85,9 +85,10 @@ Accepted workbench slices are:
 - 11.10c read-only Command Center with fail-closed canonical operational state;
 - 11.10d Unified Intelligence Workspace with governed search, canonical detail and provenance;
 - 11.10e Integrated Analysis with human-triggered IntelOwl enrichment, analyzer-only Cortex execution and durable evidence history;
-- 11.10f OpenCTI graph/entity workspace over persisted OpenCTI/STIX mapping and revision evidence without inferred upstream topology.
+- 11.10f OpenCTI graph/entity workspace over persisted OpenCTI/STIX mapping and revision evidence without inferred upstream topology;
+- 11.10g MISP Sharing & Exchange with separate human review/share approval, handling-restriction preservation and unpublished replay-protected export.
 
-IntelOwl/Cortex and OpenCTI-derived context are evidence, not verdicts. They grant no external-share/publication authority and do not prove local compromise.
+IntelOwl/Cortex, OpenCTI and MISP-derived context are evidence, not verdicts. They grant no implicit external-share/publication authority and do not prove local compromise.
 
 ## Accepted Phase 11.10f OpenCTI graph/entity boundary
 
@@ -117,9 +118,9 @@ Authoritative Phase 11.10f material remains:
 
 Repository/browser evidence for that accepted slice does not prove live OpenCTI health, completeness of OpenCTI knowledge, local exposure or compromise, production-equivalent operation, independent assurance or production authorization.
 
-## Active Phase 11.10g MISP Sharing & Exchange boundary
+## Accepted Phase 11.10g MISP Sharing & Exchange boundary
 
-Phase 11.10g replaces the `/workbench/sharing` placeholder with a canonical human-governed MISP workflow. It reuses accepted controls rather than inventing a parallel authority path.
+Phase 11.10g replaced the `/workbench/sharing` placeholder with a canonical human-governed MISP workflow. It reuses accepted controls rather than inventing a parallel authority path.
 
 The decision sequence is:
 
@@ -127,7 +128,7 @@ The decision sequence is:
 2. record human review with `review:intelligence`;
 3. record independent human share approval with `approve:share`, performed by a principal different from the reviewer;
 4. export an already reviewed and share-approved canonical revision to MISP through the existing governed export API;
-5. leave MISP publication and synchronization outside this slice.
+5. leave MISP publication and synchronization outside the accepted slice.
 
 The export adapter creates `published=false` events only. For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions remain binding and cannot be weakened on re-export. A persisted `pending`, `success` or `uncertain` export for the current deterministic event UUID blocks automatic replay. An uncertain external result requires operator inspection.
 
@@ -147,9 +148,40 @@ Authoritative Phase 11.10g material:
 - `backend/tests/test_phase11_10g_misp_sharing_browser.py`;
 - `.github/workflows/phase11-misp-sharing-exchange.yml`.
 
-Repository/browser evidence for this active slice does **not prove** live MISP health, publication/synchronization, production-equivalent operation, independent assurance or production authorization.
+Repository/browser evidence for this accepted slice does **not prove** live MISP health, publication/synchronization, production-equivalent operation, independent assurance or production authorization.
 
-After Phase 11.10g exact-head acceptance and merge, the only next bounded priority is **Phase 11.10h — TheHive Investigations & Cases**.
+## Active Phase 11.10h TheHive Investigations & Cases boundary
+
+Phase 11.10h replaces the `/workbench/investigations` placeholder with one canonical investigation workspace over DTMO canonical intelligence, provenance and durable TheHive handoff evidence.
+
+The read projection is:
+
+- `GET /api/v1/thehive/items/{item_id}/investigation` requiring `read:intelligence`.
+
+The existing accepted mutation boundary remains:
+
+- `POST /api/v1/thehive/items/{item_id}/cases` requiring `handoff:case` and an explicit human principal.
+
+The workspace never receives TheHive credentials and never calls `/api/v1/case` directly. Canonical provenance, feature/configuration prerequisites, source handling restrictions and separate case-handoff authority remain server-side. `reserved` or `ambiguous` handoff evidence is presented as a manual-reconciliation condition and blocks a blind new UI request.
+
+The accepted Phase 11.6 persistence stores handoff state only. It does not persist/read back generic TheHive alerts, tasks, case timeline or subsequent case state. Phase 11.10h therefore does not fabricate those objects. A delivered handoff proves only the confirmed case identity returned at creation time and persisted by DTMO; it does not prove later upstream action, external sharing, responder execution or local compromise.
+
+Authoritative Phase 11.10h material:
+
+- `backend/dtmo/thehive_handoff.py`;
+- `frontend/src/InvestigationsWorkspace.tsx`;
+- `frontend/src/investigations.css`;
+- `docs/architecture/PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md`;
+- `docs/user/THEHIVE_INVESTIGATIONS_WORKSPACE.md`;
+- `docs/qa/PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md`;
+- `backend/tests/test_phase11_10h_thehive_investigations_contract.py`;
+- `backend/tests/test_phase11_10h_thehive_investigations_api.py`;
+- `backend/tests/test_phase11_10h_thehive_investigations_browser.py`;
+- `.github/workflows/phase11-thehive-investigations.yml`.
+
+Repository/browser evidence for this active slice does **not prove** live TheHive health, license entitlement, upstream case completeness, responder/remediation execution, local compromise, production-equivalent operation, independent assurance or production authorization.
+
+After Phase 11.10h exact-head acceptance and merge, the only next bounded priority is **Phase 11.10i — Vulnerability & Exposure**.
 
 ## Phase 11.10p external validation boundary
 

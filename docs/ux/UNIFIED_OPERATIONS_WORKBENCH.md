@@ -1,6 +1,6 @@
 # DTMO Unified Operations Workbench
 
-Status: **Phase 11.10a–11.10f PASS / REPOSITORY_COMPLETE; Phase 11.10g IN PROGRESS / MISP SHARING & EXCHANGE**  
+Status: **Phase 11.10a–11.10g PASS / REPOSITORY_COMPLETE; Phase 11.10h IN PROGRESS / THEHIVE INVESTIGATIONS & CASES**  
 Visual reference: approved next-generation command-center concept (design target only, not evidence).
 
 ## Purpose
@@ -16,7 +16,7 @@ The workbench follows a stable four-zone composition:
 - **main workspace** for the current operational task;
 - **right context rail** for selected-object facts and governed actions.
 
-Phase 11.10b accepted this shell foundation under `/workbench/`. Phase 11.10c accepted the Command Center. Phase 11.10d accepted Threat Intelligence and IOC Explorer. Phase 11.10e accepted Analysis & Enrichment. Phase 11.10f accepted persisted OpenCTI graph/entity context. Phase 11.10g is the active migration of governed MISP Sharing & Exchange into the same shell.
+Phase 11.10b accepted this shell foundation under `/workbench/`. Phase 11.10c accepted the Command Center. Phase 11.10d accepted Threat Intelligence and IOC Explorer. Phase 11.10e accepted Analysis & Enrichment. Phase 11.10f accepted persisted OpenCTI graph/entity context. Phase 11.10g accepted governed MISP Sharing & Exchange. Phase 11.10h is the active migration of TheHive Investigations & Cases into the same shell.
 
 ## Primary journey
 
@@ -33,12 +33,12 @@ A representative analyst journey is:
 5. run bounded Cortex analysis where authorized;
 6. inspect attributable OpenCTI graph/entity evidence;
 7. correlate with MISP and canonical intelligence;
-8. create or link a TheHive case when human-authorized;
-9. complete investigation tasks;
+8. create a TheHive case through explicit human `handoff:case` authority when canonical provenance and handling prerequisites are satisfied;
+9. reconcile any uncertain/ambiguous handoff before further case mutation;
 10. prepare a governed sharing package;
 11. record independent human review and separate external-share approval;
 12. export an approved canonical revision as an unpublished MISP event where authorized;
-13. review evidence, timeline and audit state.
+13. review attributable DTMO evidence and audit state.
 
 The normal journey remains inside DTMO.
 
@@ -60,32 +60,34 @@ Phase 11.10e provides `/workbench/analysis`. Capability/history reads require `r
 
 Phase 11.10f provides `/workbench/intelligence/graph` through DTMO-owned read APIs. The browser never receives OpenCTI credentials and does not call OpenCTI `/graphql` directly. Only attributable persisted `canonical-mapping` relationships are rendered because the accepted DTMO persistence boundary does not durably store generic OpenCTI entity-to-entity topology. Missing topology evidence **fails closed**.
 
-## Active MISP Sharing & Exchange Workspace
+### MISP Sharing & Exchange Workspace
 
-Phase 11.10g makes `/workbench/sharing` functional without introducing a parallel sharing authority. The canonical flow is:
+Phase 11.10g provides `/workbench/sharing` without introducing a parallel sharing authority. The canonical flow is **inspect canonical state → human review → separate human share approval → unpublished MISP export**. The browser uses DTMO APIs only; server-side RBAC remains authoritative; source handling restrictions and replay evidence fail closed; the accepted exporter creates `published=false` events and exposes no MISP Publish or Synchronize action.
 
-**inspect canonical state → human review → separate human share approval → unpublished MISP export**.
+## Active TheHive Investigations & Cases Workspace
 
-The browser uses only DTMO APIs:
+Phase 11.10h makes `/workbench/investigations` functional while preserving the accepted Phase 11.6 case-handoff authority and persistence boundary.
 
-- `GET /api/v1/sharing/items/{item_id}` for canonical review/share/restriction/export state;
-- `POST /api/v1/intelligence/{item_id}/review` for `review:intelligence`;
-- `POST /api/v1/intelligence/{item_id}/share-approval` for `approve:share`;
-- `POST /api/v1/intelligence/{item_id}/misp-export` for a previously reviewed and share-approved canonical revision.
+The browser uses DTMO APIs only:
 
-The share approver must be a **different human principal** from the recorded reviewer. Service accounts cannot substitute for human review/share approval or MISP export. UI visibility is not authorization; **server-side RBAC** remains authoritative.
+- `GET /api/v1/thehive/items/{item_id}/investigation` for canonical intelligence, provenance and durable handoff state;
+- `POST /api/v1/thehive/items/{item_id}/cases` for an explicit human-authorized case handoff.
 
-For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions remain binding. The browser cannot weaken them. A deterministic current-revision export with `pending`, `success` or `uncertain` evidence blocks automatic replay; uncertain delivery requires operator inspection.
+Canonical reads require `read:intelligence`; case mutation requires `handoff:case`. Service accounts cannot substitute for human case authority. The browser never receives TheHive credentials or organization authorization.
 
-The accepted exporter creates `published=false` events. Phase 11.10g intentionally exposes no MISP **Publish** or **Synchronize** action. MISP configuration does not establish live MISP health, and successful transfer does not prove publication, synchronization, downstream consumption or local compromise.
+Canonical provenance is required before mutation. TLP/PAP and authoritative source restrictions fail closed. Durable `reserved`, `delivered`, `ambiguous` and `failed` evidence is presented. A `reserved` or `ambiguous` handoff requires **manual reconciliation** and the canonical workspace blocks a blind new case request.
+
+A delivered handoff proves only the stable case identity returned at creation time and persisted by DTMO. The accepted Phase 11.6 persistence does not mirror generic TheHive alerts, tasks, case timeline, later case state or responder results, so Phase 11.10h does not fabricate them or treat their absence as evidence.
+
+Configuration does not establish live TheHive health. Handoff/case presence does not grant external-share authority or prove responder execution, downstream remediation or local compromise.
 
 ## Object-centric workspace
 
-Every compatible canonical object should open a shared context model with tabs such as Overview, Evidence, Enrichment, Relationships/Graph, Vulnerabilities/Exposure, Cases/Tasks, Sharing and Timeline/Audit.
+Every compatible canonical object should open a shared context model with tabs such as Overview, Evidence, Enrichment, Relationships/Graph, Vulnerabilities/Exposure, Cases/Tasks, Sharing and Timeline/Audit where those facts are attributable.
 
 The right context rail may expose attributable counts/status from IntelOwl, Cortex, OpenCTI, MISP and TheHive without requiring a separate upstream login. Until a bounded feature slice supplies attributable data, missing facts are not inferred.
 
-The object-centric experience began with 11.10d; 11.10e added analysis, 11.10f added persisted OpenCTI graph/entity context, and 11.10g adds governed sharing/exchange. Phase 11.10h adds TheHive case capabilities without bypassing the DTMO API boundary.
+The object-centric experience began with 11.10d; 11.10e added analysis, 11.10f added persisted OpenCTI graph/entity context, 11.10g added governed sharing/exchange, and 11.10h adds canonical investigation plus durable TheHive handoff/reconciliation evidence.
 
 ## Integrated capability expectations
 
@@ -102,7 +104,7 @@ Phase 11.10f exposes persisted entity identity, STIX type, markings, confidence,
 Phase 11.10g exposes governed review, independent share approval, authoritative handling restrictions, replay state and unpublished export. Technical connectivity never grants sharing or publication authority.
 
 ### TheHive
-Phase 11.10h will expose daily case, task, observable, assignment and timeline operations subject to accepted case-handoff authority.
+Phase 11.10h exposes canonical investigation context, explicit human case handoff and durable reconciliation evidence. It deliberately does not invent alerts, tasks, observables, assignment or timeline state that the accepted DTMO persistence does not store/read back.
 
 ### Cortex
 Phase 11.10e exposes bounded analyzer execution and durable result history. Responders or autonomous side effects remain excluded until separately governed and explicitly accepted.
@@ -129,9 +131,9 @@ The interface programme is executed as bounded Phase 11.10 candidate-completion 
 - 11.10d Unified Intelligence Workspace — `PASS / REPOSITORY_COMPLETE`;
 - 11.10e IntelOwl/Cortex integrated analysis — `PASS / REPOSITORY_COMPLETE`;
 - 11.10f OpenCTI graph/entity workspace — `PASS / REPOSITORY_COMPLETE`;
-- 11.10g MISP Sharing & Exchange — active;
-- 11.10h TheHive Investigations & Cases — next after 11.10g acceptance/merge;
-- 11.10i Vulnerability & Exposure;
+- 11.10g MISP Sharing & Exchange — `PASS / REPOSITORY_COMPLETE`;
+- 11.10h TheHive Investigations & Cases — active;
+- 11.10i Vulnerability & Exposure — next after 11.10h acceptance/merge;
 - 11.10j Sources & Collection;
 - 11.10k Automation & Playbooks;
 - 11.10l Governance & Evidence;
@@ -144,4 +146,4 @@ Phase 11.11 remains blocked until 11.10p is explicitly accepted.
 
 ## Evidence boundary
 
-This document is product/UX architecture. Repository/browser CI for 11.10g can validate same-origin API usage, human authority separation, handling/replay semantics and fail-closed browser behavior. It does **not prove** live MISP health, publication/synchronization, production-equivalent validation, independent assurance or production authorization. DTMO remains **not production authorized**.
+This document is product/UX architecture. Repository/browser CI for 11.10h can validate same-origin API usage, human case authority, handling/reconciliation semantics and fail-closed browser behavior. It does **not prove** live TheHive health, upstream case completeness, responder execution, production-equivalent validation, independent assurance or production authorization. DTMO remains **not production authorized**.

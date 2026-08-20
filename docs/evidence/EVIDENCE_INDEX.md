@@ -8,7 +8,7 @@ This index maps current lifecycle stages to authoritative evidence classes and r
 
 ## Current lifecycle
 
-Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; **E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`**. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11.1–11.9 and Phase 11.10a–11.10f are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10g MISP Sharing & Exchange** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10h, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
+Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; **E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`**. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11.1–11.9 and Phase 11.10a–11.10g are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10h TheHive Investigations & Cases** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10i, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
 
 ## Evidence hierarchy
 
@@ -113,9 +113,9 @@ An empty mapping result does not prove upstream absence. Configuration does not 
 
 ### 11.10g MISP Sharing & Exchange
 
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Authoritative active chain:
+Accepted evidence chain:
 
 - `backend/dtmo/misp_sharing_workspace.py`;
 - `backend/dtmo/misp_export_api.py`;
@@ -133,13 +133,38 @@ Authoritative active chain:
 
 The canonical workspace preserves the accepted human authority chain: `read:intelligence` for state inspection, `review:intelligence` for review and a different human principal with `approve:share` for sharing approval. The MISP export endpoint cannot grant approval itself. Service accounts cannot substitute for human review/share authority.
 
-For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions remain binding. A deterministic current-revision export with `pending`, `success` or `uncertain` evidence blocks automatic replay. The accepted exporter creates `published=false` MISP events only. There is no Phase 11.10g MISP publication or synchronization authority.
+For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions remain binding. A deterministic current-revision export with `pending`, `success` or `uncertain` evidence blocks automatic replay. The accepted exporter creates `published=false` MISP events only. There is no MISP publication or synchronization authority.
 
 Configuration does not establish live MISP health. Transfer evidence does not prove publication, synchronization, downstream consumption, local compromise, production-equivalent operation, independent assurance or production authorization. Missing state and uncertain delivery **fail closed**.
 
+### 11.10h TheHive Investigations & Cases
+
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+
+Authoritative active chain:
+
+- `backend/dtmo/thehive_handoff.py`;
+- `backend/dtmo/integrations/thehive.py`;
+- `backend/dtmo/persistence/thehive.py`;
+- `frontend/src/InvestigationsWorkspace.tsx`;
+- `frontend/src/investigations.css`;
+- `docs/architecture/PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md`;
+- `docs/user/THEHIVE_INVESTIGATIONS_WORKSPACE.md`;
+- `docs/qa/PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md`;
+- `backend/tests/test_phase11_10h_thehive_investigations_contract.py`;
+- `backend/tests/test_phase11_10h_thehive_investigations_api.py`;
+- `backend/tests/test_phase11_10h_thehive_investigations_browser.py`;
+- `.github/workflows/phase11-thehive-investigations.yml`.
+
+The investigation projection requires `read:intelligence`; the accepted mutation remains a separate explicit human `handoff:case` action. Canonical provenance, TLP/PAP and authoritative handling restrictions remain server-side prerequisites. The browser receives no TheHive credential and does not invoke TheHive directly.
+
+Durable handoff state is evidence for DTMO request/reconciliation history. A `reserved` or `ambiguous` record requires manual reconciliation and the canonical UI blocks a blind new request. A delivered record proves only the stable case identity confirmed during creation. It does not prove subsequent upstream case state.
+
+The accepted Phase 11.6 persistence does not contain generic alerts, tasks, case timeline, later case state or responder results. Those objects are not inferred. Configuration does not establish live TheHive health. Handoff/case identity does not prove external-share authority, responder/remediation execution, local compromise, production-equivalent operation, independent assurance or production authorization. Missing or ambiguous evidence must **fail closed**.
+
 ### Candidate-completion order
 
-11.10h TheHive, 11.10i Vulnerability & Exposure, 11.10j Sources & Collection, 11.10k Automation & Playbooks, 11.10l Governance & Evidence, 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance remain `NOT STARTED`.
+11.10i Vulnerability & Exposure, 11.10j Sources & Collection, 11.10k Automation & Playbooks, 11.10l Governance & Evidence, 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance remain `NOT STARTED`.
 
 ## Phase 11.10p production-equivalent evidence
 

@@ -7,17 +7,17 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 DTMO protects confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence. Source trust, identity, authorization, evidence and human decision boundaries remain explicit and enforceable.
 
-DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9 and Phase 11.10a–11.10f are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**; the active bounded gate is **Phase 11.10g MISP Sharing & Exchange**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10h, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`.
+DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9 and Phase 11.10a–11.10g are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**; the active bounded gate is **Phase 11.10h TheHive Investigations & Cases**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10i, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`.
 
 ## Identity and access control
 
 - **Server-side RBAC remains authoritative.**
 - Human and service identities remain separate.
-- `read:intelligence` controls intelligence discovery, canonical object reading, analysis history/capability reads, OpenCTI graph/entity reads and MISP sharing-state reads.
+- `read:intelligence` controls intelligence discovery, canonical object reading, analysis history/capability reads, OpenCTI graph/entity reads, MISP sharing-state reads and TheHive investigation-state reads.
 - `review:intelligence` controls explicit intelligence review and remains distinct from external sharing approval.
 - `approve:share` controls human external sharing approval and requires a different human principal than the recorded reviewer.
-- `handoff:case` remains distinct from `approve:share`.
-- Service accounts cannot perform human review/share approval and cannot export intelligence to MISP.
+- `handoff:case` controls explicit human TheHive case mutation and remains distinct from `approve:share`.
+- Service accounts cannot perform human review/share approval or human case handoff.
 - Connectors, analyzers, graph clients, CI identities, Kubernetes service accounts, frontend controls and integrated platforms do not receive human publication/share or case-handoff authority.
 - Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/API/licensing/provider boundaries.
 - Enrichment, graph, exchange, case, build, deployment or evidence state does not establish DTMO-local exposure, exploitability or compromise.
@@ -37,44 +37,47 @@ Phase 11.10a accepted the frontend trust boundary **browser → DTMO API → gov
 
 Phase 11.10b accepted the separately built React/TypeScript/Vite `/workbench/` shell with committed dependency lockfile consumed by `npm ci`, build-stage-only Node/npm, strict same-origin CSP, immutable hashed assets, traversal-safe serving, responsive keyboard navigation, context rail and `/ui/console` as a migration **compatibility path**.
 
-Phase 11.10c accepted the read-only canonical Command Center with fail-closed canonical metrics and explicit separation between configuration and runtime observation. Phase 11.10d accepted read-only Unified Intelligence where search projections remain distinct from canonical detail/provenance. Phase 11.10e accepted human-triggered IntelOwl/Cortex analysis with durable evidence, server-side execution authorization and no-compromise/no-share-authority invariants. Phase 11.10f accepted read-only OpenCTI graph/entity context over persisted mappings/revisions without inferring generic upstream relationship topology.
+Phase 11.10c accepted the read-only canonical Command Center with fail-closed canonical metrics and explicit separation between configuration and runtime observation. Phase 11.10d accepted read-only Unified Intelligence where search projections remain distinct from canonical detail/provenance. Phase 11.10e accepted human-triggered IntelOwl/Cortex analysis with durable evidence, server-side execution authorization and no-compromise/no-share-authority invariants. Phase 11.10f accepted read-only OpenCTI graph/entity context over persisted mappings/revisions without inferring generic upstream relationship topology. Phase 11.10g accepted human-governed MISP Sharing & Exchange with separate review/share approval, authoritative handling restrictions, replay protection and `published=false` export only.
 
 These are repository engineering controls and do not prove provider enforcement, live availability, successful recovery, production-equivalent operation or production authorization.
 
-## Active Phase 11.10g MISP Sharing & Exchange security boundary
+## Active Phase 11.10h TheHive Investigations & Cases security boundary
 
-The Sharing & Exchange workspace is governed by same-origin DTMO APIs. UI state does not create authorization and the browser never receives MISP credentials.
+The Investigations workspace is governed by same-origin DTMO APIs. UI state does not create authorization and the browser never receives TheHive credentials or organization authorization.
 
 Security invariants:
 
-- canonical sharing-state reads require `read:intelligence`;
-- review remains a human `review:intelligence` decision;
-- external share approval remains a human `approve:share` decision performed by a principal different from the reviewer;
-- service accounts cannot perform the human review/share decisions and cannot export to MISP;
-- MISP export cannot grant its own approval and accepts only already reviewed/share-approved canonical state;
-- MISP-origin authoritative distribution and sharing-group restrictions cannot be changed on re-export;
-- requested TLP cannot be less restrictive than authoritative source TLP;
-- MISP-origin intelligence without authoritative source restriction evidence fails closed;
-- the current canonical revision uses a deterministic MISP event UUID and persisted `pending`, `success` or `uncertain` evidence blocks automatic replay;
-- uncertain delivery requires operator inspection rather than blind retry;
-- exported MISP events are created with `published=false`;
-- Phase 11.10g contains no Publish or Synchronize action and grants no such authority;
-- configuration is not promoted to live MISP health;
-- sharing-state dependency failure is unavailable rather than synthetic approval/export state;
-- transfer evidence does not prove downstream receipt, local compromise or remediation;
+- canonical investigation-state reads require `read:intelligence`;
+- case mutation remains a separate explicit human `handoff:case` action;
+- service accounts cannot authorize TheHive case handoff;
+- canonical provenance is required before mutation;
+- TLP/PAP mappings fail closed;
+- authoritative source handling restrictions cannot be broadened and authoritative MISP distribution/sharing-group restrictions require a deployment-approved TheHive access mapping;
+- TheHive token and `X-Organisation` context remain server-side only;
+- durable reservation precedes the external mutation;
+- `reserved` and `ambiguous` handoff evidence requires manual reconciliation rather than blind UI replay;
+- delivered handoff evidence proves only the stable case identity returned at creation time;
+- alerts, tasks, case timeline, later upstream case state and responder results are not inferred because the accepted Phase 11.6 persistence/readback boundary does not contain them;
+- case handoff grants no external-share/publication authority and no responder/autonomous incident-response authority;
+- configuration is not promoted to live TheHive health;
+- handoff/case identity does not prove downstream remediation or local compromise;
 - repository/browser mocks remain engineering evidence only.
 
-The dedicated Phase 11 MISP Sharing Exchange Gate may prove exact-head repository contracts, typecheck/build, server-side authority separation, handling/replay semantics and fail-closed UI behavior. It **does not prove** live MISP health, publication/synchronization, downstream consumption, production-equivalent operation, independent assurance or production authorization.
+The dedicated Phase 11 TheHive Investigations Workspace Gate may prove exact-head repository/API/browser contracts, server-side authority separation, handling/reconciliation semantics and fail-closed UI behavior. It **does not prove** live TheHive health, licensing entitlement, production credentials/RBAC, organization membership, upstream case completeness, responder execution, production-equivalent operation, independent assurance or production authorization.
+
+## Accepted Phase 11.10g MISP security boundary
+
+The accepted MISP workspace preserves `read:intelligence`, `review:intelligence` and separate human `approve:share`; MISP-origin handling restrictions and deterministic replay protections remain binding. Exported MISP events remain `published=false` and no Publish or Synchronize authority is exposed. Configuration is not live MISP health and technical transfer is not evidence of downstream consumption or local compromise.
 
 ## Threat and vulnerability management
 
 Vulnerability findings remain provenance-bound evidence. A green scan does not establish absence of unknown vulnerabilities; a governed finding cannot be silently suppressed. Exceptions must remain accountable, time-bounded and bound to the exact artifact/finding identity.
 
-Frontend production dependency audit, container/package SBOMs and vulnerability controls remain regression gates during 11.10g. They do not establish vulnerability absence or production readiness.
+Frontend production dependency audit, container/package SBOMs and vulnerability controls remain regression gates during 11.10h. They do not establish vulnerability absence or production readiness.
 
 ## Secrets and signing identities
 
-Raw runtime secrets, TLS private keys, MISP API keys and long-lived signing keys do not belong in Git, Helm values, frontend storage, documentation evidence or screenshots. Release signing uses short-lived workload identity. Registry/deployment credentials remain deployment-owned secrets.
+Raw runtime secrets, TLS private keys, MISP API keys, TheHive API tokens and long-lived signing keys do not belong in Git, Helm values, frontend storage, documentation evidence or screenshots. Release signing uses short-lived workload identity. Registry/deployment credentials remain deployment-owned secrets.
 
 ## Availability, capacity and recovery
 
@@ -86,7 +89,7 @@ Every evidence item must identify the **same immutable** candidate and approved 
 
 ## Data protection and privacy
 
-Artifact metadata, SBOMs, vulnerability evidence and Phase 11.10 manifests must avoid credentials, raw intelligence payloads, private notes and unnecessary personal data. Technical connectivity or evidence validation does not itself establish legal authority to collect, enrich, synchronize, publish or redistribute intelligence.
+Artifact metadata, SBOMs, vulnerability evidence and Phase 11.10 manifests must avoid credentials, raw intelligence payloads, private notes and unnecessary personal data. Technical connectivity or evidence validation does not itself establish legal authority to collect, enrich, synchronize, publish, create cases or redistribute intelligence.
 
 ## Evidence boundary
 

@@ -56,11 +56,13 @@ def test_phase11_10e_documentation_status_remains_accepted_during_later_slice() 
     assert "Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE`" in current
-    assert "Phase 11.10g MISP Sharing & Exchange | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
-    assert "Phase 11.10h TheHive Investigations & Cases | `NOT STARTED`" in current
+    assert "Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE`" in current
+    assert "Phase 11.10h TheHive Investigations & Cases | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
+    assert "Phase 11.10i Vulnerability & Exposure Center | `NOT STARTED`" in current
     for text in (roadmap, portal, evidence):
         assert "11.10e" in text
         assert "11.10f" in text
         assert "11.10g" in text
         assert "11.10h" in text
+        assert "11.10i" in text
     assert "not production authorized" in current.lower()

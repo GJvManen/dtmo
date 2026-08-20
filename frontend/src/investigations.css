@@ -1,0 +1,195 @@
+.investigations-workspace {
+  display: grid;
+  gap: 18px;
+}
+
+.investigations-heading {
+  align-items: flex-start;
+}
+
+.investigation-loader,
+.canonical-investigation,
+.case-create-panel,
+.investigations-evidence {
+  display: grid;
+  gap: 16px;
+}
+
+.investigation-item-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.investigation-item-form label,
+.summary-field,
+.handling-fields label {
+  display: grid;
+  gap: 7px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.investigation-item-form input,
+.summary-field textarea,
+.handling-fields select {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.summary-field textarea {
+  resize: vertical;
+  min-height: 124px;
+}
+
+.investigation-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.35fr);
+  gap: 18px;
+}
+
+.lower-investigation-grid {
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+}
+
+.investigation-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.investigation-facts div {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-muted);
+  border-radius: 10px;
+  padding: 11px 12px;
+}
+
+.investigation-facts dt {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  margin-bottom: 4px;
+}
+
+.investigation-facts dd {
+  margin: 0;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.severity-pill {
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid var(--border-strong);
+}
+
+.handoff-blockers {
+  display: grid;
+  gap: 7px;
+  border: 1px solid var(--warning-border, var(--border-strong));
+  background: var(--surface-muted);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.handoff-blockers ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-muted);
+}
+
+.handoff-blockers.reconciliation {
+  border-color: var(--danger-border, var(--border-strong));
+}
+
+.handoff-blockers.reconciliation span {
+  color: var(--text-muted);
+}
+
+.handling-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.handoff-history {
+  display: grid;
+  gap: 10px;
+}
+
+.handoff-record {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-muted);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.handoff-record > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.handoff-record strong,
+.handoff-record small,
+.record-error {
+  overflow-wrap: anywhere;
+}
+
+.handoff-record small {
+  color: var(--text-muted);
+}
+
+.record-error {
+  color: var(--text-danger, var(--text-primary));
+  font-size: 0.82rem;
+}
+
+.scope-boundary-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-muted);
+}
+
+.scope-boundary-list strong {
+  color: var(--text-primary);
+}
+
+@media (max-width: 980px) {
+  .investigation-grid,
+  .lower-investigation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .investigation-item-form,
+  .handling-fields,
+  .investigation-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .investigation-item-form .button {
+    width: 100%;
+  }
+
+  .handoff-record {
+    grid-template-columns: 1fr;
+  }
+}

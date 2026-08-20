@@ -98,8 +98,8 @@ The Unified Operations Workbench materially changes the candidate. Candidate-com
 - **11.10d Unified Intelligence Workspace** — `PASS / REPOSITORY_COMPLETE`;
 - **11.10e IntelOwl/Cortex integrated analysis** — `PASS / REPOSITORY_COMPLETE`;
 - **11.10f OpenCTI graph/entity workspace** — `PASS / REPOSITORY_COMPLETE`;
-- **11.10g MISP Sharing & Exchange** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
-- **11.10h TheHive Investigations & Cases** — `NOT STARTED`;
+- **11.10g MISP Sharing & Exchange** — `PASS / REPOSITORY_COMPLETE`;
+- **11.10h TheHive Investigations & Cases** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
 - **11.10i Vulnerability & Exposure Center** — `NOT STARTED`;
 - **11.10j Sources & Collection Control Center** — `NOT STARTED`;
 - **11.10k Automation & Playbooks** — `NOT STARTED`;
@@ -109,47 +109,46 @@ The Unified Operations Workbench materially changes the candidate. Candidate-com
 - **11.10o Consolidation and full functional acceptance** — `NOT STARTED`;
 - **11.10p Fresh production-equivalent validation** — `NOT STARTED / CANDIDATE FREEZE REQUIRED`.
 
-#### Accepted workbench foundation through 11.10f
+#### Accepted workbench foundation through 11.10g
 
 The accepted canonical path is **browser → DTMO API → governed integration adapter → upstream service**. The browser never becomes a privileged upstream integration client. **Server-side RBAC**, provenance, human publication/share authority, separate TheHive case authority and fail-closed behavior remain authoritative.
 
-11.10a–11.10f delivered the frontend architecture, React/TypeScript/Vite canonical shell, Command Center, Unified Intelligence Workspace, Integrated Analysis workspace and OpenCTI Graph/Entity workspace. IntelOwl/Cortex output remains evidence rather than a compromise verdict. OpenCTI generic relationship topology is not inferred beyond persisted mapping evidence.
+11.10a–11.10g delivered the frontend architecture, React/TypeScript/Vite canonical shell, Command Center, Unified Intelligence Workspace, Integrated Analysis workspace, OpenCTI Graph/Entity workspace and MISP Sharing/Exchange workspace. IntelOwl/Cortex output remains evidence rather than a compromise verdict. OpenCTI generic relationship topology is not inferred beyond persisted mapping evidence. MISP technical transfer remains separate from publication/synchronization authority.
 
-#### 11.10g active MISP Sharing & Exchange
+#### 11.10h active TheHive Investigations & Cases
 
-11.10g makes `/workbench/sharing` functional using accepted Phase 11.5/E8 governance and export controls rather than a parallel sharing backend.
+11.10h makes `/workbench/investigations` functional using the accepted Phase 11.6 human-authorized TheHive handoff/persistence boundary rather than a parallel case backend.
 
 Frontend-facing state contract:
 
-- `GET /api/v1/sharing/items/{item_id}` — canonical review/share/restriction/export state protected by `read:intelligence`.
+- `GET /api/v1/thehive/items/{item_id}/investigation` — canonical intelligence, provenance and durable handoff state protected by `read:intelligence`.
 
-Existing governed actions remain authoritative:
+Existing governed action remains authoritative:
 
-- `POST /api/v1/intelligence/{item_id}/review` — `review:intelligence`;
-- `POST /api/v1/intelligence/{item_id}/share-approval` — `approve:share`, by a different human principal than the reviewer;
-- `POST /api/v1/intelligence/{item_id}/misp-export` — export of an already reviewed/share-approved canonical revision.
+- `POST /api/v1/thehive/items/{item_id}/cases` — explicit human `handoff:case` case creation.
 
-Service accounts cannot substitute for human review/share approval or MISP export. The browser never receives MISP credentials and does not call MISP directly.
+Service accounts cannot substitute for human case authority. Canonical provenance remains mandatory. The browser never receives TheHive credentials or organization authorization and does not call TheHive directly. TLP/PAP and authoritative source restrictions fail closed.
 
-For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions cannot be weakened on re-export. The current canonical revision has a deterministic MISP event UUID; persisted `pending`, `success` or `uncertain` delivery evidence blocks automatic replay, and uncertain delivery requires operator inspection.
+Durable `reserved`, `delivered`, `ambiguous` and `failed` handoff evidence is exposed. `reserved` or `ambiguous` state requires manual reconciliation and the canonical UI blocks a blind new case request. A delivered result proves only stable case identity at creation time.
 
-The accepted exporter creates `published=false` MISP events. Phase 11.10g exposes no Publish or Synchronize action. Configuration is not live MISP health. A technical transfer does not prove publication, synchronization, downstream receipt, local compromise or remediation.
+The accepted persistence does not mirror generic TheHive alerts, tasks, case timeline, later case state or responder results. 11.10h therefore does not infer them. Configuration is not live TheHive health. Case/handoff evidence does not prove external-share authority, responder/remediation execution, local compromise or production readiness.
 
-Authoritative 11.10g package:
+Authoritative 11.10h package:
 
-- `backend/dtmo/misp_sharing_workspace.py`;
-- `backend/dtmo/misp_export_api.py`;
-- `backend/dtmo/governance/misp_export.py`;
-- `frontend/src/MispSharingWorkspace.tsx`;
-- `frontend/src/misp-sharing.css`;
-- `docs/architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md`;
-- `docs/user/MISP_SHARING_EXCHANGE_WORKSPACE.md`;
-- `docs/qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md`;
-- `backend/tests/test_phase11_10g_misp_sharing_contract.py`;
-- `backend/tests/test_phase11_10g_misp_sharing_browser.py`;
-- `.github/workflows/phase11-misp-sharing-exchange.yml`.
+- `backend/dtmo/thehive_handoff.py`;
+- `backend/dtmo/integrations/thehive.py`;
+- `backend/dtmo/persistence/thehive.py`;
+- `frontend/src/InvestigationsWorkspace.tsx`;
+- `frontend/src/investigations.css`;
+- `docs/architecture/PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md`;
+- `docs/user/THEHIVE_INVESTIGATIONS_WORKSPACE.md`;
+- `docs/qa/PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md`;
+- `backend/tests/test_phase11_10h_thehive_investigations_contract.py`;
+- `backend/tests/test_phase11_10h_thehive_investigations_api.py`;
+- `backend/tests/test_phase11_10h_thehive_investigations_browser.py`;
+- `.github/workflows/phase11-thehive-investigations.yml`.
 
-Only after 11.10g is accepted and merged may **11.10h TheHive Investigations & Cases** begin.
+Only after 11.10h is accepted and merged may **11.10i Vulnerability & Exposure Center** begin.
 
 #### 11.10p Fresh production-equivalent validation
 
@@ -178,9 +177,9 @@ A production `GO` requires accepted 11.10 and 11.11 evidence for the same releas
 
 ## Immediate sequence
 
-1. Complete **11.10g MISP Sharing & Exchange** on one exact green head and merge with expected-head protection.
-2. Start **11.10h TheHive Investigations & Cases** only after 11.10g is merged.
-3. Continue 11.10i–11.10o one bounded green PR at a time.
+1. Complete **11.10h TheHive Investigations & Cases** on one exact green head and merge with expected-head protection.
+2. Start **11.10i Vulnerability & Exposure Center** only after 11.10h is merged.
+3. Continue 11.10j–11.10o one bounded green PR at a time.
 4. Freeze one immutable candidate and execute **11.10p**.
 5. Complete fresh **Phase 11.11** independent assurance for that same candidate.
 6. Enter **Phase 12** only after 11.10 and 11.11 are accepted.

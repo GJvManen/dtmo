@@ -21,14 +21,15 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10g MISP Sharing & Exchange | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10h–11.10o candidate completion | `NOT STARTED` |
+| Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10h TheHive Investigations & Cases | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.10i–11.10o candidate completion | `NOT STARTED` |
 | Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **not production authorized** |
 
-The active bounded programme step is **Phase 11.10g MISP Sharing & Exchange**. Phase 11.10a–11.10f are accepted repository baselines. The Unified Operations Workbench materially changes the integrated candidate, so fresh external production-equivalent execution remains 11.10p after 11.10a–11.10o completion and immutable candidate freeze. Earlier Phase 8/9 evidence remains historical and candidate-bound and cannot be reused.
+The active bounded programme step is **Phase 11.10h TheHive Investigations & Cases**. Phase 11.10a–11.10g are accepted repository baselines. The Unified Operations Workbench materially changes the integrated candidate, so fresh external production-equivalent execution remains 11.10p after 11.10a–11.10o completion and immutable candidate freeze. Earlier Phase 8/9 evidence remains historical and candidate-bound and cannot be reused.
 
 ## Start here
 
@@ -36,18 +37,18 @@ The active bounded programme step is **Phase 11.10g MISP Sharing & Exchange**. P
 |---|---|
 | Executive / sponsor | [Current State](project/CURRENT_STATE.md), [Executive Status](project/EXECUTIVE_STATUS.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
 | Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) |
-| Analyst / reviewer | [MISP Sharing & Exchange](user/MISP_SHARING_EXCHANGE_WORKSPACE.md), [OpenCTI Graph / Entity Workspace](user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md), [Integrated Analysis Workspace](user/INTEGRATED_ANALYSIS_WORKSPACE.md), [Unified Intelligence Workspace](user/UNIFIED_INTELLIGENCE_WORKSPACE.md), [IntelOwl Enrichment Workflow](user/INTELOWL_ENRICHMENT_WORKFLOW.md), [User Guide](user/USER_GUIDE.md) |
-| Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Kubernetes Runtime Configuration](administration/KUBERNETES_RUNTIME_CONFIGURATION.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
-| Architecture / engineering | [Phase 11.10g MISP Sharing & Exchange](architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md), [Frontend Architecture](architecture/FRONTEND_ARCHITECTURE.md), [UI/API Contract](architecture/UI_API_CONTRACT.md), [Phase 11.10f OpenCTI Graph / Entity Workspace](architecture/PHASE11_10F_OPENCTI_GRAPH_ENTITY_WORKSPACE.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
+| Analyst / reviewer | [TheHive Investigations](user/THEHIVE_INVESTIGATIONS_WORKSPACE.md), [MISP Sharing & Exchange](user/MISP_SHARING_EXCHANGE_WORKSPACE.md), [OpenCTI Graph / Entity Workspace](user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md), [Integrated Analysis Workspace](user/INTEGRATED_ANALYSIS_WORKSPACE.md), [Unified Intelligence Workspace](user/UNIFIED_INTELLIGENCE_WORKSPACE.md), [IntelOwl Enrichment Workflow](user/INTELOWL_ENRICHMENT_WORKFLOW.md), [User Guide](user/USER_GUIDE.md) |
+| Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [TheHive Handoff Configuration](administration/THEHIVE_HANDOFF_CONFIGURATION.md), [Kubernetes Runtime Configuration](administration/KUBERNETES_RUNTIME_CONFIGURATION.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
+| Architecture / engineering | [Phase 11.10h TheHive Investigations & Cases](architecture/PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md), [Phase 11.10g MISP Sharing & Exchange](architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md), [Frontend Architecture](architecture/FRONTEND_ARCHITECTURE.md), [UI/API Contract](architecture/UI_API_CONTRACT.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
 | UX / frontend | [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Information Architecture](ux/INFORMATION_ARCHITECTURE.md), [Design System](ux/DESIGN_SYSTEM.md), [Frontend UX](ux/FRONTEND_UX.md), [`frontend/README.md`](../frontend/README.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.10 Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md) |
-| Governance / compliance | [MISP Sharing & Exchange](architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md), [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
-| QA / release | [Phase 11.10g MISP Sharing Gate](qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md), [Phase 11.10f OpenCTI Graph Gate](qa/PHASE11_10F_OPENCTI_GRAPH_ENTITY_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
-| Operations | [Phase 11.10 Production-Equivalent Validation Runbook](operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md), [OpenCTI Integration Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md), [IntelOwl Enrichment Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
+| Governance / compliance | [TheHive Investigations](architecture/PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md), [MISP Sharing & Exchange](architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md), [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
+| QA / release | [Phase 11.10h TheHive Investigations Gate](qa/PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md), [Phase 11.10g MISP Sharing Gate](qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
+| Operations | [TheHive Handoff Runbook](operations/THEHIVE_HANDOFF_RUNBOOK.md), [Phase 11.10 Production-Equivalent Validation Runbook](operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
 
 ## Unified Operations Workbench programme
 
-Phase 11.10a established the frontend architecture/design contract. Phase 11.10b implemented the React/TypeScript/Vite canonical shell under `/workbench/`. Phase 11.10c delivered the governed Command Center. Phase 11.10d delivered governed intelligence discovery and canonical object detail/provenance. Phase 11.10e delivered the human-governed IntelOwl/Cortex analysis workspace. Phase 11.10f delivered the OpenCTI graph/entity workspace. **Phase 11.10g is active** and makes `/workbench/sharing` a human-governed MISP review, approval and unpublished-export workspace.
+Phase 11.10a established the frontend architecture/design contract. Phase 11.10b implemented the React/TypeScript/Vite canonical shell under `/workbench/`. Phase 11.10c delivered the governed Command Center. Phase 11.10d delivered governed intelligence discovery and canonical object detail/provenance. Phase 11.10e delivered the human-governed IntelOwl/Cortex analysis workspace. Phase 11.10f delivered the OpenCTI graph/entity workspace. Phase 11.10g delivered the human-governed MISP sharing workspace. **Phase 11.10h is active** and makes `/workbench/investigations` a canonical DTMO/TheHive investigation and explicit human case-handoff workspace.
 
 The canonical frontend trust path remains:
 
@@ -55,7 +56,7 @@ The canonical frontend trust path remains:
 
 The browser does not become a privileged upstream client. **Server-side RBAC**, provenance, human publication/share authority and separate TheHive case authority remain authoritative. `/ui/console`, `/ui/intelligence-workspace` and `/ui/misp-workspace` are migration **compatibility paths**, not parallel feature-development targets.
 
-### Accepted Phase 11.10a–11.10f packages
+### Accepted Phase 11.10a–11.10g packages
 
 Accepted workbench evidence remains discoverable through:
 
@@ -65,31 +66,40 @@ Accepted workbench evidence remains discoverable through:
 - `architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md`, `user/UNIFIED_INTELLIGENCE_WORKSPACE.md`, `qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`;
 - `architecture/PHASE11_10E_INTEGRATED_ANALYSIS_WORKSPACE.md`, `user/INTEGRATED_ANALYSIS_WORKSPACE.md`, `qa/PHASE11_10E_INTEGRATED_ANALYSIS_GATE.md`;
 - `architecture/PHASE11_10F_OPENCTI_GRAPH_ENTITY_WORKSPACE.md`, `user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md`, `qa/PHASE11_10F_OPENCTI_GRAPH_ENTITY_GATE.md`;
-- `.github/workflows/phase11-frontend-architecture.yml`, `.github/workflows/phase11-application-shell.yml`, `.github/workflows/phase11-command-center.yml`, `.github/workflows/phase11-unified-intelligence-workspace.yml`, `.github/workflows/phase11-integrated-analysis-workspace.yml` and `.github/workflows/phase11-opencti-graph-workspace.yml`.
+- `architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md`, `user/MISP_SHARING_EXCHANGE_WORKSPACE.md`, `qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md`;
+- `.github/workflows/phase11-frontend-architecture.yml`, `.github/workflows/phase11-application-shell.yml`, `.github/workflows/phase11-command-center.yml`, `.github/workflows/phase11-unified-intelligence-workspace.yml`, `.github/workflows/phase11-integrated-analysis-workspace.yml`, `.github/workflows/phase11-opencti-graph-workspace.yml` and `.github/workflows/phase11-misp-sharing-exchange.yml`.
 
-These accepted slices preserve fail-closed behavior. Search projections are not canonical truth; configuration is not runtime health; IntelOwl/Cortex output is evidence rather than a compromise verdict; OpenCTI topology is not inferred beyond persisted evidence; UI visibility never replaces server-side authorization.
+These accepted slices preserve fail-closed behavior. Search projections are not canonical truth; configuration is not runtime health; IntelOwl/Cortex output is evidence rather than a compromise verdict; OpenCTI topology is not inferred beyond persisted evidence; MISP transfer does not become publication authority; UI visibility never replaces server-side authorization.
 
-### Active Phase 11.10g MISP Sharing & Exchange package
-
-- `architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md`
-- `user/MISP_SHARING_EXCHANGE_WORKSPACE.md`
-- `qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md`
-- `backend/dtmo/misp_sharing_workspace.py`
-- `backend/dtmo/misp_export_api.py`
-- `backend/dtmo/governance/misp_export.py`
-- `frontend/src/MispSharingWorkspace.tsx`
-- `frontend/src/misp-sharing.css`
-- `backend/tests/test_phase11_10g_misp_sharing_contract.py`
-- `backend/tests/test_phase11_10g_misp_sharing_browser.py`
-- `.github/workflows/phase11-misp-sharing-exchange.yml`
+### Accepted Phase 11.10g MISP Sharing & Exchange boundary
 
 The workspace reads canonical sharing state with `read:intelligence`, records review only through the existing `review:intelligence` endpoint, requires a **different human principal** with `approve:share` for sharing approval, and invokes the accepted MISP export only for already reviewed/share-approved canonical revisions. Service accounts cannot substitute for human review/share authority.
 
-MISP-origin intelligence retains authoritative distribution, sharing-group and TLP restrictions. Replay evidence for the deterministic current revision fails closed on `pending`, `success` or `uncertain` states. The export creates an event with `published=false`. Phase 11.10g exposes **no Publish or Synchronize action**.
+MISP-origin intelligence retains authoritative distribution, sharing-group and TLP restrictions. Replay evidence for the deterministic current revision fails closed on `pending`, `success` or `uncertain` states. The export creates an event with `published=false`. The accepted workspace exposes **no Publish or Synchronize action**.
 
 MISP configuration is not live-service health. A successful transfer does not prove publication, synchronization, downstream consumption, local compromise, production-equivalent operation, independent assurance or production authorization.
 
-After exact-head acceptance and merge of 11.10g, the only next bounded priority is **Phase 11.10h TheHive Investigations & Cases**.
+### Active Phase 11.10h TheHive Investigations & Cases package
+
+- `architecture/PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md`
+- `user/THEHIVE_INVESTIGATIONS_WORKSPACE.md`
+- `qa/PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md`
+- `backend/dtmo/thehive_handoff.py`
+- `backend/dtmo/persistence/thehive.py`
+- `frontend/src/InvestigationsWorkspace.tsx`
+- `frontend/src/investigations.css`
+- `backend/tests/test_phase11_10h_thehive_investigations_contract.py`
+- `backend/tests/test_phase11_10h_thehive_investigations_api.py`
+- `backend/tests/test_phase11_10h_thehive_investigations_browser.py`
+- `.github/workflows/phase11-thehive-investigations.yml`
+
+The workspace projects only canonical DTMO intelligence/provenance and durable TheHive handoff state. `read:intelligence` authorizes the read projection; case creation still requires the separate `handoff:case` permission and an explicit human action. Service accounts remain outside human case authority.
+
+A `reserved` or `ambiguous` handoff is a manual-reconciliation condition and the canonical UI refuses a blind new case request. The existing Phase 11.6 persistence does not store/read back alerts, tasks, case timeline or later upstream case state, so Phase 11.10h does not fabricate them. A delivered handoff is evidence of confirmed case identity at creation time only.
+
+TheHive configuration is not live-service health. Case handoff evidence does not prove external sharing, responder/remediation execution, local compromise, production-equivalent operation, independent assurance or production authorization.
+
+After exact-head acceptance and merge of 11.10h, the only next bounded priority is **Phase 11.10i Vulnerability & Exposure**.
 
 ## Accepted Phase 11 service integration baseline
 
