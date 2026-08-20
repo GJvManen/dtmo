@@ -20,8 +20,9 @@ This roadmap separates production authorization from product evolution and platf
 | Phase 11.10 | Candidate completion + new production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.10a | Frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10b | Canonical application shell | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10c | Command Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10d | Unified Intelligence Workspace | `NOT STARTED` |
+| Phase 11.10c | Command Center | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10d | Unified Intelligence Workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.10e | IntelOwl/Cortex integrated analysis | `NOT STARTED` |
 | Phase 11.10p | Fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
 | Phase 11.11 | New independent external assurance | `NOT STARTED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
@@ -48,8 +49,8 @@ The Unified Operations Workbench materially changes the candidate. Phase 11.10 t
 
 1. 11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`;
 2. 11.10b canonical application shell — `PASS / REPOSITORY_COMPLETE`;
-3. **11.10c Command Center — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`**;
-4. 11.10d Unified Intelligence Workspace — `NOT STARTED`;
+3. 11.10c Command Center — `PASS / REPOSITORY_COMPLETE`;
+4. **11.10d Unified Intelligence Workspace — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`**;
 5. 11.10e IntelOwl/Cortex integrated analysis — `NOT STARTED`;
 6. 11.10f OpenCTI graph/entity workspace — `NOT STARTED`;
 7. 11.10g MISP Sharing & Exchange — `NOT STARTED`;
@@ -62,13 +63,13 @@ The Unified Operations Workbench materially changes the candidate. Phase 11.10 t
 14. 11.10n role-aware UX/accessibility — `NOT STARTED`;
 15. 11.10o consolidation/full functional acceptance — `NOT STARTED`.
 
-The canonical security path remains **browser → DTMO API → governed integration adapter → upstream service**. **Server-side RBAC**, provenance, human publication/share authority and separate TheHive case authority remain authoritative. `/ui/console` remains a temporary **compatibility path**.
+The canonical security path remains **browser → DTMO API → governed integration adapter → upstream service**. **Server-side RBAC**, provenance, human publication/share authority and separate TheHive case authority remain authoritative. `/ui/console` and `/ui/intelligence-workspace` remain temporary **compatibility paths**.
 
-### Active 11.10c Command Center
+### Accepted 11.10c Command Center
 
 The Command Center is a read-only canonical operational view. It provides intelligence volume, high/critical activity, 24-hour intake, review/share-decision workload, high education relevance, recent canonical intelligence and capability state for Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex.
 
-The interface must fail closed:
+The accepted interface fails closed:
 
 - canonical-store failure produces unavailable/null metrics rather than synthetic zero values;
 - feature enablement/configuration is not a general runtime-health claim;
@@ -78,7 +79,22 @@ The interface must fail closed:
 
 Authoritative evidence is `docs/architecture/PHASE11_10C_COMMAND_CENTER.md`, `docs/qa/PHASE11_10C_COMMAND_CENTER_GATE.md`, `backend/tests/test_phase11_10c_command_center_contract.py`, `backend/tests/test_phase11_10c_command_center_browser.py` and `.github/workflows/phase11-command-center.yml`.
 
-Repository/browser acceptance **does not prove** live upstream health, production-equivalent operation, independent assurance or production authorization.
+### Active 11.10d Unified Intelligence Workspace
+
+The active slice replaces the Threat Intelligence and IOC Explorer placeholders with governed read-only discovery and canonical investigation inside `/workbench/`.
+
+It reuses existing DTMO endpoints rather than introducing a parallel intelligence backend:
+
+- `GET /api/v1/intelligence/search` for server-authorized indexed discovery;
+- `GET /api/v1/intelligence/{item_id}/workspace` for canonical DTMO object detail and provenance.
+
+Search results are discovery projections, not canonical truth. Selected object detail is retrieved separately from canonical persistence. Search dependency failure is reported unavailable rather than converted into an empty result. Canonical-detail failure does not fabricate missing object state from the search hit. A zero-result search does not prove absence from every upstream source.
+
+The workspace may expose attributable severity, source, education relevance, confidence/rationale, review status, separate share-approval state, CVE/known-exploited/vendor/product context, tags and provenance. Search and investigation remain protected by `read:intelligence` and grant no review, publication/share, case, connector/analyzer or administration mutation authority.
+
+Authoritative evidence is `docs/architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md`, `docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md`, `docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`, `backend/tests/test_phase11_10d_unified_intelligence_workspace_contract.py`, `backend/tests/test_phase11_10d_unified_intelligence_workspace_browser.py` and `.github/workflows/phase11-unified-intelligence-workspace.yml`.
+
+Repository/browser acceptance **does not prove** live upstream completeness or health, production-equivalent operation, independent assurance or production authorization.
 
 ### Part B — 11.10p fresh production-equivalent validation
 
@@ -108,9 +124,9 @@ Each material repository change requires one bounded PR with explicit acceptance
 
 ## Immediate sequence
 
-1. Complete **Phase 11.10c Command Center** on one fully green exact head and merge with expected-head protection.
-2. Only then start **11.10d Unified Intelligence Workspace**.
-3. Continue 11.10e–11.10o one green merged bounded PR at a time.
+1. Complete **Phase 11.10d Unified Intelligence Workspace** on one fully green exact head and merge with expected-head protection.
+2. Only then start **11.10e IntelOwl/Cortex integrated analysis**.
+3. Continue 11.10f–11.10o one green merged bounded PR at a time.
 4. Freeze one immutable candidate and execute **11.10p**.
 5. Run Phase 11.11 against that same candidate after explicit 11.10 acceptance.
 6. Enter Phase 12 only after both evidence classes are accepted.

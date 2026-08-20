@@ -18,8 +18,9 @@ This checklist controls the post-Phase-10 industrialisation programme and future
 | Phase 11.10 | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` | Candidate completion + future real-environment evidence |
 | Phase 11.10a frontend architecture/design | `PASS / REPOSITORY_COMPLETE` | Repository architecture evidence |
 | Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` | Repository/browser shell evidence |
-| Phase 11.10c Command Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Repository/browser Command Center evidence |
-| Phase 11.10d Unified Intelligence Workspace | `NOT STARTED` | Future product evidence |
+| Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser Command Center evidence |
+| Phase 11.10d Unified Intelligence Workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Active repository/browser intelligence evidence |
+| Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED` | Future product evidence |
 | Phase 11.10p production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` | Future real-environment evidence |
 | Phase 11.11 independent external assurance | `NOT STARTED` | Independent assurance |
 | Phase 12 | `NOT STARTED` | Future production authorization |
@@ -54,35 +55,36 @@ Historical Phase 8/9 evidence remains candidate-bound and cannot be reused for t
 - [x] Committed frontend dependency graph consumed with `npm ci`.
 - [x] `/ui/console` retained only as a migration **compatibility path**.
 - [x] Responsive navigation, keyboard command palette, context rail, light/dark semantics and CSP accepted.
-- [x] Existing security, accessibility, integration and supply-chain regressions remained green on the accepted 11.10b exact head.
+- [x] Phase 11.10c canonical Command Center accepted on an exact green head and merged with expected-head protection.
 
-## 3. Active Phase 11.10c — Command Center
+## 3. Active Phase 11.10d — Unified Intelligence Workspace
 
 Implementation criteria:
 
-- [x] Canonical read model implemented in `backend/dtmo/command_center.py`.
-- [x] Server-authorized read API implemented at `/api/v1/command-center`.
-- [x] Six operational KPI classes derived from canonical DTMO persistence.
-- [x] Recent canonical intelligence is exposed without direct upstream browser calls.
-- [x] Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex capability state is visible.
-- [x] Configuration state is separated from runtime observation; feature enablement is not a health claim.
-- [x] Canonical-store failure returns `null` values / unavailable state rather than synthetic zeros.
-- [x] Role-aware quick actions are derived from server-issued permissions.
-- [x] Command Center remains read-only; review/share/case/connector/admin mutations retain separate authorization.
+- [x] Functional `/workbench/intelligence` route added inside the accepted canonical shell.
+- [x] Functional `/workbench/intelligence/iocs` route uses the same governed intelligence contracts.
+- [x] Existing `/api/v1/intelligence/search` is reused for server-authorized discovery.
+- [x] Existing `/api/v1/intelligence/{item_id}/workspace` is reused for canonical DTMO object detail and provenance.
+- [x] Search requires explicit submission and supports severity, minimum education relevance and result-limit filters.
+- [x] No synthetic default intelligence is rendered before search.
+- [x] Search dependency failure renders unavailable rather than a synthetic empty result.
+- [x] Canonical-detail failure does not manufacture complete object state from a search hit.
+- [x] Severity, education relevance, confidence/rationale, review status and separate sharing state are rendered where attributable.
+- [x] CVE/known-exploited/vendor/product context and provenance are rendered where recorded.
+- [x] Search and investigation remain read-only; review/share/case/connector/analyzer/admin mutations retain separate authorization.
 - [x] Dedicated repository and browser contracts added.
-- [x] Dedicated `Phase 11 Command Center Gate` added.
+- [x] Dedicated `Phase 11 Unified Intelligence Workspace Gate` added.
 - [ ] Final exact-head frontend `npm ci`, typecheck and production build are green.
-- [ ] Final exact-head Command Center repository contract is green.
+- [ ] Final exact-head Unified Intelligence repository contract is green.
 - [ ] Final exact-head browser acceptance is green.
 - [ ] Existing security, accessibility, integration, migration, runtime and supply-chain regressions are all green for the same exact head.
 - [ ] Professional current-state, evidence, QA and roadmap documentation is synchronized for the same head.
-- [ ] Phase 11.10c merged with expected-head protection only after every registered exact-head workflow is `completed/success`.
+- [ ] Phase 11.10d merged with expected-head protection only after every registered exact-head workflow is `completed/success`.
 
-Only after these items are complete may **Phase 11.10d Unified Intelligence Workspace** start.
+Only after these items are complete may **Phase 11.10e IntelOwl/Cortex integrated analysis** start.
 
 ## 4. Remaining candidate-completion sequence
 
-- [ ] 11.10d Unified Intelligence Workspace.
 - [ ] 11.10e IntelOwl/Cortex integrated analysis.
 - [ ] 11.10f OpenCTI graph/entity workspace.
 - [ ] 11.10g MISP Sharing & Exchange.

@@ -7,12 +7,13 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 DTMO protects confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence. Source trust, identity, authorization, evidence and human decision boundaries remain explicit and enforceable.
 
-DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9, Phase 11.10a and Phase 11.10b are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**; the active bounded gate is **Phase 11.10c Command Center**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10d, Phase 11.11 and Phase 12 are `NOT STARTED`.
+DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9 and Phase 11.10a–11.10c are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**; the active bounded gate is **Phase 11.10d Unified Intelligence Workspace**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10e, Phase 11.11 and Phase 12 are `NOT STARTED`.
 
 ## Identity and access control
 
 - **Server-side RBAC remains authoritative.**
 - Human and service identities remain separate.
+- `read:intelligence` controls Unified Intelligence discovery and canonical object reading.
 - `handoff:case` remains distinct from `approve:share`.
 - Connectors, CI identities, Kubernetes service accounts, frontend controls and integrated platforms do not receive human publication/share or case-handoff authority.
 - Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/API/licensing/provider boundaries.
@@ -33,32 +34,35 @@ Phase 11.10a accepted the frontend trust boundary **browser → DTMO API → gov
 
 Phase 11.10b accepted the separately built React/TypeScript/Vite `/workbench/` shell with committed dependency lockfile consumed by `npm ci`, build-stage-only Node/npm, strict same-origin CSP, immutable hashed assets, traversal-safe serving, responsive keyboard navigation, context rail and `/ui/console` as a migration **compatibility path**.
 
+Phase 11.10c accepted the read-only canonical Command Center with fail-closed canonical metrics, explicit separation between configuration and runtime observation, and no new review/share/case/connector/admin authority.
+
 These are repository engineering controls and do not prove provider enforcement, live availability, successful recovery, production-equivalent operation or production authorization.
 
-## Active Phase 11.10c Command Center security boundary
+## Active Phase 11.10d Unified Intelligence security boundary
 
-The Command Center is a **read-only** canonical projection. `/api/v1/command-center` requires `READ_INTELLIGENCE` and does not grant review, share, case, connector, analysis or administrative mutation authority.
+The Unified Intelligence Workspace is **read-only**. `/api/v1/intelligence/search` and `/api/v1/intelligence/{item_id}/workspace` require server-side `READ_INTELLIGENCE`/`read:intelligence` authority and do not grant review, share, publication, case, connector, analyzer or administrative mutation authority.
 
 Security invariants:
 
-- metrics are derived from canonical DTMO persistence rather than hard-coded operational values;
-- if canonical persistence cannot be observed, metric values remain `null` and the UI reports `unavailable` instead of synthesizing zero activity;
-- Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex configuration is separated from runtime observation;
-- a feature flag or API base never produces a general `healthy` claim;
-- persisted execution may be shown only as attributable observation and does not become a general upstream-health claim;
-- role-aware quick-action visibility is convenience only and never replaces server-side authorization;
+- browser requests remain same-origin DTMO API calls rather than direct privileged Taranis, IntelOwl, OpenCTI, MISP, TheHive or Cortex calls;
 - no upstream secret, bearer token, private key or human approval authority is stored as ordinary frontend state;
-- browser requests remain same-origin DTMO API calls rather than direct privileged service calls;
-- UI error/degraded states must not fabricate intelligence, workload, integration health or compromise;
+- search results are discovery/index projections and are not silently promoted to canonical truth;
+- selected object detail and provenance are retrieved separately from canonical DTMO persistence;
+- no demonstration or synthetic intelligence is fabricated before an explicit user search;
+- search dependency failure is rendered unavailable rather than converted into a synthetic empty result;
+- canonical-detail failure does not reconstruct missing fields from the search hit;
+- a zero-result search does not prove absence from all upstream sources;
+- severity, confidence, review status, sharing state, contextual CVEs/KEV/vendor/product data and provenance are shown only where attributable;
+- role-aware visibility is convenience only and never replaces server-side authorization;
 - repository/browser mocks remain engineering evidence only.
 
-The dedicated Phase 11 Command Center Gate may prove exact-head repository read-model behavior, typecheck/build, fail-closed browser rendering and role-aware visibility. It **does not prove** live upstream integration health, production-equivalent operation, independent assurance or production authorization.
+The dedicated Phase 11 Unified Intelligence Workspace Gate may prove exact-head repository contracts, typecheck/build, deterministic search/detail/provenance browser behavior and fail-closed UI handling. It **does not prove** live upstream completeness or health, production-equivalent operation, independent assurance or production authorization.
 
 ## Threat and vulnerability management
 
 Vulnerability findings remain provenance-bound evidence. A green scan does not establish absence of unknown vulnerabilities; a governed finding cannot be silently suppressed. Exceptions must remain accountable, time-bounded and bound to the exact artifact/finding identity.
 
-Frontend production dependency audit, container/package SBOMs and vulnerability controls remain regression gates during 11.10c. They do not establish vulnerability absence or production readiness.
+Frontend production dependency audit, container/package SBOMs and vulnerability controls remain regression gates during 11.10d. They do not establish vulnerability absence or production readiness.
 
 ## Secrets and signing identities
 
@@ -78,4 +82,4 @@ Artifact metadata, SBOMs, vulnerability evidence and Phase 11.10 manifests must 
 
 ## Evidence boundary
 
-Repository CI can prove repository-controlled contracts and exact-head outputs only. It cannot prove live Kubernetes behavior, real production-equivalent migration, upgrade, rollback, saturation, recovery, independent assurance or production authorization. Phase 11.11 remains `NOT STARTED` until Phase 11.10 is explicitly accepted; Phase 12 remains `NOT STARTED` until fresh assurance is accepted for the same candidate.
+Repository CI can prove repository-controlled contracts and exact-head outputs only. It cannot prove live Kubernetes behavior, live upstream completeness or health, real production-equivalent migration, upgrade, rollback, saturation, recovery, independent assurance or production authorization. Phase 11.11 remains `NOT STARTED` until Phase 11.10 is explicitly accepted; Phase 12 remains `NOT STARTED` until fresh assurance is accepted for the same candidate.

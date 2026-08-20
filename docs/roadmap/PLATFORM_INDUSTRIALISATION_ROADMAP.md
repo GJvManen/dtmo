@@ -94,8 +94,8 @@ The Unified Operations Workbench materially changes the candidate. Therefore 11.
 
 - **11.10a Frontend architecture and design contract** — `PASS / REPOSITORY_COMPLETE`;
 - **11.10b Canonical application shell** — `PASS / REPOSITORY_COMPLETE`;
-- **11.10c Command Center** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
-- **11.10d Unified Intelligence Workspace** — `NOT STARTED`;
+- **11.10c Command Center** — `PASS / REPOSITORY_COMPLETE`;
+- **11.10d Unified Intelligence Workspace** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
 - **11.10e IntelOwl/Cortex integrated analysis** — `NOT STARTED`;
 - **11.10f OpenCTI graph/entity workspace** — `NOT STARTED`;
 - **11.10g MISP Sharing & Exchange** — `NOT STARTED`;
@@ -125,11 +125,11 @@ Accepted evidence remains:
 - `.github/workflows/phase11-frontend-architecture.yml`;
 - `.github/workflows/phase11-application-shell.yml`.
 
-#### 11.10c active Command Center
+#### 11.10c accepted Command Center
 
-11.10c delivers the first functional canonical workspace. It provides accountable read-only visibility into canonical intelligence counts, high/critical activity, 24-hour intake, review/share-decision workload, high education relevance, recent intelligence and the configured capability state of Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex.
+11.10c is `PASS / REPOSITORY_COMPLETE`. It delivered the first functional canonical workspace with accountable read-only visibility into canonical intelligence counts, high/critical activity, 24-hour intake, review/share-decision workload, high education relevance, recent intelligence and the configured capability state of Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex.
 
-It must never turn a feature flag or API configuration into a `healthy` claim. Persisted execution may be shown only as attributable observation. When the canonical datastore is unavailable, metric values remain unavailable rather than synthetic zero values. Role-aware quick-action visibility is usability only and never substitutes for server authorization.
+It never turns a feature flag or API configuration into a `healthy` claim. Persisted execution is shown only as attributable observation. When the canonical datastore is unavailable, metric values remain unavailable rather than synthetic zero values. Role-aware quick-action visibility is usability only and never substitutes for server authorization.
 
 Authoritative 11.10c package:
 
@@ -143,7 +143,28 @@ Authoritative 11.10c package:
 - `backend/tests/test_phase11_10c_command_center_browser.py`;
 - `.github/workflows/phase11-command-center.yml`.
 
-Only after 11.10c is accepted and merged may **11.10d Unified Intelligence Workspace** begin.
+#### 11.10d active Unified Intelligence Workspace
+
+11.10d migrates governed intelligence discovery and investigation into the canonical workbench and makes IOC Explorer a specialized view over the same server-authorized DTMO contracts.
+
+The implementation reuses `GET /api/v1/intelligence/search` for search discovery and `GET /api/v1/intelligence/{item_id}/workspace` for canonical object detail and provenance. It introduces no browser-to-upstream privileged calls and no parallel intelligence backend.
+
+Search results are index projections, not canonical truth. A selected object is retrieved separately from canonical DTMO persistence. Search failure is unavailable rather than a fabricated empty result; canonical-detail failure never promotes incomplete index data into a complete object. A zero-result search does not prove absence from all upstream sources.
+
+The read-only workspace exposes severity, source, education relevance, confidence, review status, separate share-approval state, structured CVE/known-exploited/vendor/product context and provenance where recorded. `read:intelligence` remains the server-side access boundary. Review, dissemination, connector/analyzer execution, case mutation and administration remain separately authorized.
+
+Authoritative 11.10d package:
+
+- `frontend/src/UnifiedIntelligenceWorkspace.tsx`;
+- `frontend/src/unified-intelligence.css`;
+- `docs/architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md`;
+- `docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md`;
+- `docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`;
+- `backend/tests/test_phase11_10d_unified_intelligence_workspace_contract.py`;
+- `backend/tests/test_phase11_10d_unified_intelligence_workspace_browser.py`;
+- `.github/workflows/phase11-unified-intelligence-workspace.yml`.
+
+Only after 11.10d is accepted and merged may **11.10e IntelOwl/Cortex integrated analysis** begin.
 
 #### 11.10p Fresh production-equivalent validation
 
@@ -172,9 +193,9 @@ A production `GO` requires accepted 11.10 and 11.11 evidence for the same releas
 
 ## Immediate sequence
 
-1. Complete **11.10c Command Center** on one exact green head and merge with expected-head protection.
-2. Start **11.10d Unified Intelligence Workspace** only after 11.10c is merged.
-3. Continue 11.10e–11.10o one bounded green PR at a time.
+1. Complete **11.10d Unified Intelligence Workspace** on one exact green head and merge with expected-head protection.
+2. Start **11.10e IntelOwl/Cortex integrated analysis** only after 11.10d is merged.
+3. Continue 11.10f–11.10o one bounded green PR at a time.
 4. Freeze one immutable candidate and execute **11.10p**.
 5. Complete fresh **Phase 11.11** independent assurance for that same candidate.
 6. Enter **Phase 12** only after 11.10 and 11.11 are accepted.

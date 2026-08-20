@@ -18,8 +18,9 @@ This document gives accountable decision makers the current production-readiness
 | Phase 11.10 | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` | Candidate completion plus fresh external validation required |
 | Phase 11.10a | `PASS / REPOSITORY_COMPLETE` | Frontend architecture/design accepted |
 | Phase 11.10b | `PASS / REPOSITORY_COMPLETE` | Canonical application shell accepted |
-| Phase 11.10c | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Command Center is the sole active decision gate |
-| Phase 11.10d | `NOT STARTED` | Unified Intelligence Workspace blocked until 11.10c acceptance |
+| Phase 11.10c | `PASS / REPOSITORY_COMPLETE` | Canonical Command Center accepted |
+| Phase 11.10d | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Unified Intelligence Workspace is the sole active decision gate |
+| Phase 11.10e | `NOT STARTED` | IntelOwl/Cortex integrated analysis blocked until 11.10d acceptance |
 | Phase 11.10p | `NOT STARTED / CANDIDATE FREEZE REQUIRED` | External validation blocked until candidate completion/freeze |
 | Phase 11.11 | `NOT STARTED` | Blocked until 11.10 acceptance |
 | Phase 12 | `NOT STARTED` | Requires fresh validation and assurance |
@@ -28,31 +29,33 @@ Phase 11 remains `IN PROGRESS / ACTIVE`. DTMO is **not production authorized**.
 
 ## Active decision boundary
 
-The immediate question is whether **Phase 11.10c Command Center** provides trustworthy operational orientation from canonical DTMO evidence without fabricating health, workload or threat state.
+The immediate question is whether **Phase 11.10d Unified Intelligence Workspace** provides trustworthy read-only intelligence discovery and canonical investigation without fabricating search completeness, object detail or authority.
 
 The exact-head gate must prove:
 
-- canonical `/api/v1/command-center` read API protected by `READ_INTELLIGENCE`;
-- metrics derived from canonical persistence, not hard-coded dashboard numbers;
-- explicit `unavailable`/`null` state when canonical persistence cannot be queried;
-- no zero-value synthesis from missing evidence;
-- configured integrations never labelled healthy solely from flags or API configuration;
-- runtime execution shown only as attributable observation;
-- role-aware quick navigation based on authenticated permissions while **server-side RBAC** remains authoritative;
-- no new review/share/case/connector/admin mutation authority;
+- functional `/workbench/intelligence` and `/workbench/intelligence/iocs` routes inside the accepted canonical shell;
+- governed `/api/v1/intelligence/search` discovery protected by `read:intelligence`;
+- selected canonical object/provenance retrieval through `/api/v1/intelligence/{item_id}/workspace`;
+- search hits treated as index projections rather than canonical truth;
+- no default synthetic intelligence before explicit search;
+- search dependency failure reported unavailable, not as a synthetic empty result;
+- canonical-detail failure does not manufacture missing object fields from the index hit;
+- attributable severity, education relevance, confidence/rationale, review status, separate share approval, context and provenance where recorded;
+- no review/share/case/connector/analyzer/admin mutation authority added by the browser;
 - responsive/browser behavior inside the accepted `/workbench/` shell;
 - professional lifecycle/evidence/roadmap documentation synchronized to the same exact head.
 
-The canonical trust path remains **browser → DTMO API → governed integration adapter → upstream service**. `/ui/console` remains a temporary **compatibility path**.
+The canonical trust path remains **browser → DTMO API → governed integration adapter → upstream service**. `/ui/console` and `/ui/intelligence-workspace` remain temporary **compatibility paths**.
 
 ## Candidate-completion decision chain
 
 ```mermaid
 flowchart LR
     A[11.10a architecture accepted] --> B[11.10b shell accepted]
-    B --> C[11.10c Command Center active]
-    C --> D[11.10d-o bounded completion]
-    D --> F[Immutable candidate freeze]
+    B --> C[11.10c Command Center accepted]
+    C --> D[11.10d Unified Intelligence active]
+    D --> R[11.10e-o bounded completion]
+    R --> F[Immutable candidate freeze]
     F --> E[11.10p fresh evidence]
     E --> O{Accountable owner review}
     O -->|PASS / OWNER_ACCEPTED| N[11.11 may start]
@@ -77,4 +80,4 @@ flowchart LR
 
 ## Current decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.9, 11.10a and 11.10b are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; 11.10c is the active bounded Command Center gate. 11.10d, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO remains not production authorized.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.9 and 11.10a–11.10c are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; 11.10d is the active bounded Unified Intelligence gate. 11.10e, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO remains not production authorized.**

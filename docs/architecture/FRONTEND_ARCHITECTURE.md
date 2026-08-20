@@ -1,13 +1,13 @@
 # DTMO Canonical Frontend Architecture
 
-Status: **Phase 11.10a — PASS / REPOSITORY_COMPLETE; Phase 11.10b — IN PROGRESS / CANONICAL SHELL IMPLEMENTATION**  
+Status: **Phase 11.10a–11.10c — PASS / REPOSITORY_COMPLETE; Phase 11.10d — IN PROGRESS / UNIFIED INTELLIGENCE WORKSPACE**  
 Last updated: **2026-08-20**
 
 ## 1. Purpose
 
-This document is the accepted architecture baseline for the next-generation DTMO Unified Operations Workbench. Phase 11.10a established the frontend, information-architecture, design-system and browser/API contracts. Phase 11.10b now implements the canonical shell foundation without importing Command Center feature scope from 11.10c.
+This document is the accepted architecture baseline for the DTMO Unified Operations Workbench. Phase 11.10a established the frontend, information-architecture, design-system and browser/API contracts. Phase 11.10b implemented the canonical shell, Phase 11.10c delivered the accepted Command Center, and Phase 11.10d is the active migration of governed intelligence discovery and investigation.
 
-The objective remains one maintainable canonical browser application while preserving the security, authority, provenance and evidence boundaries already accepted elsewhere in DTMO.
+The objective remains one maintainable canonical browser application while preserving security, authority, provenance and evidence boundaries already accepted elsewhere in DTMO.
 
 ## 2. Architectural decision
 
@@ -19,9 +19,9 @@ The canonical browser application uses:
 - **React Router** for canonical client-side navigation;
 - **TanStack Query** for governed server-state retrieval, cache invalidation and request state;
 - a DTMO-owned component/design-system layer using CSS design tokens;
-- later bounded graph and analytical visualization adapters for accepted feature slices.
+- bounded graph and analytical visualization adapters only when their feature slices are accepted.
 
-Phase 11.10b exact-pins the direct frontend dependency set and commits the npm dependency lockfile. Third-party packages remain subject to DTMO licensing, dependency and supply-chain controls; inclusion in the browser bundle does not collapse upstream service or licensing boundaries.
+The direct frontend dependency set remains exact-pinned and the npm lockfile committed. Third-party packages remain subject to DTMO licensing, dependency and supply-chain controls; browser inclusion does not collapse upstream service or licensing boundaries.
 
 ## 3. Canonical trust path
 
@@ -60,32 +60,33 @@ The canonical shell contains four persistent regions:
 3. **Main workspace** — task-specific content delivered incrementally in 11.10c–11.10n.
 4. **Context rail/drawer** — selected-object facts and governed actions without losing the current workspace.
 
-Phase 11.10b implements these four regions under `/workbench/`. The command palette is navigation-only in this slice. The context rail starts fail-closed with `Geen object geselecteerd`; it does not infer object facts from integration configuration.
+Phase 11.10b accepted these regions under `/workbench/`. The command palette remains navigation-safe; high-impact operations require their own accepted server contracts. The context rail remains fail-closed when no attributable selection exists.
 
-## 5. Target capability workspaces
+## 5. Delivered and target capability workspaces
 
 The accepted information architecture in `docs/ux/INFORMATION_ARCHITECTURE.md` includes:
 
-- Command Center;
-- Threat Intelligence;
-- Exposure;
-- Investigations;
-- Analysis & Enrichment;
-- Sharing & Exchange;
-- Automation & Playbooks;
-- Collection;
-- Governance & Evidence;
-- Operations;
-- Administration.
+- Command Center — accepted in 11.10c;
+- Threat Intelligence — active functional migration in 11.10d;
+- IOC Explorer — active functional migration in 11.10d;
+- Knowledge Graph — 11.10f;
+- Exposure — 11.10i;
+- Investigations — 11.10h;
+- Analysis & Enrichment — 11.10e;
+- Sharing & Exchange — 11.10g;
+- Automation & Playbooks — 11.10k;
+- Collection — 11.10j;
+- Governance & Evidence — 11.10l;
+- Operations and Administration — 11.10m.
 
-Phase 11.10b creates safe route foundations for these domains. A route foundation is not feature acceptance and must not display fabricated operational metrics or state.
+A route foundation is not feature acceptance and must not display fabricated operational metrics or state.
 
 ## 6. Object-centric interaction model
 
-A canonical intelligence object, IOC, CVE, threat actor, campaign, source, case or other governed entity can later be selected from compatible workspaces. The common context model supports:
+A canonical intelligence object, IOC, CVE, threat actor, campaign, source, case or other governed entity can be selected from compatible workspaces. The common context model supports, where attributable:
 
 - canonical identity;
-- severity/classification where applicable;
+- severity/classification;
 - confidence;
 - provenance and markings;
 - linked intelligence;
@@ -96,7 +97,7 @@ A canonical intelligence object, IOC, CVE, threat actor, campaign, source, case 
 - audit timeline;
 - actions allowed to the current principal.
 
-Phase 11.10b implements only the context container and truthful no-selection state. Object data and actions arrive with their bounded feature/API slices.
+Phase 11.10d establishes the first deep object investigation surface: search hits remain discovery projections, while selected detail and provenance are retrieved separately from canonical DTMO persistence. A failed canonical-detail lookup never promotes incomplete search-hit data into a complete object.
 
 ## 7. Frontend state model
 
@@ -110,7 +111,7 @@ Workspace, object identity, filters, pagination and safe investigation context s
 
 ### 7.3 Ephemeral UI state
 
-Drawer visibility, local sort direction, temporary form state and presentation preferences may remain client-local. Phase 11.10b persists only the non-sensitive theme preference in local storage.
+Drawer visibility, local sort direction, temporary form state and presentation preferences may remain client-local. Only non-sensitive preferences such as theme may be persisted locally.
 
 ### 7.4 Security-sensitive state
 
@@ -132,21 +133,28 @@ The frontend preserves:
 - **no local-compromise inference** from enrichment/graph presence;
 - no publication authority from a connector call, analyzer result, MISP match, OpenCTI relationship or TheHive case.
 
-High-impact actions require their feature-specific server contract and cannot be created merely by exposing a control in the shell.
+Phase 11.10d search and canonical detail require `read:intelligence` and add no review/share/case/connector/analyzer/admin mutation authority.
 
 ## 9. API and integration boundary
 
 The detailed browser/API contract is `docs/architecture/UI_API_CONTRACT.md`.
 
-All frontend capabilities must either reuse an existing governed `/api/v1/...` endpoint with the required authorization/audit semantics or add a bounded DTMO API contract in the same feature slice before the UI depends on it.
+All frontend capabilities must either reuse an existing governed `/api/v1/...` endpoint with required authorization/audit semantics or add a bounded DTMO API contract in the same feature slice before the UI depends on it.
 
-Phase 11.10b uses same-origin `/health` and `/api/v1/ui/session` only for shell status/principal context. It does not become an upstream service client.
+Current accepted/active examples are:
+
+- `/health` and `/api/v1/ui/session` for shell context;
+- `/api/v1/command-center` for accepted read-only 11.10c operational orientation;
+- `/api/v1/intelligence/search` for 11.10d governed discovery;
+- `/api/v1/intelligence/{item_id}/workspace` for 11.10d canonical object detail/provenance.
+
+None makes the browser an upstream service client.
 
 ## 10. Design-system boundary
 
 The visual and interaction contract is `docs/ux/DESIGN_SYSTEM.md`.
 
-The 11.10b shell implements its first reusable baseline:
+The workbench baseline includes:
 
 - semantic design tokens rather than page-local styling;
 - dark operations and accessible light modes;
@@ -157,70 +165,68 @@ The 11.10b shell implements its first reusable baseline:
 - no colour-only status semantics;
 - explicit loading/degraded/empty truth rather than synthetic data.
 
-Feature-specific component acceptance continues in later slices.
+Feature-specific component acceptance continues in bounded slices.
 
 ## 11. Migration from current UI
 
 The migration is incremental and bounded:
 
 1. Phase 11.10a architecture/design contracts — `PASS / REPOSITORY_COMPLETE`.
-2. **Phase 11.10b — canonical application shell** — active.
-3. Phase 11.10c–11.10n migrate capabilities one bounded slice at a time.
-4. Phase 11.10o performs consolidation/full functional acceptance and retires obsolete UI paths where safe.
-5. Phase 11.10p executes fresh production-equivalent validation only after immutable candidate freeze.
+2. Phase 11.10b canonical application shell — `PASS / REPOSITORY_COMPLETE`.
+3. Phase 11.10c Command Center — `PASS / REPOSITORY_COMPLETE`.
+4. **Phase 11.10d Unified Intelligence Workspace** — active.
+5. Phase 11.10e–11.10n migrate remaining capabilities one bounded slice at a time.
+6. Phase 11.10o performs consolidation/full functional acceptance and retires obsolete UI paths where safe.
+7. Phase 11.10p executes fresh production-equivalent validation only after immutable candidate freeze.
 
-The declared canonical built product route is `/workbench/`. `/ui/console` remains a temporary migration compatibility path, not a parallel feature-development target.
+The declared canonical built product route is `/workbench/`. `/ui/console` and `/ui/intelligence-workspace` remain temporary migration compatibility paths, not parallel feature-development targets.
 
 ## 12. Build and deployment contract
 
-Phase 11.10b implements the build contract defined in 11.10a:
+The accepted build contract requires:
 
-- `frontend/package.json` exact-pins direct dependencies;
-- `frontend/package-lock.json` is committed and is the authoritative npm dependency graph;
-- supported CI and container builds use `npm ci` and do not regenerate dependency resolution;
-- TypeScript is checked before Vite production build;
-- Vite creates hashed production assets and no production source maps;
-- the frontend build is a separate Docker build stage pinned by immutable Node image digest;
-- Node/npm tooling is not copied into the final Python runtime image;
-- only `frontend/dist` enters the supported runtime;
-- FastAPI serves `/workbench/` and hashed assets through the same application origin;
-- the canonical index uses a strict self-origin CSP and `no-store`;
-- hashed assets use long-lived immutable caching;
-- CI records exact-head frontend asset SHA-256 hashes and audits production frontend dependencies;
-- existing final-container SBOM/vulnerability and artifact-attestation controls continue to apply.
+- exact-pinned direct dependencies in `frontend/package.json`;
+- committed `frontend/package-lock.json` as the authoritative npm dependency graph;
+- supported CI/container builds using `npm ci` without regenerating dependency resolution;
+- TypeScript checking before Vite production build;
+- hashed production assets and no production source maps;
+- frontend build in a separate immutable Node build stage;
+- Node/npm tooling excluded from the final Python runtime image;
+- only `frontend/dist` entering the supported runtime;
+- FastAPI serving `/workbench/` and hashed assets through the same application origin;
+- strict self-origin CSP and `no-store` for the canonical index;
+- long-lived immutable caching for hashed assets;
+- exact-head frontend asset SHA-256 evidence;
+- continued final-container SBOM/vulnerability and artifact-attestation controls.
 
 This build integration creates no second browser ingress or upstream credential path.
 
-## 13. Observability
+## 13. Observability and truthful failure
 
-The browser uses bounded shell state and server request behavior suitable for troubleshooting without leaking sensitive intelligence or credentials. Server-side correlation/request IDs remain authoritative for governed actions.
+The browser distinguishes authentication/authorization failure, validation failure, upstream dependency degradation, canonical backend failure, empty canonical data and stale/read-only degraded mode.
 
-Later features must distinguish authentication/authorization failure, validation failure, upstream dependency degradation, canonical backend failure, empty canonical data and stale/read-only degraded mode.
+For 11.10d specifically:
+
+- a search backend failure is `unavailable`, not an empty query result;
+- a zero-result search describes only the governed DTMO index;
+- missing canonical detail/provenance remains missing;
+- repository/browser test fixtures remain engineering evidence, not operational evidence.
+
+Server-side correlation/request IDs remain authoritative for governed actions.
 
 ## 14. Accessibility
 
-The 11.10b shell implements a baseline of:
+The accepted shell baseline provides semantic navigation/main/context regions, skip-to-content, visible focus, keyboard route navigation and Ctrl/Cmd+K palette, responsive reflow/mobile navigation, dark/light semantic themes, reduced-motion handling and non-colour-only status treatment.
 
-- semantic navigation/main/context regions;
-- skip-to-content;
-- visible focus;
-- keyboard route navigation and Ctrl/Cmd+K palette;
-- responsive reflow and mobile navigation drawer;
-- context drawer behavior below desktop layout thresholds;
-- dark/light semantic themes;
-- reduced-motion behavior;
-- status not conveyed by colour alone.
-
-Full role-aware and feature-specific WCAG 2.2 AA acceptance remains Phase 11.10n plus final 11.10o consolidation.
+Phase 11.10d adds responsive search/result/detail layouts while preserving native labels and keyboard-accessible controls. Full role-aware and feature-specific WCAG 2.2 AA acceptance remains Phase 11.10n plus final 11.10o consolidation.
 
 ## 15. Evidence boundary
 
-Phase 11.10a repository acceptance proves the architecture/design contract is accepted and protected by CI. Phase 11.10b repository/browser CI can additionally prove the exact-head dependency/build contract, same-origin shell serving, route mechanics, responsive baseline and CSP/cache behavior.
+Phase 11.10a repository acceptance proves the architecture/design contract. Phase 11.10b proves the accepted exact-head shell/build/browser contract. Phase 11.10c proves the accepted repository/browser Command Center contract. Phase 11.10d exact-head CI may prove governed search/detail/provenance rendering and fail-closed browser behavior within repository-controlled scope.
 
-Neither proves:
+None proves:
 
-- live upstream integration behavior;
-- functional acceptance of Command Center or later workspaces;
+- completeness or health of live upstream integrations;
 - production-equivalent deployment/continuity;
 - independent external assurance;
 - production authorization.
@@ -229,8 +235,8 @@ The graphical reference remains a design target, not operational evidence.
 
 ## 16. Lifecycle and exit
 
-Phase 11.10a is **`PASS / REPOSITORY_COMPLETE`**.
+Phase 11.10a, 11.10b and 11.10c are **`PASS / REPOSITORY_COMPLETE`**.
 
-Phase 11.10b may become **`PASS / REPOSITORY_COMPLETE`** only when the committed lockfile is consumed unchanged, the shell build/browser contract is green on the exact final head, existing security/supply-chain regressions remain green and all professional lifecycle documentation is synchronized.
+Phase 11.10d may become **`PASS / REPOSITORY_COMPLETE`** only when the frontend build and dedicated repository/browser contract are green on one exact final head, existing security/accessibility/integration/runtime/supply-chain regressions remain green, and all professional lifecycle documentation is synchronized.
 
-The only next bounded slice after 11.10b acceptance is **Phase 11.10c — Command Center**.
+The only next bounded slice after 11.10d acceptance and merge is **Phase 11.10e — IntelOwl/Cortex integrated analysis**.

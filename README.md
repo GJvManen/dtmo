@@ -13,8 +13,9 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Phase 11.10:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`  
 > **Phase 11.10a frontend architecture/design:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.10b canonical application shell:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded slice:** Phase 11.10c Command Center — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
-> **Phase 11.10d Unified Intelligence Workspace:** `NOT STARTED`  
+> **Phase 11.10c Command Center:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded slice:** Phase 11.10d Unified Intelligence Workspace — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
+> **Phase 11.10e IntelOwl/Cortex integrated analysis:** `NOT STARTED`  
 > **Phase 11.10p fresh production-equivalent validation:** `NOT STARTED / CANDIDATE FREEZE REQUIRED`  
 > **Phase 11.11 independent external assurance:** `NOT STARTED`  
 > **Phase 12 production decision:** `NOT STARTED`  
@@ -30,9 +31,11 @@ DTMO is built around five principles: provenance first; fail closed; human autho
 
 The accepted DTMO baseline provides **Sources & Catalog**, canonical Intelligence, **Visual Analytics**, vulnerability intelligence, governed case handoff, **Administration** and **Governance**. The accepted Phase 11 integration baseline adds Taranis AI collection/canonicalization, IntelOwl enrichment, OpenCTI STIX knowledge-graph integration, governed MISP exchange, human-authorized TheHive case handoff and a bounded Cortex analyzer connector.
 
-The next-generation interface is the **DTMO Unified Operations Workbench**. Phase 11.10a established the frontend architecture/design contract; Phase 11.10b accepted the React/TypeScript/Vite canonical application shell; Phase 11.10c is now implementing the first functional **Command Center** inside that shell.
+The next-generation interface is the **DTMO Unified Operations Workbench**. Phase 11.10a established the frontend architecture/design contract; Phase 11.10b accepted the React/TypeScript/Vite canonical application shell; Phase 11.10c delivered the first functional **Command Center**; Phase 11.10d is now implementing the functional **Unified Intelligence Workspace** and **IOC Explorer** inside that same shell.
 
 The Command Center exposes accountable canonical intelligence counts, high/critical activity, 24-hour intake, review/share-decision workload, education relevance, recent intelligence, integration capability and role-aware navigation. It does not invent operational state: an unavailable canonical datastore renders unavailable values, and a configured integration is not automatically labelled healthy.
+
+The Unified Intelligence Workspace reuses the governed DTMO search and canonical-detail APIs rather than introducing a parallel intelligence backend. Search is explicit, supports severity and education-relevance filtering, and returns discovery projections. Selecting a result retrieves canonical DTMO object detail and provenance. Failed search/detail dependencies remain unavailable and are not converted into synthetic empty or complete records.
 
 PostgreSQL remains canonical application truth. Redis, OpenSearch and S3-compatible object storage provide coordination, search and object persistence. Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing boundaries.
 
@@ -74,19 +77,19 @@ Phase 11.10 candidate completion is sequenced before fresh external validation b
 
 **11.10a architecture/design → 11.10b shell → 11.10c Command Center → 11.10d Intelligence → 11.10e IntelOwl/Cortex → 11.10f OpenCTI → 11.10g MISP → 11.10h TheHive → 11.10i Vulnerability/Exposure → 11.10j Sources/Collection → 11.10k Automation → 11.10l Governance/Evidence → 11.10m Operations/Admin → 11.10n role-aware UX/accessibility → 11.10o consolidation/full functional acceptance → candidate freeze → 11.10p fresh production-equivalent validation**.
 
-Phase 11.10c is the sole active bounded slice. The only permitted next slice after a fully green merge is **11.10d Unified Intelligence Workspace**.
+Phase 11.10d is the sole active bounded slice. The only permitted next slice after a fully green merge is **11.10e IntelOwl/Cortex integrated analysis**.
 
-### Phase 11.10c evidence boundary
+### Phase 11.10d evidence boundary
 
-Command Center values come from canonical DTMO read models. If PostgreSQL cannot be observed, the UI reports unavailable state instead of zero threats or zero workload. Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex configuration is shown as capability state; configuration alone is never a general runtime-health claim.
+`/workbench/intelligence` and `/workbench/intelligence/iocs` use DTMO server APIs protected by `read:intelligence`. Search hits are discovery projections from the governed search service. Selected object detail and provenance come from canonical DTMO persistence. A zero-result search does not prove absence from all upstream sources.
 
-The Command Center is read-only. Review, external-share approval, TheHive case mutation, connector execution, enrichment execution and administration remain separate server-authorized actions.
+The workspace is read-only. Review, external-share approval, publication, TheHive case mutation, connector execution, IntelOwl/Cortex execution and administration remain separate server-authorized actions. Search or UI visibility never grants those permissions.
 
-Repository CI validates this implementation contract only. It **does not prove** live upstream integration health, production-equivalent deployment/continuity, independent assurance or production authorization.
+Repository/browser CI validates this implementation contract only. It **does not prove** live upstream completeness or health, production-equivalent deployment/continuity, independent assurance or production authorization.
 
 ## Product roadmap
 
-Phase 11.10d–11.10o continue the Unified Operations Workbench one bounded PR at a time. After 11.10o, one immutable integrated candidate is frozen for 11.10p.
+Phase 11.10e–11.10o continue the Unified Operations Workbench one bounded PR at a time. After 11.10o, one immutable integrated candidate is frozen for 11.10p.
 
 11.10p requires fresh evidence for candidate identity, migration/compatibility, upgrade, exact prior-digest rollback plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity. All evidence must bind to the **same immutable** candidate and one production-equivalent environment. Historical Phase 8 and Phase 9 evidence remains audit history only and cannot satisfy the materially changed candidate.
 
@@ -101,14 +104,16 @@ Start with:
 - [Executive Status](docs/project/EXECUTIVE_STATUS.md)
 - [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md)
 - [Unified Operations Workbench](docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md)
+- [Unified Intelligence Workspace](docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md)
 - [Frontend Architecture](docs/architecture/FRONTEND_ARCHITECTURE.md)
 - [Phase 11.10b Application Shell](docs/architecture/PHASE11_10B_APPLICATION_SHELL.md)
 - [Phase 11.10c Command Center](docs/architecture/PHASE11_10C_COMMAND_CENTER.md)
-- [Phase 11.10c Command Center Gate](docs/qa/PHASE11_10C_COMMAND_CENTER_GATE.md)
+- [Phase 11.10d Unified Intelligence Workspace](docs/architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md)
+- [Phase 11.10d Unified Intelligence Gate](docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md)
 - [Evidence Index](docs/evidence/EVIDENCE_INDEX.md)
 - [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md)
 
-The governed screenshot catalogue contains UI-01 through UI-10. These are documentation illustrations, not evidence of live-source connectivity, staging acceptance or production readiness.
+The governed screenshot catalogue contains UI-01 through UI-10. These are documentation illustrations, not evidence of live-source connectivity, staging acceptance or production readiness. No synthetic screenshot is promoted as operational, staging, assurance or production evidence.
 
 ## Open source and responsible use
 

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
+import { UnifiedIntelligenceWorkspace } from './UnifiedIntelligenceWorkspace';
+
 type Health = {
   status: string;
   version: string;
@@ -339,7 +341,9 @@ export function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/command-center" replace />} />
             <Route path="/command-center/*" element={<CommandCenter session={session.data} health={health.data} />} />
-            {workspaces.filter((workspace) => workspace.path !== '/command-center').map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
+            <Route path="/intelligence" element={<UnifiedIntelligenceWorkspace />} />
+            <Route path="/intelligence/iocs" element={<UnifiedIntelligenceWorkspace mode="ioc" />} />
+            {workspaces.filter((workspace) => !['/command-center', '/intelligence', '/intelligence/iocs'].includes(workspace.path)).map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
             <Route path="*" element={<Navigate to="/command-center" replace />} />
           </Routes>
         </main>

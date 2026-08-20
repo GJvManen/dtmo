@@ -17,14 +17,15 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 11.10 candidate completion + production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10c Command Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10d–11.10o candidate completion | `NOT STARTED` |
+| Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10d Unified Intelligence Workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.10e–11.10o candidate completion | `NOT STARTED` |
 | Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **not production authorized** |
 
-The active bounded programme step is **Phase 11.10c Command Center**. Phase 11.10a and 11.10b are accepted repository baselines. The Unified Operations Workbench materially changes the integrated candidate, so fresh external production-equivalent execution remains 11.10p after 11.10a–11.10o candidate completion and immutable candidate freeze. Earlier Phase 8/9 evidence remains historical and candidate-bound and cannot be reused.
+The active bounded programme step is **Phase 11.10d Unified Intelligence Workspace**. Phase 11.10a–11.10c are accepted repository baselines. The Unified Operations Workbench materially changes the integrated candidate, so fresh external production-equivalent execution remains 11.10p after 11.10a–11.10o candidate completion and immutable candidate freeze. Earlier Phase 8/9 evidence remains historical and candidate-bound and cannot be reused.
 
 ## Start here
 
@@ -32,24 +33,24 @@ The active bounded programme step is **Phase 11.10c Command Center**. Phase 11.1
 |---|---|
 | Executive / sponsor | [Current State](project/CURRENT_STATE.md), [Executive Status](project/EXECUTIVE_STATUS.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
 | Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) |
-| Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [Information Architecture](ux/INFORMATION_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
+| Analyst / reviewer | [Unified Intelligence Workspace](user/UNIFIED_INTELLIGENCE_WORKSPACE.md), [User Guide](user/USER_GUIDE.md), [Information Architecture](ux/INFORMATION_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
 | Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Kubernetes Runtime Configuration](administration/KUBERNETES_RUNTIME_CONFIGURATION.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
-| Architecture / engineering | [Frontend Architecture](architecture/FRONTEND_ARCHITECTURE.md), [UI/API Contract](architecture/UI_API_CONTRACT.md), [Phase 11.10b Application Shell](architecture/PHASE11_10B_APPLICATION_SHELL.md), [Phase 11.10c Command Center](architecture/PHASE11_10C_COMMAND_CENTER.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
+| Architecture / engineering | [Frontend Architecture](architecture/FRONTEND_ARCHITECTURE.md), [UI/API Contract](architecture/UI_API_CONTRACT.md), [Phase 11.10b Application Shell](architecture/PHASE11_10B_APPLICATION_SHELL.md), [Phase 11.10c Command Center](architecture/PHASE11_10C_COMMAND_CENTER.md), [Phase 11.10d Unified Intelligence Workspace](architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
 | UX / frontend | [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Information Architecture](ux/INFORMATION_ARCHITECTURE.md), [Design System](ux/DESIGN_SYSTEM.md), [Frontend UX](ux/FRONTEND_UX.md), [`frontend/README.md`](../frontend/README.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.10 Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
-| QA / release | [Phase 11.10c Command Center Gate](qa/PHASE11_10C_COMMAND_CENTER_GATE.md), [Phase 11.10b Application Shell Gate](qa/PHASE11_10B_APPLICATION_SHELL_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
+| QA / release | [Phase 11.10d Unified Intelligence Gate](qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md), [Phase 11.10c Command Center Gate](qa/PHASE11_10C_COMMAND_CENTER_GATE.md), [Phase 11.10b Application Shell Gate](qa/PHASE11_10B_APPLICATION_SHELL_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
 | Operations | [Phase 11.10 Production-Equivalent Validation Runbook](operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md), [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
 
 ## Unified Operations Workbench programme
 
-Phase 11.10a established the frontend architecture/design contract. Phase 11.10b implemented the separately built React/TypeScript/Vite canonical shell under `/workbench/`. Phase 11.10c is the first functional workspace and implements a governed operational Command Center.
+Phase 11.10a established the frontend architecture/design contract. Phase 11.10b implemented the separately built React/TypeScript/Vite canonical shell under `/workbench/`. Phase 11.10c delivered the first functional workspace: the governed operational Command Center. Phase 11.10d is now migrating intelligence discovery, IOC-oriented search, canonical object detail and provenance into the same shell.
 
 The canonical frontend trust path remains:
 
 **browser → DTMO API → governed integration adapter → upstream service**
 
-The browser does not become a privileged upstream client. **Server-side RBAC**, provenance, human publication/share authority and separate TheHive case authority remain authoritative. `/ui/console` is a temporary migration **compatibility path**, not a parallel target for new feature development.
+The browser does not become a privileged upstream client. **Server-side RBAC**, provenance, human publication/share authority and separate TheHive case authority remain authoritative. `/ui/console` and `/ui/intelligence-workspace` are migration **compatibility paths**, not parallel targets for new feature development.
 
 ### Accepted Phase 11.10a / 11.10b package
 
@@ -65,7 +66,7 @@ The browser does not become a privileged upstream client. **Server-side RBAC**, 
 - `.github/workflows/phase11-application-shell.yml`
 - `frontend/package.json`, `frontend/package-lock.json`, `frontend/src/main.tsx`, `frontend/src/App.tsx`, `frontend/src/styles.css`
 
-### Active Phase 11.10c Command Center package
+### Accepted Phase 11.10c Command Center package
 
 - `architecture/PHASE11_10C_COMMAND_CENTER.md`
 - `qa/PHASE11_10C_COMMAND_CENTER_GATE.md`
@@ -78,7 +79,22 @@ The browser does not become a privileged upstream client. **Server-side RBAC**, 
 
 The Command Center uses attributable canonical read models. If the canonical datastore is unavailable, values are reported as unavailable rather than converted to zero. Integration configuration is not promoted to a runtime-health claim. Role-aware quick-action visibility never substitutes for server-side authorization. Repository CI **does not prove** live upstream health, production-equivalent execution, independent assurance or production authorization.
 
-After exact-head acceptance and merge of 11.10c, the only next bounded priority is **Phase 11.10d Unified Intelligence Workspace**.
+### Active Phase 11.10d Unified Intelligence Workspace package
+
+- `architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md`
+- `user/UNIFIED_INTELLIGENCE_WORKSPACE.md`
+- `qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`
+- `frontend/src/UnifiedIntelligenceWorkspace.tsx`
+- `frontend/src/unified-intelligence.css`
+- `backend/tests/test_phase11_10d_unified_intelligence_workspace_contract.py`
+- `backend/tests/test_phase11_10d_unified_intelligence_workspace_browser.py`
+- `.github/workflows/phase11-unified-intelligence-workspace.yml`
+
+The active workspace reuses `/api/v1/intelligence/search` for governed index discovery and `/api/v1/intelligence/{item_id}/workspace` for canonical DTMO object detail/provenance. Search results are discovery projections rather than canonical truth. Dependency failures **fail closed** and never become synthetic empty datasets. Search and object investigation are read-only and do not grant review, share approval, publication, connector/analyzer execution, case mutation or administrative authority.
+
+Repository/browser CI for 11.10d **does not prove** completeness across every upstream source, live upstream health, production-equivalent execution, independent assurance or production authorization.
+
+After exact-head acceptance and merge of 11.10d, the only next bounded priority is **Phase 11.10e IntelOwl/Cortex Integrated Analysis**.
 
 ## Accepted Phase 11 service integration baseline
 
