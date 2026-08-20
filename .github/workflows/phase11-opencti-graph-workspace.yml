@@ -67,7 +67,7 @@ jobs:
           python -m pytest -q \
             backend/tests/test_phase11_10f_opencti_graph_contract.py \
             backend/tests/test_current_documentation_phase11_10_contract.py \
-            backend/tests/test_phase11_4_opencti_contract.py \
+            backend/tests/test_opencti_integration_contract.py \
             backend/tests/test_phase11_4_opencti_persistence.py
 
       - name: Install Chromium for browser acceptance
