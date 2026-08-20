@@ -67,6 +67,7 @@ jobs:
         run: |
           python -m pytest -q \
             backend/tests/test_phase11_10g_misp_sharing_contract.py \
+            backend/tests/test_phase11_10g_misp_sharing_api.py \
             backend/tests/test_current_documentation_phase11_10_contract.py \
             backend/tests/test_phase11_5_misp_consolidation_contract.py \
             backend/tests/test_e8_7_misp_governed_export.py
