@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { AnalysisWorkspace } from './AnalysisWorkspace';
+import { MispSharingWorkspace } from './MispSharingWorkspace';
 import { OpenCTIGraphWorkspace } from './OpenCTIGraphWorkspace';
 import { UnifiedIntelligenceWorkspace } from './UnifiedIntelligenceWorkspace';
 
@@ -76,7 +77,7 @@ const workspaces: WorkspaceDefinition[] = [
   { path: '/exposure', label: 'Exposure', group: 'Exposure', icon: '△', title: 'Exposure', description: 'Vulnerability, asset and prioritization workspace foundation.', delivery: 'Exposure feature content is delivered in Phase 11.10i.' },
   { path: '/investigations', label: 'Investigations', group: 'Investigations', icon: '▣', title: 'Investigations', description: 'Cases, alerts, tasks and timeline workspace foundation.', delivery: 'TheHive investigation and case content is delivered in Phase 11.10h.' },
   { path: '/analysis', label: 'Analysis & Enrichment', group: 'Analysis', icon: '⌁', title: 'Analysis & Enrichment', description: 'Governed IntelOwl enrichment and Cortex analyzer workspace.', delivery: 'IntelOwl and Cortex analysis content is delivered in Phase 11.10e.' },
-  { path: '/sharing', label: 'Sharing & Exchange', group: 'Sharing', icon: '⇄', title: 'Sharing & Exchange', description: 'Governed exchange, publication and approval workspace foundation.', delivery: 'MISP exchange content is delivered in Phase 11.10g.' },
+  { path: '/sharing', label: 'Sharing & Exchange', group: 'Sharing', icon: '⇄', title: 'Sharing & Exchange', description: 'Human-governed MISP review, approval and unpublished export workflow.', delivery: 'MISP exchange content is delivered in Phase 11.10g.' },
   { path: '/automation', label: 'Automation & Playbooks', group: 'Automation', icon: '↯', title: 'Automation & Playbooks', description: 'Playbooks, jobs, schedules and approval workspace foundation.', delivery: 'Automation feature content is delivered in Phase 11.10k.' },
   { path: '/collection', label: 'Collection', group: 'Collection', icon: '↓', title: 'Collection', description: 'Sources, connectors, catalog and collection-run workspace foundation.', delivery: 'Collection control-center content is delivered in Phase 11.10j.' },
   { path: '/governance', label: 'Governance & Evidence', group: 'Governance', icon: '✓', title: 'Governance & Evidence', description: 'Framework, mapping, evidence, risk and audit workspace foundation.', delivery: 'Governance and evidence content is delivered in Phase 11.10l.' },
@@ -247,6 +248,7 @@ function CommandCenter({ session, health }: { session?: Session; health?: Health
 }
 
 function WorkspaceFoundation({ workspace }: { workspace: WorkspaceDefinition }) {
+  if (workspace.path === '/sharing') return <MispSharingWorkspace />;
   return (
     <section className="workspace-foundation" aria-labelledby="workspace-title">
       <header className="workspace-heading">
