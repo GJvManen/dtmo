@@ -37,14 +37,22 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Bootstrap lockfile for first bounded shell run
-        working-directory: frontend
-        run: npm install --package-lock-only --ignore-scripts
+      - name: Verify committed lockfile contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s frontend/package-lock.json
+          node -e "const p=require('./frontend/package-lock.json'); if (p.lockfileVersion !== 3) process.exit(1)"
 
       - name: Install exact frontend dependency graph
         working-directory: frontend
         run: npm ci
+
+      - name: Verify npm ci did not mutate dependency manifests
+        run: git diff --exit-code -- frontend/package.json frontend/package-lock.json
 
       - name: Audit production frontend dependencies
         working-directory: frontend
@@ -100,7 +108,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/)" = "307"
-          curl -fsSI http://127.0.0.1:8000/workbench/ | tee artifacts/workbench-headers.txt
+          curl -fsS -D artifacts/workbench-headers.txt -o /dev/null http://127.0.0.1:8000/workbench/
           grep -qi '^content-security-policy:' artifacts/workbench-headers.txt
           grep -qi '^x-dtmo-frontend-mode: canonical-workbench' artifacts/workbench-headers.txt
 
@@ -121,7 +129,7 @@ jobs:
               "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
               "scope": "Phase 11.10b canonical application shell",
               "claim_boundary": (
-                  "Repository-controlled evidence for exact-head frontend dependency resolution, "
+                  "Repository-controlled evidence for exact-head committed dependency resolution, "
                   "typecheck/build, canonical same-origin serving, shell routing, responsive browser "
                   "journeys and CSP headers. It does not prove live upstream integration behavior, "
                   "production-equivalent operation, independent assurance or production authorization."
