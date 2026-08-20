@@ -14,7 +14,8 @@ DTMO uses layered acceptance gates so repository engineering, accountable functi
 6. **Historical evidence is immutable** — later lifecycle changes do not rewrite original evidence claims.
 7. **One bounded Phase 11 objective per PR** — unrelated work is not stacked behind red CI.
 8. **Professional documentation is a merge criterion** — code/integration work cannot merge when affected authoritative documentation or documentation-contract tests are stale.
-9. **External evidence remains external** — repository fixtures, emulators and CI artifacts cannot be promoted to production-equivalent observations.
+9. **External evidence remains external** — repository fixtures, emulators, design mockups and CI artifacts cannot be promoted to production-equivalent observations.
+10. **UI convenience is not authority** — role-aware rendering, hidden controls and graphical workflows never replace server-side authorization or human approval boundaries.
 
 ## Current acceptance status
 
@@ -31,6 +32,7 @@ DTMO uses layered acceptance gates so repository engineering, accountable functi
 | Phase 11.8 integrated runtime industrialisation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
+| Phase 11.10a frontend architecture/design contract | `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 | `NOT STARTED` |
 
@@ -47,7 +49,9 @@ DTMO is **not production authorized**.
 | Governance | Mapping truth and authority separation | Repository CI + governance review |
 | Platform integration | API/data-model interoperability and service-boundary controls | Phase 11 repository evidence |
 | Integrated runtime | Kubernetes/Helm/GitOps, secrets, network, HA/recovery, observability, supply chain | Phase 11 repository + deployed evidence |
-| Production-equivalent validation | Same-candidate live exercise of migration, upgrade, rollback, health, saturation and recovery | Phase 11.10 real-environment evidence |
+| Frontend architecture/design | Canonical workbench, UI/API trust path, information architecture, design system | Phase 11.10a repository evidence |
+| Frontend implementation/acceptance | Bounded workbench capabilities, browser E2E, RBAC, accessibility, functional acceptance | Phase 11.10b–11.10o repository/owner evidence |
+| Production-equivalent validation | Same-candidate live exercise of migration, upgrade, rollback, health, saturation and recovery | Phase 11.10p real-environment evidence |
 | Independent assurance | Independent assessment of integrated candidate | Phase 11.11 external assurance |
 | Production decision | Formal accountable go/no-go for integrated candidate | Phase 12 |
 
@@ -59,13 +63,67 @@ Phase 11.8 is repository-complete across runtime foundation, workload identity/e
 
 These accepted gates remain regression-protected and do not become live deployment or production evidence by themselves.
 
-## Active Phase 11.10 production-equivalent validation gate
+## Active Phase 11.10a frontend architecture gate
+
+### Objective
+
+11.10a accepts only the architecture/design contract required before implementation of the owner-required next-generation Unified Operations Workbench.
+
+### Required contract
+
+The gate requires:
+
+- `docs/architecture/FRONTEND_ARCHITECTURE.md`;
+- `docs/architecture/UI_API_CONTRACT.md`;
+- `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`;
+- `docs/ux/INFORMATION_ARCHITECTURE.md`;
+- `docs/ux/DESIGN_SYSTEM.md`;
+- `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`;
+- `backend/tests/test_phase11_10a_frontend_architecture_contract.py`;
+- `.github/workflows/phase11-frontend-architecture.yml`.
+
+### Required invariants
+
+- one canonical DTMO workbench is the target;
+- normal product requests use **browser → DTMO API → governed integration adapter → upstream service**;
+- browser-side direct privileged integration with Taranis AI, IntelOwl, OpenCTI, MISP, TheHive or Cortex is not the canonical model;
+- server-side RBAC remains authoritative;
+- human publication/share authority remains separate;
+- TheHive case authority remains separate from publication/share authority;
+- enrichment, correlation and graph presence do not prove local compromise;
+- mockups/generated visuals are design artifacts only;
+- accessibility and truthful loading/empty/degraded/error state are part of the design contract.
+
+### Exact-head evidence
+
+The `Phase 11 Frontend Architecture Gate` runs the dedicated contract test and emits an artifact bound to the exact PR head. It explicitly records `frontend_implemented=false`, `live_environment_validated=false`, `production_equivalent_validated=false` and `production_authorized=false`.
+
+A green 11.10a gate permits only **11.10b canonical application shell** to start. It does not complete Phase 11.10.
+
+## Phase 11.10b–11.10o candidate-completion gates
+
+Every subsequent workbench slice must add feature-specific repository/API/browser tests and preserve the established regressions. As applicable, each slice must cover:
+
+- typed frontend build/static analysis;
+- API contract tests;
+- server-side RBAC and negative authorization cases;
+- audit/provenance behavior;
+- browser E2E critical journeys;
+- keyboard/focus/contrast/reflow/text-size/spacing/supported-browser coverage;
+- truthful loading/empty/stale/partial-failure/error states;
+- high-impact action approval boundaries;
+- professional documentation synchronization.
+
+11.10o performs final consolidation, full functional acceptance and retirement of obsolete UI paths before candidate freeze.
+
+## Phase 11.10p production-equivalent validation gate
 
 ### Entry criteria
 
 - Phase 11.1–11.9 remain accepted.
+- Phase 11.10a–11.10o candidate-completion slices are accepted.
+- One immutable integrated candidate is frozen.
 - One approved production-equivalent environment is identified.
-- One immutable integrated candidate identity is available.
 - Exact candidate and prior application image digests are known.
 - Expected migration head and deployment revision are known.
 - Monitoring, logs and audit/correlation are available to authorized reviewers.
@@ -94,18 +152,19 @@ The repository supplies:
 - `.github/workflows/phase11-production-equivalent-validation.yml` for repository-side contract evidence;
 - `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md` for accountable execution;
 - `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json` as the external metadata template;
-- this gate and the Evidence Index for review boundaries.
+- the Phase 11.10 gate and Evidence Index for review boundaries.
 
 The template is intentionally invalid until real evidence replaces all placeholders. A validator PASS establishes metadata consistency only; reviewers must inspect the referenced external evidence.
 
 ### Fail-closed conditions
 
-Phase 11.10 is blocked when:
+Phase 11.10p is blocked when:
 
+- candidate-completion acceptance is incomplete;
 - candidate/environment identity is missing or ambiguous;
 - an image is identified only by a mutable tag;
 - any required evidence class is missing or not `PASS`;
-- evidence references are placeholders, historical Phase 8/9 records, repository CI only, emulators, synthetic fixtures or localhost observations;
+- evidence references are placeholders, historical Phase 8/9 records, repository CI only, emulators, synthetic fixtures, design mockups or localhost observations;
 - candidate fingerprints differ across evidence classes;
 - rollback targets anything other than the exact prior immutable application digest;
 - post-rollback health is missing or failed;
@@ -115,7 +174,7 @@ Phase 11.10 is blocked when:
 
 ### Acceptance
 
-Phase 11.10 becomes `PASS / OWNER_ACCEPTED` only after the complete external evidence package is reviewed and explicitly accepted by the accountable owner. Repository-green status alone cannot complete Phase 11.10.
+Phase 11.10 becomes `PASS / OWNER_ACCEPTED` only after the complete candidate-completion programme and external evidence package are reviewed and explicitly accepted by the accountable owner. Repository-green status alone cannot complete Phase 11.10.
 
 ## Phase 11.11 independent external assurance
 
@@ -133,7 +192,7 @@ Release gates preserve:
 
 - external sharing requires separate human approval;
 - TheHive case handoff requires separate human approval;
-- connectors, CI, Kubernetes service accounts and integrated platforms do not gain publication/share or case-handoff authority;
+- connectors, CI, Kubernetes service accounts, frontend controls and integrated platforms do not gain publication/share or case-handoff authority;
 - enrichment/graph/exchange/case state does not itself imply local compromise;
 - human and machine roles remain separated;
 - provenance, confidence, markings and source restrictions remain preserved across service boundaries;
