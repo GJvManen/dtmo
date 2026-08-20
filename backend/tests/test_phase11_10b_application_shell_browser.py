@@ -1,11 +1,26 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Iterator
 
 import pytest
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page, expect, sync_playwright
 
 BASE_URL = os.getenv("DTMO_BROWSER_BASE_URL", "http://127.0.0.1:8000")
+
+
+@pytest.fixture()
+def page() -> Iterator[Page]:
+    """Keep the bounded shell browser test independent of pytest-playwright."""
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        context = browser.new_context()
+        page = context.new_page()
+        try:
+            yield page
+        finally:
+            context.close()
+            browser.close()
 
 
 @pytest.mark.browser
@@ -19,9 +34,10 @@ def test_canonical_workbench_shell_navigation_and_context(page: Page) -> None:
     expect(page.get_by_role("link", name="Compatibility console")).to_be_visible()
 
     page.keyboard.press("Control+k")
-    expect(page.get_by_role("dialog", name="Command palette")).to_be_visible()
+    palette = page.get_by_role("dialog", name="Command palette")
+    expect(palette).to_be_visible()
     page.get_by_label("Zoek werkruimte").fill("Threat Intelligence")
-    page.get_by_role("dialog", name="Command palette").get_by_role("button", name="Threat Intelligence Intelligence").click()
+    palette.get_by_role("button").filter(has_text="Threat Intelligence").click()
     page.wait_for_url("**/workbench/intelligence")
     expect(page.get_by_role("heading", name="Threat Intelligence", level=1)).to_be_visible()
 
