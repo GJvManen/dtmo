@@ -70,13 +70,14 @@ def test_current_surfaces_preserve_prior_candidate_evidence_boundary() -> None:
         assert "REPOSITORY_COMPLETE" in text, path
 
 
-def test_phase11_10d_candidate_completion_truth_is_professionally_reconciled() -> None:
+def test_phase11_10e_candidate_completion_truth_is_professionally_reconciled() -> None:
     for path in CANDIDATE_COMPLETION_SURFACES:
         text = _read(path)
         assert "11.10a" in text, f"Phase 11.10a missing from {path}"
         assert "11.10b" in text, f"Phase 11.10b missing from {path}"
         assert "11.10c" in text, f"Phase 11.10c missing from {path}"
         assert "11.10d" in text, f"Phase 11.10d missing from {path}"
+        assert "11.10e" in text, f"Phase 11.10e missing from {path}"
         assert "11.10p" in text, f"Phase 11.10p boundary missing from {path}"
         assert "production" in text.lower(), path
 
@@ -85,8 +86,9 @@ def test_phase11_10d_candidate_completion_truth_is_professionally_reconciled() -
         "Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10d Unified Intelligence Workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
-        "Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED`",
+        "Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.10e IntelOwl/Cortex integrated analysis | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.10f OpenCTI graph/entity workspace | `NOT STARTED`",
         "Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED`",
     ):
         assert marker in current, marker
@@ -97,12 +99,50 @@ def test_phase11_10d_candidate_completion_truth_is_professionally_reconciled() -
         "11.10b Canonical application shell",
         "11.10c Command Center",
         "11.10d Unified Intelligence Workspace",
+        "11.10e IntelOwl/Cortex integrated analysis",
+        "11.10f OpenCTI",
         "11.10p Fresh production-equivalent validation",
     ):
         assert marker in roadmap, marker
 
 
-def test_phase11_10d_unified_intelligence_package_is_professionally_discoverable() -> None:
+def test_phase11_10e_integrated_analysis_package_is_professionally_discoverable() -> None:
+    required_paths = (
+        "backend/dtmo/intelowl_execution.py",
+        "backend/dtmo/persistence/cortex.py",
+        "database/migrations/versions/0015_cortex_analysis_history.py",
+        "frontend/src/AnalysisWorkspace.tsx",
+        "frontend/src/analysis-workspace.css",
+        "docs/architecture/PHASE11_10E_INTEGRATED_ANALYSIS_WORKSPACE.md",
+        "docs/user/INTEGRATED_ANALYSIS_WORKSPACE.md",
+        "docs/qa/PHASE11_10E_INTEGRATED_ANALYSIS_GATE.md",
+        "backend/tests/test_phase11_10e_integrated_analysis_contract.py",
+        "backend/tests/test_phase11_10e_integrated_analysis_browser.py",
+        ".github/workflows/phase11-integrated-analysis-workspace.yml",
+    )
+    for path in required_paths:
+        assert (ROOT / path).is_file(), path
+
+    combined = "\n".join(
+        _read(path)
+        for path in (
+            "docs/README.md",
+            "docs/evidence/EVIDENCE_INDEX.md",
+            "docs/qa/QA_AND_RELEASE_GATES.md",
+        )
+    )
+    for marker in (
+        "PHASE11_10E_INTEGRATED_ANALYSIS_WORKSPACE.md",
+        "INTEGRATED_ANALYSIS_WORKSPACE.md",
+        "PHASE11_10E_INTEGRATED_ANALYSIS_GATE.md",
+        "phase11-integrated-analysis-workspace.yml",
+    ):
+        assert marker in combined, marker
+    for marker in ("human", "fail closed", "does not prove", "production"):
+        assert marker.lower() in combined.lower(), marker
+
+
+def test_phase11_10d_unified_intelligence_package_remains_professionally_discoverable() -> None:
     required_paths = (
         "frontend/src/UnifiedIntelligenceWorkspace.tsx",
         "frontend/src/unified-intelligence.css",
