@@ -111,7 +111,8 @@ def test_workbench_defines_candidate_completion_sequence() -> None:
         "11.10c Command Center — `PASS / REPOSITORY_COMPLETE`",
         "11.10d Unified Intelligence Workspace — `PASS / REPOSITORY_COMPLETE`",
         "11.10e IntelOwl/Cortex integrated analysis — `PASS / REPOSITORY_COMPLETE`",
-        "11.10f OpenCTI graph/entity workspace — active",
+        "11.10f OpenCTI graph/entity workspace — `PASS / REPOSITORY_COMPLETE`",
+        "11.10g MISP Sharing & Exchange — active",
         "11.10o consolidation/full functional acceptance",
         "11.10p fresh production-equivalent exercise",
         "Phase 11.11 remains blocked until 11.10p is explicitly accepted",
@@ -123,7 +124,7 @@ def test_authoritative_surfaces_preserve_accepted_architecture_and_current_slice
     for path in (ROADMAP, CURRENT_STATE, PORTAL, EVIDENCE):
         text = _read(path)
         assert "Phase 11.10" in text
-        for phase in ("11.10a", "11.10b", "11.10c", "11.10d", "11.10e", "11.10f"):
+        for phase in ("11.10a", "11.10b", "11.10c", "11.10d", "11.10e", "11.10f", "11.10g"):
             assert phase in text, f"{phase} is not exposed in {path.relative_to(ROOT)}"
         assert "not production authorized" in text.lower() or "does not authorize production" in text.lower() or "production authorization" in text.lower()
 
@@ -133,8 +134,9 @@ def test_authoritative_surfaces_preserve_accepted_architecture_and_current_slice
     assert "Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE`" in current
-    assert "Phase 11.10f OpenCTI graph/entity workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
-    assert "Phase 11.10g MISP Sharing & Exchange | `NOT STARTED`" in current
+    assert "Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE`" in current
+    assert "Phase 11.10g MISP Sharing & Exchange | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
+    assert "Phase 11.10h TheHive Investigations & Cases | `NOT STARTED`" in current
 
     roadmap = _read(ROADMAP)
     assert "11.10a Frontend architecture and design contract" in roadmap
@@ -143,6 +145,8 @@ def test_authoritative_surfaces_preserve_accepted_architecture_and_current_slice
     assert "11.10d Unified Intelligence Workspace" in roadmap
     assert "11.10e IntelOwl/Cortex integrated analysis" in roadmap
     assert "11.10f OpenCTI" in roadmap
+    assert "11.10g MISP" in roadmap
+    assert "11.10h TheHive" in roadmap
     assert "11.10p Fresh production-equivalent validation" in roadmap
 
 
