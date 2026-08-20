@@ -8,7 +8,7 @@ This index maps current lifecycle stages to authoritative evidence classes and r
 
 ## Current lifecycle
 
-Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; **E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`**. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11.1–11.9, Phase 11.10a and Phase 11.10b are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10c Command Center** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10d, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
+Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; **E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`**. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11.1–11.9 and Phase 11.10a–11.10c are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10d Unified Intelligence Workspace** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10e, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
 
 ## Evidence hierarchy
 
@@ -37,17 +37,7 @@ No enrichment, graph, correlation, MISP or TheHive integration grants autonomous
 
 ## Accepted Phase 11.8 runtime evidence
 
-Phase 11.8 is `PASS / REPOSITORY_COMPLETE` across:
-
-- 11.8a runtime foundation;
-- 11.8b workload identity/external secret delivery;
-- 11.8c ingress/TLS/network segmentation;
-- 11.8d HA/disruption hardening;
-- 11.8e observability;
-- 11.8f backup/restore/recovery;
-- 11.8g software supply-chain hardening;
-- 11.8h capacity/resource planning;
-- 11.8i exercised upgrade/rollback.
+Phase 11.8 is `PASS / REPOSITORY_COMPLETE` across runtime foundation, workload identity/external secret delivery, ingress/TLS/network segmentation, HA/disruption hardening, observability, backup/restore/recovery, software supply-chain hardening, capacity/resource planning and exercised upgrade/rollback.
 
 Key workflow references include `.github/workflows/phase11-workload-identity-secrets.yml`, `.github/workflows/phase11-ingress-tls-network.yml`, `.github/workflows/phase11-ha-disruption.yml`, `.github/workflows/phase11-supply-chain-hardening.yml`, `.github/workflows/release-artifact-attestation.yml` and `.github/workflows/phase11-upgrade-rollback.yml`.
 
@@ -100,9 +90,9 @@ The accepted trust path is **browser → DTMO API → governed integration adapt
 
 ### 11.10c Command Center
 
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Authoritative active chain:
+Accepted chain:
 
 - `backend/dtmo/command_center.py`;
 - `backend/dtmo/api_command_center.py`;
@@ -114,25 +104,36 @@ Authoritative active chain:
 - `backend/tests/test_phase11_10c_command_center_browser.py`;
 - `.github/workflows/phase11-command-center.yml`.
 
-The Command Center is a read-only canonical projection. Missing canonical-store evidence produces `unavailable`/`null`, not synthetic zero values. Configured integrations are never promoted to a general `healthy` claim. Role-aware visibility does not replace server-side authorization. This gate does not prove live upstream health, production-equivalent execution, independent assurance or production authorization.
+The Command Center is a read-only canonical projection. Missing canonical-store evidence produces `unavailable`/`null`, not synthetic zero values. Configured integrations are never promoted to a general `healthy` claim. Role-aware visibility does not replace server-side authorization. Repository acceptance does not prove live upstream health, production-equivalent execution, independent assurance or production authorization.
+
+### 11.10d Unified Intelligence Workspace
+
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+
+Authoritative active chain:
+
+- `frontend/src/UnifiedIntelligenceWorkspace.tsx`;
+- `frontend/src/unified-intelligence.css`;
+- `docs/architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md`;
+- `docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md`;
+- `docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`;
+- `backend/tests/test_phase11_10d_unified_intelligence_workspace_contract.py`;
+- `backend/tests/test_phase11_10d_unified_intelligence_workspace_browser.py`;
+- `.github/workflows/phase11-unified-intelligence-workspace.yml`.
+
+11.10d reuses the governed `/api/v1/intelligence/search` discovery contract and `/api/v1/intelligence/{item_id}/workspace` canonical-detail/provenance contract. Search hits are index projections. Selecting an item retrieves canonical DTMO persistence separately. Search or detail dependency failure is unavailable and must **fail closed**; no synthetic empty or complete object is manufactured. `read:intelligence` remains server-authoritative and no review, sharing, publication, analyzer/connector execution, case mutation or administration authority is granted.
+
+Repository/browser evidence for this gate **does not prove** live upstream completeness or health, production-equivalent operation, independent assurance or production authorization.
 
 ### Candidate-completion order
 
-11.10d Unified Intelligence Workspace, 11.10e IntelOwl/Cortex, 11.10f OpenCTI, 11.10g MISP, 11.10h TheHive, 11.10i Vulnerability & Exposure, 11.10j Sources & Collection, 11.10k Automation & Playbooks, 11.10l Governance & Evidence, 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance remain `NOT STARTED`.
+11.10e IntelOwl/Cortex, 11.10f OpenCTI, 11.10g MISP, 11.10h TheHive, 11.10i Vulnerability & Exposure, 11.10j Sources & Collection, 11.10k Automation & Playbooks, 11.10l Governance & Evidence, 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance remain `NOT STARTED`.
 
 ## Phase 11.10p production-equivalent evidence
 
 **Status:** `NOT STARTED / CANDIDATE FREEZE REQUIRED`.
 
-After 11.10o, one immutable integrated candidate is frozen. Fresh evidence must cover:
-
-- candidate identity;
-- migration/compatibility;
-- upgrade;
-- rollback to the exact prior immutable digest plus post-rollback health;
-- health/readiness;
-- representative saturation/capacity;
-- recovery/continuity.
+After 11.10o, one immutable integrated candidate is frozen. Fresh evidence must cover candidate identity, migration/compatibility, upgrade, rollback to the exact prior immutable digest plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity.
 
 Authoritative external execution package:
 
