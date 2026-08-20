@@ -1,6 +1,6 @@
 # DTMO Unified Operations Workbench
 
-Status: **Phase 11.10a — IN PROGRESS / TARGET EXPERIENCE CONTRACT**  
+Status: **Phase 11.10a PASS / REPOSITORY_COMPLETE; Phase 11.10b IN PROGRESS / CANONICAL SHELL IMPLEMENTATION**  
 Visual reference: approved next-generation command-center concept (design target only, not evidence).
 
 ## Purpose
@@ -18,7 +18,9 @@ The workbench follows a stable four-zone composition:
 - **main workspace** for the current operational task;
 - **right context rail** for selected-object facts and governed actions.
 
-The command center additionally uses a KPI row, operational widgets and a workflow strip inspired by the approved graphical reference.
+Phase 11.10b implements this shell foundation under `/workbench/`. The command palette is navigation-only in this slice, the context rail starts with an explicit no-selection state and later workspace routes do not fabricate feature data.
+
+The Command Center additionally uses a KPI row, operational widgets and a workflow strip inspired by the approved graphical reference; that functional content remains Phase 11.10c scope.
 
 ## Primary journey
 
@@ -103,7 +105,7 @@ Every compatible canonical object should open a shared context model with tabs s
 - Sharing;
 - Timeline/Audit.
 
-The right context rail may expose counts/status from IntelOwl, Cortex, OpenCTI, MISP and TheHive without requiring a separate upstream login.
+The right context rail may expose counts/status from IntelOwl, Cortex, OpenCTI, MISP and TheHive without requiring a separate upstream login. Until a bounded feature slice supplies attributable data, the rail must state that no object is selected rather than infer facts.
 
 ## Integrated capability expectations
 
@@ -180,8 +182,8 @@ The design must not imitate a decorative 'Hollywood hacker' interface.
 
 The interface programme is executed as bounded Phase 11.10 candidate-completion slices:
 
-- 11.10a frontend architecture/design contract — active;
-- 11.10b canonical shell;
+- 11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`;
+- 11.10b canonical application shell — active;
 - 11.10c Command Center;
 - 11.10d Unified Intelligence Workspace;
 - 11.10e IntelOwl/Cortex analysis;
