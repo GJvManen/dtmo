@@ -156,6 +156,6 @@ def test_vite_build_is_csp_compatible_and_does_not_publish_source_maps() -> None
 def test_phase11_10b_scope_remains_shell_only() -> None:
     app = read("frontend/src/App.tsx")
     assert "11.10b shell foundation" in app
-    assert "Functional command-center content is delivered in Phase 11.10c." in app
+    assert "Command Center is delivered in Phase 11.10c." in app
     assert "Feature data appears only when its governed DTMO API contract is implemented" in app
     assert "Publication/share authority remains server-side and human-governed." in app
