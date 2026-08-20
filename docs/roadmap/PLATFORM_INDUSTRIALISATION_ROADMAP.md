@@ -94,14 +94,14 @@ Repository acceptance establishes engineering graph/contract integrity only. It 
 ### 11.10 Integrated production-equivalent validation
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`
 
-Phase 11.10 remains the active production-readiness stage. Before external execution, the candidate must first incorporate the owner-required next-generation Unified Operations Workbench because that work materially changes the integrated candidate and user workflows. Running external validation before this candidate-completion track would create immediately stale candidate-bound evidence.
+Phase 11.10 remains the active production-readiness stage. Before external execution, the candidate first incorporates the owner-required next-generation Unified Operations Workbench because that work materially changes the integrated candidate and user workflows. Running external validation before this candidate-completion track would create immediately stale candidate-bound evidence.
 
 #### Candidate-completion sequence
 
 The following order is fixed and remains one bounded PR at a time:
 
-- **11.10a Frontend architecture and design contract** — `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT`;
-- **11.10b Canonical application shell** — `NOT STARTED`;
+- **11.10a Frontend architecture and design contract** — `PASS / REPOSITORY_COMPLETE`;
+- **11.10b Canonical application shell** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
 - **11.10c Command Center** — `NOT STARTED`;
 - **11.10d Unified Intelligence Workspace** — `NOT STARTED`;
 - **11.10e IntelOwl/Cortex integrated analysis** — `NOT STARTED`;
@@ -117,7 +117,9 @@ The following order is fixed and remains one bounded PR at a time:
 - **11.10o Consolidation and full functional acceptance** — `NOT STARTED`;
 - **11.10p Fresh production-equivalent validation** — `NOT STARTED / CANDIDATE FREEZE REQUIRED`.
 
-11.10a defines the target architecture only. It explicitly does not implement or accept the new frontend. Its repository-controlled contract is documented by:
+#### 11.10a accepted architecture/design baseline
+
+11.10a established and accepted:
 
 - `docs/architecture/FRONTEND_ARCHITECTURE.md`;
 - `docs/architecture/UI_API_CONTRACT.md`;
@@ -128,7 +130,28 @@ The following order is fixed and remains one bounded PR at a time:
 - `backend/tests/test_phase11_10a_frontend_architecture_contract.py`;
 - `.github/workflows/phase11-frontend-architecture.yml`.
 
-The canonical security path is **browser → DTMO API → governed integration adapter → upstream service**. Role-aware rendering is a usability feature only; server-side RBAC, human publication/share authority, case authority, provenance and fail-closed behavior remain authoritative.
+The canonical security path remains **browser → DTMO API → governed integration adapter → upstream service**. Role-aware rendering is a usability feature only; **server-side RBAC**, human publication/share authority, case authority, provenance and fail-closed behavior remain authoritative.
+
+#### 11.10b active canonical application shell
+
+11.10b implements only the accepted shell/build/routing foundation. Its controlled package includes:
+
+- `frontend/package.json` and committed `frontend/package-lock.json`;
+- React/TypeScript/Vite entry and shell implementation under `frontend/src/`;
+- `backend/dtmo/workbench_frontend.py` for same-origin serving;
+- `docs/architecture/PHASE11_10B_APPLICATION_SHELL.md`;
+- `docs/qa/PHASE11_10B_APPLICATION_SHELL_GATE.md`;
+- `backend/tests/test_phase11_10b_application_shell_contract.py`;
+- `backend/tests/test_phase11_10b_application_shell_browser.py`;
+- `.github/workflows/phase11-application-shell.yml`.
+
+The supported built route is `/workbench/`. `/ui/console` remains a temporary **compatibility path**, not a parallel feature-development target. The shell provides task-oriented navigation, top status/command bar, a navigation-only command palette, context rail, responsive behavior and semantic dark/light themes. Route foundations must not fabricate Command Center metrics, cases, vulnerabilities, integration state or other operational evidence.
+
+The committed npm lockfile is consumed with `npm ci` in the dedicated exact-head gate and the frontend Docker build stage. Node/npm remain build-stage tooling; only built static assets enter the Python runtime image. Final 11.10b acceptance also requires the existing security, accessibility, integration and supply-chain regressions to remain green.
+
+A green shell gate is repository evidence only. It **does not prove** live upstream integration behavior, production-equivalent operation, independent assurance or production authorization.
+
+Only after 11.10b is accepted and merged may **11.10c Command Center** begin.
 
 #### 11.10p external execution boundary
 
@@ -182,9 +205,9 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Complete **Phase 11.10a Frontend architecture and design contract** with exact-head repository evidence.
-2. If 11.10a is accepted, start **11.10b Canonical application shell** as the next and only bounded PR.
-3. Continue the fixed 11.10c–11.10o candidate-completion sequence one green merged PR at a time.
-4. Freeze one immutable integrated candidate and execute **11.10p fresh production-equivalent validation** using the full external evidence set.
+1. Complete **Phase 11.10b Canonical application shell** with committed dependency lockfile and fully green exact-head repository/browser/security/supply-chain evidence.
+2. If 11.10b is accepted and merged, start **11.10c Command Center** as the next and only bounded PR.
+3. Continue the fixed 11.10d–11.10o candidate-completion sequence one green merged PR at a time.
+4. Freeze one immutable integrated candidate and execute **11.10p Fresh production-equivalent validation** using the full external evidence set.
 5. Run **Phase 11.11 independent external assurance** against that same immutable candidate only after explicit 11.10 acceptance.
 6. Enter Phase 12 only after both 11.10 and 11.11 are accepted for the same candidate.
