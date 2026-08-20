@@ -27,15 +27,15 @@ The active bounded programme step is **Phase 11.10 integrated production-equival
 
 | Audience | Primary documents |
 |---|---|
-| Executive / sponsor | [Current State](project/CURRENT_STATE.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
+| Executive / sponsor | [Current State](project/CURRENT_STATE.md), [Executive Status](project/EXECUTIVE_STATUS.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
 | Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current State](project/CURRENT_STATE.md) |
 | Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
 | Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Kubernetes Runtime Configuration](administration/KUBERNETES_RUNTIME_CONFIGURATION.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
 | Architecture / engineering | [Phase 11.9 Migration Compatibility](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md), [Phase 11.8i Upgrade/Rollback](architecture/PHASE11_8I_UPGRADE_ROLLBACK.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
-| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.9 Migration Compatibility](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md) |
+| Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.10 Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
 | QA / release | [Phase 11.10 Production-Equivalent Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
-| Operations | [Phase 11.9 Migration Compatibility Runbook](operations/PHASE11_9_MIGRATION_COMPATIBILITY_RUNBOOK.md), [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
+| Operations | [Phase 11.10 Production-Equivalent Validation Runbook](operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md), [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
 
 ## Phase 11 programme documentation
 
@@ -60,17 +60,22 @@ Accepted integration and runtime documentation remains directly discoverable:
 - [11.8i exercised upgrade and rollback](architecture/PHASE11_8I_UPGRADE_ROLLBACK.md).
 - [11.9 migration compatibility architecture](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md), [runbook](operations/PHASE11_9_MIGRATION_COMPATIBILITY_RUNBOOK.md), and [gate](qa/PHASE11_9_MIGRATION_COMPATIBILITY_GATE.md).
 
-The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. No synthetic screenshot is promoted as operational, staging, production, or live-integration evidence.
+The governed screenshot catalogue contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. **No synthetic screenshot is promoted** as operational, staging, production, or live-integration evidence.
 
-The active Phase 11.10 documentation set is:
+## Active Phase 11.10 documentation set
 
 - [Production-Equivalent Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md)
+- [Production-Equivalent Validation Runbook](operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md)
+- [Production-Equivalent Evidence Template](evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json)
 - [Evidence Index](evidence/EVIDENCE_INDEX.md)
 - [Current State](project/CURRENT_STATE.md)
+- [Production Readiness Checklist](project/PRODUCTION_CHECKLIST.md)
 - [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md)
 - repository contract: `backend/tests/test_phase11_10_production_equivalent_validation.py`
-- evidence schema/tool: `tools/phase11_production_equivalent_validation.py`
+- evidence validator: `tools/phase11_production_equivalent_validation.py`
 - exact-head workflow: `.github/workflows/phase11-production-equivalent-validation.yml`
+
+The validator can calculate the candidate fingerprint before execution and validate a completed manifest after evidence collection. Its successful output validates metadata consistency only; accountable review of the referenced external evidence remains mandatory.
 
 ## Phase 11.10 production-equivalent evidence boundary
 
@@ -81,8 +86,8 @@ flowchart LR
     U --> H[Health]
     H --> S[Saturation]
     S --> R[Recovery]
-    R --> B[Rollback]
-    B --> V[Post-rollback validation]
+    R --> B[Exact prior-digest rollback]
+    B --> V[Post-rollback health]
     V --> A[Accountable 11.10 review]
 ```
 
