@@ -28,6 +28,15 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1�
 | Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
 | Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8 integrated runtime industrialisation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8f backup / restore / recovery hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8g software supply-chain hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8h capacity / resource planning | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8i exercised upgrade / rollback | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
