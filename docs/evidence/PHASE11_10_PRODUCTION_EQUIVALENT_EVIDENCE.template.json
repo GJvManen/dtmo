@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "phase": "11.10",
+  "environment": {
+    "environment_id": "REQUIRED",
+    "environment_class": "production-equivalent",
+    "accountable_owner": "REQUIRED",
+    "validation_operator": "REQUIRED",
+    "security_release_reviewer": "REQUIRED"
+  },
+  "candidate": {
+    "deployed_commit": "0000000000000000000000000000000000000000",
+    "application_image_digest": "sha256:REQUIRED",
+    "supporting_image_digests": [],
+    "migration_head": "REQUIRED",
+    "deployment_revision": "REQUIRED",
+    "prior_application_image_digest": "sha256:REQUIRED",
+    "candidate_fingerprint": "REQUIRED"
+  },
+  "validation_window": {
+    "started_at": "REQUIRED",
+    "completed_at": "REQUIRED"
+  },
+  "evidence": {
+    "immutable_candidate_identity": {
+      "status": "PENDING",
+      "candidate_fingerprint": "REQUIRED",
+      "observed_at": "REQUIRED",
+      "observer": "REQUIRED",
+      "evidence_reference": "REQUIRED"
+    },
+    "migration_compatibility": {
+      "status": "PENDING",
+      "candidate_fingerprint": "REQUIRED",
+      "observed_at": "REQUIRED",
+      "observer": "REQUIRED",
+      "evidence_reference": "REQUIRED"
+    },
+    "upgrade": {
+      "status": "PENDING",
+      "candidate_fingerprint": "REQUIRED",
+      "observed_at": "REQUIRED",
+      "observer": "REQUIRED",
+      "evidence_reference": "REQUIRED"
+    },
+    "rollback": {
+      "status": "PENDING",
+      "candidate_fingerprint": "REQUIRED",
+      "observed_at": "REQUIRED",
+      "observer": "REQUIRED",
+      "evidence_reference": "REQUIRED",
+      "rolled_back_to_digest": "sha256:REQUIRED",
+      "post_rollback_health": "PENDING"
+    },
+    "health": {
+      "status": "PENDING",
+      "candidate_fingerprint": "REQUIRED",
+      "observed_at": "REQUIRED",
+      "observer": "REQUIRED",
+      "evidence_reference": "REQUIRED"
+    },
+    "saturation": {
+      "status": "PENDING",
+      "candidate_fingerprint": "REQUIRED",
+      "observed_at": "REQUIRED",
+      "observer": "REQUIRED",
+      "evidence_reference": "REQUIRED",
+      "workload_profile_reference": "REQUIRED"
+    },
+    "recovery": {
+      "status": "PENDING",
+      "candidate_fingerprint": "REQUIRED",
+      "observed_at": "REQUIRED",
+      "observer": "REQUIRED",
+      "evidence_reference": "REQUIRED",
+      "observed_rpo": "REQUIRED",
+      "observed_rto": "REQUIRED"
+    }
+  },
+  "deviations": [],
+  "release_blocking_findings_open": true,
+  "review": {
+    "decision": "PENDING",
+    "reviewer": "REQUIRED",
+    "reviewed_at": "REQUIRED",
+    "acceptance_reference": "REQUIRED"
+  },
+  "claim_boundary": {
+    "repository_ci_is_live_environment_evidence": false,
+    "historical_phase8_9_evidence_reused": false,
+    "production_authorized": false
+  }
+}
