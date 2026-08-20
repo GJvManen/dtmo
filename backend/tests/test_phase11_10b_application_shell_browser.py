@@ -33,7 +33,7 @@ def test_canonical_workbench_shell_navigation_and_context(page: Page) -> None:
     expect(page.get_by_role("navigation", name="Werkruimten")).to_be_visible()
     expect(page.get_by_text("Geen object geselecteerd")).to_be_visible()
     expect(page.get_by_text("No synthetic operational state")).to_be_visible()
-    expect(page.get_by_role("link", name="Compatibility console")).to_be_visible()
+    expect(page.get_by_role("link", name="Compatibility console", exact=True)).to_be_visible()
 
     page.keyboard.press("Control+k")
     palette = page.get_by_role("dialog", name="Command palette")
