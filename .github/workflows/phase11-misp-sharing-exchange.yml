@@ -1,0 +1,129 @@
+name: Phase 11 MISP Sharing Exchange Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'backend/dtmo/misp_sharing_workspace.py'
+      - 'backend/dtmo/misp_export_api.py'
+      - 'backend/dtmo/governance/misp_export.py'
+      - 'backend/dtmo/governance/decisions.py'
+      - 'backend/dtmo/auth/policy.py'
+      - 'backend/tests/test_phase11_10g_misp_sharing_*.py'
+      - 'backend/tests/test_current_documentation_phase11_10_contract.py'
+      - '.github/workflows/phase11-misp-sharing-exchange.yml'
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  misp-sharing-exchange:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install exact frontend dependency graph
+        working-directory: frontend
+        run: npm ci
+
+      - name: Verify dependency manifests remain immutable
+        run: git diff --exit-code -- frontend/package.json frontend/package-lock.json
+
+      - name: Typecheck and build canonical workbench
+        working-directory: frontend
+        run: npm run build
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install backend test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Run Phase 11.10g repository contracts
+        run: |
+          python -m pytest -q \
+            backend/tests/test_phase11_10g_misp_sharing_contract.py \
+            backend/tests/test_current_documentation_phase11_10_contract.py \
+            backend/tests/test_phase11_5_misp_consolidation_contract.py \
+            backend/tests/test_e8_7_misp_governed_export.py
+
+      - name: Install Chromium for browser acceptance
+        run: python -m playwright install chromium
+
+      - name: Start exact-head DTMO with built workbench
+        shell: bash
+        run: |
+          DTMO_FRONTEND_DIST="$PWD/frontend/dist" uvicorn dtmo.main:app --app-dir backend --host 127.0.0.1 --port 8000 > /tmp/dtmo-misp-sharing.log 2>&1 &
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:8000/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/dtmo-misp-sharing.log
+          exit 1
+
+      - name: Run MISP sharing browser acceptance
+        env:
+          DTMO_BROWSER_BASE_URL: http://127.0.0.1:8000
+        run: python -m pytest -q backend/tests/test_phase11_10g_misp_sharing_browser.py
+
+      - name: Record repository evidence boundary
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = {
+              "workflow": "Phase 11 MISP Sharing Exchange Gate",
+              "sha": os.environ.get("GITHUB_SHA"),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "scope": "Phase 11.10g MISP Sharing & Exchange",
+              "claim_boundary": (
+                  "Repository-controlled evidence for the canonical sharing workspace, separate human review/share approval, "
+                  "authoritative MISP handling restrictions, replay-protected unpublished export and fail-closed browser behavior. "
+                  "Configuration does not prove live MISP health. Export does not grant MISP publication or synchronization "
+                  "authority and this evidence does not prove production-equivalent operation, independent assurance or production authorization."
+              ),
+          }
+          Path("artifacts/phase11-10g-misp-sharing.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload non-sensitive MISP sharing evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: phase11-10g-misp-sharing-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/
+          if-no-files-found: error
