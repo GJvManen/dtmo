@@ -6,12 +6,14 @@ from collections.abc import Iterator
 import pytest
 from playwright.sync_api import Page, expect, sync_playwright
 
-BASE_URL = os.getenv("DTMO_BROWSER_BASE_URL", "http://127.0.0.1:8000")
+BASE_URL = os.getenv("DTMO_BROWSER_BASE_URL", "").rstrip("/")
 
 
 @pytest.fixture()
 def page() -> Iterator[Page]:
-    """Keep the bounded shell browser test independent of pytest-playwright."""
+    """Run only in the dedicated browser environment with installed Chromium."""
+    if not BASE_URL:
+        pytest.skip("Phase 11.10b browser acceptance requires DTMO_BROWSER_BASE_URL")
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
         context = browser.new_context()
