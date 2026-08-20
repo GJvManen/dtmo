@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { AnalysisWorkspace } from './AnalysisWorkspace';
+import { InvestigationsWorkspace } from './InvestigationsWorkspace';
 import { MispSharingWorkspace } from './MispSharingWorkspace';
 import { OpenCTIGraphWorkspace } from './OpenCTIGraphWorkspace';
 import { UnifiedIntelligenceWorkspace } from './UnifiedIntelligenceWorkspace';
@@ -248,6 +249,7 @@ function CommandCenter({ session, health }: { session?: Session; health?: Health
 }
 
 function WorkspaceFoundation({ workspace }: { workspace: WorkspaceDefinition }) {
+  if (workspace.path === '/investigations') return <InvestigationsWorkspace />;
   if (workspace.path === '/sharing') return <MispSharingWorkspace />;
   return (
     <section className="workspace-foundation" aria-labelledby="workspace-title">
