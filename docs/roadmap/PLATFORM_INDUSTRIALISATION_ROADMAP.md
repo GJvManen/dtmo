@@ -22,7 +22,7 @@ Historical Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE` and 
 9. 11.8 Kubernetes/Helm/GitOps plus HA/secrets/network/observability/recovery/supply-chain/capacity/upgrade hardening.
 10. 11.9 migration/compatibility.
 11. 11.10 integrated candidate completion and new production-equivalent validation.
-12. 11.11 new independent external assurance.
+12. Phase 11.11 new independent external assurance.
 13. Phase 12 formal production GO/NO-GO.
 
 ## Phase 11 — Platform industrialisation
@@ -160,7 +160,7 @@ The execution package remains:
 
 Historical Phase 8/9 evidence cannot satisfy 11.10p. Missing, ambiguous, inaccessible, historical-only or mixed-candidate evidence must **fail closed**. Repository CI validates repository contracts only and does not prove production-equivalent execution or production authorization.
 
-### 11.11 Independent external assurance
+### Phase 11.11 Independent external assurance
 **Status:** `NOT STARTED`
 
 Fresh independent assurance may start only after Phase 11.10 is explicitly `PASS / OWNER_ACCEPTED` and must target the same immutable integrated candidate.
@@ -176,5 +176,5 @@ A production `GO` requires accepted 11.10 and 11.11 evidence for the same releas
 2. Start **11.10d Unified Intelligence Workspace** only after 11.10c is merged.
 3. Continue 11.10e–11.10o one bounded green PR at a time.
 4. Freeze one immutable candidate and execute **11.10p**.
-5. Complete fresh **11.11** independent assurance for that same candidate.
+5. Complete fresh **Phase 11.11** independent assurance for that same candidate.
 6. Enter **Phase 12** only after 11.10 and 11.11 are accepted.
