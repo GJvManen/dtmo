@@ -17,24 +17,28 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 11.8 integrated runtime industrialisation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.9 migration / compatibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
+| Phase 11.10a frontend architecture/design contract | `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT` |
+| Phase 11.10b–11.10o candidate completion | `NOT STARTED` |
+| Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **not production authorized** |
 
-The active bounded programme step is **Phase 11.10 integrated production-equivalent validation**. Earlier Phase 8/9 evidence remains historical and candidate-bound and cannot be reused for the materially changed integrated candidate. Fresh Phase 11.10 real-environment evidence and Phase 11.11 independent external assurance remain required before Phase 12.
+The active bounded programme step is **Phase 11.10a frontend architecture and design contract** inside the still-active Phase 11.10 stage. The owner-required Unified Operations Workbench materially changes the integrated candidate, so the fresh external production-equivalent exercise is now intentionally sequenced as 11.10p after candidate completion and candidate freeze. Earlier Phase 8/9 evidence remains historical and candidate-bound and cannot be reused.
 
 ## Start here
 
 | Audience | Primary documents |
 |---|---|
 | Executive / sponsor | [Current State](project/CURRENT_STATE.md), [Executive Status](project/EXECUTIVE_STATUS.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
-| Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current State](project/CURRENT_STATE.md) |
-| Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
+| Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current State](project/CURRENT_STATE.md) |
+| Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [Information Architecture](ux/INFORMATION_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
 | Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Kubernetes Runtime Configuration](administration/KUBERNETES_RUNTIME_CONFIGURATION.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
-| Architecture / engineering | [Phase 11.9 Migration Compatibility](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md), [Phase 11.8i Upgrade/Rollback](architecture/PHASE11_8I_UPGRADE_ROLLBACK.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
+| Architecture / engineering | [Frontend Architecture](architecture/FRONTEND_ARCHITECTURE.md), [UI/API Contract](architecture/UI_API_CONTRACT.md), [Phase 11.9 Migration Compatibility](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
+| UX / frontend | [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Information Architecture](ux/INFORMATION_ARCHITECTURE.md), [Design System](ux/DESIGN_SYSTEM.md), [Frontend UX](ux/FRONTEND_UX.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.10 Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
-| QA / release | [Phase 11.10 Production-Equivalent Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
+| QA / release | [Phase 11.10a Frontend Architecture Gate](qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md), [Phase 11.10 Production-Equivalent Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
 | Operations | [Phase 11.10 Production-Equivalent Validation Runbook](operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md), [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
 
 ## Phase 11 programme documentation
@@ -62,7 +66,24 @@ Accepted integration and runtime documentation remains directly discoverable:
 
 The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. **No synthetic screenshot is promoted** as operational, staging, production, or live-integration evidence.
 
-## Active Phase 11.10 documentation set
+## Active Phase 11.10a — Unified Operations Workbench architecture
+
+The first bounded candidate-completion slice is architecture only. It defines the target product/control-plane structure before implementation starts:
+
+- [Frontend Architecture](architecture/FRONTEND_ARCHITECTURE.md)
+- [UI/API Contract](architecture/UI_API_CONTRACT.md)
+- [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md)
+- [Information Architecture](ux/INFORMATION_ARCHITECTURE.md)
+- [Design System](ux/DESIGN_SYSTEM.md)
+- [Phase 11.10a Frontend Architecture Gate](qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md)
+- repository contract: `backend/tests/test_phase11_10a_frontend_architecture_contract.py`
+- exact-head workflow: `.github/workflows/phase11-frontend-architecture.yml`
+
+The architectural invariant is **browser → DTMO API → governed integration adapter → upstream service**. The browser does not become a privileged direct client for Taranis AI, IntelOwl, OpenCTI, MISP, TheHive or Cortex. Server-side RBAC, provenance, human publication/share authority and separate case authority remain unchanged.
+
+11.10a–11.10o complete the materially changed product candidate one bounded PR at a time. 11.10p then performs the fresh production-equivalent exercise against the frozen immutable integrated candidate. Phase 11.11 remains blocked until Phase 11.10 is explicitly accepted.
+
+## Existing Phase 11.10 external validation package
 
 - [Production-Equivalent Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md)
 - [Production-Equivalent Validation Runbook](operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md)
@@ -81,7 +102,8 @@ The validator can calculate the candidate fingerprint before execution and valid
 
 ```mermaid
 flowchart LR
-    I[One immutable integrated candidate] --> M[Migration + compatibility]
+    C[11.10a-o candidate completion] --> F[One immutable integrated candidate]
+    F --> M[Migration + compatibility]
     M --> U[Upgrade]
     U --> H[Health]
     H --> S[Saturation]
@@ -91,7 +113,7 @@ flowchart LR
     V --> A[Accountable 11.10 review]
 ```
 
-Phase 11.10 requires fresh candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery evidence from one production-equivalent environment. Historical Phase 8/9 evidence cannot satisfy the gate. Missing, ambiguous, inaccessible or mixed-candidate evidence must fail closed. Repository-green status validates the evidence contract only; it does not prove production-equivalent execution and does not authorize production.
+Phase 11.10p requires fresh candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery evidence from one production-equivalent environment. Historical Phase 8/9 evidence cannot satisfy the gate. Missing, ambiguous, inaccessible or mixed-candidate evidence must fail closed. Repository-green status validates repository contracts only; it does not prove production-equivalent execution and does not authorize production.
 
 ## Security and authority invariants
 
@@ -101,6 +123,7 @@ Phase 11.10 requires fresh candidate identity, migration/compatibility, upgrade,
 - TheHive case-handoff authority remains distinct from publication/share authority;
 - IntelOwl and Cortex enrichment do not grant share authority or prove local compromise;
 - Kubernetes placement does not collapse Taranis, IntelOwl, OpenCTI, MISP, TheHive or Cortex licensing/service boundaries;
+- normal frontend operations use the DTMO API and governed adapters, not direct browser-to-upstream privileged calls;
 - runtime image identity remains immutable-digest based;
 - workload identity credentials and runtime secret values are not committed to Git;
 - application rollback is not automatic database rollback;
@@ -112,7 +135,7 @@ Phase 11.10 requires fresh candidate identity, migration/compatibility, upgrade,
 
 Professional current-state documentation describes the present controlled state. Historical records under `docs/development/` and earlier Phase 8/9 evidence remain scoped to the candidate and moment they originally covered; they are not rewritten or reused as evidence for the materially changed Phase 11 candidate. The accepted Phase 11.7 Cortex decision record also remains historical.
 
-Repository CI and documentation-contract tests do not prove production-data migration, live Kubernetes behavior, production-equivalent continuity, independent assurance or production readiness.
+Repository CI, design mockups and documentation-contract tests do not prove live integrations, production-data migration, live Kubernetes behavior, production-equivalent continuity, independent assurance or production readiness.
 
 ## Maintenance rule
 

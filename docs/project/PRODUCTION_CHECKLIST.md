@@ -16,11 +16,12 @@ This checklist controls the post-Phase-10 industrialisation programme and future
 | Phase 11 | `IN PROGRESS / ACTIVE` | Platform industrialisation |
 | Phase 11.1–11.8 | `PASS / REPOSITORY_COMPLETE` | Accepted integrations/runtime controls |
 | Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` | Repository migration/compatibility evidence |
-| Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` | Real-environment evidence |
+| Phase 11.10 candidate completion + production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` | Repository/functional + real-environment evidence |
+| Phase 11.10a frontend architecture/design contract | `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT` | Repository architecture evidence |
 | Phase 11.11 independent external assurance | `NOT STARTED` | Independent assurance |
 | Phase 12 | `NOT STARTED` | Future production authorization |
 
-Historical Phase 8/9 evidence remains candidate-bound and is not reused for the materially changed Phase 11 integrated candidate.
+Historical Phase 8/9 evidence remains candidate-bound and is not reused for the materially changed Phase 11 integrated candidate. DTMO is not production authorized.
 
 ## Evidence rules
 
@@ -38,7 +39,47 @@ Repository CI, release signing, accountable acceptance, production-equivalent va
 - [x] Phase 11.9 migration/compatibility accepted with forward-first and no-automatic-down-migration boundaries.
 - [x] Human publication/share authority, separate TheHive case authority, provenance, RBAC, least privilege and fail-closed evidence preserved.
 
-## 2. Active Phase 11.10 — production-equivalent validation
+## 2. Active Phase 11.10a — frontend architecture/design contract
+
+- [ ] `docs/architecture/FRONTEND_ARCHITECTURE.md` accepted.
+- [ ] `docs/architecture/UI_API_CONTRACT.md` accepted.
+- [ ] `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md` accepted.
+- [ ] `docs/ux/INFORMATION_ARCHITECTURE.md` accepted.
+- [ ] `docs/ux/DESIGN_SYSTEM.md` accepted.
+- [ ] Normal product trust path is documented as browser → DTMO API → governed integration adapter → upstream service.
+- [ ] Server-side RBAC remains authoritative; role-aware rendering is not authorization.
+- [ ] Human publication/share authority remains separate from technical execution.
+- [ ] TheHive case authority remains separate from publication/share authority.
+- [ ] Enrichment, graph presence and correlation do not establish local compromise.
+- [ ] Dark/light theme semantics, severity labels and non-colour accessibility are defined.
+- [ ] Loading, empty, stale, partial-failure and error states are defined.
+- [ ] Design mockups are explicitly non-operational evidence.
+- [ ] Dedicated exact-head Phase 11 Frontend Architecture Gate is green.
+- [ ] Professional documentation is synchronized.
+
+11.10a acceptance permits only **11.10b canonical application shell** to start.
+
+## 3. Candidate-completion sequence after 11.10a
+
+- [ ] 11.10b canonical application shell.
+- [ ] 11.10c Command Center.
+- [ ] 11.10d Unified Intelligence Workspace.
+- [ ] 11.10e IntelOwl/Cortex integrated analysis.
+- [ ] 11.10f OpenCTI graph/entity workspace.
+- [ ] 11.10g MISP Sharing & Exchange.
+- [ ] 11.10h TheHive Investigations & Cases.
+- [ ] 11.10i Vulnerability & Exposure Center.
+- [ ] 11.10j Sources & Collection Control Center.
+- [ ] 11.10k Automation & Playbooks.
+- [ ] 11.10l Governance & Evidence Center.
+- [ ] 11.10m Operations & Administration.
+- [ ] 11.10n role-aware UX/accessibility.
+- [ ] 11.10o consolidation/full functional acceptance and obsolete UI retirement.
+- [ ] One immutable integrated candidate frozen after 11.10o acceptance.
+
+## 4. Phase 11.10p — production-equivalent validation
+
+The following items remain mandatory but are deliberately deferred until candidate freeze.
 
 ### Environment and candidate identity
 
@@ -73,7 +114,7 @@ Repository CI, release signing, accountable acceptance, production-equivalent va
 
 - [ ] Application health succeeds in the production-equivalent environment.
 - [ ] Readiness includes required dependency readiness rather than process liveness only.
-- [ ] Representative intended API/UI behavior succeeds.
+- [ ] Representative intended API/UI behavior succeeds, including the accepted Unified Operations Workbench critical journeys.
 - [ ] Metrics, logs and audit/correlation remain available to authorized reviewers.
 
 ### Saturation and capacity
@@ -105,7 +146,7 @@ Repository CI, release signing, accountable acceptance, production-equivalent va
 
 - [ ] All seven required evidence classes are present and `PASS`.
 - [ ] Every evidence item uses the same candidate fingerprint and environment.
-- [ ] Evidence references point to fresh external evidence rather than repository CI, emulators or historical Phase 8/9 records.
+- [ ] Evidence references point to fresh external evidence rather than repository CI, emulators, design mockups or historical Phase 8/9 records.
 - [ ] Validation timestamps and observers are attributable.
 - [ ] No unresolved release-blocking finding remains.
 - [ ] Deviations are closed or explicitly accepted by an accountable owner.
@@ -113,20 +154,20 @@ Repository CI, release signing, accountable acceptance, production-equivalent va
 - [ ] Referenced evidence has been manually reviewed.
 - [ ] Accountable owner records `PASS / OWNER_ACCEPTED`.
 
-## 3. Explicitly deferred until Phase 11.10 acceptance
+## 5. Explicitly deferred until Phase 11.10 acceptance
 
 - [ ] Phase 11.11 fresh independent external assurance against the same immutable candidate.
 - [ ] Remediation/retest of any Phase 11.11 release-blocking findings.
 - [ ] Phase 12 formal production GO/NO-GO.
 
-## 4. Fail-closed conditions
+## 6. Fail-closed conditions
 
-Phase 11.10 remains blocked if candidate identity is incomplete, a mutable tag substitutes for an immutable digest, any required evidence class is absent or not `PASS`, evidence belongs to another candidate/environment, historical Phase 8/9 evidence is reused, rollback does not restore the exact prior digest, post-rollback health is missing, or release-blocking findings remain unresolved.
+Phase 11.10 remains blocked if candidate-completion work is incomplete, candidate identity is incomplete, a mutable tag substitutes for an immutable digest, any required 11.10p evidence class is absent or not `PASS`, evidence belongs to another candidate/environment, historical Phase 8/9 evidence is reused, rollback does not restore the exact prior digest, post-rollback health is missing, or release-blocking findings remain unresolved.
 
-## 5. Service and authority boundaries
+## 7. Service and authority boundaries
 
-Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing boundaries. Validation execution grants no publication/share, case-handoff or responder authority and does not prove local compromise.
+Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing boundaries. Frontend integration, validation execution and automation grant no publication/share, case-handoff or responder authority and do not prove local compromise.
 
 ## Current release decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`. Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is not production authorized.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; 11.10a is active. Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is not production authorized.**

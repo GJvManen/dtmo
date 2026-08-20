@@ -1,0 +1,53 @@
+name: Phase 11 Frontend Architecture Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend-architecture-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Validate Phase 11.10a architecture contract
+        run: |
+          python -m pytest -q backend/tests/test_phase11_10a_frontend_architecture_contract.py
+      - name: Bind repository architecture evidence to exact PR head
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          mkdir -p artifacts
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = {
+              "phase": "11.10a",
+              "gate": "frontend-architecture-contract",
+              "exact_head": os.environ["EXPECTED_HEAD"],
+              "architecture_contract_validated": True,
+              "frontend_implemented": False,
+              "live_environment_validated": False,
+              "production_equivalent_validated": False,
+              "production_authorized": False,
+          }
+          Path("artifacts/phase11-frontend-architecture.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: phase11-frontend-architecture-contract-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
