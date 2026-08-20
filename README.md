@@ -6,18 +6,13 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Engineering baseline:** Phases 1–7 `PASS`  
 > **Functional acceptance:** RC13 `PASS / OWNER_ACCEPTED`  
 > **Product evolution:** E8.1–E8.10 `PASS / REPOSITORY_COMPLETE`  
-> **Historical staging evidence:** Phase 8 `PASS / OWNER_ACCEPTED`  
-> **Historical independent assurance:** Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED`  
+> **Historical staging evidence:** Phase 8 `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`  
+> **Historical independent assurance:** Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`  
 > **Phase 10 production decision:** `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`  
-> **Phase 11.3 IntelOwl integration:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.4 OpenCTI integration:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.5 MISP consolidation:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.6 TheHive:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.7 Cortex decision:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`  
-> **Phase 11.7b Cortex analyzer connector:** `PASS / REPOSITORY_COMPLETE`  
-> **Phase 11.8a–11.8f runtime hardening:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded priority:** Phase 11.8g software supply-chain hardening `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
-> **Next production authorization:** Phase 12 `NOT STARTED`  
+> **Phase 11.1–11.9:** `PASS / REPOSITORY_COMPLETE`  
+> **Phase 11.10 production-equivalent validation:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`  
+> **Phase 11.11 independent external assurance:** `NOT STARTED`  
+> **Phase 12 production decision:** `NOT STARTED`  
 > **Production status:** **not production authorized**
 
 ## Why DTMO
@@ -28,9 +23,9 @@ DTMO is built around five principles: provenance first; fail closed; human autho
 
 ## Product capabilities
 
-The canonical web application provides one operator experience for Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance. The repository-complete baseline includes governed OpenCVE, CIRCL Vulnerability-Lookup, MISP and AIL semantics plus Phase 11 Taranis AI collection/canonicalization, IntelOwl enrichment, OpenCTI graph integration, governed MISP consolidation, human-authorized TheHive case handoff and the accepted bounded Cortex analyzer connector.
+The canonical web application provides one operator experience for **Overview**, **Intelligence**, **Sources & Catalog**, **Visual Analytics**, **Administration** and **Governance**. The accepted repository baseline integrates governed OpenCVE and CIRCL Vulnerability-Lookup semantics with Taranis AI collection/canonicalization, IntelOwl enrichment, OpenCTI STIX knowledge-graph integration, governed MISP exchange, human-authorized TheHive case handoff and the bounded Cortex analyzer connector.
 
-The original Phase 11.7 decision did not adopt Cortex because no validated IntelOwl capability gap existed at that time. The later owner-required Phase 11.7b connector was accepted separately without rewriting that historical decision.
+PostgreSQL remains canonical DTMO application truth. Redis, OpenSearch and S3-compatible object storage support coordination, search and object persistence. Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service and licensing boundaries; none independently establishes local compromise or grants DTMO publication/share authority.
 
 ## Phase 11 composed intelligence pipeline
 
@@ -45,38 +40,81 @@ flowchart LR
     O[OpenCTI\nSTIX 2.1 graph] --> D
     M[MISP\ngoverned exchange] <--> D
     D --> H{Human handoff:case authority?}
-    H -->|approved| R[(Durable handoff reservation)]
+    H -->|approved| TH[TheHive case handoff]
     H -->|not approved| N[No case mutation]
-    R --> TH[TheHive API v1\nPOST /api/v1/case]
-    D -. authority remains .-> P[Human share/publication approval]
+    D -. separate authority .-> P[Human share/publication approval]
 ```
 
-PostgreSQL remains canonical DTMO application truth. Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive are separate service boundaries. None independently establishes local compromise or grants DTMO external-share/publication authority.
+The original Phase 11.7 decision did not adopt Cortex because no validated IntelOwl capability gap existed at that time. The later owner-required Phase 11.7b analyzer connector was accepted separately; the historical decision record remains immutable.
 
-## Phase 11.8 Kubernetes runtime industrialisation
+## Phase 11 platform industrialisation baseline
 
-Phase 11.8a–11.8f are accepted repository engineering evidence for the governed Helm/GitOps runtime foundation, workload identity/external secret delivery, **ingress/TLS** and network segmentation, HA/disruption controls, observability boundaries and recovery requirements. Those accepted controls remain repository evidence and do not themselves establish production authorization.
+Phase 11.8 is `PASS / REPOSITORY_COMPLETE`. Its bounded controls cover:
 
-The active **Phase 11.8g** slice establishes software supply-chain controls around the build subject: CycloneDX SBOM generation for Python dependencies and the candidate container, known-vulnerability auditing/scanning, SHA-256 artifact identities, and a release path for cryptographically signed provenance and SBOM attestations using short-lived OIDC-backed signing rather than repository-stored long-lived signing keys.
+- Kubernetes/Helm/GitOps runtime foundations;
+- workload identity and external secret delivery;
+- ingress/TLS and network segmentation;
+- HA and disruption controls;
+- observability boundaries;
+- backup, restore and recovery controls;
+- software supply-chain hardening with SBOM, vulnerability and signed-provenance mechanisms;
+- capacity and resource planning;
+- exercised upgrade and exact prior-digest rollback contracts.
+
+Phase 11.9 migration/compatibility is also `PASS / REPOSITORY_COMPLETE`. The accepted contract requires one connected Alembic migration chain, forward-first migration, backward-compatible rolling overlap, expand/migrate/contract for destructive schema evolution, and no automatic database down migration during application rollback.
+
+These are repository engineering controls. They do not by themselves establish production-equivalent behavior, independent assurance or production authorization.
+
+## Active Phase 11.10 production-equivalent validation
+
+Phase 11.10 is the sole active production-readiness objective. It requires **fresh external evidence against one immutable integrated deployment identity** for:
+
+1. immutable candidate identity;
+2. migration/compatibility;
+3. upgrade;
+4. rollback to the exact prior immutable digest plus post-rollback health;
+5. health/readiness;
+6. representative saturation/capacity behavior;
+7. recovery/continuity.
 
 ```mermaid
 flowchart LR
-    S[Accepted source revision] --> B[CI build]
-    B --> A[Wheel + container]
-    A --> SB[SBOM]
-    A --> V[Vulnerability scan]
-    A --> H[SHA-256 subject identity]
-    H --> P[Signed release provenance/SBOM attestation]
-    P --> X[Consumer verification]
+    I[Immutable integrated candidate] --> M[Migration + compatibility]
+    M --> U[Upgrade]
+    U --> H[Health]
+    H --> S[Saturation]
+    S --> R[Recovery]
+    R --> B[Exact prior-digest rollback]
+    B --> V[Post-rollback health]
+    V --> A[Accountable 11.10 review]
 ```
 
-PR CI validates the supply-chain mechanism and exact-head scan evidence only. It does not claim that a future release artifact has already been signed or verified by a deployment environment. Signed provenance is not proof that an artifact is vulnerability-free, production-equivalent or production-authorized. Capacity and exercised upgrade/rollback remain later bounded Phase 11.8 work.
+Every accepted evidence item must bind to the same production-equivalent environment and candidate fingerprint. Missing, placeholder, inaccessible, historical-only or mixed-candidate evidence fails closed. Historical Phase 8/9 evidence is preserved as audit history and cannot satisfy Phase 11.10 or Phase 11.11 for the materially changed candidate.
 
-See [Phase 11.8g Supply-chain Hardening](docs/security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md), [Phase 11.8g Supply-chain Runbook](docs/operations/PHASE11_8G_SUPPLY_CHAIN_RUNBOOK.md), [Phase 11.8g Gate](docs/qa/PHASE11_8G_SUPPLY_CHAIN_GATE.md) and the [Evidence Index](docs/evidence/EVIDENCE_INDEX.md).
+Repository CI validates only the evidence contract, manifest structure and repository-controlled behavior. It does **not** prove that the production-equivalent environment has been deployed or exercised. Phase 11.10 completes only after the full real-environment evidence package is reviewed and explicitly accepted by the accountable owner. Phase 11.11 remains blocked until then.
+
+Execution material:
+
+- [Phase 11.10 validation gate](docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md)
+- [Phase 11.10 execution runbook](docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md)
+- [Phase 11.10 evidence template](docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json)
+- [Evidence Index](docs/evidence/EVIDENCE_INDEX.md)
+- [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md)
 
 ## Architecture
 
-The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, SQLAlchemy/Alembic, PostgreSQL, Redis, OpenSearch, S3-compatible object storage, Prometheus/Grafana, Nginx and a Docker Compose reference topology. Phase 11 industrialisation adds a governed Kubernetes/Helm/GitOps runtime target while preserving the separate Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive service boundaries.
+The current reference platform uses Python 3.12+, FastAPI/Uvicorn, SQLAlchemy/Alembic, PostgreSQL, Redis, OpenSearch, S3-compatible object storage, Prometheus/Grafana and Nginx. The industrialised runtime adds governed Kubernetes/Helm/GitOps deployment while preserving service identities, workload identity, external secret delivery, ingress/TLS boundaries, RBAC, provenance and human authority.
+
+```mermaid
+flowchart TB
+    U[Analyst / Administrator] --> W[DTMO Web + API]
+    W --> PG[(PostgreSQL)]
+    W --> OS[(OpenSearch)]
+    W --> R[(Redis)]
+    W --> S3[(S3-compatible storage)]
+    W --> X[Governed external CTI services]
+    W --> O[Prometheus / Grafana]
+```
 
 ## Current maturity and release position
 
@@ -85,34 +123,34 @@ The current DTMO reference platform consists of Python 3.12+, FastAPI/Uvicorn, S
 | Phases 1–7 | Repository-controlled engineering baseline | `PASS` |
 | RC13 | Unified-console functional acceptance | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | Vulnerability & CTI product evolution | `PASS / REPOSITORY_COMPLETE` |
-| Phase 8 | Production-equivalent staging validation | `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE` |
+| Phase 8 | Production-equivalent validation | `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE` |
 | Phase 9 | Independent assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE` |
 | Phase 10 | Formal production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
-| Phase 11.1–11.2 | Taranis architecture + canonical adapter | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.3 | IntelOwl enrichment integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.4 | OpenCTI STIX knowledge-graph integration | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.5 | MISP consolidation and authority state | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.6 | TheHive incident/case handoff | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.7 | Cortex conditional decision | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
-| Phase 11.7b | Owner-required Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8a–11.8f | Runtime foundation through recovery hardening | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8g | Software supply-chain hardening | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.9 | Migration and compatibility | `NOT STARTED` |
-| Phase 11.10 | New production-equivalent validation | `NOT STARTED` |
-| Phase 11.11 | New independent external assurance | `NOT STARTED` |
-| Phase 12 | New formal production go/no-go | `NOT STARTED` |
-
-Historical Phase 8/9 evidence remains bound to the earlier candidate. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.
+| Phase 11.1–11.7b | Service integration programme | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8 | Integrated runtime industrialisation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.9 | Migration and compatibility | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10 | Fresh production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
+| Phase 11.11 | Fresh independent external assurance | `NOT STARTED` |
+| Phase 12 | Formal production GO/NO-GO | `NOT STARTED` |
 
 ## Product roadmap
 
-The controlled sequence is accepted service integration → Phase 11.8 runtime industrialisation → 11.9 migration/compatibility → 11.10 new production-equivalent validation → 11.11 new independent external assurance → Phase 12.
+The controlled sequence is now: **Phase 11.10 fresh production-equivalent validation → Phase 11.11 fresh independent external assurance → Phase 12 formal production GO/NO-GO**. Phase 11.11 must use the same immutable candidate accepted in Phase 11.10. A material candidate change requires a new evidence binding.
 
-See the [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current Project State](docs/project/CURRENT_STATE.md), [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md) and [Evidence Index](docs/evidence/EVIDENCE_INDEX.md).
+See the [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Production Roadmap](docs/roadmap/PRODUCTION_ROADMAP.md), [Current Project State](docs/project/CURRENT_STATE.md), [QA and Release Gates](docs/qa/QA_AND_RELEASE_GATES.md) and [Evidence Index](docs/evidence/EVIDENCE_INDEX.md).
 
 ## Documentation
 
-The authoritative documentation portal is [docs/README.md](docs/README.md). Historical point-in-time records remain historical and are not rewritten to claim later Phase 11 evidence.
+The authoritative professional documentation portal is [docs/README.md](docs/README.md). Current-state documentation is maintained separately from immutable historical evidence. Historical point-in-time records are not rewritten to manufacture later acceptance.
+
+Key current-state documents include:
+
+- [Current Project State](docs/project/CURRENT_STATE.md)
+- [Executive Status](docs/project/EXECUTIVE_STATUS.md)
+- [Executive Decision View](docs/project/EXECUTIVE_DECISION_VIEW.md)
+- [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md)
+- [Production Readiness Checklist](docs/project/PRODUCTION_CHECKLIST.md)
+- [Documentation Status and Authority](docs/project/DOCUMENTATION_STATUS.md)
 
 ## Local reference environment
 
@@ -123,7 +161,7 @@ python3 tools/bootstrap_local.py
 docker compose up --build
 ```
 
-The local Compose topology is a development/reference environment only.
+The local Compose topology is a development/reference environment only. It is not Phase 11.10 production-equivalent evidence.
 
 ## Open source and responsible use
 
@@ -138,6 +176,6 @@ DTMO is licensed under the **Apache License, Version 2.0**. Canonical governance
 - `docs/legal/LICENSING.md`
 - `docs/legal/THIRD_PARTY.md`
 
-Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate services under their applicable licensing and provider boundaries. IntelOwl and MISP remain separate AGPL-3.0 services; OpenCTI Community Edition is Apache-2.0 while Enterprise Edition is separately licensed; TheHive license entitlement is deployment-specific. Cortex itself remains a separate open-source service while individual analyzers and external providers can impose separate licensing, subscription or data-handling terms. Phase 11 integrations do not vendor upstream platform source without explicit licensing approval.
+Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate services under their applicable licensing and provider boundaries. IntelOwl and MISP remain separate AGPL-3.0 services; OpenCTI Community Edition is Apache-2.0 while Enterprise Edition is separately licensed; TheHive license entitlement is deployment-specific. Cortex itself remains a separate open-source service while individual analyzers and external providers can impose separate licensing, subscription or data-handling terms. DTMO integrations do not vendor upstream platform source without explicit licensing approval.
 
 Use DTMO only with lawful access to intelligence sources and infrastructure. Technical connectivity does not itself establish legal authority to collect, process, enrich, synchronize, create cases, publish or redistribute third-party material.
