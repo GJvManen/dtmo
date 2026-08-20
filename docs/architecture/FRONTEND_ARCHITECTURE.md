@@ -1,11 +1,11 @@
 # DTMO Canonical Frontend Architecture
 
-Status: **Phase 11.10a–11.10e — PASS / REPOSITORY_COMPLETE; Phase 11.10f — IN PROGRESS / OPENCTI GRAPH ENTITY WORKSPACE**  
+Status: **Phase 11.10a–11.10f — PASS / REPOSITORY_COMPLETE; Phase 11.10g — IN PROGRESS / MISP SHARING & EXCHANGE**  
 Last updated: **2026-08-20**
 
 ## 1. Purpose
 
-This document is the accepted architecture baseline for the DTMO Unified Operations Workbench. Phase 11.10a established the frontend, information-architecture, design-system and browser/API contracts. **Phase 11.10b implemented the canonical shell**, Phase 11.10c delivered the Command Center, Phase 11.10d delivered governed intelligence discovery/investigation, Phase 11.10e delivered governed IntelOwl/Cortex analysis, and Phase 11.10f is the active migration of persisted OpenCTI graph/entity context.
+This document is the accepted architecture baseline for the DTMO Unified Operations Workbench. Phase 11.10a established the frontend, information-architecture, design-system and browser/API contracts. **Phase 11.10b implemented the canonical shell**, Phase 11.10c delivered the Command Center, Phase 11.10d governed intelligence discovery/investigation, Phase 11.10e governed IntelOwl/Cortex analysis, Phase 11.10f persisted OpenCTI graph/entity context, and Phase 11.10g is the active migration of governed MISP Sharing & Exchange.
 
 The objective remains one maintainable canonical browser application while preserving security, authority, provenance and evidence boundaries already accepted elsewhere in DTMO.
 
@@ -60,20 +60,18 @@ The canonical shell contains four persistent regions:
 3. **Main workspace** — task-specific content delivered incrementally in 11.10c–11.10n.
 4. **Context rail/drawer** — selected-object facts and governed actions without losing the current workspace.
 
-Phase 11.10b accepted these regions under `/workbench/`. The command palette remains navigation-safe; high-impact operations require their own accepted server contracts. The context rail remains fail-closed when no attributable selection exists.
+Phase 11.10b accepted these regions under `/workbench/`. The command palette remains navigation-safe; high-impact operations require accepted server contracts. The context rail remains fail-closed when no attributable selection exists.
 
 ## 5. Delivered and target capability workspaces
-
-The accepted information architecture includes:
 
 - Command Center — accepted in 11.10c;
 - Threat Intelligence — accepted in 11.10d;
 - IOC Explorer — accepted in 11.10d;
-- Knowledge Graph — active functional migration in 11.10f;
+- Knowledge Graph — accepted in 11.10f;
 - Exposure — 11.10i;
 - Investigations — 11.10h;
 - Analysis & Enrichment — accepted in 11.10e;
-- Sharing & Exchange — 11.10g;
+- Sharing & Exchange — active in 11.10g;
 - Automation & Playbooks — 11.10k;
 - Collection — 11.10j;
 - Governance & Evidence — 11.10l;
@@ -85,27 +83,21 @@ A route foundation is not feature acceptance and must not display fabricated ope
 
 A canonical intelligence object, IOC, CVE, threat actor, campaign, source, case or other governed entity can be selected from compatible workspaces. The common context model supports, where attributable, canonical identity, severity/classification, confidence, provenance/markings, linked intelligence, enrichment/analysis state, relationships, cases/tasks, sharing/approval state, audit timeline and actions allowed to the current principal.
 
-Phase 11.10d established deep object investigation: search hits remain discovery projections while selected detail/provenance comes separately from canonical DTMO persistence. Phase 11.10e extended the object context into persisted analysis history.
-
-Phase 11.10f extends object context into OpenCTI graph/entity evidence. `/workbench/intelligence/graph?item=<uuid>` retrieves persisted mapping context from DTMO. Browser state never becomes graph evidence and OpenCTI is not queried directly by the browser.
+Phase 11.10d established deep object investigation. Phase 11.10e extended object context into persisted analysis history. Phase 11.10f extended it into persisted OpenCTI graph/entity evidence. Phase 11.10g extends it into canonical sharing state, human review/share attribution, handling restrictions and MISP export evidence.
 
 ## 7. Frontend state model
 
 ### 7.1 Server state
-
-Canonical state is retrieved from DTMO APIs. TanStack Query manages request lifecycle and stale-state behavior. Browser caches never become authoritative product state.
+Canonical state is retrieved from DTMO APIs. TanStack Query or bounded request-state handling manages request lifecycle and stale-state behavior. Browser caches never become authoritative product state.
 
 ### 7.2 URL state
-
-Workspace, object identity, filters, pagination and safe investigation context should be URL-addressable where practical without embedding secrets. The `item` query parameter carries only canonical UUID context for analysis/graph deep links.
+Workspace, object identity, filters, pagination and safe investigation context should be URL-addressable where practical without embedding secrets. The `item` query parameter carries only canonical UUID context for analysis, graph and sharing deep links.
 
 ### 7.3 Ephemeral UI state
-
 Drawer visibility, local sort direction, temporary form state and presentation preferences may remain client-local. Only non-sensitive preferences such as theme may be persisted locally.
 
 ### 7.4 Security-sensitive state
-
-Credentials, API secrets, private keys, upstream tokens and approval authority are never ordinary persistent frontend state. Production authentication follows the configured identity/bearer-token trust model and server-side authorization remains authoritative.
+Credentials, API secrets, private keys, upstream tokens and approval authority are never ordinary persistent frontend state. Production authentication follows the configured trust model and server-side authorization remains authoritative.
 
 ## 8. Authorization and authority boundaries
 
@@ -120,10 +112,12 @@ The frontend preserves:
 - administrator self-protection and final-admin protections;
 - case-handoff authority separate from publication/share authority;
 - human review and external-share approval separation;
-- **no local-compromise inference** from enrichment/graph presence;
-- no publication authority from a connector call, analyzer result, MISP match, OpenCTI mapping/relationship or TheHive case.
+- **no local-compromise inference** from enrichment/graph/exchange presence;
+- no publication authority from a connector call, analyzer result, MISP match/export, OpenCTI mapping or TheHive case.
 
 Phase 11.10d search/canonical detail require `read:intelligence`. Phase 11.10e analysis history/capabilities require `read:intelligence` while explicit IntelOwl/Cortex execution requires `review:intelligence`. Phase 11.10f OpenCTI capability/graph/entity detail is read-only and requires `read:intelligence`.
+
+Phase 11.10g canonical sharing-state reads require `read:intelligence`; review remains `review:intelligence`; external share approval remains `approve:share`. The share approver must be a different human principal from the reviewer. Service accounts cannot perform those human decisions or MISP export.
 
 ## 9. API and integration boundary
 
@@ -137,24 +131,29 @@ Current accepted/active examples are:
 - `/api/v1/command-center` for accepted 11.10c operational orientation;
 - `/api/v1/intelligence/search` and `/api/v1/intelligence/{item_id}/workspace` for accepted 11.10d discovery/detail;
 - `/api/v1/analysis/capabilities`, `/api/v1/analysis/items/{item_id}/history`, `/api/v1/intelowl/items/{item_id}/enrich` and `/api/v1/analysis/items/{item_id}/cortex` for accepted 11.10e analysis;
-- `/api/v1/opencti/capabilities`, `/api/v1/opencti/items/{item_id}/graph` and `/api/v1/opencti/entities/{mapping_id}` for active 11.10f read-only OpenCTI graph/entity evidence.
+- `/api/v1/opencti/capabilities`, `/api/v1/opencti/items/{item_id}/graph` and `/api/v1/opencti/entities/{mapping_id}` for accepted 11.10f read-only OpenCTI graph/entity evidence;
+- `/api/v1/sharing/items/{item_id}`, `/api/v1/intelligence/{item_id}/review`, `/api/v1/intelligence/{item_id}/share-approval` and `/api/v1/intelligence/{item_id}/misp-export` for active 11.10g MISP sharing/exchange.
 
 None makes the browser an upstream service client.
 
-## 10. OpenCTI graph safety boundary
+## 10. MISP sharing safety boundary
 
-OpenCTI remains a separate upstream service behind the accepted DTMO integration/persistence boundary.
+MISP remains a separate upstream service behind the accepted DTMO governance/export boundary.
 
-- feature/configuration state is not live-health evidence;
-- the browser receives no OpenCTI token and does not invoke `/graphql`;
-- canonical DTMO item identity is the graph root;
-- graph/entity nodes derive from persisted OpenCTI/STIX mappings;
-- the current persistence boundary does not durably store generic OpenCTI entity-to-entity relationship topology;
-- only proven `canonical-mapping` edges are rendered;
-- missing topology must **fail closed** and cannot be inferred from labels, entity types, co-occurrence or visual proximity;
-- empty persisted mapping state is not proof of upstream absence;
-- graph/entity presence, confidence or markings do not prove local exposure, exploitability, compromise or attribution certainty;
-- existing persistence carries no external-share authority and no local-compromise proof.
+- browser requests remain same-origin DTMO API calls;
+- MISP API keys remain server-side;
+- canonical sharing state never creates authority;
+- review and share approval are separate human decisions;
+- export cannot grant its own approval;
+- MISP-origin authoritative distribution, sharing-group and TLP restrictions cannot be weakened;
+- deterministic current-revision replay is blocked by `pending`, `success` or `uncertain` evidence;
+- uncertain delivery requires inspection rather than automatic replay;
+- exported events are created with `published=false`;
+- no Phase 11.10g Publish or Synchronize action exists;
+- configuration is not live-health evidence;
+- exchange evidence does not prove publication, synchronization, downstream consumption or local compromise.
+
+Missing or ambiguous authority/handling evidence must **fail closed**.
 
 ## 11. Design-system boundary
 
@@ -162,17 +161,16 @@ The visual and interaction contract is `docs/ux/DESIGN_SYSTEM.md`. The workbench
 
 ## 12. Migration from current UI
 
-The migration is incremental and bounded:
-
 1. Phase 11.10a architecture/design contracts — `PASS / REPOSITORY_COMPLETE`.
 2. Phase 11.10b canonical application shell — `PASS / REPOSITORY_COMPLETE`.
 3. Phase 11.10c Command Center — `PASS / REPOSITORY_COMPLETE`.
 4. Phase 11.10d Unified Intelligence Workspace — `PASS / REPOSITORY_COMPLETE`.
 5. Phase 11.10e IntelOwl/Cortex integrated analysis — `PASS / REPOSITORY_COMPLETE`.
-6. **Phase 11.10f OpenCTI graph/entity workspace** — active.
-7. Phase 11.10g–11.10n migrate remaining capabilities one bounded slice at a time.
-8. Phase 11.10o performs consolidation/full functional acceptance and retires obsolete UI paths where safe.
-9. Phase 11.10p executes fresh production-equivalent validation only after immutable candidate freeze.
+6. Phase 11.10f OpenCTI graph/entity workspace — `PASS / REPOSITORY_COMPLETE`.
+7. **Phase 11.10g MISP Sharing & Exchange** — active.
+8. Phase 11.10h–11.10n migrate remaining capabilities one bounded slice at a time.
+9. Phase 11.10o performs consolidation/full functional acceptance and retires obsolete UI paths where safe.
+10. Phase 11.10p executes fresh production-equivalent validation only after immutable candidate freeze.
 
 The declared canonical built product route is `/workbench/`. `/ui/console` and prior UI routes remain temporary migration compatibility paths, not parallel feature-development targets.
 
@@ -180,38 +178,34 @@ The declared canonical built product route is `/workbench/`. `/ui/console` and p
 
 The accepted build contract requires exact-pinned direct dependencies in `frontend/package.json`, committed `frontend/package-lock.json`, `npm ci`, TypeScript checking before Vite build, hashed assets/no production source maps, separate immutable Node build stage, no Node/npm in final Python runtime, only `frontend/dist` in supported runtime, same-origin FastAPI serving, strict self-origin CSP, immutable hashed-asset caching, exact-head frontend asset evidence and continued final-container SBOM/vulnerability/artifact-attestation controls.
 
-This build integration creates no second browser ingress or upstream credential path.
-
 ## 14. Observability and truthful failure
 
 The browser distinguishes authentication/authorization failure, validation failure, upstream dependency degradation, canonical backend failure, empty canonical data and stale/read-only degraded mode.
 
-For 11.10f specifically:
+For 11.10g specifically:
 
-- OpenCTI configuration is not rendered as live service health;
-- an empty persisted mapping set is not represented as global OpenCTI absence;
-- missing graph/entity detail remains unavailable rather than reconstructed from incomplete display data;
-- unpersisted relationship topology is not synthesized;
+- MISP configuration is not rendered as live service health;
+- missing canonical sharing state is not represented as approved or rejected sharing;
+- missing attribution/restrictions block export eligibility;
+- uncertain delivery is not represented as success and is not automatically replayed;
 - repository/browser fixtures remain engineering evidence, not operational evidence.
 
 Server-side correlation/request IDs remain authoritative for governed actions.
 
 ## 15. Accessibility
 
-The accepted shell baseline provides semantic navigation/main/context regions, skip-to-content, visible focus, keyboard route navigation and Ctrl/Cmd+K palette, responsive reflow/mobile navigation, dark/light semantic themes, reduced-motion handling and non-colour-only status treatment.
-
-Phase 11.10f adds responsive graph/entity composition and a keyboard-accessible entity list as an equivalent navigation surface alongside SVG. Full role-aware and feature-specific WCAG 2.2 AA acceptance remains Phase 11.10n plus final 11.10o consolidation.
+The accepted shell baseline provides semantic navigation/main/context regions, skip-to-content, visible focus, keyboard route navigation and Ctrl/Cmd+K palette, responsive reflow/mobile navigation, dark/light semantic themes, reduced-motion handling and non-colour-only status treatment. Full role-aware and feature-specific WCAG 2.2 AA acceptance remains Phase 11.10n plus final 11.10o consolidation.
 
 ## 16. Evidence boundary
 
-Phase 11.10a–11.10e repository/browser acceptance remains accepted within each bounded scope. Phase 11.10f exact-head CI may prove read-only OpenCTI graph/entity routes, persisted mapping/revision rendering, explicit topology limitation, browser/API trust boundaries and fail-closed behavior within repository-controlled scope.
+Phase 11.10a–11.10f repository/browser acceptance remains accepted within each bounded scope. Phase 11.10g exact-head CI may prove canonical sharing routes, human authority separation, source-handling/replay semantics, unpublished export boundaries and fail-closed browser behavior within repository-controlled scope.
 
-None proves completeness or health of live upstream integrations, production-equivalent deployment/continuity, independent external assurance or production authorization. The graphical reference remains a design target, not operational evidence.
+None proves completeness or health of live upstream integrations, MISP publication/synchronization, production-equivalent deployment/continuity, independent external assurance or production authorization. The graphical reference remains a design target, not operational evidence.
 
 ## 17. Lifecycle and exit
 
-Phase 11.10a–11.10e are **`PASS / REPOSITORY_COMPLETE`**.
+Phase 11.10a–11.10f are **`PASS / REPOSITORY_COMPLETE`**.
 
-Phase 11.10f may become **`PASS / REPOSITORY_COMPLETE`** only when the frontend build and dedicated repository/browser contract are green on one exact final head, existing security/accessibility/integration/runtime/supply-chain regressions remain green, and all professional lifecycle documentation is synchronized.
+Phase 11.10g may become **`PASS / REPOSITORY_COMPLETE`** only when the frontend build and dedicated repository/browser contract are green on one exact final head, existing security/accessibility/integration/runtime/supply-chain regressions remain green, and all professional lifecycle documentation is synchronized.
 
-The only next bounded slice after 11.10f acceptance and merge is **Phase 11.10g — MISP Sharing & Exchange**.
+The only next bounded slice after 11.10g acceptance and merge is **Phase 11.10h — TheHive Investigations & Cases**.
