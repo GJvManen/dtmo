@@ -1,6 +1,6 @@
 # DTMO Unified Operations Workbench
 
-Status: **Phase 11.10a PASS / REPOSITORY_COMPLETE; Phase 11.10b PASS / REPOSITORY_COMPLETE; Phase 11.10c PASS / REPOSITORY_COMPLETE; Phase 11.10d IN PROGRESS / UNIFIED INTELLIGENCE**  
+Status: **Phase 11.10a–11.10d PASS / REPOSITORY_COMPLETE; Phase 11.10e IN PROGRESS / INTEGRATED ANALYSIS**  
 Visual reference: approved next-generation command-center concept (design target only, not evidence).
 
 ## Purpose
@@ -22,7 +22,9 @@ Phase 11.10b accepted this shell foundation under `/workbench/`. The command pal
 
 Phase 11.10c accepted the first functional workspace: the Command Center. Its KPI layer, recent-intelligence view, integration capability view, role-aware navigation and workflow orientation use attributable DTMO read models and explicit degraded/unavailable states.
 
-Phase 11.10d is the active functional migration of Threat Intelligence and IOC Explorer. It reuses governed DTMO search and canonical-detail/provenance APIs rather than introducing direct browser-to-upstream access or a second intelligence backend.
+Phase 11.10d accepted the functional migration of Threat Intelligence and IOC Explorer. It reuses governed DTMO search and canonical-detail/provenance APIs rather than introducing direct browser-to-upstream access or a second intelligence backend.
+
+Phase 11.10e is the active functional migration of Analysis & Enrichment. It combines persisted IntelOwl enrichment and analyzer-only Cortex evidence against one canonical DTMO object, while retaining human-triggered execution and server-side authorization.
 
 ## Primary journey
 
@@ -53,24 +55,11 @@ The accepted Phase 11.10c Command Center provides a truthful operational picture
 
 ### KPI layer
 
-The implemented canonical read model includes:
-
-- total intelligence objects;
-- high/critical intelligence;
-- new intelligence in the preceding 24 hours;
-- candidate intelligence pending review;
-- reviewed intelligence awaiting a separate external-share decision;
-- intelligence with education relevance of at least 80.
-
-A missing canonical datastore produces `unavailable`/`null`, not synthetic zero values.
+The implemented canonical read model includes total intelligence objects, high/critical intelligence, new intelligence in the preceding 24 hours, candidate intelligence pending review, reviewed intelligence awaiting a separate external-share decision and intelligence with education relevance of at least 80. A missing canonical datastore produces `unavailable`/`null`, not synthetic zero values.
 
 ### Threat intelligence panel
 
-Phase 11.10c includes recent canonical intelligence with source, severity, education relevance, review state and discovery time. Phase 11.10d now provides the deeper governed intelligence discovery/investigation workspace.
-
-### Security operations panel
-
-Case/task/SLA operational workload remains later TheHive/Investigation scope. The Command Center does not fabricate those values before their governed API contract exists.
+Phase 11.10c includes recent canonical intelligence with source, severity, education relevance, review state and discovery time. Phase 11.10d provides the deeper governed intelligence discovery/investigation workspace.
 
 ### Framework integration panel
 
@@ -82,7 +71,7 @@ Phase 11.10c exposes role-aware navigation based on server-issued permissions. V
 
 ## Unified Intelligence Workspace
 
-Phase 11.10d provides functional `/workbench/intelligence` and `/workbench/intelligence/iocs` routes.
+Phase 11.10d provides accepted functional `/workbench/intelligence` and `/workbench/intelligence/iocs` routes.
 
 The workspace deliberately separates two evidence layers:
 
@@ -91,9 +80,22 @@ The workspace deliberately separates two evidence layers:
 
 The interface exposes explicit query submission, severity, minimum education relevance and result-limit filters. It does not fabricate demonstration intelligence before search. A search failure is shown as unavailable rather than as an empty dataset, and a canonical-detail failure does not reconstruct missing object fields from the search result.
 
-Where attributable data exists, the detail surface exposes severity, source, education relevance, confidence/rationale, review status, separate share-approval state, CVE/known-exploited/vendor/product context, tags and provenance. A zero-result query means only that the governed DTMO index returned no match; it does not prove absence from every upstream source.
-
 Both routes remain read-only and use server-side `read:intelligence`. Search or selection grants no review, publication/share approval, connector/analyzer execution, case mutation or administration authority.
+
+## Integrated Analysis Workspace
+
+Phase 11.10e provides the active `/workbench/analysis` slice.
+
+The workspace keeps analysis object-centric:
+
+- one canonical intelligence item can be selected directly or deep-linked using `?item=<uuid>`;
+- `GET /api/v1/analysis/capabilities` shows explicit configured IntelOwl/Cortex observable/analyzer allowlists without making a runtime-health claim;
+- `GET /api/v1/analysis/items/{item_id}/history` combines persisted IntelOwl and Cortex evidence;
+- the existing IntelOwl execution path remains governed by `review:intelligence`;
+- `POST /api/v1/analysis/items/{item_id}/cortex` executes one explicit analyzer-only Cortex job and persists bounded evidence;
+- read-only principals can inspect history but execution controls are not presented as authorized.
+
+Cortex responders, automatic analyzer discovery and automatic IntelOwl fallback are deliberately excluded. Durable Cortex evidence carries no external-share authority and does not prove local compromise. Failures remain explicit and **fail closed** rather than producing synthetic successful analysis.
 
 ## Object-centric workspace
 
@@ -110,7 +112,7 @@ Every compatible canonical object should open a shared context model with tabs s
 
 The right context rail may expose counts/status from IntelOwl, Cortex, OpenCTI, MISP and TheHive without requiring a separate upstream login. Until a bounded feature slice supplies attributable data, the rail must state that no object is selected rather than infer facts.
 
-The object-centric intelligence experience begins with **Phase 11.10d Unified Intelligence Workspace**. Later 11.10e–11.10h slices add governed analysis, graph, exchange and case capabilities without bypassing the DTMO API boundary.
+The object-centric intelligence experience began with **Phase 11.10d Unified Intelligence Workspace**. Phase 11.10e adds governed analysis; later 11.10f–11.10h slices add graph, exchange and case capabilities without bypassing the DTMO API boundary.
 
 ## Integrated capability expectations
 
@@ -120,11 +122,11 @@ Collection/assessment capabilities remain an upstream service boundary but sourc
 
 ### IntelOwl
 
-DTMO should expose analyzer selection, job state, normalized findings, provenance, partial failures and raw evidence references where permitted.
+Phase 11.10e exposes explicit analyzer selection, job state and persisted bounded enrichment history through the DTMO workbench. IntelOwl results do not grant publication/share authority or prove local compromise.
 
 ### OpenCTI
 
-DTMO should expose entity/relationship exploration, graph expansion, filtering, markings/confidence and relationship provenance through the canonical workbench.
+DTMO should expose entity/relationship exploration, graph expansion, filtering, markings/confidence and relationship provenance through the canonical workbench in 11.10f.
 
 ### MISP
 
@@ -136,7 +138,7 @@ DTMO should expose daily case, task, observable, assignment and timeline operati
 
 ### Cortex
 
-DTMO should expose bounded analyzer execution and result history. Responders or autonomous side effects remain excluded until separately governed and explicitly accepted.
+Phase 11.10e exposes bounded analyzer execution and durable result history. Responders or autonomous side effects remain excluded until separately governed and explicitly accepted.
 
 ### Vulnerability intelligence
 
@@ -155,33 +157,11 @@ No graphical workflow may bypass RBAC, case authority, publication/share approva
 
 ## Role-aware defaults
 
-The same product can present different default workspaces for:
-
-- Executive/security leadership;
-- CISO;
-- SOC analyst;
-- CTI analyst;
-- Incident responder;
-- Administrator;
-- Auditor.
-
-Role-aware layout is for efficiency only; backend authorization remains authoritative.
+The same product can present different default workspaces for Executive/security leadership, CISO, SOC analyst, CTI analyst, Incident responder, Administrator and Auditor. Role-aware layout is for efficiency only; backend authorization remains authoritative.
 
 ## Visual direction
 
-The target is a dense but calm SOC-grade interface:
-
-- dark operations mode plus accessible light mode;
-- clear hierarchy and restrained accent usage;
-- high information density without decorative noise;
-- semantic status and severity treatment;
-- persistent context;
-- compact tables/cards with drill-down;
-- keyboard-first operation for analyst workflows;
-- responsive layouts;
-- truthful loading, empty and degraded states.
-
-The design must not imitate a decorative 'Hollywood hacker' interface.
+The target is a dense but calm SOC-grade interface with dark operations mode plus accessible light mode, clear hierarchy, semantic status/severity treatment, persistent context, compact drill-down surfaces, keyboard-first operation, responsive layouts and truthful loading/empty/degraded states. The design must not imitate a decorative 'Hollywood hacker' interface.
 
 ## Candidate-completion sequence
 
@@ -190,9 +170,9 @@ The interface programme is executed as bounded Phase 11.10 candidate-completion 
 - 11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`;
 - 11.10b canonical application shell — `PASS / REPOSITORY_COMPLETE`;
 - 11.10c Command Center — `PASS / REPOSITORY_COMPLETE`;
-- 11.10d Unified Intelligence Workspace — active;
-- 11.10e IntelOwl/Cortex analysis — next after 11.10d acceptance/merge;
-- 11.10f OpenCTI graph/entity workspace;
+- 11.10d Unified Intelligence Workspace — `PASS / REPOSITORY_COMPLETE`;
+- 11.10e IntelOwl/Cortex integrated analysis — active;
+- 11.10f OpenCTI graph/entity workspace — next after 11.10e acceptance/merge;
 - 11.10g MISP Sharing & Exchange;
 - 11.10h TheHive Investigations & Cases;
 - 11.10i Vulnerability & Exposure;
@@ -208,4 +188,4 @@ Phase 11.11 remains blocked until 11.10p is explicitly accepted.
 
 ## Evidence boundary
 
-This document is product/UX architecture. The graphical reference and repository documentation are not evidence of live integration, staging acceptance, production-equivalent validation or production authorization. Repository/browser CI for 11.10d does not prove live upstream completeness or service health.
+This document is product/UX architecture. The graphical reference and repository documentation are not evidence of live integration, staging acceptance, production-equivalent validation or production authorization. Repository/browser CI for 11.10e does not prove live IntelOwl/Cortex availability, analyzer/provider authorization or service health.
