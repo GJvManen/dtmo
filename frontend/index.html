@@ -1,43 +1,15 @@
 <!doctype html>
-<html lang="nl" data-theme="light">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>DTMO RC4.6 SOC Workspace</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <aside class="sidebar">
-    <div class="brand">DTMO <small>Education CTI</small></div>
-    <nav>
-      <button data-view="overview" class="active">Executive overview</button>
-      <button data-view="intelligence">Intelligence feed</button>
-      <button data-view="vulnerabilities">Vulnerability center</button>
-      <button data-view="ioc">IOC explorer</button>
-      <button data-view="graph">Knowledge graph</button>
-      <button data-view="hunting">Threat hunting</button>
-      <button data-view="governance">QA & governance</button>
-    </nav>
-    <div class="release">RC4.6 · UI workspace</div>
-  </aside>
-  <main>
-    <header>
-      <button id="menu" aria-label="Menu">☰</button>
-      <input id="search" aria-label="Enterprise search" placeholder="vendor:Microsoft kev:true education_relevance>=80">
-      <button id="theme" aria-label="Thema wisselen">◐</button>
-    </header>
-    <section id="overview" class="view active">
-      <div class="hero"><h1>Operationele cyber intelligence voor onderwijs</h1><p>Een rolgebaseerde werkruimte voor bestuur, CISO, SOC, CERT, privacy en audit.</p></div>
-      <div class="metrics" id="metrics"></div>
-      <div class="grid"><article><h2>Prioriteiten</h2><div id="priorities"></div></article><article><h2>Connector health</h2><div id="connectors"></div></article></div>
-    </section>
-    <section id="intelligence" class="view"><h1>Intelligence feed</h1><div id="feed" class="cards"></div></section>
-    <section id="vulnerabilities" class="view"><h1>Vulnerability center</h1><div class="table"><table><thead><tr><th>CVE</th><th>Vendor</th><th>Product</th><th>CVSS</th><th>KEV</th><th>Education</th></tr></thead><tbody id="vulnRows"></tbody></table></div></section>
-    <section id="ioc" class="view"><h1>IOC explorer</h1><div id="iocRows" class="cards"></div></section>
-    <section id="graph" class="view"><h1>Knowledge graph</h1><div class="graph" id="graphCanvas" role="img" aria-label="Knowledge graph visualization"></div></section>
-    <section id="hunting" class="view"><h1>Threat hunting</h1><textarea id="huntQuery" placeholder="Search query or detection hypothesis"></textarea><button class="primary">Run hunt</button></section>
-    <section id="governance" class="view"><h1>QA & governance</h1><div class="grid"><article><h2>Publication gate</h2><p>Reviewed intelligence is not automatically share approved.</p></article><article><h2>External gates</h2><p>Pentest, load test, restore exercise and deployment acceptance remain mandatory.</p></article></div></section>
-  </main>
-  <script src="app.js"></script>
-</body>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#07111f" />
+    <meta name="description" content="DTMO Unified Operations Workbench" />
+    <title>DTMO — Unified Operations Workbench</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
