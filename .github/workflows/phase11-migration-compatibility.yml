@@ -1,0 +1,43 @@
+name: Phase 11 Migration Compatibility Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  migration-compatibility:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Validate migration graph compatibility contract
+        run: |
+          mkdir -p artifacts
+          python tools/phase11_migration_compatibility.py > artifacts/phase11-migration-compatibility.json
+          python -m pytest -q backend/tests/test_phase11_9_migration_compatibility.py
+      - name: Bind evidence to exact PR head
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path('artifacts/phase11-migration-compatibility.json')
+          evidence = json.loads(p.read_text(encoding='utf-8'))
+          evidence['exact_head'] = os.environ['EXPECTED_HEAD']
+          evidence['ephemeral_database_upgrade_claimed'] = False
+          p.write_text(json.dumps(evidence, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: phase11-migration-compatibility-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
