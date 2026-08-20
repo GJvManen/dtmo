@@ -35,14 +35,14 @@ The active bounded programme step is **Phase 11.10f OpenCTI graph/entity workspa
 |---|---|
 | Executive / sponsor | [Current State](project/CURRENT_STATE.md), [Executive Status](project/EXECUTIVE_STATUS.md), [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
 | Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md) |
-| Analyst / reviewer | [OpenCTI Graph / Entity Workspace](user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md), [Integrated Analysis Workspace](user/INTEGRATED_ANALYSIS_WORKSPACE.md), [Unified Intelligence Workspace](user/UNIFIED_INTELLIGENCE_WORKSPACE.md), [User Guide](user/USER_GUIDE.md) |
+| Analyst / reviewer | [OpenCTI Graph / Entity Workspace](user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md), [Integrated Analysis Workspace](user/INTEGRATED_ANALYSIS_WORKSPACE.md), [Unified Intelligence Workspace](user/UNIFIED_INTELLIGENCE_WORKSPACE.md), [IntelOwl Enrichment Workflow](user/INTELOWL_ENRICHMENT_WORKFLOW.md), [User Guide](user/USER_GUIDE.md) |
 | Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Kubernetes Runtime Configuration](administration/KUBERNETES_RUNTIME_CONFIGURATION.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
 | Architecture / engineering | [Frontend Architecture](architecture/FRONTEND_ARCHITECTURE.md), [UI/API Contract](architecture/UI_API_CONTRACT.md), [Phase 11.10f OpenCTI Graph / Entity Workspace](architecture/PHASE11_10F_OPENCTI_GRAPH_ENTITY_WORKSPACE.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
 | UX / frontend | [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Information Architecture](ux/INFORMATION_ARCHITECTURE.md), [Design System](ux/DESIGN_SYSTEM.md), [Frontend UX](ux/FRONTEND_UX.md), [`frontend/README.md`](../frontend/README.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.10 Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
 | QA / release | [Phase 11.10f OpenCTI Graph Gate](qa/PHASE11_10F_OPENCTI_GRAPH_ENTITY_GATE.md), [Phase 11.10e Integrated Analysis Gate](qa/PHASE11_10E_INTEGRATED_ANALYSIS_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
-| Operations | [Phase 11.10 Production-Equivalent Validation Runbook](operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md), [OpenCTI Integration Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
+| Operations | [Phase 11.10 Production-Equivalent Validation Runbook](operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md), [OpenCTI Integration Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md), [IntelOwl Enrichment Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
 
 ## Unified Operations Workbench programme
 
@@ -90,15 +90,26 @@ After exact-head acceptance and merge of 11.10f, the only next bounded priority 
 
 ## Accepted Phase 11 service integration baseline
 
-- Phase 11.3 IntelOwl remains `PASS / REPOSITORY_COMPLETE` and grants no publication/share authority or compromise proof.
+- Phase 11.3 IntelOwl remains `PASS / REPOSITORY_COMPLETE`. Operator documentation remains explicitly exposed through `user/INTELOWL_ENRICHMENT_WORKFLOW.md` and `operations/INTELOWL_ENRICHMENT_RUNBOOK.md`; enrichment grants no publication/share authority and proves no local compromise.
 - Phase 11.4 OpenCTI remains `PASS / REPOSITORY_COMPLETE`; authoritative service-boundary material includes `architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md`, `integrations/OPENCTI_INTEGRATION.md`, `operations/OPENCTI_INTEGRATION_RUNBOOK.md`, `qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md` and `qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md`.
 - Phase 11.5 MISP remains `PASS / REPOSITORY_COMPLETE`; governed exchange remains subject to DTMO human sharing approval and handling restrictions.
-- Phase 11.6 TheHive remains `PASS / REPOSITORY_COMPLETE`; case-handoff authority remains separate from publication/share authority.
-- Phase 11.7 historical Cortex decision and 11.7b analyzer connector remain accepted; responders remain outside the accepted analyzer boundary.
+- **Phase 11.6 TheHive Handoff Implementation Gate** remains accepted through `architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md`, `integrations/THEHIVE_HANDOFF.md`, `operations/THEHIVE_HANDOFF_RUNBOOK.md`, `user/THEHIVE_CASE_HANDOFF.md`, `administration/THEHIVE_HANDOFF_CONFIGURATION.md` and `qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md`.
+- Phase 11.7 historical Cortex decision remains accepted; the 11.7b analyzer connector remains exposed through `integrations/CORTEX_ANALYZER_CONNECTOR.md`, `operations/CORTEX_ANALYZER_RUNBOOK.md` and `qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`. Responders remain outside the accepted analyzer boundary.
 
 ## Accepted Phase 11.8 / 11.9 industrialisation baseline
 
 Phase 11.8 and 11.9 remain `PASS / REPOSITORY_COMPLETE` across runtime, identity/secrets, ingress/network, HA, observability, recovery, supply chain, capacity, upgrade/rollback and forward-first migration compatibility. Application rollback does not authorize automatic database down migration. Repository controls do not by themselves establish production-equivalent behavior or production authorization.
+
+The accepted runtime and migration documentation remains explicitly discoverable:
+
+- `architecture/PHASE11_8_RUNTIME_FOUNDATION.md` and `administration/KUBERNETES_RUNTIME_CONFIGURATION.md`;
+- `architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md`, `administration/WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md`, `operations/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_RUNBOOK.md` and `qa/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS_GATE.md`;
+- `architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md`, `administration/INGRESS_TLS_NETWORK_SEGMENTATION.md`, `operations/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_RUNBOOK.md` and `qa/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION_GATE.md`;
+- `architecture/PHASE11_8D_HA_DISRUPTION.md`, `operations/PHASE11_8D_HA_DISRUPTION_RUNBOOK.md` and `qa/PHASE11_8D_HA_DISRUPTION_GATE.md`;
+- `architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md`, `operations/PHASE11_8E_OBSERVABILITY_RUNBOOK.md` and `qa/PHASE11_8E_OBSERVABILITY_GATE.md`;
+- `architecture/PHASE11_8F_RECOVERY_HARDENING.md`, `operations/PHASE11_8F_RECOVERY_RUNBOOK.md` and `qa/PHASE11_8F_RECOVERY_GATE.md`;
+- `security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md`, `operations/PHASE11_8G_SUPPLY_CHAIN_RUNBOOK.md` and `qa/PHASE11_8G_SUPPLY_CHAIN_GATE.md`;
+- `architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md`, `operations/PHASE11_9_MIGRATION_COMPATIBILITY_RUNBOOK.md` and `qa/PHASE11_9_MIGRATION_COMPATIBILITY_GATE.md`.
 
 ## Phase 11.10 external validation package
 
@@ -114,6 +125,10 @@ The existing execution package remains authoritative for 11.10p:
 11.10p requires fresh candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery evidence for the **same immutable** candidate and one production-equivalent environment. Historical Phase 8/9 evidence cannot satisfy this gate. Missing, ambiguous, inaccessible, historical-only or mixed-candidate evidence must **fail closed**.
 
 Repository CI validates repository-controlled contracts only. It does not prove production-equivalent operation and does not authorize production. Phase 11.11 remains `NOT STARTED` until Phase 11.10 is explicitly `PASS / OWNER_ACCEPTED`; Phase 12 remains `NOT STARTED` until fresh independent assurance is accepted.
+
+## Governed visual evidence boundary
+
+The governed screenshot catalogue now contains UI-01 through UI-10. These are **documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness**. No synthetic screenshot is promoted as operational, staging, assurance or production evidence.
 
 ## Documentation maintenance rule
 
