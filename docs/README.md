@@ -106,7 +106,7 @@ After exact-head acceptance and merge of 11.10c, the only next bounded priority 
 
 Phase 11.8 and 11.9 remain `PASS / REPOSITORY_COMPLETE`; repository controls do not by themselves establish production-equivalent behavior or production authorization.
 
-The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
+The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. No synthetic screenshot is promoted as operational, staging, assurance or production evidence.
 
 ## Phase 11.10 external validation package
 
