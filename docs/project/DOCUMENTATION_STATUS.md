@@ -12,8 +12,8 @@ For current project decisions use:
 
 1. `docs/project/CURRENT_STATE.md`;
 2. `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
-3. active Phase 11.10f material: `docs/architecture/PHASE11_10F_OPENCTI_GRAPH_ENTITY_WORKSPACE.md`, `docs/user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md`, `docs/qa/PHASE11_10F_OPENCTI_GRAPH_ENTITY_GATE.md`, backend/frontend implementation and `.github/workflows/phase11-opencti-graph-workspace.yml`;
-4. accepted Phase 11.10a–11.10e workbench architecture, shell, Command Center, Unified Intelligence and Integrated Analysis material;
+3. active Phase 11.10g material: `docs/architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md`, `docs/user/MISP_SHARING_EXCHANGE_WORKSPACE.md`, `docs/qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md`, backend/frontend implementation and `.github/workflows/phase11-misp-sharing-exchange.yml`;
+4. accepted Phase 11.10a–11.10f workbench architecture, shell, Command Center, Unified Intelligence, Integrated Analysis and OpenCTI Graph material;
 5. `docs/project/PRODUCTION_READINESS_REPORT.md` and `docs/project/PRODUCTION_CHECKLIST.md`;
 6. `docs/evidence/EVIDENCE_INDEX.md`;
 7. accepted Phase 11.8/11.9 architecture, operations, security and QA documentation;
@@ -39,7 +39,8 @@ Historical point-in-time records remain valid for what they originally described
 | Phase 11.10c Command Center | `CURRENT / ACCEPTED` | Preserve canonical read model and fail-closed operational overview |
 | Phase 11.10d Unified Intelligence Workspace | `CURRENT / ACCEPTED` | Preserve governed discovery, canonical detail/provenance and browser acceptance |
 | Phase 11.10e IntelOwl/Cortex integrated analysis | `CURRENT / ACCEPTED` | Preserve human-triggered analyzer execution/history and no-verdict boundary |
-| Phase 11.10f OpenCTI graph/entity workspace | `CURRENT / ACTIVE` | Govern persisted graph/entity evidence, explicit topology limits and exact-head browser acceptance |
+| Phase 11.10f OpenCTI graph/entity workspace | `CURRENT / ACCEPTED` | Preserve persisted graph/entity evidence and explicit topology limits |
+| Phase 11.10g MISP Sharing & Exchange | `CURRENT / ACTIVE` | Govern separate human review/share approval, source handling and unpublished replay-protected export |
 | Phase 11.10 external gate/runbook | `CURRENT / DEFERRED UNTIL 11.10p` | Govern fresh production-equivalent exercise after candidate freeze |
 | Production roadmap/readiness/checklist | `CURRENT` | Reconcile on readiness change |
 | Security/governance model | `CURRENT` | Reconcile on material control change |
@@ -61,35 +62,37 @@ Historical point-in-time records remain valid for what they originally described
 - Phase 11.10c `PASS / REPOSITORY_COMPLETE`;
 - Phase 11.10d `PASS / REPOSITORY_COMPLETE`;
 - Phase 11.10e `PASS / REPOSITORY_COMPLETE`;
-- Phase 11.10f `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
-- Phase 11.10g `NOT STARTED`;
+- Phase 11.10f `PASS / REPOSITORY_COMPLETE`;
+- Phase 11.10g `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
+- Phase 11.10h `NOT STARTED`;
 - Phase 11.10p `NOT STARTED / CANDIDATE FREEZE REQUIRED`;
 - Phase 11.11 `NOT STARTED`;
 - Phase 12 `NOT STARTED`;
 - DTMO **not production authorized**.
 
-## Active Phase 11.10f documentation rule
+## Active Phase 11.10g documentation rule
 
-Documentation may describe OpenCTI graph/entity behavior only where attributable to repository implementation, accepted Phase 11.4 DTMO persistence and exact-head browser/contract evidence.
+Documentation may describe MISP Sharing & Exchange behavior only where attributable to repository implementation, accepted Phase 11.5/E8 governance controls and exact-head browser/contract evidence.
 
 The active package preserves:
 
-- canonical `/workbench/intelligence/graph` inside the accepted React/TypeScript/Vite shell;
-- `GET /api/v1/opencti/capabilities`, `GET /api/v1/opencti/items/{item_id}/graph` and `GET /api/v1/opencti/entities/{mapping_id}` as DTMO-owned read APIs;
+- canonical `/workbench/sharing` inside the accepted React/TypeScript/Vite shell;
+- `GET /api/v1/sharing/items/{item_id}` as a sanitized DTMO-owned canonical state projection;
 - **browser → DTMO API → governed integration adapter → upstream service**;
-- **server-side RBAC** with `read:intelligence` for graph/entity reads;
-- no ordinary browser-held OpenCTI credentials and no direct `/graphql` request;
-- canonical DTMO item identity as graph root and persisted OpenCTI/STIX mappings as attributable nodes;
-- only `canonical-mapping` graph edges where persistence proves the association;
-- explicit `upstream_relationship_topology_persisted=false` while generic OpenCTI entity-to-entity topology is not durably stored by DTMO;
-- no inferred malware/campaign/actor/indicator/infrastructure relationship merely from co-occurrence or visual layout;
-- persisted markings, confidence, references, provenance, snapshot identity and immutable revisions where recorded;
-- `external_share_authorized=false` and `local_compromise_proven=false` as accepted persistence invariants;
-- empty persisted mappings distinguished from upstream absence;
-- dependency failure rendered unavailable rather than synthetic empty state;
+- **server-side RBAC** with `read:intelligence`, `review:intelligence` and `approve:share` remaining distinct authorities;
+- a different human share approver from the recorded reviewer;
+- service-account exclusion from human review/share authority and MISP export;
+- no ordinary browser-held MISP credentials or direct MISP request;
+- authoritative MISP source distribution, sharing-group and TLP constraints on re-export;
+- deterministic replay protection for the current canonical revision;
+- uncertain delivery classified as requiring operator inspection rather than automatic replay;
+- MISP events created with `published=false`;
+- no Phase 11.10g Publish or Synchronize action;
+- configuration distinguished from live MISP health;
+- dependency failure rendered unavailable rather than synthetic approval or export eligibility;
 - repository/browser mocks and fixtures classified as engineering evidence only.
 
-Missing or ambiguous graph topology must **fail closed**. A successful Phase 11 OpenCTI Graph Workspace Gate **does not prove** live OpenCTI connectivity/health, completeness of upstream knowledge, local exposure or compromise, production-equivalent operation, independent assurance or production authorization.
+Missing or ambiguous authority/handling evidence must **fail closed**. A successful Phase 11 MISP Sharing Exchange Gate **does not prove** live MISP connectivity/health, publication/synchronization, downstream consumption, local compromise, production-equivalent operation, independent assurance or production authorization.
 
 ## Phase 11.10p external documentation rule
 
