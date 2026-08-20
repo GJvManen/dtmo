@@ -40,7 +40,7 @@ The sole active bounded objective is now **Phase 11.10b Canonical application sh
 | Phase 11.8h capacity / resource planning | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8i exercised upgrade / rollback | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10 candidate completion + production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
+| Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10b canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.10c Command Center | `NOT STARTED` |
@@ -98,6 +98,7 @@ The bounded implementation provides:
 - task-oriented navigation, global top bar, navigation-only command palette and context rail;
 - responsive/mobile shell behavior, skip link, visible focus, semantic themes and reduced-motion handling;
 - same-origin FastAPI serving with strict CSP and immutable cache headers for hashed assets;
+- committed npm dependency lockfile consumed by supported builds with `npm ci`;
 - container build integration in which Node/npm remain build-stage only;
 - `/ui/console` retained only as a temporary compatibility path;
 - explicit shell placeholders that never fabricate live operational state.
@@ -108,11 +109,12 @@ The authoritative implementation/gate documents are:
 - `docs/qa/PHASE11_10B_APPLICATION_SHELL_GATE.md`;
 - `frontend/README.md`;
 - `frontend/THIRD_PARTY_NOTICES.md`;
+- `frontend/package.json` and `frontend/package-lock.json`;
 - `backend/tests/test_phase11_10b_application_shell_contract.py`;
 - `backend/tests/test_phase11_10b_application_shell_browser.py`;
 - `.github/workflows/phase11-application-shell.yml`.
 
-Before 11.10b can become `PASS / REPOSITORY_COMPLETE`, the npm dependency lockfile must be committed, the final exact-head build must consume that lockfile with `npm ci`, the frontend/container supply-chain checks must remain green and all registered exact-head workflows must complete successfully.
+Before 11.10b can become `PASS / REPOSITORY_COMPLETE`, the final exact-head build must consume the committed lockfile unchanged with `npm ci`, the frontend/container supply-chain checks must remain green and all registered exact-head workflows must complete successfully.
 
 Phase 11.10b does not implement Command Center feature data, later feature workspaces, live upstream validation, production-equivalent execution, independent assurance or production authorization. After acceptance, the only next bounded priority is **Phase 11.10c — Command Center**.
 
