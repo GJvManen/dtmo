@@ -6,7 +6,7 @@ Last updated: **2026-08-20**
 
 This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`; Phase 11.10 production-equivalent validation is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`; Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; its active bounded candidate-completion slice is 11.10a frontend architecture/design contract. Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
 
 ## Authoritative current-state sources
 
@@ -26,6 +26,14 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `backend/tests/test_phase11_9_migration_compatibility.py`
 - `tools/phase11_migration_compatibility.py`
 - `.github/workflows/phase11-migration-compatibility.yml`
+- `docs/architecture/FRONTEND_ARCHITECTURE.md`
+- `docs/architecture/UI_API_CONTRACT.md`
+- `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`
+- `docs/ux/INFORMATION_ARCHITECTURE.md`
+- `docs/ux/DESIGN_SYSTEM.md`
+- `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`
+- `backend/tests/test_phase11_10a_frontend_architecture_contract.py`
+- `.github/workflows/phase11-frontend-architecture.yml`
 - `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`
 - `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`
 - `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`
@@ -38,7 +46,7 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 
 ## Evidence hierarchy
 
-1. **Repository-controlled engineering evidence** — exact-head CI, contracts, SBOMs, vulnerability scans, migrations and synthetic integration/runtime tests.
+1. **Repository-controlled engineering evidence** — exact-head CI, contracts, SBOMs, vulnerability scans, migrations, architecture contracts and synthetic integration/runtime tests.
 2. **Release supply-chain evidence** — artifact hashes plus signed provenance/SBOM attestations for the exact release subject.
 3. **Accountable functional evidence** — explicit owner acceptance of product behavior.
 4. **Real-environment evidence** — production-equivalent validation bound to an immutable deployment identity.
@@ -104,9 +112,38 @@ Repository acceptance establishes graph/contract integrity only. It does **not**
 
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-#### Repository evidence contract
+The owner-required next-generation Unified Operations Workbench materially changes the integrated candidate. Therefore the Phase 11.10 stage now contains a bounded candidate-completion track before the existing external execution package is exercised.
 
-The repository contract is defined by:
+#### Phase 11.10a frontend architecture/design contract
+
+**Status:** `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT`.
+
+11.10a repository evidence is:
+
+- `docs/architecture/FRONTEND_ARCHITECTURE.md`;
+- `docs/architecture/UI_API_CONTRACT.md`;
+- `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`;
+- `docs/ux/INFORMATION_ARCHITECTURE.md`;
+- `docs/ux/DESIGN_SYSTEM.md`;
+- `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`;
+- `backend/tests/test_phase11_10a_frontend_architecture_contract.py`;
+- `.github/workflows/phase11-frontend-architecture.yml`.
+
+The dedicated workflow binds architecture-contract evidence to the exact PR head and explicitly records that the frontend is not yet implemented, no live environment was validated and production is not authorized.
+
+The canonical trust path is **browser → DTMO API → governed integration adapter → upstream service**. Repository acceptance of this architecture contract does not prove implementation, live Taranis/IntelOwl/OpenCTI/MISP/TheHive/Cortex behavior, staging acceptance, production-equivalent operation or production authorization.
+
+Design mockups and generated visuals are design artifacts only. They cannot be promoted to live screenshot, staging, production-equivalent or production evidence.
+
+#### Candidate-completion order
+
+After 11.10a, the fixed bounded order is 11.10b canonical application shell; 11.10c Command Center; 11.10d Unified Intelligence Workspace; 11.10e IntelOwl/Cortex analysis; 11.10f OpenCTI graph/entity workspace; 11.10g MISP Sharing & Exchange; 11.10h TheHive Investigations & Cases; 11.10i Vulnerability & Exposure; 11.10j Sources & Collection; 11.10k Automation & Playbooks; 11.10l Governance & Evidence; 11.10m Operations & Administration; 11.10n role-aware UX/accessibility; 11.10o consolidation/full functional acceptance; then 11.10p fresh production-equivalent validation.
+
+Repository evidence from 11.10a–11.10o remains engineering/functional candidate-completion evidence and is not a substitute for 11.10p external evidence.
+
+#### Repository evidence contract for external validation
+
+The existing production-equivalent repository contract remains defined by:
 
 - `backend/tests/test_phase11_10_production_equivalent_validation.py`;
 - `tools/phase11_production_equivalent_validation.py`;
@@ -115,9 +152,9 @@ The repository contract is defined by:
 
 Repository CI validates contract behavior, fail-closed parsing and exact-head metadata only. It does not contact or prove a production-equivalent environment.
 
-#### External execution package
+#### 11.10p external execution package
 
-The governed production-equivalent exercise is defined by:
+After candidate freeze, the governed production-equivalent exercise is defined by:
 
 - `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
 - `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`;
@@ -158,7 +195,7 @@ Historical Phase 8/9 artifacts, mixed-candidate artifacts, ambiguous identity, p
 
 #### Acceptance boundary
 
-A successful manifest validation proves only that supplied metadata satisfies the repository contract. Reviewers must inspect the referenced external evidence. Phase 11.10 becomes `PASS / OWNER_ACCEPTED` only when the accountable owner explicitly accepts the complete evidence package.
+A successful manifest validation proves only that supplied metadata satisfies the repository contract. Reviewers must inspect the referenced external evidence. Phase 11.10 becomes `PASS / OWNER_ACCEPTED` only after candidate completion, candidate freeze, successful 11.10p execution and explicit accountable owner acceptance.
 
 Phase 11.10 acceptance still does not authorize production. Phase 11.11 remains blocked until this acceptance exists.
 
@@ -180,14 +217,14 @@ Historical Phase 8/9 acceptance remains candidate-bound and cannot be transferre
 
 ## Governance and handling rules
 
-Framework claims remain governed by explicit provenance-backed mappings. External service, workload identity, secret-provider, ingress, HA, observability, recovery, supply-chain, capacity, rollout or migration state does not establish local exploitability, compromise, case necessity or dissemination authority without separate attributable evidence.
+Framework claims remain governed by explicit provenance-backed mappings. External service, workload identity, secret-provider, ingress, HA, observability, recovery, supply-chain, capacity, rollout, migration or frontend state does not establish local exploitability, compromise, case necessity or dissemination authority without separate attributable evidence.
 
 - Exact-head evidence belongs only to the exact state tested.
 - Missing, queued, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
 - Sensitive authentication material, TLS private keys, signing key material and unnecessary personal data do not belong in repository evidence.
 - Human review/share approval and human case-handoff approval remain separate from technical execution.
 - Cortex analyzer output is enrichment evidence only.
-- Kubernetes placement and migration tooling do not collapse service licensing/authority boundaries.
+- Kubernetes placement, migration tooling and frontend integration do not collapse service licensing/authority boundaries.
 - Signed provenance is not a declaration that an artifact is vulnerability-free or production-authorized.
 - Application rollback is not automatic database rollback or data recovery.
 - Historical immutable run records are never rewritten to manufacture later acceptance.
