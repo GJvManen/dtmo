@@ -83,21 +83,23 @@ Phase 11.8 was delivered as bounded sub-slices with exact-head repository eviden
 Accepted repository evidence requires immutable baseline/candidate/rollback digests, safe RollingUpdate controls, revision history, finite progress/min-ready bounds, mandatory post-upgrade/post-rollback health evidence and restoration of the exact prior digest. Automatic database down migration remains forbidden. Repository acceptance does not prove a live-cluster rollback, stateful recovery, production-equivalent continuity or production authorization.
 
 ### 11.9 Migration and compatibility
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-The active bounded slice validates one connected single-root/single-head Alembic revision graph, explicit upgrade/downgrade contracts and forward-first deployment sequencing. Rolling overlap is allowed only for backward-compatible schema changes. Destructive changes require an explicit expand/migrate/contract sequence. Application rollback never implies automatic database down migration; ambiguity fails closed.
+The accepted repository slice validates one connected single-root/single-head Alembic revision graph, explicit upgrade/downgrade contracts and forward-first deployment sequencing. Rolling overlap is allowed only for backward-compatible schema changes. Destructive changes require an explicit expand/migrate/contract sequence. Application rollback never implies automatic database down migration; ambiguity fails closed.
 
-Repository CI is engineering evidence only. It does not prove migration of production data, live application/schema compatibility, production-equivalent continuity, independent assurance or production authorization.
+Repository acceptance establishes engineering graph/contract integrity only. It does not prove migration of production data, live application/schema compatibility, production-equivalent continuity, independent assurance or production authorization.
 
 ### 11.10 Integrated production-equivalent validation
-**Status:** `PLANNED`
+**Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`
 
-Starts only after Phase 11.9 is accepted on fully green exact-head CI. Run new production-equivalent validation against one immutable integrated deployment identity, including fresh migration/compatibility, upgrade, rollback, health, saturation and recovery evidence. Prior Phase 8 evidence is historical only.
+The active bounded slice defines and validates the evidence contract for a new production-equivalent exercise against one immutable integrated deployment identity. Acceptance requires fresh migration/compatibility, upgrade, rollback, health, saturation and recovery evidence, all attributable to the same candidate and environment. Historical Phase 8/9 evidence is audit history only and cannot satisfy this gate. Missing, ambiguous, mixed-candidate or inaccessible evidence fails closed.
+
+Repository CI can validate the Phase 11.10 contract and exact-head binding, but repository-green status does not prove that a production-equivalent environment was deployed or exercised. Operational Phase 11.10 acceptance therefore remains separate from repository merge and is required before Phase 11.11.
 
 ### 11.11 Independent external assurance
-**Status:** `PLANNED`
+**Status:** `NOT STARTED`
 
-Run fresh independent assurance against the same integrated candidate after 11.10 acceptance.
+Run fresh independent assurance against the same immutable integrated candidate only after Phase 11.10 production-equivalent evidence is complete and accepted.
 
 ## Phase 12 — Production GO/NO-GO
 **Status:** `NOT STARTED`
@@ -110,7 +112,6 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept **Phase 11.9 migration/compatibility** only on fully green exact-head CI with authoritative documentation reconciled.
-2. Start **Phase 11.10 integrated production-equivalent validation** only after 11.9 is accepted.
-3. Run **Phase 11.11 independent external assurance** against the same immutable integrated candidate.
-4. Enter Phase 12 only after every required Phase 11 gate is accepted.
+1. Complete **Phase 11.10 integrated production-equivalent validation** for one immutable candidate using the full fresh evidence set; repository CI alone is insufficient for operational acceptance.
+2. Run **Phase 11.11 independent external assurance** against that same immutable integrated candidate only after 11.10 acceptance.
+3. Enter Phase 12 only after both 11.10 and 11.11 are accepted for the same candidate.
