@@ -12,8 +12,8 @@ For current project decisions use:
 
 1. `docs/project/CURRENT_STATE.md`;
 2. `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
-3. active Phase 11.10c material: `docs/architecture/PHASE11_10C_COMMAND_CENTER.md`, `docs/qa/PHASE11_10C_COMMAND_CENTER_GATE.md`, `backend/dtmo/command_center.py`, `backend/dtmo/api_command_center.py`, frontend implementation and `.github/workflows/phase11-command-center.yml`;
-4. accepted 11.10a/11.10b workbench architecture and shell material;
+3. active Phase 11.10d material: `docs/architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md`, `docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md`, `docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`, frontend implementation and `.github/workflows/phase11-unified-intelligence-workspace.yml`;
+4. accepted Phase 11.10a/11.10b/11.10c workbench architecture, shell and Command Center material;
 5. `docs/project/PRODUCTION_READINESS_REPORT.md` and `docs/project/PRODUCTION_CHECKLIST.md`;
 6. `docs/evidence/EVIDENCE_INDEX.md`;
 7. accepted Phase 11.8/11.9 architecture, operations, security and QA documentation;
@@ -36,7 +36,8 @@ Historical point-in-time records remain valid for what they originally described
 | Phase 11.9 migration/compatibility docs | `CURRENT / ACCEPTED` | Preserve forward-first compatibility boundary |
 | Phase 11.10a frontend architecture/design | `CURRENT / ACCEPTED` | Preserve accepted workbench architecture |
 | Phase 11.10b canonical shell | `CURRENT / ACCEPTED` | Preserve accepted build/routing/accessibility baseline |
-| Phase 11.10c Command Center | `CURRENT / ACTIVE` | Govern canonical read model, fail-closed UI and exact-head browser acceptance |
+| Phase 11.10c Command Center | `CURRENT / ACCEPTED` | Preserve canonical read model and fail-closed operational overview |
+| Phase 11.10d Unified Intelligence Workspace | `CURRENT / ACTIVE` | Govern read-only discovery, canonical detail/provenance and exact-head browser acceptance |
 | Phase 11.10 external gate/runbook | `CURRENT / DEFERRED UNTIL 11.10p` | Govern fresh production-equivalent exercise after candidate freeze |
 | Production roadmap/readiness/checklist | `CURRENT` | Reconcile on readiness change |
 | Security/governance model | `CURRENT` | Reconcile on material control change |
@@ -55,33 +56,34 @@ Historical point-in-time records remain valid for what they originally described
 - Phase 11.10 `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`;
 - Phase 11.10a `PASS / REPOSITORY_COMPLETE`;
 - Phase 11.10b `PASS / REPOSITORY_COMPLETE`;
-- Phase 11.10c `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
-- Phase 11.10d `NOT STARTED`;
+- Phase 11.10c `PASS / REPOSITORY_COMPLETE`;
+- Phase 11.10d `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
+- Phase 11.10e `NOT STARTED`;
 - Phase 11.10p `NOT STARTED / CANDIDATE FREEZE REQUIRED`;
 - Phase 11.11 `NOT STARTED`;
 - Phase 12 `NOT STARTED`;
 - DTMO **not production authorized**.
 
-## Active Phase 11.10c documentation rule
+## Active Phase 11.10d documentation rule
 
-Documentation may describe Command Center behavior only where attributable to repository implementation and exact-head browser/contract evidence.
+Documentation may describe Unified Intelligence behavior only where attributable to repository implementation, existing governed DTMO APIs and exact-head browser/contract evidence.
 
 The active package preserves:
 
-- one canonical `/workbench/command-center` workspace;
-- canonical DTMO read models rather than browser-to-upstream privileged calls;
+- canonical `/workbench/intelligence` and `/workbench/intelligence/iocs` routes;
+- `GET /api/v1/intelligence/search` as server-authorized discovery rather than a direct browser-to-upstream query;
+- `GET /api/v1/intelligence/{item_id}/workspace` as canonical DTMO object detail/provenance;
 - **browser → DTMO API → governed integration adapter → upstream service**;
-- **server-side RBAC** as the authority boundary;
-- role-aware visibility as usability only;
-- separate human publication/share and TheHive case authority;
-- explicit distinction between integration configuration and runtime observation;
-- no `healthy` claim solely from a feature flag/API base;
-- `null`/unavailable metrics when canonical evidence is unavailable rather than synthetic zeros;
-- accessible/responsive behavior inherited from the accepted shell;
-- `/ui/console` as a migration **compatibility path** only;
+- **server-side RBAC** and `read:intelligence` as authority boundaries;
+- search results as index projections rather than canonical truth;
+- no fabricated default records before explicit search;
+- search failure rendered unavailable instead of synthetic empty results;
+- canonical-detail failure never reconstructed from incomplete search-hit data;
+- separate review, human publication/share, analyzer/connector execution and TheHive case authority;
+- `/ui/console` and `/ui/intelligence-workspace` as migration **compatibility paths** only;
 - repository/browser mocks and fixtures classified as engineering evidence only.
 
-A successful Phase 11 Command Center Gate **does not prove** live upstream behavior, production-equivalent operation, independent assurance or production authorization.
+A successful Phase 11 Unified Intelligence Workspace Gate **does not prove** live upstream completeness or behavior, production-equivalent operation, independent assurance or production authorization.
 
 ## Phase 11.10p external documentation rule
 
