@@ -1,0 +1,150 @@
+name: Phase 11 Application Shell Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'backend/dtmo/workbench_frontend.py'
+      - 'backend/dtmo/main.py'
+      - 'backend/tests/test_phase11_10b_application_shell_*.py'
+      - 'Dockerfile'
+      - '.github/workflows/phase11-application-shell.yml'
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-application-shell:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Verify committed lockfile contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s frontend/package-lock.json
+          node -e "const p=require('./frontend/package-lock.json'); if (p.lockfileVersion !== 3) process.exit(1)"
+
+      - name: Install exact frontend dependency graph
+        working-directory: frontend
+        run: npm ci
+
+      - name: Verify npm ci did not mutate dependency manifests
+        run: git diff --exit-code -- frontend/package.json frontend/package-lock.json
+
+      - name: Audit production frontend dependencies
+        working-directory: frontend
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Typecheck and build canonical workbench
+        working-directory: frontend
+        run: npm run build
+
+      - name: Record deterministic frontend asset hashes
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          find frontend/dist -type f -print0 | sort -z | xargs -0 sha256sum > artifacts/frontend-dist-SHA256SUMS
+          cp frontend/package-lock.json artifacts/package-lock.json
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install backend test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Run Phase 11.10b repository contract
+        run: python -m pytest -q backend/tests/test_phase11_10b_application_shell_contract.py
+
+      - name: Install Chromium for browser acceptance
+        run: python -m playwright install chromium
+
+      - name: Start exact-head DTMO with built workbench
+        shell: bash
+        run: |
+          DTMO_FRONTEND_DIST="$PWD/frontend/dist" uvicorn dtmo.main:app --app-dir backend --host 127.0.0.1 --port 8000 > /tmp/dtmo-workbench.log 2>&1 &
+          echo $! > /tmp/dtmo-workbench.pid
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:8000/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/dtmo-workbench.log
+          exit 1
+
+      - name: Run canonical shell browser acceptance
+        env:
+          DTMO_BROWSER_BASE_URL: http://127.0.0.1:8000
+        run: python -m pytest -q backend/tests/test_phase11_10b_application_shell_browser.py
+
+      - name: Verify canonical route and CSP headers
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/)" = "307"
+          curl -fsS -D artifacts/workbench-headers.txt -o /dev/null http://127.0.0.1:8000/workbench/
+          grep -qi '^content-security-policy:' artifacts/workbench-headers.txt
+          grep -qi '^x-dtmo-frontend-mode: canonical-workbench' artifacts/workbench-headers.txt
+
+      - name: Record repository evidence boundary
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          payload = {
+              "workflow": "Phase 11 Application Shell Gate",
+              "sha": os.environ.get("GITHUB_SHA"),
+              "run_id": os.environ.get("GITHUB_RUN_ID"),
+              "run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
+              "scope": "Phase 11.10b canonical application shell",
+              "claim_boundary": (
+                  "Repository-controlled evidence for exact-head committed dependency resolution, "
+                  "typecheck/build, canonical same-origin serving, shell routing, responsive browser "
+                  "journeys and CSP headers. It does not prove live upstream integration behavior, "
+                  "production-equivalent operation, independent assurance or production authorization."
+              ),
+          }
+          Path("artifacts/phase11-10b-application-shell.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload non-sensitive shell evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: phase11-10b-application-shell-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/
+          if-no-files-found: error

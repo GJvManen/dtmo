@@ -6,7 +6,7 @@ Last updated: **2026-08-20**
 
 This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`; Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; its active bounded candidate-completion slice is 11.10a frontend architecture/design contract. Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.9 and Phase 11.10a are `PASS / REPOSITORY_COMPLETE`; Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; its active bounded candidate-completion slice is 11.10b canonical application shell, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10c, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
 
 ## Authoritative current-state sources
 
@@ -34,6 +34,13 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`
 - `backend/tests/test_phase11_10a_frontend_architecture_contract.py`
 - `.github/workflows/phase11-frontend-architecture.yml`
+- `docs/architecture/PHASE11_10B_APPLICATION_SHELL.md`
+- `docs/qa/PHASE11_10B_APPLICATION_SHELL_GATE.md`
+- `frontend/package.json`
+- `frontend/package-lock.json`
+- `backend/tests/test_phase11_10b_application_shell_contract.py`
+- `backend/tests/test_phase11_10b_application_shell_browser.py`
+- `.github/workflows/phase11-application-shell.yml`
 - `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`
 - `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`
 - `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`
@@ -46,7 +53,7 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 
 ## Evidence hierarchy
 
-1. **Repository-controlled engineering evidence** — exact-head CI, contracts, SBOMs, vulnerability scans, migrations, architecture contracts and synthetic integration/runtime tests.
+1. **Repository-controlled engineering evidence** — exact-head CI, contracts, SBOMs, vulnerability scans, migrations, architecture contracts, frontend builds/browser tests and synthetic integration/runtime tests.
 2. **Release supply-chain evidence** — artifact hashes plus signed provenance/SBOM attestations for the exact release subject.
 3. **Accountable functional evidence** — explicit owner acceptance of product behavior.
 4. **Real-environment evidence** — production-equivalent validation bound to an immutable deployment identity.
@@ -112,13 +119,13 @@ Repository acceptance establishes graph/contract integrity only. It does **not**
 
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The owner-required next-generation Unified Operations Workbench materially changes the integrated candidate. Therefore the Phase 11.10 stage now contains a bounded candidate-completion track before the existing external execution package is exercised.
+The owner-required next-generation Unified Operations Workbench materially changes the integrated candidate. The Phase 11.10 stage therefore contains a bounded candidate-completion track before the existing external execution package is exercised.
 
 #### Phase 11.10a frontend architecture/design contract
 
-**Status:** `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT`.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-11.10a repository evidence is:
+Accepted 11.10a repository evidence is:
 
 - `docs/architecture/FRONTEND_ARCHITECTURE.md`;
 - `docs/architecture/UI_API_CONTRACT.md`;
@@ -129,15 +136,41 @@ The owner-required next-generation Unified Operations Workbench materially chang
 - `backend/tests/test_phase11_10a_frontend_architecture_contract.py`;
 - `.github/workflows/phase11-frontend-architecture.yml`.
 
-The dedicated workflow binds architecture-contract evidence to the exact PR head and explicitly records that the frontend is not yet implemented, no live environment was validated and production is not authorized.
+The accepted architecture preserves **browser → DTMO API → governed integration adapter → upstream service**, **server-side RBAC**, provenance, human/service identity separation, separate case and publication/share authority, and no local-compromise inference from enrichment/graph/correlation state.
 
-The canonical trust path is **browser → DTMO API → governed integration adapter → upstream service**. Repository acceptance of this architecture contract does not prove implementation, live Taranis/IntelOwl/OpenCTI/MISP/TheHive/Cortex behavior, staging acceptance, production-equivalent operation or production authorization.
+11.10a acceptance proves the repository architecture/design contract only. It does not prove frontend feature implementation, live Taranis/IntelOwl/OpenCTI/MISP/TheHive/Cortex behavior, production-equivalent operation, independent assurance or production authorization.
 
-Design mockups and generated visuals are design artifacts only. They cannot be promoted to live screenshot, staging, production-equivalent or production evidence.
+Design mockups and generated visuals are design artifacts only and cannot be promoted to live screenshot, staging, production-equivalent or production evidence.
+
+#### Phase 11.10b canonical application shell
+
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+
+The active repository evidence package is:
+
+- `docs/architecture/PHASE11_10B_APPLICATION_SHELL.md`;
+- `docs/qa/PHASE11_10B_APPLICATION_SHELL_GATE.md`;
+- `frontend/README.md`;
+- `frontend/THIRD_PARTY_NOTICES.md`;
+- `frontend/package.json`;
+- `frontend/package-lock.json`;
+- `frontend/src/main.tsx`;
+- `frontend/src/App.tsx`;
+- `frontend/src/styles.css`;
+- `backend/dtmo/workbench_frontend.py`;
+- `backend/tests/test_phase11_10b_application_shell_contract.py`;
+- `backend/tests/test_phase11_10b_application_shell_browser.py`;
+- `.github/workflows/phase11-application-shell.yml`.
+
+The committed npm lockfile is the authoritative frontend dependency graph. The final exact-head gate must consume it unchanged with `npm ci`, audit production frontend dependencies, typecheck/build the workbench, record deterministic built-asset hashes, run the repository contract and exercise canonical shell browser journeys.
+
+The supported built route is `/workbench/`; `/ui/console` is a temporary **compatibility path** and not a parallel feature target. Route foundations for later workspaces explicitly avoid synthetic operational state. The command palette is navigation-only in 11.10b.
+
+A green 11.10b shell workflow can prove repository-controlled dependency/build integrity, same-origin serving, canonical routing, CSP/cache behavior and bounded browser mechanics. It **does not prove** live upstream integration behavior, Command Center feature acceptance, production-equivalent deployment/continuity, independent assurance or production authorization.
 
 #### Candidate-completion order
 
-After 11.10a, the fixed bounded order is 11.10b canonical application shell; 11.10c Command Center; 11.10d Unified Intelligence Workspace; 11.10e IntelOwl/Cortex analysis; 11.10f OpenCTI graph/entity workspace; 11.10g MISP Sharing & Exchange; 11.10h TheHive Investigations & Cases; 11.10i Vulnerability & Exposure; 11.10j Sources & Collection; 11.10k Automation & Playbooks; 11.10l Governance & Evidence; 11.10m Operations & Administration; 11.10n role-aware UX/accessibility; 11.10o consolidation/full functional acceptance; then 11.10p fresh production-equivalent validation.
+After 11.10b acceptance, the fixed bounded order is 11.10c Command Center; 11.10d Unified Intelligence Workspace; 11.10e IntelOwl/Cortex analysis; 11.10f OpenCTI graph/entity workspace; 11.10g MISP Sharing & Exchange; 11.10h TheHive Investigations & Cases; 11.10i Vulnerability & Exposure; 11.10j Sources & Collection; 11.10k Automation & Playbooks; 11.10l Governance & Evidence; 11.10m Operations & Administration; 11.10n role-aware UX/accessibility; 11.10o consolidation/full functional acceptance; then 11.10p fresh production-equivalent validation.
 
 Repository evidence from 11.10a–11.10o remains engineering/functional candidate-completion evidence and is not a substitute for 11.10p external evidence.
 
@@ -150,7 +183,7 @@ The existing production-equivalent repository contract remains defined by:
 - `.github/workflows/phase11-production-equivalent-validation.yml`;
 - `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`.
 
-Repository CI validates contract behavior, fail-closed parsing and exact-head metadata only. It does not contact or prove a production-equivalent environment.
+Repository CI validates contract behavior, candidate identity requirements, migration/compatibility, upgrade, rollback, health, saturation, recovery, fail closed parsing and exact-head metadata only. It does not contact or prove a production-equivalent environment.
 
 #### 11.10p external execution package
 
@@ -164,14 +197,7 @@ The checked-in evidence template is intentionally incomplete and therefore must 
 
 #### Candidate binding
 
-One deterministic candidate fingerprint binds:
-
-- production-equivalent `environment_id`;
-- exact deployed Git commit;
-- immutable application image digest;
-- immutable supporting image digests where applicable;
-- migration head;
-- deployment/GitOps revision.
+One deterministic candidate fingerprint binds production-equivalent `environment_id`, exact deployed Git commit, immutable application image digest, immutable supporting image digests where applicable, migration head and deployment/GitOps revision.
 
 The exact approved prior immutable application digest is also recorded for rollback. Every required evidence item must carry the candidate fingerprint of the exercised candidate.
 

@@ -17,7 +17,10 @@ This checklist controls the post-Phase-10 industrialisation programme and future
 | Phase 11.1–11.8 | `PASS / REPOSITORY_COMPLETE` | Accepted integrations/runtime controls |
 | Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` | Repository migration/compatibility evidence |
 | Phase 11.10 candidate completion + production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` | Repository/functional + real-environment evidence |
-| Phase 11.10a frontend architecture/design contract | `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT` | Repository architecture evidence |
+| Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` | Accepted repository architecture evidence |
+| Phase 11.10b canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Repository build/browser shell evidence |
+| Phase 11.10c Command Center | `NOT STARTED` | Future functional product evidence |
+| Phase 11.10p production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` | Future real-environment evidence |
 | Phase 11.11 independent external assurance | `NOT STARTED` | Independent assurance |
 | Phase 12 | `NOT STARTED` | Future production authorization |
 
@@ -25,7 +28,7 @@ Historical Phase 8/9 evidence remains candidate-bound and is not reused for the 
 
 ## Evidence rules
 
-Repository CI, release signing, accountable acceptance, production-equivalent validation, independent assurance and production authorization are separate evidence classes. Missing mandatory evidence is not implicit acceptance. Sensitive evidence is retained in approved restricted storage rather than committed to Git.
+Repository CI, release signing, accountable acceptance, production-equivalent validation, independent assurance and production authorization are separate evidence classes. Missing mandatory evidence is not implicit acceptance. Sensitive evidence is retained in approved restricted storage rather than committed to Git. Repository shell CI **does not prove** live upstream behavior or production-equivalent operation.
 
 ## 1. Accepted baseline
 
@@ -37,31 +40,53 @@ Repository CI, release signing, accountable acceptance, production-equivalent va
 - [x] Phase 11.1–11.7b service/integration boundaries accepted.
 - [x] Phase 11.8 integrated runtime industrialisation accepted, including workload identity, external secret, ingress/TLS, HA, observability, recovery, supply chain, capacity and upgrade/rollback controls.
 - [x] Phase 11.9 migration/compatibility accepted with forward-first and no-automatic-down-migration boundaries.
-- [x] Human publication/share authority, separate TheHive case authority, provenance, RBAC, least privilege and fail-closed evidence preserved.
+- [x] Human publication/share authority, separate TheHive case authority, provenance, server-side RBAC, least privilege and fail-closed evidence preserved.
 
-## 2. Active Phase 11.10a — frontend architecture/design contract
+## 2. Accepted Phase 11.10a — frontend architecture/design contract
 
-- [ ] `docs/architecture/FRONTEND_ARCHITECTURE.md` accepted.
-- [ ] `docs/architecture/UI_API_CONTRACT.md` accepted.
-- [ ] `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md` accepted.
-- [ ] `docs/ux/INFORMATION_ARCHITECTURE.md` accepted.
-- [ ] `docs/ux/DESIGN_SYSTEM.md` accepted.
-- [ ] Normal product trust path is documented as browser → DTMO API → governed integration adapter → upstream service.
-- [ ] Server-side RBAC remains authoritative; role-aware rendering is not authorization.
-- [ ] Human publication/share authority remains separate from technical execution.
-- [ ] TheHive case authority remains separate from publication/share authority.
-- [ ] Enrichment, graph presence and correlation do not establish local compromise.
-- [ ] Dark/light theme semantics, severity labels and non-colour accessibility are defined.
-- [ ] Loading, empty, stale, partial-failure and error states are defined.
-- [ ] Design mockups are explicitly non-operational evidence.
-- [ ] Dedicated exact-head Phase 11 Frontend Architecture Gate is green.
-- [ ] Professional documentation is synchronized.
+- [x] `docs/architecture/FRONTEND_ARCHITECTURE.md` accepted.
+- [x] `docs/architecture/UI_API_CONTRACT.md` accepted.
+- [x] `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md` accepted.
+- [x] `docs/ux/INFORMATION_ARCHITECTURE.md` accepted.
+- [x] `docs/ux/DESIGN_SYSTEM.md` accepted.
+- [x] Normal product trust path documented as browser → DTMO API → governed integration adapter → upstream service.
+- [x] Server-side RBAC remains authoritative; role-aware rendering is not authorization.
+- [x] Human publication/share authority remains separate from technical execution.
+- [x] TheHive case authority remains separate from publication/share authority.
+- [x] Enrichment, graph presence and correlation do not establish local compromise.
+- [x] Dark/light theme semantics, severity labels and non-colour accessibility defined.
+- [x] Loading, empty, stale, partial-failure and error states defined.
+- [x] Design mockups explicitly classified as non-operational evidence.
+- [x] Dedicated exact-head Phase 11 Frontend Architecture Gate accepted.
+- [x] Professional documentation synchronized for the accepted 11.10a baseline.
 
-11.10a acceptance permits only **11.10b canonical application shell** to start.
+## 3. Active Phase 11.10b — canonical application shell
 
-## 3. Candidate-completion sequence after 11.10a
+- [x] Separately built React/TypeScript/Vite frontend structure added under `frontend/`.
+- [x] Direct frontend dependencies exact-pinned.
+- [x] npm lockfile committed as the authoritative dependency graph.
+- [x] Supported workflow and Docker build configured to consume the committed lockfile with `npm ci` rather than regenerate resolution.
+- [x] Canonical `/workbench/` route implemented through the DTMO origin.
+- [x] `/ui/console` retained only as a temporary **compatibility path**.
+- [x] Task-oriented primary navigation, top bar and navigation-only command palette implemented.
+- [x] Context rail implements explicit no-selection state rather than inferred object truth.
+- [x] Dark/light semantic shell tokens and responsive/mobile shell layout implemented.
+- [x] Skip link, visible focus, keyboard navigation and reduced-motion handling implemented at shell level.
+- [x] Canonical index configured with strict same-origin CSP; hashed assets use immutable caching.
+- [x] Node/npm kept in a frontend Docker build stage; only built assets enter the Python runtime image.
+- [x] Repository/browser tests and dedicated `Phase 11 Application Shell Gate` added.
+- [ ] Final exact-head `npm ci` proves the committed dependency graph is consumed unchanged.
+- [ ] Final exact-head frontend production dependency audit is green.
+- [ ] Final exact-head TypeScript/Vite build and deterministic asset-hash evidence are green.
+- [ ] Final exact-head browser acceptance proves root routing, canonical navigation, command palette, context rail and mobile navigation.
+- [ ] Existing container supply-chain, security, accessibility, integration and regression workflows are fully green for the same exact head.
+- [ ] All professional current-state, roadmap, QA and evidence documents are synchronized on the final head.
+- [ ] Phase 11.10b is merged with expected-head protection only after all registered exact-head workflows are completed/success.
 
-- [ ] 11.10b canonical application shell.
+11.10b acceptance permits only **11.10c Command Center** to start.
+
+## 4. Remaining candidate-completion sequence
+
 - [ ] 11.10c Command Center.
 - [ ] 11.10d Unified Intelligence Workspace.
 - [ ] 11.10e IntelOwl/Cortex integrated analysis.
@@ -77,7 +102,7 @@ Repository CI, release signing, accountable acceptance, production-equivalent va
 - [ ] 11.10o consolidation/full functional acceptance and obsolete UI retirement.
 - [ ] One immutable integrated candidate frozen after 11.10o acceptance.
 
-## 4. Phase 11.10p — production-equivalent validation
+## 5. Phase 11.10p — production-equivalent validation
 
 The following items remain mandatory but are deliberately deferred until candidate freeze.
 
@@ -154,20 +179,22 @@ The following items remain mandatory but are deliberately deferred until candida
 - [ ] Referenced evidence has been manually reviewed.
 - [ ] Accountable owner records `PASS / OWNER_ACCEPTED`.
 
-## 5. Explicitly deferred until Phase 11.10 acceptance
+## 6. Explicitly deferred until Phase 11.10 acceptance
 
 - [ ] Phase 11.11 fresh independent external assurance against the same immutable candidate.
 - [ ] Remediation/retest of any Phase 11.11 release-blocking findings.
 - [ ] Phase 12 formal production GO/NO-GO.
 
-## 6. Fail-closed conditions
+## 7. Fail-closed conditions
 
 Phase 11.10 remains blocked if candidate-completion work is incomplete, candidate identity is incomplete, a mutable tag substitutes for an immutable digest, any required 11.10p evidence class is absent or not `PASS`, evidence belongs to another candidate/environment, historical Phase 8/9 evidence is reused, rollback does not restore the exact prior digest, post-rollback health is missing, or release-blocking findings remain unresolved.
 
-## 7. Service and authority boundaries
+Phase 11.10b specifically remains blocked if the committed lockfile cannot be consumed unchanged, the canonical shell/browser gate is not green, a browser path bypasses DTMO server authorization, compatibility routes become parallel feature targets, synthetic operational data is presented as live, or any registered exact-head workflow is incomplete/failed.
+
+## 8. Service and authority boundaries
 
 Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing boundaries. Frontend integration, validation execution and automation grant no publication/share, case-handoff or responder authority and do not prove local compromise.
 
 ## Current release decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; 11.10a is active. Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is not production authorized.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.9 and 11.10a are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; 11.10b is active. 11.10c, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is not production authorized.**

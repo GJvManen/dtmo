@@ -7,9 +7,9 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The sole active bounded objective is now **Phase 11.10a Frontend architecture and design contract**, status `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT`. The owner-required next-generation Unified Operations Workbench materially changes the integrated candidate, so fresh production-equivalent execution is intentionally deferred until the candidate-completion sequence 11.10a–11.10o is complete and one immutable integrated candidate is frozen for 11.10p.
+The sole active bounded objective is now **Phase 11.10b Canonical application shell**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10a established the accepted frontend architecture/design contract. The owner-required Unified Operations Workbench materially changes the integrated candidate, so fresh production-equivalent execution remains intentionally deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
 
 ## Lifecycle position
 
@@ -41,8 +41,8 @@ The sole active bounded objective is now **Phase 11.10a Frontend architecture an
 | Phase 11.8i exercised upgrade / rollback | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
-| Phase 11.10a frontend architecture/design contract | `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT` |
-| Phase 11.10b canonical application shell | `NOT STARTED` |
+| Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10b canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.10c Command Center | `NOT STARTED` |
 | Phase 11.10d Unified Intelligence Workspace | `NOT STARTED` |
 | Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED` |
@@ -66,11 +66,11 @@ Taranis, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed se
 
 Phase 11.8 is repository-complete. Accepted controls cover the Helm/GitOps Kubernetes runtime foundation, workload identity/external-secret delivery, TLS ingress/network segmentation, application HA/disruption controls, observability boundaries, backup/restore/recovery controls, software supply-chain hardening, capacity/resource planning and exercised upgrade/rollback. Phase 11.9 adds the accepted forward-first migration/application compatibility contract. These remain engineering controls and do not themselves establish production-equivalent behavior or production authorization.
 
-## Active Phase 11.10a frontend architecture boundary
+## Accepted Phase 11.10a frontend architecture boundary
 
-11.10a establishes the maintainable architecture required to build the approved next-generation interface without weakening existing controls.
+Phase 11.10a is `PASS / REPOSITORY_COMPLETE`. It established the maintainable architecture required to build the next-generation interface without weakening existing controls.
 
-The target canonical trust path is:
+The canonical trust path remains:
 
 ```mermaid
 flowchart LR
@@ -82,24 +82,45 @@ flowchart LR
     I --> S[Taranis / IntelOwl / OpenCTI / MISP / TheHive / Cortex]
 ```
 
-Normal product workflows must use **browser → DTMO API → governed integration adapter → upstream service**. The browser is not a privileged integration broker. Role-aware rendering is a usability function only; server-side RBAC remains authoritative.
+Normal product workflows use **browser → DTMO API → governed integration adapter → upstream service**. The browser is not a privileged integration broker. Role-aware rendering is a usability function only; server-side RBAC remains authoritative.
 
-The 11.10a repository contract consists of:
+The accepted architecture baseline remains in `docs/architecture/FRONTEND_ARCHITECTURE.md`, `docs/architecture/UI_API_CONTRACT.md`, `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`, `docs/ux/INFORMATION_ARCHITECTURE.md`, `docs/ux/DESIGN_SYSTEM.md` and `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`.
 
-- `docs/architecture/FRONTEND_ARCHITECTURE.md`;
-- `docs/architecture/UI_API_CONTRACT.md`;
-- `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`;
-- `docs/ux/INFORMATION_ARCHITECTURE.md`;
-- `docs/ux/DESIGN_SYSTEM.md`;
-- `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`;
-- `backend/tests/test_phase11_10a_frontend_architecture_contract.py`;
-- `.github/workflows/phase11-frontend-architecture.yml`.
+## Active Phase 11.10b application-shell boundary
 
-11.10a does not implement or accept the frontend and does not establish live integration, staging acceptance, production-equivalent execution, independent assurance or production authorization. Generated/reference design visuals remain design artifacts only.
+Phase 11.10b implements only the canonical application shell and routing foundation described by the accepted architecture.
+
+The bounded implementation provides:
+
+- separately built React/TypeScript/Vite application under `frontend/`;
+- React Router canonical route family under `/workbench/`;
+- TanStack Query shell request lifecycle;
+- task-oriented navigation, global top bar, navigation-only command palette and context rail;
+- responsive/mobile shell behavior, skip link, visible focus, semantic themes and reduced-motion handling;
+- same-origin FastAPI serving with strict CSP and immutable cache headers for hashed assets;
+- committed npm dependency lockfile consumed by supported builds with `npm ci`;
+- container build integration in which Node/npm remain build-stage only;
+- `/ui/console` retained only as a temporary compatibility path;
+- explicit shell placeholders that never fabricate live operational state.
+
+The authoritative implementation/gate documents are:
+
+- `docs/architecture/PHASE11_10B_APPLICATION_SHELL.md`;
+- `docs/qa/PHASE11_10B_APPLICATION_SHELL_GATE.md`;
+- `frontend/README.md`;
+- `frontend/THIRD_PARTY_NOTICES.md`;
+- `frontend/package.json` and `frontend/package-lock.json`;
+- `backend/tests/test_phase11_10b_application_shell_contract.py`;
+- `backend/tests/test_phase11_10b_application_shell_browser.py`;
+- `.github/workflows/phase11-application-shell.yml`.
+
+Before 11.10b can become `PASS / REPOSITORY_COMPLETE`, the final exact-head build must consume the committed lockfile unchanged with `npm ci`, the frontend/container supply-chain checks must remain green and all registered exact-head workflows must complete successfully.
+
+Phase 11.10b does not implement Command Center feature data, later feature workspaces, live upstream validation, production-equivalent execution, independent assurance or production authorization. After acceptance, the only next bounded priority is **Phase 11.10c — Command Center**.
 
 ## Phase 11.10 external validation boundary
 
-Fresh production-equivalent validation remains mandatory, but is now the final 11.10 candidate step **11.10p** after 11.10a–11.10o candidate completion and functional acceptance.
+Fresh production-equivalent validation remains mandatory, but is the final 11.10 candidate step **11.10p** after 11.10a–11.10o candidate completion and functional acceptance.
 
 11.10p still requires fresh production-equivalent evidence for one immutable integrated deployment identity. The mandatory evidence classes remain candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery.
 
@@ -145,7 +166,8 @@ Phase 11.11 independent external assurance must run only after Phase 11.10 accep
 7. owner-required Cortex analyzer connector — `PASS / REPOSITORY_COMPLETE`;
 8. integrated runtime industrialisation — Phase 11.8 `PASS / REPOSITORY_COMPLETE`;
 9. migration/compatibility — Phase 11.9 `PASS / REPOSITORY_COMPLETE`;
-10. Phase 11.10a–11.10o integrated candidate completion — 11.10a active;
-11. Phase 11.10p fresh production-equivalent validation — `NOT STARTED`;
-12. new independent external assurance — Phase 11.11 `NOT STARTED`;
-13. Phase 12 formal production GO/NO-GO — `NOT STARTED`.
+10. Phase 11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`;
+11. Phase 11.10b–11.10o integrated candidate completion — 11.10b active;
+12. Phase 11.10p fresh production-equivalent validation — `NOT STARTED`;
+13. new independent external assurance — Phase 11.11 `NOT STARTED`;
+14. Phase 12 formal production GO/NO-GO — `NOT STARTED`.
