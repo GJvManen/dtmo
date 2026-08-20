@@ -29,7 +29,7 @@ The accepted service integrations remain `PASS / REPOSITORY_COMPLETE` and separa
 - IntelOwl — governed enrichment and immutable history;
 - **Phase 11.4 OpenCTI** — `docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md`, `docs/integrations/OPENCTI_INTEGRATION.md`, `docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md`, `docs/qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md`, `docs/qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md`;
 - **Phase 11.5 MISP** — governed consolidation/read/export evidence with human sharing authority retained by DTMO;
-- TheHive — governed handoff evidence with case authority distinct from sharing authority;
+- TheHive — governed handoff evidence with case authority distinct from sharing authority; accepted implementation workflow remains `.github/workflows/phase11-thehive-handoff-implementation.yml`;
 - Cortex historical decision plus 11.7b analyzer-only connector evidence.
 
 No enrichment, graph, correlation, MISP or TheHive integration grants autonomous DTMO publication/share authority or proves local compromise.
@@ -37,6 +37,8 @@ No enrichment, graph, correlation, MISP or TheHive integration grants autonomous
 ## Accepted Phase 11.8 / 11.9 evidence
 
 Phase 11.8 is `PASS / REPOSITORY_COMPLETE` across runtime foundation, workload identity/external secret delivery, ingress/TLS/network segmentation, HA/disruption hardening, observability, backup/restore/recovery, software supply-chain hardening, capacity/resource planning and exercised upgrade/rollback. Phase 11.9 is `PASS / REPOSITORY_COMPLETE` for the connected migration graph and forward-first compatibility model.
+
+Accepted workflow evidence remains explicitly indexed through `.github/workflows/phase11-runtime-foundation.yml`, `.github/workflows/phase11-workload-identity-secrets.yml`, `.github/workflows/phase11-ingress-tls-network.yml`, `.github/workflows/phase11-ha-disruption.yml`, `.github/workflows/phase11-supply-chain-hardening.yml`, `.github/workflows/release-artifact-attestation.yml`, `.github/workflows/phase11-upgrade-rollback.yml` and `.github/workflows/phase11-migration-compatibility.yml`.
 
 Rollback requires exact prior immutable identity and post-rollback health. Application rollback does not authorize automatic database down migration. Repository acceptance is not live-cluster or production-equivalent evidence.
 
@@ -121,7 +123,7 @@ Repository/browser evidence does not prove live OpenCTI connectivity/health, com
 
 **Status:** `NOT STARTED / CANDIDATE FREEZE REQUIRED`.
 
-After 11.10o, one immutable integrated candidate is frozen. Fresh evidence must cover candidate identity, migration/compatibility, upgrade, rollback to the exact prior immutable digest plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity.
+After 11.10o, one immutable integrated candidate is frozen. Fresh evidence must cover **candidate identity**, **migration/compatibility**, **upgrade**, **rollback** to the exact prior immutable digest plus post-rollback **health**, representative **saturation**/capacity and **recovery**/continuity.
 
 Authoritative external execution package:
 
