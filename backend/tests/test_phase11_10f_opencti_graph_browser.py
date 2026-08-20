@@ -104,7 +104,10 @@ def test_graph_workspace_renders_persisted_mapping_graph_and_entity_evidence(pag
     expect(page.get_by_text("not persisted", exact=True)).to_be_visible()
     expect(page.get_by_role("heading", name="Graph presence is context, not a verdict", level=2)).to_be_visible()
 
-    page.get_by_role("button", name="Indicator").click()
+    # Select the explicit accessible entity-list control. The SVG graph node is also
+    # keyboard-operable and intentionally exposes role=button, so a broad role/name
+    # query for "Indicator" is ambiguous under Playwright strict mode.
+    page.locator("button.entity-row").filter(has_text="indicator--abc").click()
     expect(page.get_by_role("heading", name="Indicator", level=2)).to_be_visible()
     expect(page.get_by_text("TLP:AMBER", exact=True)).to_be_visible()
     expect(page.get_by_text("not authorized", exact=True)).to_be_visible()
