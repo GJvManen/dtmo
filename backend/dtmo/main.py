@@ -38,6 +38,7 @@ from dtmo.intelowl_execution import router as intelowl_execution_router
 from dtmo.logging import bind_request_context, clear_request_context, configure_logging, correlation_id, get_logger, resolve_correlation_id
 from dtmo.misp_export_api import router as misp_export_router
 from dtmo.misp_workspace import router as misp_workspace_router
+from dtmo.opencti_workspace import router as opencti_workspace_router
 from dtmo.operations_metrics import router as operations_metrics_router
 from dtmo.operations_ui import router as operations_ui_router
 from dtmo.rbac_admin import router as rbac_admin_router
@@ -158,6 +159,7 @@ app.include_router(admin_center_router)
 app.include_router(ux_preferences_router)
 app.include_router(intelligence_router)
 app.include_router(intelowl_execution_router)
+app.include_router(opencti_workspace_router)
 app.include_router(thehive_handoff_router)
 app.include_router(misp_export_router)
 app.include_router(misp_workspace_router)

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { AnalysisWorkspace } from './AnalysisWorkspace';
+import { OpenCTIGraphWorkspace } from './OpenCTIGraphWorkspace';
 import { UnifiedIntelligenceWorkspace } from './UnifiedIntelligenceWorkspace';
 
 type Health = {
@@ -344,8 +345,9 @@ export function App() {
             <Route path="/command-center/*" element={<CommandCenter session={session.data} health={health.data} />} />
             <Route path="/intelligence" element={<UnifiedIntelligenceWorkspace />} />
             <Route path="/intelligence/iocs" element={<UnifiedIntelligenceWorkspace mode="ioc" />} />
+            <Route path="/intelligence/graph" element={<OpenCTIGraphWorkspace />} />
             <Route path="/analysis/*" element={<AnalysisWorkspace />} />
-            {workspaces.filter((workspace) => !['/command-center', '/intelligence', '/intelligence/iocs', '/analysis'].includes(workspace.path)).map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
+            {workspaces.filter((workspace) => !['/command-center', '/intelligence', '/intelligence/iocs', '/intelligence/graph', '/analysis'].includes(workspace.path)).map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
             <Route path="*" element={<Navigate to="/command-center" replace />} />
           </Routes>
         </main>

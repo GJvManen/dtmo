@@ -7,23 +7,23 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 DTMO protects confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence. Source trust, identity, authorization, evidence and human decision boundaries remain explicit and enforceable.
 
-DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9 and Phase 11.10a–11.10d are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**; the active bounded gate is **Phase 11.10e IntelOwl/Cortex integrated analysis**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10f, Phase 11.11 and Phase 12 are `NOT STARTED`.
+DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9 and Phase 11.10a–11.10e are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**; the active bounded gate is **Phase 11.10f OpenCTI graph/entity workspace**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10g, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`.
 
 ## Identity and access control
 
 - **Server-side RBAC remains authoritative.**
 - Human and service identities remain separate.
-- `read:intelligence` controls intelligence discovery, canonical object reading and integrated-analysis history/capability reads.
-- `review:intelligence` controls explicit IntelOwl/Cortex analyzer execution in the active 11.10e workspace.
+- `read:intelligence` controls intelligence discovery, canonical object reading, analysis history/capability reads and OpenCTI graph/entity reads.
+- `review:intelligence` controls explicit IntelOwl/Cortex analyzer execution in the accepted 11.10e workspace.
 - `handoff:case` remains distinct from `approve:share`.
-- Connectors, analyzers, CI identities, Kubernetes service accounts, frontend controls and integrated platforms do not receive human publication/share or case-handoff authority.
+- Connectors, analyzers, graph clients, CI identities, Kubernetes service accounts, frontend controls and integrated platforms do not receive human publication/share or case-handoff authority.
 - Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/API/licensing/provider boundaries.
 - Enrichment, graph, exchange, case, build, deployment or evidence state does not establish DTMO-local exposure, exploitability or compromise.
 - Missing, conflicting or unverifiable mandatory evidence must **fail closed**.
 
 ## Separation of duties
 
-Human publication/share approval, case handoff, analyzer execution, CI build identity, deployment, validation review, release signing and production authorization remain distinct authority domains. A connector, analyzer, Kubernetes workload, browser control, CI job, signed artifact or evidence validator cannot self-grant analyst approval or production authority.
+Human publication/share approval, case handoff, analyzer execution, graph/context reading, CI build identity, deployment, validation review, release signing and production authorization remain distinct authority domains. A connector, analyzer, graph node, Kubernetes workload, browser control, CI job, signed artifact or evidence validator cannot self-grant analyst approval or production authority.
 
 ## Accepted Phase 11 security baseline
 
@@ -35,38 +35,37 @@ Phase 11.10a accepted the frontend trust boundary **browser → DTMO API → gov
 
 Phase 11.10b accepted the separately built React/TypeScript/Vite `/workbench/` shell with committed dependency lockfile consumed by `npm ci`, build-stage-only Node/npm, strict same-origin CSP, immutable hashed assets, traversal-safe serving, responsive keyboard navigation, context rail and `/ui/console` as a migration **compatibility path**.
 
-Phase 11.10c accepted the read-only canonical Command Center with fail-closed canonical metrics, explicit separation between configuration and runtime observation, and no new review/share/case/connector/admin authority.
-
-Phase 11.10d accepted the read-only Unified Intelligence Workspace. Search results remain discovery projections, canonical detail/provenance comes from DTMO persistence, and dependency failure is not converted into synthetic state.
+Phase 11.10c accepted the read-only canonical Command Center with fail-closed canonical metrics and explicit separation between configuration and runtime observation. Phase 11.10d accepted read-only Unified Intelligence where search projections remain distinct from canonical detail/provenance. Phase 11.10e accepted human-triggered IntelOwl/Cortex analysis with durable evidence, server-side execution authorization and no-compromise/no-share-authority invariants.
 
 These are repository engineering controls and do not prove provider enforcement, live availability, successful recovery, production-equivalent operation or production authorization.
 
-## Active Phase 11.10e integrated-analysis security boundary
+## Active Phase 11.10f OpenCTI graph/entity security boundary
 
-The Analysis & Enrichment workspace is governed by server-side DTMO APIs. Capability/history reads require `read:intelligence`; IntelOwl/Cortex execution requires `review:intelligence`. UI state does not create authorization.
+The Knowledge Graph workspace is governed by same-origin DTMO APIs. All frontend-facing graph/entity reads require `read:intelligence`; UI state does not create authorization.
 
 Security invariants:
 
-- browser requests remain same-origin DTMO API calls rather than direct privileged IntelOwl/Cortex calls;
-- no upstream secret, bearer token, private key or human approval authority is stored as ordinary frontend state;
-- IntelOwl keeps its existing feature flag, handling policy, observable/analyzer allowlists, disclosure controls and result-size limits;
-- Cortex keeps its feature flag, explicit observable/analyzer allowlists, TLP checks, stable job/analyzer identity checks and result-size bounds;
-- Cortex remains **analyzer-only**; responders, automatic analyzer discovery, files/attachments, administration and automatic IntelOwl fallback remain outside the active scope;
-- `GET /api/v1/analysis/capabilities` exposes configuration/capability state only and never converts it into a runtime-health claim;
-- Cortex analysis history is durably bound to the canonical DTMO object and stable Cortex job identity;
-- persistence enforces `external_share_authorized=false` and `local_compromise_proven=false`;
-- IntelOwl/Cortex output is evidence, not a verdict, and does **not prove** local compromise by itself;
-- read-only principals may inspect history but execution controls are not presented as authorized;
-- policy, canonical-object, upstream or persistence failure is surfaced as failure/unavailable and must **fail closed** rather than synthesize a successful result;
+- browser requests remain same-origin DTMO API calls rather than direct privileged OpenCTI GraphQL calls;
+- no OpenCTI token, upstream bearer credential, private key or human approval authority is stored as ordinary frontend state;
+- `GET /api/v1/opencti/capabilities` exposes feature/configuration state only and never converts it into a runtime-health claim;
+- `GET /api/v1/opencti/items/{item_id}/graph` reads one canonical DTMO item plus persisted OpenCTI mappings;
+- `GET /api/v1/opencti/entities/{mapping_id}` exposes persisted stable identity, STIX type, markings, confidence, references, provenance, snapshot identity and immutable revisions;
+- existing OpenCTI persistence enforces `external_share_authorized=false` and `local_compromise_proven=false`;
+- generic OpenCTI entity-to-entity relationship topology is not durably persisted by the current accepted DTMO boundary;
+- the browser therefore renders only attributable `canonical-mapping` edges and MUST NOT infer actor/campaign/malware/indicator/infrastructure relationships from co-occurrence or visual proximity;
+- an empty persisted mapping set is not promoted to an upstream-absence claim;
+- graph/entity presence, confidence or markings do **not prove** local exposure, exploitability, compromise, attribution certainty or remediation state;
+- canonical-data dependency failure is surfaced as unavailable and must **fail closed** rather than becoming a synthetic empty graph;
+- no OpenCTI write, connector invocation, MISP synchronization, TheHive case mutation or publication/share action is introduced by 11.10f;
 - repository/browser mocks remain engineering evidence only.
 
-The dedicated Phase 11 Integrated Analysis Workspace Gate may prove exact-head repository contracts, typecheck/build, durable evidence invariants, role-aware browser behavior and fail-closed UI handling. It **does not prove** live IntelOwl/Cortex health, analyzer/provider authorization, production-equivalent operation, independent assurance or production authorization.
+The dedicated Phase 11 OpenCTI Graph Workspace Gate may prove exact-head repository contracts, typecheck/build, server-side read authorization, persisted mapping/entity/revision rendering, explicit topology limitation and fail-closed UI behavior. It **does not prove** live OpenCTI health, completeness of upstream knowledge, local exposure/compromise, production-equivalent operation, independent assurance or production authorization.
 
 ## Threat and vulnerability management
 
 Vulnerability findings remain provenance-bound evidence. A green scan does not establish absence of unknown vulnerabilities; a governed finding cannot be silently suppressed. Exceptions must remain accountable, time-bounded and bound to the exact artifact/finding identity.
 
-Frontend production dependency audit, container/package SBOMs and vulnerability controls remain regression gates during 11.10e. They do not establish vulnerability absence or production readiness.
+Frontend production dependency audit, container/package SBOMs and vulnerability controls remain regression gates during 11.10f. They do not establish vulnerability absence or production readiness.
 
 ## Secrets and signing identities
 
@@ -78,7 +77,7 @@ Phase 11.8 HA, observability, capacity and recovery repository boundaries remain
 
 11.10p must provide fresh evidence for candidate identity, migration/compatibility, upgrade, health/readiness, representative saturation/capacity, recovery/continuity and rollback to the **exact prior immutable** application digest plus **post-rollback health**. Application rollback does not authorize **automatic database down migration**.
 
-Every evidence item must identify the **same immutable** candidate and approved production-equivalent environment. Historical Phase 8 `PASS / OWNER_ACCEPTED` and Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED` remain prior-candidate history and cannot satisfy the new candidate. Missing, inaccessible, placeholder, historical-only or mixed-candidate evidence must fail closed.
+Every evidence item must identify the **same immutable** candidate and approved production-equivalent environment. Historical Phase 8 `PASS / OWNER_ACCEPTED` and Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED` remain prior-candidate history and cannot satisfy the new candidate. Missing, inaccessible, placeholder, historical-only or mixed-candidate evidence must **fail closed**.
 
 ## Data protection and privacy
 

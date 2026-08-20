@@ -20,8 +20,9 @@ This document gives accountable decision makers the current production-readiness
 | Phase 11.10b | `PASS / REPOSITORY_COMPLETE` | Canonical application shell accepted |
 | Phase 11.10c | `PASS / REPOSITORY_COMPLETE` | Canonical Command Center accepted |
 | Phase 11.10d | `PASS / REPOSITORY_COMPLETE` | Unified Intelligence Workspace accepted |
-| Phase 11.10e | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | IntelOwl/Cortex integrated analysis is the sole active decision gate |
-| Phase 11.10f | `NOT STARTED` | OpenCTI workspace blocked until 11.10e acceptance |
+| Phase 11.10e | `PASS / REPOSITORY_COMPLETE` | Integrated IntelOwl/Cortex analysis accepted |
+| Phase 11.10f | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | OpenCTI graph/entity workspace is the sole active decision gate |
+| Phase 11.10g | `NOT STARTED` | MISP workspace blocked until 11.10f acceptance |
 | Phase 11.10p | `NOT STARTED / CANDIDATE FREEZE REQUIRED` | External validation blocked until candidate completion/freeze |
 | Phase 11.11 | `NOT STARTED` | Blocked until 11.10 acceptance |
 | Phase 12 | `NOT STARTED` | Requires fresh validation and assurance |
@@ -30,19 +31,22 @@ Phase 11 remains `IN PROGRESS / ACTIVE`. DTMO is **not production authorized**.
 
 ## Active decision boundary
 
-The immediate question is whether **Phase 11.10e IntelOwl/Cortex integrated analysis** provides trustworthy human-triggered analyzer workflows and persisted evidence without fabricating runtime health, local-compromise conclusions or external-share authority.
+The immediate question is whether **Phase 11.10f OpenCTI graph/entity workspace** provides trustworthy graph/entity context using only persisted DTMO evidence without fabricating upstream topology, runtime health, local-compromise conclusions or external-share authority.
 
 The exact-head gate must prove:
 
-- functional `/workbench/analysis` route inside the accepted canonical shell;
-- governed capability and combined-history APIs protected by `read:intelligence`;
-- IntelOwl enrichment remains explicitly human-triggered and protected by `review:intelligence`;
-- Cortex execution is explicitly human-triggered, feature-gated, analyzer-only, allowlist/TLP validated and protected by `review:intelligence`;
-- durable Cortex history is bound to canonical item, stable job identity, explicit analyzer and requesting principal;
-- database/runtime invariants preserve `external_share_authorized=false` and `local_compromise_proven=false`;
-- Cortex responders, automatic analyzer discovery and automatic IntelOwl fallback remain outside scope;
-- read-only principals can inspect history but are not presented with authorized execution controls;
-- dependency, policy and persistence failures are unavailable/failed rather than synthetic success;
+- functional `/workbench/intelligence/graph` route inside the accepted canonical shell;
+- governed capability, graph and entity APIs protected by `read:intelligence`;
+- the browser uses DTMO APIs only and receives no OpenCTI credential;
+- canonical DTMO intelligence identity is the graph root;
+- graph nodes originate from persisted OpenCTI/STIX mappings;
+- only proven `canonical-mapping` edges are rendered;
+- generic OpenCTI entity-to-entity relationships are not inferred because that topology is not durably persisted by the current DTMO boundary;
+- stable OpenCTI/STIX identity, type, markings, confidence, references, provenance and immutable revision history remain attributable;
+- existing `external_share_authorized=false` and `local_compromise_proven=false` persistence invariants remain intact;
+- feature/configuration state is not presented as runtime health;
+- empty persisted mapping evidence is not promoted to an upstream-absence claim;
+- dependency failures are unavailable rather than synthetic empty graphs;
 - professional lifecycle/evidence/roadmap documentation is synchronized to the same exact head.
 
 The canonical trust path remains **browser → DTMO API → governed integration adapter → upstream service**. `/ui/console` and earlier UI routes remain temporary **compatibility paths**.
@@ -54,8 +58,9 @@ flowchart LR
     A[11.10a architecture accepted] --> B[11.10b shell accepted]
     B --> C[11.10c Command Center accepted]
     C --> D[11.10d Unified Intelligence accepted]
-    D --> E[11.10e Integrated Analysis active]
-    E --> R[11.10f-o bounded completion]
+    D --> E[11.10e Integrated Analysis accepted]
+    E --> G[11.10f OpenCTI Graph active]
+    G --> R[11.10g-o bounded completion]
     R --> F[Immutable candidate freeze]
     F --> P[11.10p fresh evidence]
     P --> O{Accountable owner review}
@@ -71,7 +76,7 @@ flowchart LR
 - Human publication/share authority and TheHive case-handoff authority remain distinct.
 - Enrichment, graph presence or correlation does not establish local compromise.
 - Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing boundaries.
-- Cortex responders remain outside the approved analyzer-only connector boundary.
+- A displayed graph edge requires attributable persisted relationship evidence; missing topology must **fail closed**.
 - Design mockups, fixtures and browser mocks are not live or production-equivalent evidence.
 - Historical Phase 8/9 evidence is preserved but cannot be reused as Phase 11.10/11.11 evidence.
 - Repository CI **does not prove** production-equivalent operation.
@@ -82,4 +87,4 @@ flowchart LR
 
 ## Current decision
 
-**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.9 and 11.10a–11.10d are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; 11.10e is the active bounded IntelOwl/Cortex integrated-analysis gate. 11.10f, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO remains not production authorized.**
+**Phase 10 remains `NO-GO / BLOCKED`. Phase 11.1–11.9 and 11.10a–11.10e are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; 11.10f is the active bounded OpenCTI graph/entity gate. 11.10g, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO remains not production authorized.**
