@@ -19,7 +19,10 @@ This roadmap separates production authorization from product evolution and platf
 | Phase 11.1–11.8 | Service integrations and integrated runtime industrialisation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.9 | Migration and compatibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10 | Candidate completion + new production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
-| Phase 11.10a | Frontend architecture/design contract | `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT` |
+| Phase 11.10a | Frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10b | Canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.10c | Command Center | `NOT STARTED` |
+| Phase 11.10p | Fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
 | Phase 11.11 | New independent external assurance | `NOT STARTED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
 
@@ -57,23 +60,33 @@ The owner-required next-generation interface materially changes the candidate. T
 
 The interface is built one bounded PR at a time:
 
-1. 11.10a frontend architecture/design contract — active;
-2. 11.10b canonical application shell;
-3. 11.10c Command Center;
-4. 11.10d Unified Intelligence Workspace;
-5. 11.10e IntelOwl/Cortex integrated analysis;
-6. 11.10f OpenCTI graph/entity workspace;
-7. 11.10g MISP Sharing & Exchange;
-8. 11.10h TheHive Investigations & Cases;
-9. 11.10i Vulnerability & Exposure Center;
-10. 11.10j Sources & Collection Control Center;
-11. 11.10k Automation & Playbooks;
-12. 11.10l Governance & Evidence Center;
-13. 11.10m Operations & Administration;
-14. 11.10n role-aware UX/accessibility;
-15. 11.10o consolidation/full functional acceptance.
+1. 11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`;
+2. **11.10b canonical application shell — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`**;
+3. 11.10c Command Center — `NOT STARTED`;
+4. 11.10d Unified Intelligence Workspace — `NOT STARTED`;
+5. 11.10e IntelOwl/Cortex integrated analysis — `NOT STARTED`;
+6. 11.10f OpenCTI graph/entity workspace — `NOT STARTED`;
+7. 11.10g MISP Sharing & Exchange — `NOT STARTED`;
+8. 11.10h TheHive Investigations & Cases — `NOT STARTED`;
+9. 11.10i Vulnerability & Exposure Center — `NOT STARTED`;
+10. 11.10j Sources & Collection Control Center — `NOT STARTED`;
+11. 11.10k Automation & Playbooks — `NOT STARTED`;
+12. 11.10l Governance & Evidence Center — `NOT STARTED`;
+13. 11.10m Operations & Administration — `NOT STARTED`;
+14. 11.10n role-aware UX/accessibility — `NOT STARTED`;
+15. 11.10o consolidation/full functional acceptance — `NOT STARTED`.
 
-The canonical frontend security path is **browser → DTMO API → governed integration adapter → upstream service**. Server-side RBAC, provenance, human publication/share authority and separate case authority remain unchanged.
+The canonical frontend security path is **browser → DTMO API → governed integration adapter → upstream service**. **Server-side RBAC**, provenance, human publication/share authority and separate case authority remain unchanged.
+
+##### Active 11.10b shell boundary
+
+11.10b implements the accepted architecture as a separately built React/TypeScript/Vite workbench under `/workbench/`. The direct frontend dependency set is exact-pinned and the committed npm lockfile is consumed with `npm ci` in CI and the frontend container build stage. Node/npm remain build-stage tooling; only built static assets enter the Python runtime image.
+
+The shell includes task-oriented primary navigation, top status/command bar, navigation-only command palette, context rail, responsive/mobile behavior, skip/focus/reduced-motion baseline, semantic dark/light themes and same-origin static serving with strict CSP and immutable hashed-asset caching.
+
+`/ui/console` remains a temporary **compatibility path** and is not a second feature-development target. Route foundations for future workspaces do not fabricate live intelligence, cases, vulnerabilities, integration status or approval state. Command Center functional content starts only in 11.10c.
+
+Repository/browser shell acceptance **does not prove** live upstream integration behavior, production-equivalent operation, independent assurance or production authorization.
 
 #### Part B — 11.10p new production-equivalent validation
 
@@ -117,8 +130,9 @@ Each material repository change requires one bounded pull request with explicit 
 
 ## Immediate sequence
 
-1. Complete Phase **11.10a frontend architecture/design contract**.
-2. Continue 11.10b–11.10o one green merged bounded PR at a time.
-3. Freeze one immutable integrated candidate and execute **11.10p fresh production-equivalent validation**.
-4. After explicit Phase 11.10 acceptance, run Phase 11.11 independent external assurance against that same candidate.
-5. Enter Phase 12 only after both evidence classes are accepted and all production-specific prerequisites are reviewable.
+1. Complete **Phase 11.10b canonical application shell** on one fully green exact final head and merge with expected-head protection.
+2. Only then start **11.10c Command Center**.
+3. Continue 11.10d–11.10o one green merged bounded PR at a time.
+4. Freeze one immutable integrated candidate and execute **11.10p fresh production-equivalent validation**.
+5. After explicit Phase 11.10 acceptance, run Phase 11.11 independent external assurance against that same candidate.
+6. Enter Phase 12 only after both evidence classes are accepted and all production-specific prerequisites are reviewable.
