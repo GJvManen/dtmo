@@ -43,8 +43,9 @@ Phase 11.1–11.7b integration contracts remain accepted and discoverable throug
 
 Accepted integration and runtime documentation remains directly discoverable:
 
-- IntelOwl enrichment: [user/INTELOWL_ENRICHMENT_WORKFLOW.md](user/INTELOWL_ENRICHMENT_WORKFLOW.md). Phase 11.3 IntelOwl remains `PASS / REPOSITORY_COMPLETE`; enrichment is governed evidence and does not itself grant dissemination authority or prove local compromise.
-- Phase 11.4 OpenCTI remains `PASS / REPOSITORY_COMPLETE`; its accepted knowledge-graph integration boundary remains part of the controlled Phase 11 baseline and does not imply live OpenCTI connectivity or production authorization.
+- IntelOwl enrichment: [user/INTELOWL_ENRICHMENT_WORKFLOW.md](user/INTELOWL_ENRICHMENT_WORKFLOW.md) with [operations/INTELOWL_ENRICHMENT_RUNBOOK.md](operations/INTELOWL_ENRICHMENT_RUNBOOK.md). Phase 11.3 IntelOwl remains `PASS / REPOSITORY_COMPLETE`; enrichment is governed evidence and does not itself grant dissemination authority or prove local compromise.
+- Phase 11.4 OpenCTI remains `PASS / REPOSITORY_COMPLETE`; accepted documentation is [architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md](architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md), [integrations/OPENCTI_INTEGRATION.md](integrations/OPENCTI_INTEGRATION.md), [operations/OPENCTI_INTEGRATION_RUNBOOK.md](operations/OPENCTI_INTEGRATION_RUNBOOK.md), and [qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md](qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md). Its knowledge-graph integration boundary does not imply live OpenCTI connectivity or production authorization.
+- Phase 11.5 MISP remains `PASS / REPOSITORY_COMPLETE`; the accepted consolidation boundary remains controlled by DTMO sharing approval and does not itself prove external sharing or production authorization.
 - TheHive implementation: [TheHive integration](integrations/THEHIVE_HANDOFF.md), [TheHive contract](architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md), [TheHive runbook](operations/THEHIVE_HANDOFF_RUNBOOK.md), [TheHive administration](administration/THEHIVE_HANDOFF_CONFIGURATION.md) and **Phase 11.6 TheHive Handoff Implementation Gate**.
 - Phase 11.7 historical Cortex decision: [CORTEX_DECISION_GATE.md](qa/PHASE11_7_CORTEX_DECISION_GATE.md). This remains the accepted historical decision record and is not rewritten by the later 11.7b connector implementation.
 - Cortex analyzer connector: [CORTEX_ANALYZER_CONNECTOR.md](integrations/CORTEX_ANALYZER_CONNECTOR.md) and [PHASE11_7B_CORTEX_CONNECTOR_GATE.md](qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md).
@@ -58,7 +59,7 @@ Accepted integration and runtime documentation remains directly discoverable:
 - [11.8h capacity and resource planning](architecture/PHASE11_8H_CAPACITY_RESOURCE_PLANNING.md).
 - [11.8i exercised upgrade and rollback](architecture/PHASE11_8I_UPGRADE_ROLLBACK.md).
 
-The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
+The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. No synthetic screenshot is promoted as operational, staging, production, or live-integration evidence.
 
 The active Phase 11.9 documentation set is:
 
