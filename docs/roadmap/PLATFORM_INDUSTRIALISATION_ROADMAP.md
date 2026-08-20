@@ -1,6 +1,6 @@
 # DTMO Platform Industrialisation Roadmap
 
-Last updated: **2026-08-19**  
+Last updated: **2026-08-20**  
 Programme state: **`ACTIVE / HIGHEST PRIORITY`**
 
 ## Purpose
@@ -8,34 +8,6 @@ Programme state: **`ACTIVE / HIGHEST PRIORITY`**
 Phase 10 concluded with `NO-GO / BLOCKED` for production authorization. Phase 11 is the successor industrialisation programme and is executed one bounded pull request at a time. Historical Phase 8/9 evidence remains candidate-bound and is not reused for the materially changed integrated platform.
 
 DTMO prefers mature service integrations over rebuilding generic collection, enrichment, graph, exchange and case-management platforms inside DTMO.
-
-## Strategic target
-
-```mermaid
-flowchart LR
-    EXT[External governed sources] --> TAR[Taranis AI\ncollection + assessment]
-    TAR --> DTMO[DTMO\ncanonical education CTI + governance]
-    DTMO --> OWL[IntelOwl\nenrichment]
-    OWL --> DTMO
-    DTMO --> CTX[Cortex\nbounded analyzer connector]
-    CTX --> DTMO
-    DTMO <--> OCTI[OpenCTI\nSTIX graph]
-    DTMO <--> MISP[MISP\ngoverned exchange]
-    DTMO --> HIVE[TheHive\nincident/case workflow]
-    GIT[Reviewed Git revision] --> HELM[Helm + GitOps]
-    HELM --> K8S[Kubernetes runtime]
-    IAM[Workload identity] --> K8S
-    SEC[External secret provider] --> K8S
-    TLS[TLS ingress boundary] --> K8S
-    HA[Zone + host spread] --> K8S
-    OBS[Metrics + logs + traces] --> K8S
-    REC[Backup + restore + recovery] --> K8S
-    SC[SBOM + vulnerability scan + signed provenance] --> K8S
-    CAP[Capacity + saturation policy] --> K8S
-    UR[Upgrade + rollback exercise] --> K8S
-```
-
-The original 11.7 Cortex no-adoption decision remains preserved as historical evidence. The later owner-required 11.7b analyzer connector is separately accepted. Phase 11.8 is active. Provenance, RBAC, human publication/share authority, service licensing boundaries and fail-closed evidence rules remain explicit across every runtime boundary.
 
 ## Fixed priority order
 
@@ -77,66 +49,50 @@ The original 11.7 Cortex no-adoption decision remains preserved as historical ev
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
 ### 11.8 Integrated runtime industrialisation
-**Status:** `IN PROGRESS / ACTIVE`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-Phase 11.8 is delivered as bounded sub-slices so each runtime control has exact-head evidence and professional documentation.
+Phase 11.8 was delivered as bounded sub-slices with exact-head repository evidence and professional documentation.
 
 #### 11.8a Runtime foundation
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-Immutable image digest, GitOps-owned non-secret values, non-root/read-only workload hardening, disabled service-account token automounting, probes/resources, PodDisruptionBudget and fail-closed NetworkPolicy are accepted repository controls.
-
 #### 11.8b Workload identity and external secret delivery
 **Status:** `PASS / REPOSITORY_COMPLETE`
-
-Provider-neutral workload identity and opt-in external secret delivery are accepted without storing identity credentials or secret values in Git.
 
 #### 11.8c Ingress/TLS and network segmentation
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-TLS-only ingress and explicit ingress-controller network segmentation are accepted repository controls; live DNS/certificate/CNI enforcement is not inferred.
-
 #### 11.8d HA and disruption hardening
 **Status:** `PASS / REPOSITORY_COMPLETE`
-
-Application replicas, zone/host spread, anti-affinity, PodDisruptionBudget and graceful termination are accepted. Stateful quorum/failover remains deployment-specific.
 
 #### 11.8e Observability hardening
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-Metrics discovery, structured JSON logging and opt-in distributed tracing boundaries are accepted; live telemetry/SLO attainment is not inferred.
-
 #### 11.8f Backup, restore and recovery hardening
 **Status:** `PASS / REPOSITORY_COMPLETE`
-
-PostgreSQL, Redis, OpenSearch and object storage have explicit recovery ownership, retention, restore-verification, exercise and RPO/RTO evidence boundaries. Live backup/recovery success is not inferred.
 
 #### 11.8g Software supply-chain hardening
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-Accepted repository controls cover exact-head SBOM generation, Python/container vulnerability scanning, SHA-256 artifact identities, minimal runtime boundaries and a governed release path for signed provenance/SBOM attestations. Repository acceptance does not claim a future artifact has already been signed, admitted or deployed.
-
 #### 11.8h Capacity and resource planning
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-Accepted repository controls establish explicit CPU/memory requests and limits, bounded autoscaling, stabilization behavior and saturation-evidence thresholds. They do not prove production sizing, provider capacity, workload demand or SLO attainment.
-
 #### 11.8i Exercised upgrade and rollback
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-This final bounded Phase 11.8 slice requires immutable baseline/candidate/rollback digests, safe RollingUpdate settings, revision history, progress/min-ready bounds, required post-upgrade and post-rollback health evidence and restoration of the exact prior accepted digest. Automatic database down migration is forbidden. Missing identity, rollback compatibility or health evidence fails closed.
-
-CI exercises a deterministic repository transition from one synthetic immutable digest to a different candidate digest and back to the exact baseline digest. That is repository engineering evidence only; it does not prove a live-cluster rollback, stateful recovery, production-equivalent continuity or production authorization.
+Accepted repository evidence requires immutable baseline/candidate/rollback digests, safe RollingUpdate controls, revision history, finite progress/min-ready bounds, mandatory post-upgrade/post-rollback health evidence and restoration of the exact prior digest. Automatic database down migration remains forbidden. Repository acceptance does not prove a live-cluster rollback, stateful recovery, production-equivalent continuity or production authorization.
 
 ### 11.9 Migration and compatibility
-**Status:** `PLANNED`
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
 
-11.9 starts only after 11.8i is accepted on fully green exact-head CI.
+The active bounded slice validates one connected single-root/single-head Alembic revision graph, explicit upgrade/downgrade contracts and forward-first deployment sequencing. Rolling overlap is allowed only for backward-compatible schema changes. Destructive changes require an explicit expand/migrate/contract sequence. Application rollback never implies automatic database down migration; ambiguity fails closed.
+
+Repository CI is engineering evidence only. It does not prove migration of production data, live application/schema compatibility, production-equivalent continuity, independent assurance or production authorization.
 
 ### 11.10 Integrated production-equivalent validation
 **Status:** `PLANNED`
 
-Run new production-equivalent validation against one immutable integrated deployment identity, including fresh upgrade, rollback, health, saturation and recovery evidence. Prior Phase 8 evidence is historical only.
+Starts only after Phase 11.9 is accepted on fully green exact-head CI. Run new production-equivalent validation against one immutable integrated deployment identity, including fresh migration/compatibility, upgrade, rollback, health, saturation and recovery evidence. Prior Phase 8 evidence is historical only.
 
 ### 11.11 Independent external assurance
 **Status:** `PLANNED`
@@ -154,6 +110,7 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 
 ## Immediate sequence
 
-1. Accept **Phase 11.8i exercised upgrade/rollback** only on fully green exact-head CI.
-2. Start **Phase 11.9 migration/compatibility** only after 11.8i is accepted.
-3. Continue 11.10–11.11 in fixed order and enter Phase 12 only after every required Phase 11 gate is accepted.
+1. Accept **Phase 11.9 migration/compatibility** only on fully green exact-head CI with authoritative documentation reconciled.
+2. Start **Phase 11.10 integrated production-equivalent validation** only after 11.9 is accepted.
+3. Run **Phase 11.11 independent external assurance** against the same immutable integrated candidate.
+4. Enter Phase 12 only after every required Phase 11 gate is accepted.
