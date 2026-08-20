@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
+import { AnalysisWorkspace } from './AnalysisWorkspace';
 import { UnifiedIntelligenceWorkspace } from './UnifiedIntelligenceWorkspace';
 
 type Health = {
@@ -73,7 +74,7 @@ const workspaces: WorkspaceDefinition[] = [
   { path: '/intelligence/graph', label: 'Knowledge Graph', group: 'Intelligence', icon: '⌘', title: 'Knowledge Graph', description: 'Graph route governed by DTMO API and provenance boundaries.', delivery: 'OpenCTI graph/entity content is delivered in Phase 11.10f.' },
   { path: '/exposure', label: 'Exposure', group: 'Exposure', icon: '△', title: 'Exposure', description: 'Vulnerability, asset and prioritization workspace foundation.', delivery: 'Exposure feature content is delivered in Phase 11.10i.' },
   { path: '/investigations', label: 'Investigations', group: 'Investigations', icon: '▣', title: 'Investigations', description: 'Cases, alerts, tasks and timeline workspace foundation.', delivery: 'TheHive investigation and case content is delivered in Phase 11.10h.' },
-  { path: '/analysis', label: 'Analysis & Enrichment', group: 'Analysis', icon: '⌁', title: 'Analysis & Enrichment', description: 'Governed analysis and enrichment workspace foundation.', delivery: 'IntelOwl and Cortex analysis content is delivered in Phase 11.10e.' },
+  { path: '/analysis', label: 'Analysis & Enrichment', group: 'Analysis', icon: '⌁', title: 'Analysis & Enrichment', description: 'Governed IntelOwl enrichment and Cortex analyzer workspace.', delivery: 'IntelOwl and Cortex analysis content is delivered in Phase 11.10e.' },
   { path: '/sharing', label: 'Sharing & Exchange', group: 'Sharing', icon: '⇄', title: 'Sharing & Exchange', description: 'Governed exchange, publication and approval workspace foundation.', delivery: 'MISP exchange content is delivered in Phase 11.10g.' },
   { path: '/automation', label: 'Automation & Playbooks', group: 'Automation', icon: '↯', title: 'Automation & Playbooks', description: 'Playbooks, jobs, schedules and approval workspace foundation.', delivery: 'Automation feature content is delivered in Phase 11.10k.' },
   { path: '/collection', label: 'Collection', group: 'Collection', icon: '↓', title: 'Collection', description: 'Sources, connectors, catalog and collection-run workspace foundation.', delivery: 'Collection control-center content is delivered in Phase 11.10j.' },
@@ -343,7 +344,8 @@ export function App() {
             <Route path="/command-center/*" element={<CommandCenter session={session.data} health={health.data} />} />
             <Route path="/intelligence" element={<UnifiedIntelligenceWorkspace />} />
             <Route path="/intelligence/iocs" element={<UnifiedIntelligenceWorkspace mode="ioc" />} />
-            {workspaces.filter((workspace) => !['/command-center', '/intelligence', '/intelligence/iocs'].includes(workspace.path)).map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
+            <Route path="/analysis/*" element={<AnalysisWorkspace />} />
+            {workspaces.filter((workspace) => !['/command-center', '/intelligence', '/intelligence/iocs', '/analysis'].includes(workspace.path)).map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
             <Route path="*" element={<Navigate to="/command-center" replace />} />
           </Routes>
         </main>
