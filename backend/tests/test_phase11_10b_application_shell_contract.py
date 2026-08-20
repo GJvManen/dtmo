@@ -10,8 +10,9 @@ def read(path: str) -> str:
     return (ROOT / path).read_text(encoding="utf-8")
 
 
-def test_canonical_frontend_stack_is_exactly_pinned() -> None:
+def test_canonical_frontend_stack_is_exactly_pinned_and_locked() -> None:
     package = json.loads(read("frontend/package.json"))
+    lock = json.loads(read("frontend/package-lock.json"))
     assert package["private"] is True
     assert package["scripts"]["build"] == "tsc --noEmit && vite build"
     expected = {
@@ -26,6 +27,27 @@ def test_canonical_frontend_stack_is_exactly_pinned() -> None:
         for version in package[section].values():
             assert version[0].isdigit(), f"dependency must be exact-pinned: {version}"
             assert not version.startswith(("^", "~", ">", "<", "*"))
+
+    assert lock["lockfileVersion"] == 3
+    root = lock["packages"][""]
+    assert root["dependencies"] == package["dependencies"]
+    assert root["devDependencies"] == package["devDependencies"]
+    assert lock["packages"]["node_modules/react"]["version"] == package["dependencies"]["react"]
+    assert lock["packages"]["node_modules/react-router-dom"]["version"] == package["dependencies"]["react-router-dom"]
+    assert lock["packages"]["node_modules/@tanstack/react-query"]["version"] == package["dependencies"]["@tanstack/react-query"]
+
+
+def test_supported_build_consumes_committed_lockfile_without_regeneration() -> None:
+    dockerfile = read("Dockerfile")
+    workflow = read(".github/workflows/phase11-application-shell.yml")
+    assert "COPY frontend/package.json frontend/package-lock.json ./" in dockerfile
+    assert "RUN npm ci" in dockerfile
+    assert "npm install --package-lock-only" not in dockerfile
+    assert "cache-dependency-path: frontend/package-lock.json" in workflow
+    assert "npm ci" in workflow
+    assert "Bootstrap lockfile" not in workflow
+    assert "npm install --package-lock-only" not in workflow
+    assert "git diff --exit-code -- frontend/package.json frontend/package-lock.json" in workflow
 
 
 def test_workbench_is_a_real_react_router_shell() -> None:
