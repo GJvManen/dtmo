@@ -19,8 +19,9 @@ This checklist controls the post-Phase-10 industrialisation programme and future
 | Phase 11.10a frontend architecture/design | `PASS / REPOSITORY_COMPLETE` | Repository architecture evidence |
 | Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` | Repository/browser shell evidence |
 | Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser Command Center evidence |
-| Phase 11.10d Unified Intelligence Workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Active repository/browser intelligence evidence |
-| Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED` | Future product evidence |
+| Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser intelligence evidence |
+| Phase 11.10e IntelOwl/Cortex integrated analysis | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Active repository/browser analysis evidence |
+| Phase 11.10f OpenCTI graph/entity workspace | `NOT STARTED` | Future product evidence |
 | Phase 11.10p production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` | Future real-environment evidence |
 | Phase 11.11 independent external assurance | `NOT STARTED` | Independent assurance |
 | Phase 12 | `NOT STARTED` | Future production authorization |
@@ -34,6 +35,7 @@ Historical Phase 8/9 evidence remains candidate-bound and cannot be reused for t
 - Historical evidence is preserved rather than relabelled.
 - Role-aware UI never substitutes for **server-side RBAC**.
 - Human publication/share authority remains separate from TheHive case authority and technical execution.
+- Analyzer output is enrichment evidence, not proof of local compromise.
 - Repository/browser CI **does not prove** live upstream health or production-equivalent operation.
 - Missing, placeholder, inaccessible, historical-only or mixed-candidate evidence must **fail closed**.
 
@@ -56,36 +58,39 @@ Historical Phase 8/9 evidence remains candidate-bound and cannot be reused for t
 - [x] `/ui/console` retained only as a migration **compatibility path**.
 - [x] Responsive navigation, keyboard command palette, context rail, light/dark semantics and CSP accepted.
 - [x] Phase 11.10c canonical Command Center accepted on an exact green head and merged with expected-head protection.
+- [x] Phase 11.10d Unified Intelligence Workspace accepted on an exact green head and merged with expected-head protection.
 
-## 3. Active Phase 11.10d — Unified Intelligence Workspace
+## 3. Active Phase 11.10e — IntelOwl/Cortex integrated analysis
 
 Implementation criteria:
 
-- [x] Functional `/workbench/intelligence` route added inside the accepted canonical shell.
-- [x] Functional `/workbench/intelligence/iocs` route uses the same governed intelligence contracts.
-- [x] Existing `/api/v1/intelligence/search` is reused for server-authorized discovery.
-- [x] Existing `/api/v1/intelligence/{item_id}/workspace` is reused for canonical DTMO object detail and provenance.
-- [x] Search requires explicit submission and supports severity, minimum education relevance and result-limit filters.
-- [x] No synthetic default intelligence is rendered before search.
-- [x] Search dependency failure renders unavailable rather than a synthetic empty result.
-- [x] Canonical-detail failure does not manufacture complete object state from a search hit.
-- [x] Severity, education relevance, confidence/rationale, review status and separate sharing state are rendered where attributable.
-- [x] CVE/known-exploited/vendor/product context and provenance are rendered where recorded.
-- [x] Search and investigation remain read-only; review/share/case/connector/analyzer/admin mutations retain separate authorization.
+- [x] Functional `/workbench/analysis` route added inside the accepted canonical shell.
+- [x] Existing human-authorized IntelOwl execution/history contract retained.
+- [x] `GET /api/v1/analysis/capabilities` added for configured allowlists/capability state without inferred runtime health.
+- [x] `GET /api/v1/analysis/items/{item_id}/history` combines persisted IntelOwl and Cortex evidence for one canonical object.
+- [x] `POST /api/v1/analysis/items/{item_id}/cortex` added as one explicit analyzer-only Cortex execution path.
+- [x] Analysis reads remain protected by server-side `read:intelligence`.
+- [x] IntelOwl/Cortex execution remains protected by server-side `review:intelligence`.
+- [x] Cortex execution retains explicit feature flag, observable/analyzer allowlist and TLP policy checks.
+- [x] Cortex responders, automatic analyzer discovery and automatic IntelOwl fallback remain excluded.
+- [x] Durable `cortex_analysis_records` persistence and migration `0015_cortex_analysis_history` added.
+- [x] Persistence binds canonical object, stable Cortex job identity, analyzer, TLP and requesting principal.
+- [x] Persistence enforces `external_share_authorized=false` and `local_compromise_proven=false`.
+- [x] Read-only principals can inspect evidence but execution controls are not presented as authorized.
+- [x] Dependency/policy/persistence failure paths are fail-closed and do not synthesize successful analysis.
 - [x] Dedicated repository and browser contracts added.
-- [x] Dedicated `Phase 11 Unified Intelligence Workspace Gate` added.
+- [x] Dedicated `Phase 11 Integrated Analysis Workspace Gate` added.
 - [ ] Final exact-head frontend `npm ci`, typecheck and production build are green.
-- [ ] Final exact-head Unified Intelligence repository contract is green.
+- [ ] Final exact-head integrated-analysis repository contract is green.
 - [ ] Final exact-head browser acceptance is green.
 - [ ] Existing security, accessibility, integration, migration, runtime and supply-chain regressions are all green for the same exact head.
 - [ ] Professional current-state, evidence, QA and roadmap documentation is synchronized for the same head.
-- [ ] Phase 11.10d merged with expected-head protection only after every registered exact-head workflow is `completed/success`.
+- [ ] Phase 11.10e merged with expected-head protection only after every registered exact-head workflow is `completed/success`.
 
-Only after these items are complete may **Phase 11.10e IntelOwl/Cortex integrated analysis** start.
+Only after these items are complete may **Phase 11.10f OpenCTI graph/entity workspace** start.
 
 ## 4. Remaining candidate-completion sequence
 
-- [ ] 11.10e IntelOwl/Cortex integrated analysis.
 - [ ] 11.10f OpenCTI graph/entity workspace.
 - [ ] 11.10g MISP Sharing & Exchange.
 - [ ] 11.10h TheHive Investigations & Cases.
