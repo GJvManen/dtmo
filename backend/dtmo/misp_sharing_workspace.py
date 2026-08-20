@@ -12,7 +12,7 @@ from dtmo.auth.policy import Permission, Principal
 from dtmo.config import Settings, get_settings
 from dtmo.persistence.models import IntelligenceItem
 
-router = APIRouter(prefix="/api/v1/sharing", tags=["misp-sharing-workspace"])
+router = APIRouter(prefix="/sharing", tags=["misp-sharing-workspace"])
 
 
 def _safe_restrictions(item: IntelligenceItem) -> dict[str, Any] | None:
