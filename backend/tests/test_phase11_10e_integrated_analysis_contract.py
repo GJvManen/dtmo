@@ -47,16 +47,18 @@ def test_analysis_workspace_preserves_human_authority_and_evidence_boundaries() 
     assert "/api/v1/analysis/items/" in workspace
 
 
-def test_phase11_10e_documentation_status_is_current_and_next_slice_is_preserved() -> None:
+def test_phase11_10e_documentation_status_remains_accepted_during_next_slice() -> None:
     current = read("docs/project/CURRENT_STATE.md")
     roadmap = read("docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md")
     portal = read("docs/README.md")
     evidence = read("docs/evidence/EVIDENCE_INDEX.md")
 
     assert "Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE`" in current
-    assert "Phase 11.10e IntelOwl/Cortex integrated analysis | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
-    assert "Phase 11.10f OpenCTI" in current
+    assert "Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE`" in current
+    assert "Phase 11.10f OpenCTI graph/entity workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
+    assert "Phase 11.10g MISP Sharing & Exchange | `NOT STARTED`" in current
     for text in (roadmap, portal, evidence):
         assert "11.10e" in text
         assert "11.10f" in text
+        assert "11.10g" in text
     assert "not production authorized" in current.lower()
