@@ -117,9 +117,11 @@ def test_browser_does_not_become_an_upstream_integration_client() -> None:
 
 def test_backend_serves_built_shell_and_fails_to_legacy_only_when_dist_is_absent() -> None:
     serving = read("backend/dtmo/workbench_frontend.py")
+    compatibility_root = read("backend/dtmo/vulnerability_console_ui.py")
     main = read("backend/dtmo/main.py")
     for marker in (
         "DTMO_FRONTEND_DIST",
+        "workbench_built",
         'url="/workbench/"',
         'url="/ui/console"',
         '"X-DTMO-Frontend-Mode": "canonical-workbench"',
@@ -129,6 +131,12 @@ def test_backend_serves_built_shell_and_fails_to_legacy_only_when_dist_is_absent
         "object-src 'none'",
     ):
         assert marker in serving
+    for marker in (
+        "from dtmo.workbench_frontend import workbench_built",
+        "if workbench_built():",
+        'RedirectResponse(url="/workbench/", status_code=307',
+    ):
+        assert marker in compatibility_root
     assert "from dtmo.workbench_frontend import router as workbench_frontend_router" in main
     assert main.index("app.include_router(workbench_frontend_router)") < main.index("app.include_router(unified_console_router)")
 
