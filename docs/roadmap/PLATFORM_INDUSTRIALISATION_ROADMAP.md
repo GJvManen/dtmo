@@ -11,18 +11,19 @@ Historical Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE` and 
 
 ## Fixed priority order
 
-1. 11.1–11.2 Taranis AI architecture and canonical adapter.
-2. 11.3 IntelOwl enrichment integration.
-3. 11.4 OpenCTI knowledge-graph integration.
-4. 11.5 MISP consolidation.
-5. 11.6 TheHive incident/case handoff.
-6. 11.7 Cortex decision gate.
-7. 11.7b Cortex analyzer connector.
-8. 11.8 Integrated runtime industrialisation.
-9. 11.9 Migration and compatibility.
-10. 11.10 Candidate completion and fresh production-equivalent validation.
-11. 11.11 Independent external assurance.
-12. Phase 12 — Production GO/NO-GO.
+1. 11.1 Taranis AI architecture/API/data-model/identity/licensing assessment.
+2. 11.2 Taranis → DTMO canonical adapter.
+3. 11.3 IntelOwl enrichment integration.
+4. 11.4 OpenCTI STIX knowledge-graph integration.
+5. 11.5 MISP consolidation and authoritative governed sharing model.
+6. 11.6 TheHive incident/case handoff.
+7. 11.7 Cortex conditional decision gate.
+8. 11.7b owner-required Cortex analyzer connector.
+9. 11.8 Kubernetes/Helm/GitOps plus HA/secrets/network/observability/recovery/supply-chain/capacity/upgrade hardening.
+10. 11.9 migration/compatibility.
+11. 11.10 integrated candidate completion and new production-equivalent validation.
+12. 11.11 new independent external assurance.
+13. Phase 12 formal production GO/NO-GO.
 
 ## Phase 11 — Platform industrialisation
 
