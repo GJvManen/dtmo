@@ -95,8 +95,8 @@ The Unified Operations Workbench materially changes the candidate. Therefore 11.
 - **11.10a Frontend architecture and design contract** — `PASS / REPOSITORY_COMPLETE`;
 - **11.10b Canonical application shell** — `PASS / REPOSITORY_COMPLETE`;
 - **11.10c Command Center** — `PASS / REPOSITORY_COMPLETE`;
-- **11.10d Unified Intelligence Workspace** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
-- **11.10e IntelOwl/Cortex integrated analysis** — `NOT STARTED`;
+- **11.10d Unified Intelligence Workspace** — `PASS / REPOSITORY_COMPLETE`;
+- **11.10e IntelOwl/Cortex integrated analysis** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
 - **11.10f OpenCTI graph/entity workspace** — `NOT STARTED`;
 - **11.10g MISP Sharing & Exchange** — `NOT STARTED`;
 - **11.10h TheHive Investigations & Cases** — `NOT STARTED`;
@@ -131,27 +131,11 @@ Accepted evidence remains:
 
 It never turns a feature flag or API configuration into a `healthy` claim. Persisted execution is shown only as attributable observation. When the canonical datastore is unavailable, metric values remain unavailable rather than synthetic zero values. Role-aware quick-action visibility is usability only and never substitutes for server authorization.
 
-Authoritative 11.10c package:
+#### 11.10d accepted Unified Intelligence Workspace
 
-- `backend/dtmo/command_center.py`;
-- `backend/dtmo/api_command_center.py`;
-- `frontend/src/App.tsx`;
-- `frontend/src/command-center.css`;
-- `docs/architecture/PHASE11_10C_COMMAND_CENTER.md`;
-- `docs/qa/PHASE11_10C_COMMAND_CENTER_GATE.md`;
-- `backend/tests/test_phase11_10c_command_center_contract.py`;
-- `backend/tests/test_phase11_10c_command_center_browser.py`;
-- `.github/workflows/phase11-command-center.yml`.
+11.10d is `PASS / REPOSITORY_COMPLETE`. It migrated governed intelligence discovery and investigation into the canonical workbench and made IOC Explorer a specialized view over the same server-authorized DTMO contracts.
 
-#### 11.10d active Unified Intelligence Workspace
-
-11.10d migrates governed intelligence discovery and investigation into the canonical workbench and makes IOC Explorer a specialized view over the same server-authorized DTMO contracts.
-
-The implementation reuses `GET /api/v1/intelligence/search` for search discovery and `GET /api/v1/intelligence/{item_id}/workspace` for canonical object detail and provenance. It introduces no browser-to-upstream privileged calls and no parallel intelligence backend.
-
-Search results are index projections, not canonical truth. A selected object is retrieved separately from canonical DTMO persistence. Search failure is unavailable rather than a fabricated empty result; canonical-detail failure never promotes incomplete index data into a complete object. A zero-result search does not prove absence from all upstream sources.
-
-The read-only workspace exposes severity, source, education relevance, confidence, review status, separate share-approval state, structured CVE/known-exploited/vendor/product context and provenance where recorded. `read:intelligence` remains the server-side access boundary. Review, dissemination, connector/analyzer execution, case mutation and administration remain separately authorized.
+The implementation reuses `GET /api/v1/intelligence/search` for search discovery and `GET /api/v1/intelligence/{item_id}/workspace` for canonical object detail and provenance. Search results remain index projections, not canonical truth. Dependency failure is unavailable rather than a synthetic result. `read:intelligence` remains the server-side access boundary and the workspace grants no analyzer, sharing, case or administration authority.
 
 Authoritative 11.10d package:
 
@@ -160,11 +144,39 @@ Authoritative 11.10d package:
 - `docs/architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md`;
 - `docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md`;
 - `docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`;
-- `backend/tests/test_phase11_10d_unified_intelligence_workspace_contract.py`;
-- `backend/tests/test_phase11_10d_unified_intelligence_workspace_browser.py`;
 - `.github/workflows/phase11-unified-intelligence-workspace.yml`.
 
-Only after 11.10d is accepted and merged may **11.10e IntelOwl/Cortex integrated analysis** begin.
+#### 11.10e active IntelOwl/Cortex integrated analysis
+
+11.10e replaces the Analysis & Enrichment placeholder with one governed workspace for human-triggered IntelOwl enrichment and analyzer-only Cortex execution against a canonical DTMO object.
+
+The implementation preserves the accepted IntelOwl DTMO route/history and introduces:
+
+- `GET /api/v1/analysis/capabilities` for configured allowlist/capability state without inferred runtime health;
+- `GET /api/v1/analysis/items/{item_id}/history` for combined persisted IntelOwl and Cortex evidence;
+- `POST /api/v1/analysis/items/{item_id}/cortex` for one explicit, feature-gated, allowlisted Cortex analyzer execution;
+- durable `cortex_analysis_records` through `0015_cortex_analysis_history`, chained from `0014_thehive_handoff_state`;
+- `/workbench/analysis` with role-aware read/history and execution controls.
+
+`read:intelligence` protects history/capability reads. Execution requires server-side `review:intelligence`. Cortex remains analyzer-only: responders, automatic analyzer discovery, automatic IntelOwl fallback and other side-effect actions are outside this slice. Persisted Cortex evidence enforces `external_share_authorized=false` and `local_compromise_proven=false`.
+
+Failures must **fail closed**. IntelOwl/Cortex output **does not prove** local compromise, grant external-share/publication/case authority, or establish live upstream health.
+
+Authoritative 11.10e package:
+
+- `backend/dtmo/intelowl_execution.py`;
+- `backend/dtmo/persistence/cortex.py`;
+- `database/migrations/versions/0015_cortex_analysis_history.py`;
+- `frontend/src/AnalysisWorkspace.tsx`;
+- `frontend/src/analysis-workspace.css`;
+- `docs/architecture/PHASE11_10E_INTEGRATED_ANALYSIS_WORKSPACE.md`;
+- `docs/user/INTEGRATED_ANALYSIS_WORKSPACE.md`;
+- `docs/qa/PHASE11_10E_INTEGRATED_ANALYSIS_GATE.md`;
+- `backend/tests/test_phase11_10e_integrated_analysis_contract.py`;
+- `backend/tests/test_phase11_10e_integrated_analysis_browser.py`;
+- `.github/workflows/phase11-integrated-analysis-workspace.yml`.
+
+Only after 11.10e is accepted and merged may **11.10f OpenCTI graph/entity workspace** begin.
 
 #### 11.10p Fresh production-equivalent validation
 
@@ -193,9 +205,9 @@ A production `GO` requires accepted 11.10 and 11.11 evidence for the same releas
 
 ## Immediate sequence
 
-1. Complete **11.10d Unified Intelligence Workspace** on one exact green head and merge with expected-head protection.
-2. Start **11.10e IntelOwl/Cortex integrated analysis** only after 11.10d is merged.
-3. Continue 11.10f–11.10o one bounded green PR at a time.
+1. Complete **11.10e IntelOwl/Cortex integrated analysis** on one exact green head and merge with expected-head protection.
+2. Start **11.10f OpenCTI graph/entity workspace** only after 11.10e is merged.
+3. Continue 11.10g–11.10o one bounded green PR at a time.
 4. Freeze one immutable candidate and execute **11.10p**.
 5. Complete fresh **Phase 11.11** independent assurance for that same candidate.
 6. Enter **Phase 12** only after 11.10 and 11.11 are accepted.

@@ -7,22 +7,23 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 DTMO protects confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence. Source trust, identity, authorization, evidence and human decision boundaries remain explicit and enforceable.
 
-DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9 and Phase 11.10a–11.10c are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**; the active bounded gate is **Phase 11.10d Unified Intelligence Workspace**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10e, Phase 11.11 and Phase 12 are `NOT STARTED`.
+DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9 and Phase 11.10a–11.10d are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**; the active bounded gate is **Phase 11.10e IntelOwl/Cortex integrated analysis**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10f, Phase 11.11 and Phase 12 are `NOT STARTED`.
 
 ## Identity and access control
 
 - **Server-side RBAC remains authoritative.**
 - Human and service identities remain separate.
-- `read:intelligence` controls Unified Intelligence discovery and canonical object reading.
+- `read:intelligence` controls intelligence discovery, canonical object reading and integrated-analysis history/capability reads.
+- `review:intelligence` controls explicit IntelOwl/Cortex analyzer execution in the active 11.10e workspace.
 - `handoff:case` remains distinct from `approve:share`.
-- Connectors, CI identities, Kubernetes service accounts, frontend controls and integrated platforms do not receive human publication/share or case-handoff authority.
+- Connectors, analyzers, CI identities, Kubernetes service accounts, frontend controls and integrated platforms do not receive human publication/share or case-handoff authority.
 - Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/API/licensing/provider boundaries.
 - Enrichment, graph, exchange, case, build, deployment or evidence state does not establish DTMO-local exposure, exploitability or compromise.
 - Missing, conflicting or unverifiable mandatory evidence must **fail closed**.
 
 ## Separation of duties
 
-Human publication/share approval, case handoff, service execution, CI build identity, deployment, validation review, release signing and production authorization remain distinct authority domains. A connector, analyzer, Kubernetes workload, browser control, CI job, signed artifact or evidence validator cannot self-grant analyst approval or production authority.
+Human publication/share approval, case handoff, analyzer execution, CI build identity, deployment, validation review, release signing and production authorization remain distinct authority domains. A connector, analyzer, Kubernetes workload, browser control, CI job, signed artifact or evidence validator cannot self-grant analyst approval or production authority.
 
 ## Accepted Phase 11 security baseline
 
@@ -36,33 +37,36 @@ Phase 11.10b accepted the separately built React/TypeScript/Vite `/workbench/` s
 
 Phase 11.10c accepted the read-only canonical Command Center with fail-closed canonical metrics, explicit separation between configuration and runtime observation, and no new review/share/case/connector/admin authority.
 
+Phase 11.10d accepted the read-only Unified Intelligence Workspace. Search results remain discovery projections, canonical detail/provenance comes from DTMO persistence, and dependency failure is not converted into synthetic state.
+
 These are repository engineering controls and do not prove provider enforcement, live availability, successful recovery, production-equivalent operation or production authorization.
 
-## Active Phase 11.10d Unified Intelligence security boundary
+## Active Phase 11.10e integrated-analysis security boundary
 
-The Unified Intelligence Workspace is **read-only**. `/api/v1/intelligence/search` and `/api/v1/intelligence/{item_id}/workspace` require server-side `READ_INTELLIGENCE`/`read:intelligence` authority and do not grant review, share, publication, case, connector, analyzer or administrative mutation authority.
+The Analysis & Enrichment workspace is governed by server-side DTMO APIs. Capability/history reads require `read:intelligence`; IntelOwl/Cortex execution requires `review:intelligence`. UI state does not create authorization.
 
 Security invariants:
 
-- browser requests remain same-origin DTMO API calls rather than direct privileged Taranis, IntelOwl, OpenCTI, MISP, TheHive or Cortex calls;
+- browser requests remain same-origin DTMO API calls rather than direct privileged IntelOwl/Cortex calls;
 - no upstream secret, bearer token, private key or human approval authority is stored as ordinary frontend state;
-- search results are discovery/index projections and are not silently promoted to canonical truth;
-- selected object detail and provenance are retrieved separately from canonical DTMO persistence;
-- no demonstration or synthetic intelligence is fabricated before an explicit user search;
-- search dependency failure is rendered unavailable rather than converted into a synthetic empty result;
-- canonical-detail failure does not reconstruct missing fields from the search hit;
-- a zero-result search does not prove absence from all upstream sources;
-- severity, confidence, review status, sharing state, contextual CVEs/KEV/vendor/product data and provenance are shown only where attributable;
-- role-aware visibility is convenience only and never replaces server-side authorization;
+- IntelOwl keeps its existing feature flag, handling policy, observable/analyzer allowlists, disclosure controls and result-size limits;
+- Cortex keeps its feature flag, explicit observable/analyzer allowlists, TLP checks, stable job/analyzer identity checks and result-size bounds;
+- Cortex remains **analyzer-only**; responders, automatic analyzer discovery, files/attachments, administration and automatic IntelOwl fallback remain outside the active scope;
+- `GET /api/v1/analysis/capabilities` exposes configuration/capability state only and never converts it into a runtime-health claim;
+- Cortex analysis history is durably bound to the canonical DTMO object and stable Cortex job identity;
+- persistence enforces `external_share_authorized=false` and `local_compromise_proven=false`;
+- IntelOwl/Cortex output is evidence, not a verdict, and does **not prove** local compromise by itself;
+- read-only principals may inspect history but execution controls are not presented as authorized;
+- policy, canonical-object, upstream or persistence failure is surfaced as failure/unavailable and must **fail closed** rather than synthesize a successful result;
 - repository/browser mocks remain engineering evidence only.
 
-The dedicated Phase 11 Unified Intelligence Workspace Gate may prove exact-head repository contracts, typecheck/build, deterministic search/detail/provenance browser behavior and fail-closed UI handling. It **does not prove** live upstream completeness or health, production-equivalent operation, independent assurance or production authorization.
+The dedicated Phase 11 Integrated Analysis Workspace Gate may prove exact-head repository contracts, typecheck/build, durable evidence invariants, role-aware browser behavior and fail-closed UI handling. It **does not prove** live IntelOwl/Cortex health, analyzer/provider authorization, production-equivalent operation, independent assurance or production authorization.
 
 ## Threat and vulnerability management
 
 Vulnerability findings remain provenance-bound evidence. A green scan does not establish absence of unknown vulnerabilities; a governed finding cannot be silently suppressed. Exceptions must remain accountable, time-bounded and bound to the exact artifact/finding identity.
 
-Frontend production dependency audit, container/package SBOMs and vulnerability controls remain regression gates during 11.10d. They do not establish vulnerability absence or production readiness.
+Frontend production dependency audit, container/package SBOMs and vulnerability controls remain regression gates during 11.10e. They do not establish vulnerability absence or production readiness.
 
 ## Secrets and signing identities
 

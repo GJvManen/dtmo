@@ -33,8 +33,9 @@ DTMO separates repository engineering evidence, accountable functional acceptanc
 | Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10d Unified Intelligence Workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED` |
+| Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10e IntelOwl/Cortex integrated analysis | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.10f OpenCTI graph/entity workspace | `NOT STARTED` |
 | Phase 11.10p production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 | `NOT STARTED` |
@@ -55,8 +56,9 @@ DTMO is **not production authorized**.
 | Frontend architecture/design | Canonical workbench and UI/API trust path | Phase 11.10a repository evidence |
 | Canonical application shell | Build, route, CSP, responsive shell and browser mechanics | Phase 11.10b repository/browser evidence |
 | Command Center | Canonical read model, fail-closed metrics, role-aware visibility and browser experience | Accepted Phase 11.10c repository/browser evidence |
-| Unified Intelligence Workspace | Governed search, IOC-oriented discovery, canonical detail/provenance and fail-closed browser behavior | Active Phase 11.10d repository/browser evidence |
-| Candidate workspaces | Bounded workbench capabilities, browser E2E, RBAC, accessibility | Phase 11.10e–11.10o repository/owner evidence |
+| Unified Intelligence Workspace | Governed search, IOC-oriented discovery, canonical detail/provenance and fail-closed browser behavior | Accepted Phase 11.10d repository/browser evidence |
+| Integrated Analysis Workspace | Human-triggered IntelOwl/Cortex execution, immutable evidence history, server RBAC and no-verdict boundary | Active Phase 11.10e repository/browser evidence |
+| Candidate workspaces | Bounded workbench capabilities, browser E2E, RBAC, accessibility | Phase 11.10f–11.10o repository/owner evidence |
 | Production-equivalent validation | Same-candidate migration/upgrade/rollback/health/saturation/recovery | Phase 11.10p real-environment evidence |
 | Independent assurance | Independent assessment of integrated candidate | Phase 11.11 |
 | Production decision | Formal accountable GO/NO-GO | Phase 12 |
@@ -106,29 +108,38 @@ The accepted exact-head contract proves repository-controlled behavior for `/api
 
 Repository acceptance **does not prove** upstream service health, production-equivalent operation, independent assurance or production authorization.
 
-## Active Phase 11.10d Unified Intelligence Workspace gate
+## Accepted Phase 11.10d Unified Intelligence Workspace gate
 
 Dedicated gate: `docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`  
 Workflow: `.github/workflows/phase11-unified-intelligence-workspace.yml`
 
-The final exact head must prove:
-
-- `/workbench/intelligence` is a functional read-only intelligence discovery/investigation route;
-- `/workbench/intelligence/iocs` uses the same governed DTMO contracts for indicator-oriented discovery;
-- `/api/v1/intelligence/search` remains protected by server-side `read:intelligence` and is used for discovery only;
-- `/api/v1/intelligence/{item_id}/workspace` remains the canonical DTMO detail/provenance source;
-- explicit query, severity, minimum education-relevance and result-limit controls render and function;
-- no synthetic records appear before explicit search;
-- a search dependency failure renders **Search service unavailable** rather than an empty-result claim;
-- selected detail exposes attributable severity, confidence/rationale, review status, separate sharing state, structured context and provenance where recorded;
-- canonical-detail failure does not reconstruct a complete object from search-hit data;
-- browser code adds no privileged direct upstream calls and grants no review/share/case/connector/analyzer/admin mutation authority;
-- frontend typecheck/build and deterministic search→detail/provenance browser acceptance succeed;
-- professional current-state, evidence and roadmap documentation is synchronized.
+The accepted contract covers functional read-only `/workbench/intelligence` and `/workbench/intelligence/iocs`, governed `/api/v1/intelligence/search` discovery, canonical `/api/v1/intelligence/{item_id}/workspace` detail/provenance, explicit search/filter controls, fail-closed dependency behavior and deterministic browser acceptance. Server-side `read:intelligence` remains authoritative and search/object investigation grants no review/share/case/connector/analyzer/admin mutation authority.
 
 Repository/browser acceptance **does not prove** upstream completeness or health, production-equivalent operation, independent assurance or production authorization.
 
-After 11.10d exact-head acceptance and merge, the only next bounded priority is **Phase 11.10e IntelOwl/Cortex integrated analysis**.
+## Active Phase 11.10e Integrated Analysis Workspace gate
+
+Dedicated gate: `docs/qa/PHASE11_10E_INTEGRATED_ANALYSIS_GATE.md`  
+Workflow: `.github/workflows/phase11-integrated-analysis-workspace.yml`
+
+The final exact head must prove:
+
+- `/workbench/analysis` renders one canonical Analysis & Enrichment workspace;
+- `GET /api/v1/analysis/capabilities` exposes configured allowlists/capability state but never promotes configuration to runtime health;
+- `GET /api/v1/analysis/items/{item_id}/history` combines persisted IntelOwl and Cortex evidence for one canonical item;
+- the existing IntelOwl enrichment route remains server-authorized by `review:intelligence` and retains its policy/persistence controls;
+- `POST /api/v1/analysis/items/{item_id}/cortex` is analyzer-only, feature-gated, allowlist/TLP validated and server-authorized by `review:intelligence`;
+- migration `0015_cortex_analysis_history` is connected to `0014_thehive_handoff_state` and durable Cortex records are idempotent by item/job identity;
+- persisted Cortex results enforce `external_share_authorized=false` and `local_compromise_proven=false`;
+- Cortex responders, automatic analyzer discovery and automatic IntelOwl fallback remain outside scope;
+- read-only principals can inspect history but are not presented with authorized execution controls;
+- dependency/policy/persistence failures **fail closed** and no synthetic successful analysis is fabricated;
+- frontend typecheck/build and deterministic browser acceptance succeed;
+- professional current-state, evidence and roadmap documentation is synchronized.
+
+IntelOwl/Cortex analyzer output **does not prove** local compromise and grants no external-share, publication, case or production authority. Repository/browser acceptance does not prove live upstream availability/provider authorization, production-equivalent operation, independent assurance or production authorization.
+
+After 11.10e exact-head acceptance and merge, the only next bounded priority is **Phase 11.10f OpenCTI graph/entity workspace**.
 
 ## Phase 11.10p production-equivalent gate
 

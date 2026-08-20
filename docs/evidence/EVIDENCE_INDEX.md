@@ -8,7 +8,7 @@ This index maps current lifecycle stages to authoritative evidence classes and r
 
 ## Current lifecycle
 
-Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; **E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`**. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11.1–11.9 and Phase 11.10a–11.10c are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10d Unified Intelligence Workspace** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10e, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
+Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; **E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`**. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11.1–11.9 and Phase 11.10a–11.10d are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10e IntelOwl/Cortex integrated analysis** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10f, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
 
 ## Evidence hierarchy
 
@@ -108,9 +108,9 @@ The Command Center is a read-only canonical projection. Missing canonical-store 
 
 ### 11.10d Unified Intelligence Workspace
 
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Authoritative active chain:
+Accepted chain:
 
 - `frontend/src/UnifiedIntelligenceWorkspace.tsx`;
 - `frontend/src/unified-intelligence.css`;
@@ -121,13 +121,33 @@ Authoritative active chain:
 - `backend/tests/test_phase11_10d_unified_intelligence_workspace_browser.py`;
 - `.github/workflows/phase11-unified-intelligence-workspace.yml`.
 
-11.10d reuses the governed `/api/v1/intelligence/search` discovery contract and `/api/v1/intelligence/{item_id}/workspace` canonical-detail/provenance contract. Search hits are index projections. Selecting an item retrieves canonical DTMO persistence separately. Search or detail dependency failure is unavailable and must **fail closed**; no synthetic empty or complete object is manufactured. `read:intelligence` remains server-authoritative and no review, sharing, publication, analyzer/connector execution, case mutation or administration authority is granted.
+11.10d reuses the governed `/api/v1/intelligence/search` discovery contract and `/api/v1/intelligence/{item_id}/workspace` canonical-detail/provenance contract. Search hits are index projections. Search or detail dependency failure is unavailable and must **fail closed**. `read:intelligence` remains server-authoritative and no review, sharing, publication, analyzer/connector execution, case mutation or administration authority is granted.
 
-Repository/browser evidence for this gate **does not prove** live upstream completeness or health, production-equivalent operation, independent assurance or production authorization.
+### 11.10e IntelOwl/Cortex integrated analysis
+
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+
+Authoritative active chain:
+
+- `backend/dtmo/intelowl_execution.py`;
+- `backend/dtmo/persistence/cortex.py`;
+- `database/migrations/versions/0015_cortex_analysis_history.py`;
+- `frontend/src/AnalysisWorkspace.tsx`;
+- `frontend/src/analysis-workspace.css`;
+- `docs/architecture/PHASE11_10E_INTEGRATED_ANALYSIS_WORKSPACE.md`;
+- `docs/user/INTEGRATED_ANALYSIS_WORKSPACE.md`;
+- `docs/qa/PHASE11_10E_INTEGRATED_ANALYSIS_GATE.md`;
+- `backend/tests/test_phase11_10e_integrated_analysis_contract.py`;
+- `backend/tests/test_phase11_10e_integrated_analysis_browser.py`;
+- `.github/workflows/phase11-integrated-analysis-workspace.yml`.
+
+The workspace preserves the existing governed IntelOwl execution/history contract and adds a DTMO Cortex analyzer-only execution/history path with durable immutable persistence. `read:intelligence` authorizes capability/history reads; `review:intelligence` is required for execution. Cortex responders, automatic analyzer discovery and automatic IntelOwl fallback remain prohibited. Persisted analyzer evidence is constrained to `external_share_authorized=false` and `local_compromise_proven=false`.
+
+The workflow must **fail closed** on missing canonical data, policy rejection or upstream failure. Configuration is not a runtime-health claim. IntelOwl/Cortex output **does not prove** local compromise, grants no external-share/publication/case authority, and repository/browser evidence does not prove live analyzer availability, production-equivalent operation, independent assurance or production authorization.
 
 ### Candidate-completion order
 
-11.10e IntelOwl/Cortex, 11.10f OpenCTI, 11.10g MISP, 11.10h TheHive, 11.10i Vulnerability & Exposure, 11.10j Sources & Collection, 11.10k Automation & Playbooks, 11.10l Governance & Evidence, 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance remain `NOT STARTED`.
+11.10f OpenCTI, 11.10g MISP, 11.10h TheHive, 11.10i Vulnerability & Exposure, 11.10j Sources & Collection, 11.10k Automation & Playbooks, 11.10l Governance & Evidence, 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance remain `NOT STARTED`.
 
 ## Phase 11.10p production-equivalent evidence
 

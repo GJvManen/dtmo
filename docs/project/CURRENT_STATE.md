@@ -7,9 +7,9 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9, Phase 11.10a, Phase 11.10b and Phase 11.10c are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a–11.10d are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The sole active bounded objective is **Phase 11.10d Unified Intelligence Workspace**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10c delivered the accepted canonical Command Center. Phase 11.10d migrates governed intelligence search, IOC-oriented discovery, canonical object detail and provenance into the same React/TypeScript/Vite workbench without introducing browser-to-upstream privileged calls. Fresh production-equivalent execution remains deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
+The sole active bounded objective is **Phase 11.10e IntelOwl/Cortex integrated analysis**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10d delivered the accepted Unified Intelligence Workspace. Phase 11.10e integrates human-triggered IntelOwl enrichment and analyzer-only Cortex execution/history into the same canonical React/TypeScript/Vite workbench while preserving server-side RBAC, explicit analyzer allowlists, immutable evidence history and the prohibition on inferring local compromise or external-share authority from analyzer output. Fresh production-equivalent execution remains deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
 
 ## Lifecycle position
 
@@ -44,8 +44,8 @@ The sole active bounded objective is **Phase 11.10d Unified Intelligence Workspa
 | Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10d Unified Intelligence Workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED` |
+| Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10e IntelOwl/Cortex integrated analysis | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.10f OpenCTI graph/entity workspace | `NOT STARTED` |
 | Phase 11.10g MISP Sharing & Exchange | `NOT STARTED` |
 | Phase 11.10h TheHive Investigations & Cases | `NOT STARTED` |
@@ -120,9 +120,9 @@ Authoritative Phase 11.10c material:
 
 Phase 11.10c grants no review, sharing, case, connector or administration authority. Repository CI for that slice does not prove live upstream health, production-equivalent operation, independent assurance or production authorization.
 
-## Active Phase 11.10d Unified Intelligence Workspace boundary
+## Accepted Phase 11.10d Unified Intelligence Workspace boundary
 
-Phase 11.10d replaces the Threat Intelligence placeholder with a functional read-only discovery and investigation workspace and delivers IOC Explorer as an indicator-oriented view over the same governed contracts.
+Phase 11.10d is `PASS / REPOSITORY_COMPLETE`. It replaces the Threat Intelligence placeholder with a functional read-only discovery and investigation workspace and delivers IOC Explorer as an indicator-oriented view over the same governed contracts.
 
 The browser uses:
 
@@ -144,9 +144,44 @@ Authoritative Phase 11.10d material:
 - `backend/tests/test_phase11_10d_unified_intelligence_workspace_browser.py`;
 - `.github/workflows/phase11-unified-intelligence-workspace.yml`.
 
-Repository/browser CI **does not prove** live upstream completeness or health, production-equivalent operation, independent assurance or production authorization.
+Repository/browser CI for 11.10d does not prove live upstream completeness or health, production-equivalent operation, independent assurance or production authorization.
 
-After Phase 11.10d exact-head acceptance and merge, the only next bounded priority is **Phase 11.10e — IntelOwl/Cortex Integrated Analysis**.
+## Active Phase 11.10e IntelOwl/Cortex integrated analysis boundary
+
+Phase 11.10e replaces the Analysis & Enrichment shell placeholder with a functional governed workspace at `/workbench/analysis`.
+
+The slice preserves the existing IntelOwl DTMO execution/history contract and adds a browser-facing, analyzer-only Cortex DTMO API plus durable Cortex history. The integrated history endpoint presents both evidence streams against one canonical intelligence object.
+
+Core controls are:
+
+- `GET /api/v1/analysis/capabilities` requires `read:intelligence` and exposes configured capability/allowlist state without claiming runtime health;
+- `GET /api/v1/analysis/items/{item_id}/history` requires `read:intelligence` and returns persisted IntelOwl/Cortex evidence;
+- `POST /api/v1/intelowl/items/{item_id}/enrich` remains the existing human-authorized IntelOwl route;
+- `POST /api/v1/analysis/items/{item_id}/cortex` requires `review:intelligence` and executes one explicit allowlisted Cortex analyzer;
+- migration `0015_cortex_analysis_history` adds durable Cortex result history chained from `0014_thehive_handoff_state`;
+- persisted Cortex evidence is constrained to `external_share_authorized=false` and `local_compromise_proven=false`;
+- Cortex responders, automatic analyzer discovery, automatic IntelOwl fallback and other side-effect actions remain outside the slice;
+- failed history or execution is rendered unavailable and must **fail closed** rather than synthesizing a result.
+
+The browser is not a privileged upstream client. Server-side RBAC remains authoritative; read-only principals may inspect evidence but cannot use the execution controls as authorized actions.
+
+Authoritative Phase 11.10e material:
+
+- `backend/dtmo/intelowl_execution.py`;
+- `backend/dtmo/persistence/cortex.py`;
+- `database/migrations/versions/0015_cortex_analysis_history.py`;
+- `frontend/src/AnalysisWorkspace.tsx`;
+- `frontend/src/analysis-workspace.css`;
+- `docs/architecture/PHASE11_10E_INTEGRATED_ANALYSIS_WORKSPACE.md`;
+- `docs/user/INTEGRATED_ANALYSIS_WORKSPACE.md`;
+- `docs/qa/PHASE11_10E_INTEGRATED_ANALYSIS_GATE.md`;
+- `backend/tests/test_phase11_10e_integrated_analysis_contract.py`;
+- `backend/tests/test_phase11_10e_integrated_analysis_browser.py`;
+- `.github/workflows/phase11-integrated-analysis-workspace.yml`.
+
+IntelOwl and Cortex output is evidence, not a verdict: it does **not prove** local compromise and grants no external-share, publication, case or production authority. Repository/browser CI does not prove live analyzer/provider availability, production-equivalent operation, independent assurance or production authorization.
+
+After Phase 11.10e exact-head acceptance and merge, the only next bounded priority is **Phase 11.10f — OpenCTI graph/entity workspace**.
 
 ## Phase 11.10 external validation boundary
 

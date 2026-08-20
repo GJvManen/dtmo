@@ -109,7 +109,8 @@ def test_workbench_defines_candidate_completion_sequence() -> None:
         "11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`",
         "11.10b canonical application shell — `PASS / REPOSITORY_COMPLETE`",
         "11.10c Command Center — `PASS / REPOSITORY_COMPLETE`",
-        "11.10d Unified Intelligence Workspace — active",
+        "11.10d Unified Intelligence Workspace — `PASS / REPOSITORY_COMPLETE`",
+        "11.10e IntelOwl/Cortex integrated analysis — active",
         "11.10o consolidation/full functional acceptance",
         "11.10p fresh production-equivalent exercise",
         "Phase 11.11 remains blocked until 11.10p is explicitly accepted",
@@ -125,20 +126,24 @@ def test_authoritative_surfaces_preserve_accepted_architecture_and_current_slice
         assert "11.10b" in text, f"11.10b is not exposed in {path.relative_to(ROOT)}"
         assert "11.10c" in text, f"11.10c is not exposed in {path.relative_to(ROOT)}"
         assert "11.10d" in text, f"11.10d is not exposed in {path.relative_to(ROOT)}"
+        assert "11.10e" in text, f"11.10e is not exposed in {path.relative_to(ROOT)}"
         assert "not production authorized" in text.lower() or "does not authorize production" in text.lower() or "production authorization" in text.lower()
 
     current = _read(CURRENT_STATE)
     assert "Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE`" in current
-    assert "Phase 11.10d Unified Intelligence Workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
-    assert "Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED`" in current
+    assert "Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE`" in current
+    assert "Phase 11.10e IntelOwl/Cortex integrated analysis | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
+    assert "Phase 11.10f OpenCTI graph/entity workspace | `NOT STARTED`" in current
 
     roadmap = _read(ROADMAP)
     assert "11.10a Frontend architecture and design contract" in roadmap
     assert "11.10b Canonical application shell" in roadmap
     assert "11.10c Command Center" in roadmap
     assert "11.10d Unified Intelligence Workspace" in roadmap
+    assert "11.10e IntelOwl/Cortex integrated analysis" in roadmap
+    assert "11.10f OpenCTI" in roadmap
     assert "11.10p Fresh production-equivalent validation" in roadmap
 
 
