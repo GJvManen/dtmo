@@ -5,7 +5,7 @@ from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -36,7 +36,7 @@ class OpenCTIGraphNode(BaseModel):
     entity_type: str
     stix_id: str | None = None
     confidence: int | None = None
-    markings: list[dict[str, Any]] = []
+    markings: list[dict[str, Any]] = Field(default_factory=list)
     last_seen_at: datetime | None = None
 
 
