@@ -1,6 +1,6 @@
 # DTMO Unified Operations Workbench
 
-Status: **Phase 11.10a PASS / REPOSITORY_COMPLETE; Phase 11.10b PASS / REPOSITORY_COMPLETE; Phase 11.10c IN PROGRESS / COMMAND CENTER**  
+Status: **Phase 11.10a PASS / REPOSITORY_COMPLETE; Phase 11.10b PASS / REPOSITORY_COMPLETE; Phase 11.10c PASS / REPOSITORY_COMPLETE; Phase 11.10d IN PROGRESS / UNIFIED INTELLIGENCE**  
 Visual reference: approved next-generation command-center concept (design target only, not evidence).
 
 ## Purpose
@@ -20,7 +20,9 @@ The workbench follows a stable four-zone composition:
 
 Phase 11.10b accepted this shell foundation under `/workbench/`. The command palette is navigation-only in the accepted shell, the context rail starts with an explicit no-selection state and later workspace routes do not fabricate feature data.
 
-Phase 11.10c implements the first functional workspace: the Command Center. Its KPI layer, recent-intelligence view, integration capability view, role-aware navigation and workflow orientation use attributable DTMO read models and explicit degraded/unavailable states.
+Phase 11.10c accepted the first functional workspace: the Command Center. Its KPI layer, recent-intelligence view, integration capability view, role-aware navigation and workflow orientation use attributable DTMO read models and explicit degraded/unavailable states.
+
+Phase 11.10d is the active functional migration of Threat Intelligence and IOC Explorer. It reuses governed DTMO search and canonical-detail/provenance APIs rather than introducing direct browser-to-upstream access or a second intelligence backend.
 
 ## Primary journey
 
@@ -47,7 +49,7 @@ The normal journey remains inside DTMO.
 
 ## Command Center
 
-The active Phase 11.10c Command Center provides a truthful operational picture, not decorative pseudo-data.
+The accepted Phase 11.10c Command Center provides a truthful operational picture, not decorative pseudo-data.
 
 ### KPI layer
 
@@ -64,7 +66,7 @@ A missing canonical datastore produces `unavailable`/`null`, not synthetic zero 
 
 ### Threat intelligence panel
 
-Phase 11.10c includes recent canonical intelligence with source, severity, education relevance, review state and discovery time. Later bounded slices may add trend, campaign/actor, vulnerability and geographic context only where attributable data contracts exist.
+Phase 11.10c includes recent canonical intelligence with source, severity, education relevance, review state and discovery time. Phase 11.10d now provides the deeper governed intelligence discovery/investigation workspace.
 
 ### Security operations panel
 
@@ -77,6 +79,21 @@ Phase 11.10c shows governed capability/configuration state for Taranis AI, Intel
 ### Quick actions
 
 Phase 11.10c exposes role-aware navigation based on server-issued permissions. Visibility is usability only. Review, analysis, source execution, case handoff, sharing and administration remain separately server-authorized.
+
+## Unified Intelligence Workspace
+
+Phase 11.10d provides functional `/workbench/intelligence` and `/workbench/intelligence/iocs` routes.
+
+The workspace deliberately separates two evidence layers:
+
+1. **discovery projection** — `/api/v1/intelligence/search` returns indexed search results;
+2. **canonical investigation** — `/api/v1/intelligence/{item_id}/workspace` returns the selected DTMO object and provenance from canonical persistence.
+
+The interface exposes explicit query submission, severity, minimum education relevance and result-limit filters. It does not fabricate demonstration intelligence before search. A search failure is shown as unavailable rather than as an empty dataset, and a canonical-detail failure does not reconstruct missing object fields from the search result.
+
+Where attributable data exists, the detail surface exposes severity, source, education relevance, confidence/rationale, review status, separate share-approval state, CVE/known-exploited/vendor/product context, tags and provenance. A zero-result query means only that the governed DTMO index returned no match; it does not prove absence from every upstream source.
+
+Both routes remain read-only and use server-side `read:intelligence`. Search or selection grants no review, publication/share approval, connector/analyzer execution, case mutation or administration authority.
 
 ## Object-centric workspace
 
@@ -93,7 +110,7 @@ Every compatible canonical object should open a shared context model with tabs s
 
 The right context rail may expose counts/status from IntelOwl, Cortex, OpenCTI, MISP and TheHive without requiring a separate upstream login. Until a bounded feature slice supplies attributable data, the rail must state that no object is selected rather than infer facts.
 
-The complete object-centric intelligence experience begins in **Phase 11.10d Unified Intelligence Workspace**, only after 11.10c is accepted and merged.
+The object-centric intelligence experience begins with **Phase 11.10d Unified Intelligence Workspace**. Later 11.10e–11.10h slices add governed analysis, graph, exchange and case capabilities without bypassing the DTMO API boundary.
 
 ## Integrated capability expectations
 
@@ -172,9 +189,9 @@ The interface programme is executed as bounded Phase 11.10 candidate-completion 
 
 - 11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`;
 - 11.10b canonical application shell — `PASS / REPOSITORY_COMPLETE`;
-- 11.10c Command Center — active;
-- 11.10d Unified Intelligence Workspace — next after 11.10c acceptance/merge;
-- 11.10e IntelOwl/Cortex analysis;
+- 11.10c Command Center — `PASS / REPOSITORY_COMPLETE`;
+- 11.10d Unified Intelligence Workspace — active;
+- 11.10e IntelOwl/Cortex analysis — next after 11.10d acceptance/merge;
 - 11.10f OpenCTI graph/entity workspace;
 - 11.10g MISP Sharing & Exchange;
 - 11.10h TheHive Investigations & Cases;
@@ -191,4 +208,4 @@ Phase 11.11 remains blocked until 11.10p is explicitly accepted.
 
 ## Evidence boundary
 
-This document is product/UX architecture. The graphical reference and repository documentation are not evidence of live integration, staging acceptance, production-equivalent validation or production authorization. Repository/browser CI for 11.10c does not prove live upstream service health.
+This document is product/UX architecture. The graphical reference and repository documentation are not evidence of live integration, staging acceptance, production-equivalent validation or production authorization. Repository/browser CI for 11.10d does not prove live upstream completeness or service health.
