@@ -69,6 +69,7 @@ STABLE_DOCUMENTS = (
     "docs/qa/PHASE11_8E_OBSERVABILITY_GATE.md",
     "docs/qa/PHASE11_8F_RECOVERY_GATE.md",
     "docs/qa/PHASE11_8G_SUPPLY_CHAIN_GATE.md",
+    "docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md",
     "docs/roadmap/PRODUCTION_ROADMAP.md",
     "docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md",
     "docs/production/PHASE10_PRODUCTION_GO_NO_GO.md",
@@ -196,8 +197,8 @@ def test_current_professional_lifecycle_is_consistent() -> None:
             "Phase 11.8g software supply-chain hardening | `PASS / REPOSITORY_COMPLETE`",
             "Phase 11.8h capacity / resource planning | `PASS / REPOSITORY_COMPLETE`",
             "Phase 11.8i exercised upgrade / rollback | `PASS / REPOSITORY_COMPLETE`",
-            "Phase 11.9 migration/compatibility | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
-            "Phase 11.10 production-equivalent validation | `NOT STARTED`",
+            "Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE`",
+            "Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`",
             "Phase 11.11 independent external assurance | `NOT STARTED`",
             "Phase 12 | `NOT STARTED`",
         ),
@@ -215,13 +216,15 @@ def test_current_professional_lifecycle_is_consistent() -> None:
             "11.8e Observability hardening", "11.8f Backup, restore and recovery hardening",
             "11.8g Software supply-chain hardening", "11.8h Capacity and resource planning",
             "11.8i Exercised upgrade and rollback", "11.9 Migration and compatibility",
-            "**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+            "11.10 Integrated production-equivalent validation",
+            "**Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`",
             "Phase 12 — Production GO/NO-GO",
         ),
     )
     roadmap = _read("docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md")
     assert "#### 11.8i Exercised upgrade and rollback\n**Status:** `PASS / REPOSITORY_COMPLETE`" in roadmap
-    assert "### 11.9 Migration and compatibility\n**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in roadmap
+    assert "### 11.9 Migration and compatibility\n**Status:** `PASS / REPOSITORY_COMPLETE`" in roadmap
+    assert "### 11.10 Integrated production-equivalent validation\n**Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`" in roadmap
 
 
 def test_accepted_integration_documents_remain_exposed() -> None:
@@ -304,7 +307,20 @@ def test_documentation_portal_exposes_guides_and_visual_evidence_boundary() -> N
             "PHASE11_8D_HA_DISRUPTION.md", "PHASE11_8E_OBSERVABILITY_HARDENING.md",
             "PHASE11_8F_RECOVERY_HARDENING.md", "PHASE11_8G_SUPPLY_CHAIN_HARDENING.md",
             "PHASE11_9_MIGRATION_COMPATIBILITY.md", "PHASE11_9_MIGRATION_COMPATIBILITY_GATE.md",
+            "PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md",
+            "phase11-production-equivalent-validation.yml",
         ),
+    )
+    _contains_all(
+        "docs/evidence/EVIDENCE_INDEX.md",
+        (
+            "phase11-production-equivalent-validation.yml",
+            "test_phase11_10_production_equivalent_validation.py",
+            "phase11_production_equivalent_validation.py",
+            "candidate identity", "migration/compatibility", "upgrade", "rollback",
+            "health", "saturation", "recovery", "fail closed",
+        ),
+        casefold=True,
     )
 
 
