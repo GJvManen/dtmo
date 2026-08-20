@@ -83,12 +83,12 @@ Accepted runtime evidence requires immutable image identities, safe rollout cont
 ### 11.9 Migration and compatibility
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-The accepted contract requires one connected single-root/single-head Alembic chain, forward-first migration, backward-compatible rolling overlap and expand/migrate/contract for destructive changes. Ambiguity fails closed.
+The accepted contract requires one connected single-root/single-head Alembic chain, forward-first migration, backward-compatible rolling overlap and expand/migrate/contract for destructive changes. Ambiguity must **fail closed**.
 
 ### 11.10 Integrated production-equivalent validation
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`
 
-The Unified Operations Workbench materially changes the candidate. Therefore 11.10 first completes the interface and integrated user journeys in bounded candidate-completion slices. Only after 11.10o is accepted is one immutable candidate frozen for the fresh 11.10p real-environment exercise.
+The Unified Operations Workbench materially changes the candidate. Candidate-completion slices are therefore accepted before one immutable integrated candidate is frozen for the fresh 11.10p real-environment exercise.
 
 #### Candidate-completion sequence
 
@@ -96,8 +96,8 @@ The Unified Operations Workbench materially changes the candidate. Therefore 11.
 - **11.10b Canonical application shell** — `PASS / REPOSITORY_COMPLETE`;
 - **11.10c Command Center** — `PASS / REPOSITORY_COMPLETE`;
 - **11.10d Unified Intelligence Workspace** — `PASS / REPOSITORY_COMPLETE`;
-- **11.10e IntelOwl/Cortex integrated analysis** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
-- **11.10f OpenCTI graph/entity workspace** — `NOT STARTED`;
+- **11.10e IntelOwl/Cortex integrated analysis** — `PASS / REPOSITORY_COMPLETE`;
+- **11.10f OpenCTI graph/entity workspace** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
 - **11.10g MISP Sharing & Exchange** — `NOT STARTED`;
 - **11.10h TheHive Investigations & Cases** — `NOT STARTED`;
 - **11.10i Vulnerability & Exposure Center** — `NOT STARTED`;
@@ -109,74 +109,41 @@ The Unified Operations Workbench materially changes the candidate. Therefore 11.
 - **11.10o Consolidation and full functional acceptance** — `NOT STARTED`;
 - **11.10p Fresh production-equivalent validation** — `NOT STARTED / CANDIDATE FREEZE REQUIRED`.
 
-#### 11.10a–11.10b accepted workbench foundation
+#### Accepted workbench foundation through 11.10e
 
 The accepted canonical path is **browser → DTMO API → governed integration adapter → upstream service**. The browser never becomes a privileged upstream integration client. **Server-side RBAC**, provenance, human publication/share authority, separate TheHive case authority and fail-closed behavior remain authoritative.
 
-11.10b delivered the React/TypeScript/Vite canonical `/workbench/` shell, committed npm lockfile consumed with `npm ci`, responsive navigation, context rail, command palette, same-origin CSP/asset serving and `/ui/console` as a temporary **compatibility path**.
+11.10a–11.10e delivered the frontend architecture, React/TypeScript/Vite canonical shell, Command Center, Unified Intelligence Workspace and Integrated Analysis workspace. IntelOwl/Cortex output remains evidence rather than a compromise verdict and cannot grant external-share/publication authority.
 
-Accepted evidence remains:
+#### 11.10f active OpenCTI graph/entity workspace
 
-- `docs/architecture/FRONTEND_ARCHITECTURE.md`;
-- `docs/architecture/UI_API_CONTRACT.md`;
-- `docs/architecture/PHASE11_10B_APPLICATION_SHELL.md`;
-- `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`;
-- `docs/qa/PHASE11_10B_APPLICATION_SHELL_GATE.md`;
-- `.github/workflows/phase11-frontend-architecture.yml`;
-- `.github/workflows/phase11-application-shell.yml`.
+11.10f makes `/workbench/intelligence/graph` functional using accepted Phase 11.4 OpenCTI/STIX mapping persistence rather than a parallel graph backend.
 
-#### 11.10c accepted Command Center
+Frontend-facing read contracts are:
 
-11.10c is `PASS / REPOSITORY_COMPLETE`. It delivered the first functional canonical workspace with accountable read-only visibility into canonical intelligence counts, high/critical activity, 24-hour intake, review/share-decision workload, high education relevance, recent intelligence and the configured capability state of Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex.
+- `GET /api/v1/opencti/capabilities`;
+- `GET /api/v1/opencti/items/{item_id}/graph`;
+- `GET /api/v1/opencti/entities/{mapping_id}`.
 
-It never turns a feature flag or API configuration into a `healthy` claim. Persisted execution is shown only as attributable observation. When the canonical datastore is unavailable, metric values remain unavailable rather than synthetic zero values. Role-aware quick-action visibility is usability only and never substitutes for server authorization.
+All require `read:intelligence`. The browser never receives OpenCTI credentials and never calls `/graphql` directly.
 
-#### 11.10d accepted Unified Intelligence Workspace
+The persisted Phase 11.4 boundary contains stable OpenCTI/STIX object mappings and immutable revisions, but not generic entity-to-entity OpenCTI relationship topology. Therefore the workspace renders only attributable `canonical-mapping` edges between a canonical DTMO intelligence item and its persisted OpenCTI mappings. Missing topology evidence must **fail closed**; DTMO must not infer malware, campaign, indicator, actor, infrastructure or other upstream relationships merely because objects coexist in the graph view.
 
-11.10d is `PASS / REPOSITORY_COMPLETE`. It migrated governed intelligence discovery and investigation into the canonical workbench and made IOC Explorer a specialized view over the same server-authorized DTMO contracts.
+Feature/configuration state is not runtime health. Empty persisted mappings do not prove upstream absence. OpenCTI confidence, markings, graph presence or revisions do **not prove** local exposure, exploitability, compromise or attribution certainty and grant no external-share/publication authority.
 
-The implementation reuses `GET /api/v1/intelligence/search` for search discovery and `GET /api/v1/intelligence/{item_id}/workspace` for canonical object detail and provenance. Search results remain index projections, not canonical truth. Dependency failure is unavailable rather than a synthetic result. `read:intelligence` remains the server-side access boundary and the workspace grants no analyzer, sharing, case or administration authority.
+Authoritative 11.10f package:
 
-Authoritative 11.10d package:
+- `backend/dtmo/opencti_workspace.py`;
+- `frontend/src/OpenCTIGraphWorkspace.tsx`;
+- `frontend/src/opencti-graph.css`;
+- `docs/architecture/PHASE11_10F_OPENCTI_GRAPH_ENTITY_WORKSPACE.md`;
+- `docs/user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md`;
+- `docs/qa/PHASE11_10F_OPENCTI_GRAPH_ENTITY_GATE.md`;
+- `backend/tests/test_phase11_10f_opencti_graph_contract.py`;
+- `backend/tests/test_phase11_10f_opencti_graph_browser.py`;
+- `.github/workflows/phase11-opencti-graph-workspace.yml`.
 
-- `frontend/src/UnifiedIntelligenceWorkspace.tsx`;
-- `frontend/src/unified-intelligence.css`;
-- `docs/architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md`;
-- `docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md`;
-- `docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`;
-- `.github/workflows/phase11-unified-intelligence-workspace.yml`.
-
-#### 11.10e active IntelOwl/Cortex integrated analysis
-
-11.10e replaces the Analysis & Enrichment placeholder with one governed workspace for human-triggered IntelOwl enrichment and analyzer-only Cortex execution against a canonical DTMO object.
-
-The implementation preserves the accepted IntelOwl DTMO route/history and introduces:
-
-- `GET /api/v1/analysis/capabilities` for configured allowlist/capability state without inferred runtime health;
-- `GET /api/v1/analysis/items/{item_id}/history` for combined persisted IntelOwl and Cortex evidence;
-- `POST /api/v1/analysis/items/{item_id}/cortex` for one explicit, feature-gated, allowlisted Cortex analyzer execution;
-- durable `cortex_analysis_records` through `0015_cortex_analysis_history`, chained from `0014_thehive_handoff_state`;
-- `/workbench/analysis` with role-aware read/history and execution controls.
-
-`read:intelligence` protects history/capability reads. Execution requires server-side `review:intelligence`. Cortex remains analyzer-only: responders, automatic analyzer discovery, automatic IntelOwl fallback and other side-effect actions are outside this slice. Persisted Cortex evidence enforces `external_share_authorized=false` and `local_compromise_proven=false`.
-
-Failures must **fail closed**. IntelOwl/Cortex output **does not prove** local compromise, grant external-share/publication/case authority, or establish live upstream health.
-
-Authoritative 11.10e package:
-
-- `backend/dtmo/intelowl_execution.py`;
-- `backend/dtmo/persistence/cortex.py`;
-- `database/migrations/versions/0015_cortex_analysis_history.py`;
-- `frontend/src/AnalysisWorkspace.tsx`;
-- `frontend/src/analysis-workspace.css`;
-- `docs/architecture/PHASE11_10E_INTEGRATED_ANALYSIS_WORKSPACE.md`;
-- `docs/user/INTEGRATED_ANALYSIS_WORKSPACE.md`;
-- `docs/qa/PHASE11_10E_INTEGRATED_ANALYSIS_GATE.md`;
-- `backend/tests/test_phase11_10e_integrated_analysis_contract.py`;
-- `backend/tests/test_phase11_10e_integrated_analysis_browser.py`;
-- `.github/workflows/phase11-integrated-analysis-workspace.yml`.
-
-Only after 11.10e is accepted and merged may **11.10f OpenCTI graph/entity workspace** begin.
+Only after 11.10f is accepted and merged may **11.10g MISP Sharing & Exchange** begin.
 
 #### 11.10p Fresh production-equivalent validation
 
@@ -205,9 +172,9 @@ A production `GO` requires accepted 11.10 and 11.11 evidence for the same releas
 
 ## Immediate sequence
 
-1. Complete **11.10e IntelOwl/Cortex integrated analysis** on one exact green head and merge with expected-head protection.
-2. Start **11.10f OpenCTI graph/entity workspace** only after 11.10e is merged.
-3. Continue 11.10g–11.10o one bounded green PR at a time.
+1. Complete **11.10f OpenCTI graph/entity workspace** on one exact green head and merge with expected-head protection.
+2. Start **11.10g MISP Sharing & Exchange** only after 11.10f is merged.
+3. Continue 11.10h–11.10o one bounded green PR at a time.
 4. Freeze one immutable candidate and execute **11.10p**.
 5. Complete fresh **Phase 11.11** independent assurance for that same candidate.
 6. Enter **Phase 12** only after 11.10 and 11.11 are accepted.
