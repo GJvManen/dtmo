@@ -1,0 +1,44 @@
+name: Phase 11 Production-Equivalent Validation Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-equivalent-validation-contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - name: Validate fresh integrated evidence contract
+        run: |
+          mkdir -p artifacts
+          python tools/phase11_production_equivalent_validation.py > artifacts/phase11-production-equivalent-validation.json
+          python -m pytest -q backend/tests/test_phase11_10_production_equivalent_validation.py
+      - name: Bind repository contract evidence to exact PR head
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path('artifacts/phase11-production-equivalent-validation.json')
+          evidence = json.loads(p.read_text(encoding='utf-8'))
+          evidence['exact_head'] = os.environ['EXPECTED_HEAD']
+          evidence['live_environment_validated'] = False
+          evidence['acceptance_claimed'] = False
+          p.write_text(json.dumps(evidence, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: phase11-production-equivalent-validation-contract-evidence
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error
