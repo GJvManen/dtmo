@@ -7,9 +7,9 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9, Phase 11.10a and Phase 11.10b are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9, Phase 11.10a, Phase 11.10b and Phase 11.10c are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The sole active bounded objective is **Phase 11.10c Command Center**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10b delivered the accepted canonical React/TypeScript/Vite application shell. Phase 11.10c adds the first functional workspace on top of that shell using attributable DTMO read models and explicit fail-closed evidence semantics. Fresh production-equivalent execution remains deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
+The sole active bounded objective is **Phase 11.10d Unified Intelligence Workspace**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10c delivered the accepted canonical Command Center. Phase 11.10d migrates governed intelligence search, IOC-oriented discovery, canonical object detail and provenance into the same React/TypeScript/Vite workbench without introducing browser-to-upstream privileged calls. Fresh production-equivalent execution remains deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
 
 ## Lifecycle position
 
@@ -43,8 +43,8 @@ The sole active bounded objective is **Phase 11.10c Command Center**, status `IN
 | Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10c Command Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10d Unified Intelligence Workspace | `NOT STARTED` |
+| Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10d Unified Intelligence Workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED` |
 | Phase 11.10f OpenCTI graph/entity workspace | `NOT STARTED` |
 | Phase 11.10g MISP Sharing & Exchange | `NOT STARTED` |
@@ -99,25 +99,13 @@ Authoritative accepted baseline:
 - `.github/workflows/phase11-frontend-architecture.yml`;
 - `.github/workflows/phase11-application-shell.yml`.
 
-## Active Phase 11.10c Command Center boundary
+## Accepted Phase 11.10c Command Center boundary
 
-Phase 11.10c is the first functional workspace in the canonical workbench.
+Phase 11.10c is `PASS / REPOSITORY_COMPLETE` and remains the first functional workspace in the canonical workbench.
 
-It delivers a read-only operational overview with:
+It delivers a read-only operational overview with canonical intelligence counts, high/critical intelligence, 24-hour intake, review/share-decision workload, high education relevance, recent canonical intelligence, governed integration capability state, role-aware quick navigation and Collect → Enrich → Analyze → Investigate → Respond → Learn orientation.
 
-- canonical intelligence-object count;
-- high/critical intelligence count;
-- new intelligence in the preceding 24 hours;
-- review and separate share-approval workload;
-- high education-relevance count;
-- recent canonical intelligence;
-- Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex capability state;
-- role-aware quick navigation based on authenticated permissions;
-- Collect → Enrich → Analyze → Investigate → Respond → Learn workflow orientation.
-
-The integration panel intentionally distinguishes configuration from runtime observation. A configured or enabled integration is **not** labelled healthy unless attributable runtime evidence exists, and this slice does not convert a prior connector run into a general upstream-health claim.
-
-If the canonical datastore is unavailable, metric values remain `null` and the browser shows an explicit unavailable state. Missing evidence is not rendered as zero activity or a healthy platform. This boundary must **fail closed**.
+The integration panel distinguishes configuration from runtime observation. A configured or enabled integration is **not** labelled healthy solely from configuration. If the canonical datastore is unavailable, metric values remain `null` and missing evidence is not rendered as zero activity or a healthy platform. This boundary must **fail closed**.
 
 Authoritative Phase 11.10c material:
 
@@ -130,9 +118,35 @@ Authoritative Phase 11.10c material:
 - `backend/tests/test_phase11_10c_command_center_browser.py`;
 - `.github/workflows/phase11-command-center.yml`.
 
-Phase 11.10c grants no review, sharing, case, connector or administration authority. Those mutations remain separate server-authorized workflows. Repository CI for this slice does not prove live upstream health, production-equivalent operation, independent assurance or production authorization.
+Phase 11.10c grants no review, sharing, case, connector or administration authority. Repository CI for that slice does not prove live upstream health, production-equivalent operation, independent assurance or production authorization.
 
-After Phase 11.10c exact-head acceptance and merge, the only next bounded priority is **Phase 11.10d — Unified Intelligence Workspace**.
+## Active Phase 11.10d Unified Intelligence Workspace boundary
+
+Phase 11.10d replaces the Threat Intelligence placeholder with a functional read-only discovery and investigation workspace and delivers IOC Explorer as an indicator-oriented view over the same governed contracts.
+
+The browser uses:
+
+- `GET /api/v1/intelligence/search` for server-authorized discovery through the DTMO search service;
+- `GET /api/v1/intelligence/{item_id}/workspace` for canonical DTMO object detail and provenance.
+
+Search results remain discovery projections. Selected detail comes from canonical DTMO persistence. A zero-result query does not prove absence from every upstream source. Search-backend failure is rendered unavailable instead of synthetic empty state; canonical-detail failure never causes the browser to fabricate missing object fields from the search hit.
+
+The workspace renders attributable severity, education relevance, confidence/rationale, review status, separate sharing approval state, CVE/known-exploited/vendor/product context and provenance where recorded. Search and investigation require `read:intelligence` and grant no review, publication/share approval, analyzer/connector execution, case mutation or administration authority.
+
+Authoritative Phase 11.10d material:
+
+- `frontend/src/UnifiedIntelligenceWorkspace.tsx`;
+- `frontend/src/unified-intelligence.css`;
+- `docs/architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md`;
+- `docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md`;
+- `docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`;
+- `backend/tests/test_phase11_10d_unified_intelligence_workspace_contract.py`;
+- `backend/tests/test_phase11_10d_unified_intelligence_workspace_browser.py`;
+- `.github/workflows/phase11-unified-intelligence-workspace.yml`.
+
+Repository/browser CI **does not prove** live upstream completeness or health, production-equivalent operation, independent assurance or production authorization.
+
+After Phase 11.10d exact-head acceptance and merge, the only next bounded priority is **Phase 11.10e — IntelOwl/Cortex Integrated Analysis**.
 
 ## Phase 11.10 external validation boundary
 
