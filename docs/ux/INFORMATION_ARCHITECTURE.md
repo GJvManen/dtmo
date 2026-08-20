@@ -1,69 +1,60 @@
 # DTMO Next-Generation Information Architecture
 
-Status: **Phase 11.10a–11.10e — PASS / REPOSITORY_COMPLETE; Phase 11.10f — ACTIVE OPENCTI GRAPH/ENTITY WORKSPACE**
+Status: **Phase 11.10a–11.10f — PASS / REPOSITORY_COMPLETE; Phase 11.10g — ACTIVE MISP SHARING & EXCHANGE**
 
 ## Principle
 
-Primary navigation is organized by operator intent, not by upstream product ownership. Service names remain visible as provenance, capability and health context.
+Primary navigation is organized by operator intent, not by upstream product ownership. Service names remain visible as provenance, capability and evidence context.
 
-Phase 11.10b established the canonical `/workbench/` shell. Phase 11.10c delivered the Command Center, Phase 11.10d delivered Threat Intelligence and IOC Explorer, Phase 11.10e delivered Analysis & Enrichment, and Phase 11.10f is the active functional migration of OpenCTI graph/entity context. Route foundations for later workspaces do not imply that those features are implemented or accepted.
+Phase 11.10b established the canonical `/workbench/` shell. Phase 11.10c delivered the Command Center, Phase 11.10d Threat Intelligence and IOC Explorer, Phase 11.10e Analysis & Enrichment, Phase 11.10f Knowledge Graph, and Phase 11.10g is the active functional migration of governed Sharing & Exchange. Route foundations for later workspaces do not imply that those features are implemented or accepted.
 
 ## Canonical navigation tree
 
 ### Home
-
 - Command Center — accepted in Phase 11.10c.
 
 ### Intelligence
-
 - Threat Intelligence — accepted in Phase 11.10d.
 - IOC Explorer — accepted in Phase 11.10d.
 - Threat Actors & Campaigns — later bounded intelligence capability.
-- Knowledge Graph — active in Phase 11.10f.
+- Knowledge Graph — accepted in Phase 11.10f.
 - Threat Hunting — later bounded intelligence capability.
 
 ### Exposure
-
 - Vulnerabilities
 - Assets
 - Technology
 - Prioritization
 
 ### Investigations
-
 - Alerts
 - Cases
 - Tasks
 - Investigation Timeline
 
 ### Analysis
-
 - Enrichment — accepted in Phase 11.10e through governed IntelOwl execution/history.
 - Cortex Analyses — accepted in Phase 11.10e through analyzer-only governed execution/history.
 - Analysis History — accepted combined canonical-object view in Phase 11.10e.
 
 ### Sharing
-
-- MISP Exchange — Phase 11.10g.
-- Publication Queue
-- Sharing Approvals
+- MISP Exchange — active in Phase 11.10g.
+- Sharing Approvals — active through canonical human review/share authority.
+- Publication Queue — future separately governed capability; not a Phase 11.10g publication action.
 
 ### Automation
-
 - Playbooks
 - Jobs
 - Schedules
 - Approval Queue
 
 ### Collection
-
 - Sources
 - Connectors
 - Catalog
 - Collection Runs
 
 ### Governance
-
 - Frameworks
 - Control Mappings
 - Evidence
@@ -71,7 +62,6 @@ Phase 11.10b established the canonical `/workbench/` shell. Phase 11.10c deliver
 - Audit
 
 ### Operations
-
 - System Health
 - Integrations
 - Observability
@@ -79,7 +69,6 @@ Phase 11.10b established the canonical `/workbench/` shell. Phase 11.10c deliver
 - Backup & Recovery
 
 ### Administration
-
 - Users
 - Roles
 - Permissions
@@ -98,23 +87,28 @@ Phase 11.10d made the Intelligence domain functional through `/workbench/intelli
 
 ## Integrated Analysis placement
 
-Phase 11.10e made `/workbench/analysis` functional. It uses DTMO capability/history APIs plus human-triggered IntelOwl and Cortex analyzer execution. History/capability reads require server-side `read:intelligence`; execution requires `review:intelligence`. Analyzer output does not prove local compromise or create sharing/publication authority.
+Phase 11.10e made `/workbench/analysis` functional. History/capability reads require server-side `read:intelligence`; explicit IntelOwl/Cortex execution requires `review:intelligence`. Analyzer output does not prove local compromise or create sharing/publication authority.
 
 ## OpenCTI Graph / Entity placement
 
-Phase 11.10f makes `/workbench/intelligence/graph` functional while preserving the canonical API and evidence model.
+Phase 11.10f made `/workbench/intelligence/graph` functional through DTMO endpoints protected by `read:intelligence`. The graph root is the canonical DTMO intelligence item. OpenCTI nodes come from persisted stable OpenCTI/STIX mappings. Generic upstream relationship topology is not durably persisted; only attributable `canonical-mapping` edges are rendered and missing relationship evidence **fails closed**.
+
+## MISP Sharing & Exchange placement
+
+Phase 11.10g makes `/workbench/sharing` functional while preserving the canonical API and human-authority model.
 
 The browser calls only DTMO endpoints:
 
-- `/api/v1/opencti/capabilities`;
-- `/api/v1/opencti/items/{item_id}/graph`;
-- `/api/v1/opencti/entities/{mapping_id}`.
+- `/api/v1/sharing/items/{item_id}` for canonical sharing state;
+- `/api/v1/intelligence/{item_id}/review` for human review;
+- `/api/v1/intelligence/{item_id}/share-approval` for separate human external-share approval;
+- `/api/v1/intelligence/{item_id}/misp-export` for an already reviewed/share-approved canonical revision.
 
-Every read requires server-side `read:intelligence`. The browser does not receive an OpenCTI token and does not query `/graphql` directly.
+Canonical state reads require `read:intelligence`; review requires `review:intelligence`; share approval/export require `approve:share` according to the accepted server contracts. The share approver must differ from the reviewer. Service accounts cannot substitute for human review/share authority or MISP export.
 
-The graph root is the canonical DTMO intelligence item. OpenCTI nodes come from persisted stable OpenCTI/STIX mappings. Because the accepted persistence boundary does not durably store generic OpenCTI entity-to-entity relationship topology, only attributable `canonical-mapping` edges may be rendered. Missing relationship evidence must **fail closed** rather than being inferred from labels, entity types, confidence, co-occurrence or visual proximity.
+MISP-origin authoritative distribution, sharing-group and TLP restrictions remain binding. Current-revision replay evidence fails closed on `pending`, `success` or `uncertain`. Export creates an unpublished MISP event (`published=false`). Phase 11.10g has no Publish or Synchronize action.
 
-An empty mapping set is not an upstream-absence claim. OpenCTI configuration is not runtime health. Entity/graph presence does not prove local exposure, exploitability, compromise, attribution certainty or remediation state.
+Configuration is not runtime health. A technical transfer does not prove publication, synchronization, downstream consumption or local compromise.
 
 ## Canonical object types
 
@@ -124,7 +118,7 @@ The workbench represents and navigates governed object classes where supported b
 
 The right context rail is driven by selected attributable object state and may show identity/type, severity/classification, confidence, TLP/PAP/markings, provenance/source, related entities, enrichment/analysis counts, cases/tasks, vulnerabilities/exposure, sharing status, timeline/audit summary and authorized actions.
 
-The rail must never infer an unavailable fact because an integration is configured. Until a feature slice integrates shared rail selection, feature-specific detail remains inside its governed workspace. Phase 11.10f therefore shows OpenCTI entity/revision detail inside the Knowledge Graph workspace while preserving the shell **Context rail contract**.
+The rail must never infer an unavailable fact because an integration is configured. Until a feature slice integrates shared rail selection, feature-specific detail remains inside its governed workspace. This preserves the shell **Context rail contract**.
 
 ## Command palette
 
@@ -136,11 +130,11 @@ Role-aware defaults may change landing page and visible navigation groups but do
 
 ## Responsive behavior
 
-Desktop uses persistent navigation and optional context rail. Tablet may collapse regions into drawers. Small mobile view prioritizes situational awareness and explicitly supported low-risk actions. Phase 11.10f adds responsive graph/entity composition plus an accessible entity list so navigation never depends on SVG interaction alone.
+Desktop uses persistent navigation and optional context rail. Tablet may collapse regions into drawers. Small mobile view prioritizes situational awareness and explicitly supported low-risk actions. Feature workspaces provide accessible non-visual alternatives where appropriate; sharing decisions never depend on colour alone.
 
 ## Migration rule
 
-Existing Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance functionality must be mapped into this architecture before legacy retirement. `/workbench/` is the canonical built product route. `/ui/console` and prior UI routes remain temporary **compatibility paths** and are not parallel feature-development targets.
+Existing Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance functionality must be mapped into this architecture before legacy retirement. `/workbench/` is the canonical built product route. `/ui/console`, `/ui/intelligence-workspace` and `/ui/misp-workspace` remain temporary **compatibility paths** and are not parallel feature-development targets.
 
 ## Candidate-completion state
 
@@ -149,8 +143,9 @@ Existing Overview, Intelligence, Sources & Catalog, Visual Analytics, Administra
 - 11.10c Command Center — `PASS / REPOSITORY_COMPLETE`;
 - 11.10d Unified Intelligence Workspace — `PASS / REPOSITORY_COMPLETE`;
 - 11.10e IntelOwl/Cortex integrated analysis — `PASS / REPOSITORY_COMPLETE`;
-- 11.10f OpenCTI graph/entity workspace — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
-- 11.10g MISP Sharing & Exchange — `NOT STARTED`;
+- 11.10f OpenCTI graph/entity workspace — `PASS / REPOSITORY_COMPLETE`;
+- 11.10g MISP Sharing & Exchange — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
+- 11.10h TheHive Investigations & Cases — `NOT STARTED`;
 - 11.10p fresh production-equivalent validation — `NOT STARTED / CANDIDATE FREEZE REQUIRED`;
 - Phase 11.11 — `NOT STARTED`;
 - Phase 12 — `NOT STARTED`.
@@ -159,4 +154,4 @@ DTMO remains **not production authorized**.
 
 ## Evidence boundary
 
-This information architecture and its implemented routes are repository product-design/engineering evidence only. They do **not prove** live OpenCTI connectivity or health, complete upstream topology, local compromise, production-equivalent validation, independent assurance or production authorization. Missing or ambiguous operational evidence must **fail closed**.
+This information architecture and its implemented routes are repository product-design/engineering evidence only. They do **not prove** live MISP/OpenCTI connectivity or health, publication/synchronization, complete upstream state, local compromise, production-equivalent validation, independent assurance or production authorization. Missing or ambiguous operational evidence must **fail closed**.
