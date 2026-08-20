@@ -7,9 +7,9 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9, Phase 11.10a and Phase 11.10b are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The sole active bounded objective is now **Phase 11.10b Canonical application shell**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10a established the accepted frontend architecture/design contract. The owner-required Unified Operations Workbench materially changes the integrated candidate, so fresh production-equivalent execution remains intentionally deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
+The sole active bounded objective is **Phase 11.10c Command Center**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10b delivered the accepted canonical React/TypeScript/Vite application shell. Phase 11.10c adds the first functional workspace on top of that shell using attributable DTMO read models and explicit fail-closed evidence semantics. Fresh production-equivalent execution remains deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
 
 ## Lifecycle position
 
@@ -42,8 +42,8 @@ The sole active bounded objective is now **Phase 11.10b Canonical application sh
 | Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10b canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10c Command Center | `NOT STARTED` |
+| Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10c Command Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.10d Unified Intelligence Workspace | `NOT STARTED` |
 | Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED` |
 | Phase 11.10f OpenCTI graph/entity workspace | `NOT STARTED` |
@@ -66,9 +66,9 @@ Taranis, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed se
 
 Phase 11.8 is repository-complete. Accepted controls cover the Helm/GitOps Kubernetes runtime foundation, workload identity/external-secret delivery, TLS ingress/network segmentation, application HA/disruption controls, observability boundaries, backup/restore/recovery controls, software supply-chain hardening, capacity/resource planning and exercised upgrade/rollback. Phase 11.9 adds the accepted forward-first migration/application compatibility contract. These remain engineering controls and do not themselves establish production-equivalent behavior or production authorization.
 
-## Accepted Phase 11.10a frontend architecture boundary
+## Accepted Unified Operations Workbench foundation
 
-Phase 11.10a is `PASS / REPOSITORY_COMPLETE`. It established the maintainable architecture required to build the next-generation interface without weakening existing controls.
+Phase 11.10a and Phase 11.10b are `PASS / REPOSITORY_COMPLETE`.
 
 The canonical trust path remains:
 
@@ -82,92 +82,73 @@ flowchart LR
     I --> S[Taranis / IntelOwl / OpenCTI / MISP / TheHive / Cortex]
 ```
 
-Normal product workflows use **browser → DTMO API → governed integration adapter → upstream service**. The browser is not a privileged integration broker. Role-aware rendering is a usability function only; server-side RBAC remains authoritative.
+Normal product workflows use **browser → DTMO API → governed integration adapter → upstream service**. The browser is not a privileged integration broker. Role-aware rendering is a usability function only; **server-side RBAC** remains authoritative.
 
-The accepted architecture baseline remains in `docs/architecture/FRONTEND_ARCHITECTURE.md`, `docs/architecture/UI_API_CONTRACT.md`, `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`, `docs/ux/INFORMATION_ARCHITECTURE.md`, `docs/ux/DESIGN_SYSTEM.md` and `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`.
+11.10b delivered the separately built React/TypeScript/Vite application under `frontend/`, canonical `/workbench/` route family, responsive shell, command palette, context rail, strict same-origin CSP, immutable hashed assets, committed npm lockfile consumed with `npm ci`, and `/ui/console` as a migration compatibility path only.
 
-## Active Phase 11.10b application-shell boundary
+Authoritative accepted baseline:
 
-Phase 11.10b implements only the canonical application shell and routing foundation described by the accepted architecture.
-
-The bounded implementation provides:
-
-- separately built React/TypeScript/Vite application under `frontend/`;
-- React Router canonical route family under `/workbench/`;
-- TanStack Query shell request lifecycle;
-- task-oriented navigation, global top bar, navigation-only command palette and context rail;
-- responsive/mobile shell behavior, skip link, visible focus, semantic themes and reduced-motion handling;
-- same-origin FastAPI serving with strict CSP and immutable cache headers for hashed assets;
-- committed npm dependency lockfile consumed by supported builds with `npm ci`;
-- container build integration in which Node/npm remain build-stage only;
-- `/ui/console` retained only as a temporary compatibility path;
-- explicit shell placeholders that never fabricate live operational state.
-
-The authoritative implementation/gate documents are:
-
+- `docs/architecture/FRONTEND_ARCHITECTURE.md`;
+- `docs/architecture/UI_API_CONTRACT.md`;
 - `docs/architecture/PHASE11_10B_APPLICATION_SHELL.md`;
+- `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`;
+- `docs/ux/INFORMATION_ARCHITECTURE.md`;
+- `docs/ux/DESIGN_SYSTEM.md`;
+- `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`;
 - `docs/qa/PHASE11_10B_APPLICATION_SHELL_GATE.md`;
-- `frontend/README.md`;
-- `frontend/THIRD_PARTY_NOTICES.md`;
-- `frontend/package.json` and `frontend/package-lock.json`;
-- `backend/tests/test_phase11_10b_application_shell_contract.py`;
-- `backend/tests/test_phase11_10b_application_shell_browser.py`;
+- `.github/workflows/phase11-frontend-architecture.yml`;
 - `.github/workflows/phase11-application-shell.yml`.
 
-Before 11.10b can become `PASS / REPOSITORY_COMPLETE`, the final exact-head build must consume the committed lockfile unchanged with `npm ci`, the frontend/container supply-chain checks must remain green and all registered exact-head workflows must complete successfully.
+## Active Phase 11.10c Command Center boundary
 
-Phase 11.10b does not implement Command Center feature data, later feature workspaces, live upstream validation, production-equivalent execution, independent assurance or production authorization. After acceptance, the only next bounded priority is **Phase 11.10c — Command Center**.
+Phase 11.10c is the first functional workspace in the canonical workbench.
+
+It delivers a read-only operational overview with:
+
+- canonical intelligence-object count;
+- high/critical intelligence count;
+- new intelligence in the preceding 24 hours;
+- review and separate share-approval workload;
+- high education-relevance count;
+- recent canonical intelligence;
+- Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex capability state;
+- role-aware quick navigation based on authenticated permissions;
+- Collect → Enrich → Analyze → Investigate → Respond → Learn workflow orientation.
+
+The integration panel intentionally distinguishes configuration from runtime observation. A configured or enabled integration is **not** labelled healthy unless attributable runtime evidence exists, and this slice does not convert a prior connector run into a general upstream-health claim.
+
+If the canonical datastore is unavailable, metric values remain `null` and the browser shows an explicit unavailable state. Missing evidence is not rendered as zero activity or a healthy platform. This boundary must **fail closed**.
+
+Authoritative Phase 11.10c material:
+
+- `backend/dtmo/command_center.py`;
+- `backend/dtmo/api_command_center.py`;
+- `frontend/src/App.tsx` and `frontend/src/command-center.css`;
+- `docs/architecture/PHASE11_10C_COMMAND_CENTER.md`;
+- `docs/qa/PHASE11_10C_COMMAND_CENTER_GATE.md`;
+- `backend/tests/test_phase11_10c_command_center_contract.py`;
+- `backend/tests/test_phase11_10c_command_center_browser.py`;
+- `.github/workflows/phase11-command-center.yml`.
+
+Phase 11.10c grants no review, sharing, case, connector or administration authority. Those mutations remain separate server-authorized workflows. Repository CI for this slice does not prove live upstream health, production-equivalent operation, independent assurance or production authorization.
+
+After Phase 11.10c exact-head acceptance and merge, the only next bounded priority is **Phase 11.10d — Unified Intelligence Workspace**.
 
 ## Phase 11.10 external validation boundary
 
 Fresh production-equivalent validation remains mandatory, but is the final 11.10 candidate step **11.10p** after 11.10a–11.10o candidate completion and functional acceptance.
 
-11.10p still requires fresh production-equivalent evidence for one immutable integrated deployment identity. The mandatory evidence classes remain candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery.
+11.10p requires fresh production-equivalent evidence for the **same immutable** integrated deployment identity and one production-equivalent environment. Mandatory evidence remains candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery. Rollback must identify the exact prior immutable digest and include post-rollback health; application rollback does not authorize automatic database down migration.
 
-```mermaid
-flowchart LR
-    C[11.10a-o candidate completion] --> F[Immutable candidate freeze]
-    F --> I[Candidate identity]
-    I --> M[Migration + compatibility]
-    M --> U[Upgrade]
-    U --> H[Health]
-    H --> S[Saturation]
-    S --> R[Recovery]
-    R --> B[Exact prior-digest rollback]
-    B --> V[Post-rollback health]
-    V --> A[11.10 owner review]
-```
+Historical Phase 8/9 evidence remains audit history only and is not reusable. Missing, placeholder, inaccessible, mixed-candidate or historical-only evidence must **fail closed**.
 
-Every artifact must identify the same candidate fingerprint and production-equivalent environment. Historical Phase 8/9 evidence remains audit history only and is not reusable for Phase 11.10 acceptance. Missing, placeholder, inaccessible, mixed-candidate or historical-only evidence must **fail closed**.
+The external execution package remains authoritative:
 
-The existing external execution package remains authoritative:
+- `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`;
+- `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
+- `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`;
+- `tools/phase11_production_equivalent_validation.py`;
+- `backend/tests/test_phase11_10_production_equivalent_validation.py`;
+- `.github/workflows/phase11-production-equivalent-validation.yml`.
 
-- `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md` — acceptance criteria;
-- `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md` — accountable execution procedure;
-- `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json` — deliberately incomplete evidence template;
-- `tools/phase11_production_equivalent_validation.py` — candidate fingerprinting and fail-closed manifest validation;
-- `backend/tests/test_phase11_10_production_equivalent_validation.py` — contract and negative-case regression coverage;
-- `.github/workflows/phase11-production-equivalent-validation.yml` — repository evidence-contract workflow.
-
-Repository CI may validate repository contracts and exact-head metadata, but it cannot prove that the production-equivalent environment was deployed or exercised. Repository-green status alone therefore does not complete Phase 11.10 and does not authorize production.
-
-Phase 11.10 may become `PASS / OWNER_ACCEPTED` only when 11.10a–11.10o are complete, one integrated candidate is frozen, the full 11.10p real-environment evidence package is complete and the accountable owner explicitly accepts it.
-
-Phase 11.11 independent external assurance must run only after Phase 11.10 acceptance and against the same immutable integrated candidate.
-
-## Phase 11 fixed order
-
-1. Taranis AI — `PASS / REPOSITORY_COMPLETE`;
-2. IntelOwl — `PASS / REPOSITORY_COMPLETE`;
-3. OpenCTI — `PASS / REPOSITORY_COMPLETE`;
-4. MISP — `PASS / REPOSITORY_COMPLETE`;
-5. TheHive — `PASS / REPOSITORY_COMPLETE`;
-6. original Cortex conditional decision — historical `PASS / REPOSITORY_COMPLETE`;
-7. owner-required Cortex analyzer connector — `PASS / REPOSITORY_COMPLETE`;
-8. integrated runtime industrialisation — Phase 11.8 `PASS / REPOSITORY_COMPLETE`;
-9. migration/compatibility — Phase 11.9 `PASS / REPOSITORY_COMPLETE`;
-10. Phase 11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`;
-11. Phase 11.10b–11.10o integrated candidate completion — 11.10b active;
-12. Phase 11.10p fresh production-equivalent validation — `NOT STARTED`;
-13. new independent external assurance — Phase 11.11 `NOT STARTED`;
-14. Phase 12 formal production GO/NO-GO — `NOT STARTED`.
+Repository CI validates repository contracts and exact-head metadata only. It does not prove that the production-equivalent environment has been deployed or exercised. Phase 11.10 may become `PASS / OWNER_ACCEPTED` only after 11.10a–11.10o are complete, one candidate is frozen, the 11.10p evidence package is complete and the accountable owner accepts it. Phase 11.11 must then run against the same immutable integrated candidate before Phase 12 can make the formal production decision.

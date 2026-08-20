@@ -6,7 +6,10 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse, RedirectResponse, Response
 
+from dtmo.api_command_center import router as command_center_api_router
+
 router = APIRouter()
+router.include_router(command_center_api_router)
 
 
 def _dist_root() -> Path:

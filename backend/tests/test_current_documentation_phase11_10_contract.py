@@ -24,11 +24,11 @@ CANDIDATE_COMPLETION_SURFACES = tuple(path for path in CURRENT_SURFACES if path 
 
 STALE_ACTIVE_MARKERS = (
     "Phase 11.10a frontend architecture/design contract | `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT`",
-    "Phase 11.10b canonical application shell | `NOT STARTED`",
-    "11.10a frontend architecture/design contract — active",
-    "active bounded objective is now **Phase 11.10a",
-    "active bounded step is **Phase 11.10a",
-    "Exactly one current priority: **complete PR #299",
+    "Phase 11.10b canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+    "Phase 11.10c Command Center | `NOT STARTED`",
+    "current bounded priority is **Phase 11.10b",
+    "sole active bounded objective is now **Phase 11.10b",
+    "Continue only **Phase 11.10b",
 )
 
 
@@ -63,19 +63,21 @@ def test_current_surfaces_preserve_prior_candidate_evidence_boundary() -> None:
         assert "REPOSITORY_COMPLETE" in text, path
 
 
-def test_phase11_10b_candidate_completion_truth_is_professionally_reconciled() -> None:
+def test_phase11_10c_candidate_completion_truth_is_professionally_reconciled() -> None:
     for path in CANDIDATE_COMPLETION_SURFACES:
         text = _read(path)
         assert "11.10a" in text, f"Phase 11.10a missing from {path}"
         assert "11.10b" in text, f"Phase 11.10b missing from {path}"
+        assert "11.10c" in text, f"Phase 11.10c missing from {path}"
         assert "11.10p" in text, f"Phase 11.10p boundary missing from {path}"
         assert "production" in text.lower(), path
 
     current = _read("docs/project/CURRENT_STATE.md")
     for marker in (
         "Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10b canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
-        "Phase 11.10c Command Center | `NOT STARTED`",
+        "Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.10c Command Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.10d Unified Intelligence Workspace | `NOT STARTED`",
         "Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED`",
     ):
         assert marker in current, marker
@@ -85,12 +87,49 @@ def test_phase11_10b_candidate_completion_truth_is_professionally_reconciled() -
         "11.10a Frontend architecture and design contract",
         "11.10b Canonical application shell",
         "11.10c Command Center",
+        "11.10d Unified Intelligence Workspace",
         "11.10p Fresh production-equivalent validation",
     ):
         assert marker in roadmap, marker
 
 
-def test_phase11_10b_application_shell_package_is_professionally_discoverable() -> None:
+def test_phase11_10c_command_center_package_is_professionally_discoverable() -> None:
+    required_paths = (
+        "backend/dtmo/command_center.py",
+        "backend/dtmo/api_command_center.py",
+        "frontend/src/App.tsx",
+        "frontend/src/command-center.css",
+        "docs/architecture/PHASE11_10C_COMMAND_CENTER.md",
+        "docs/qa/PHASE11_10C_COMMAND_CENTER_GATE.md",
+        "backend/tests/test_phase11_10c_command_center_contract.py",
+        "backend/tests/test_phase11_10c_command_center_browser.py",
+        ".github/workflows/phase11-command-center.yml",
+    )
+    for path in required_paths:
+        assert (ROOT / path).is_file(), path
+
+    portal = _read("docs/README.md")
+    evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
+    qa = _read("docs/qa/QA_AND_RELEASE_GATES.md")
+    combined = portal + "\n" + evidence + "\n" + qa
+    for marker in (
+        "PHASE11_10C_COMMAND_CENTER.md",
+        "PHASE11_10C_COMMAND_CENTER_GATE.md",
+        "phase11-command-center.yml",
+        "command_center.py",
+    ):
+        assert marker in combined, marker
+
+    for marker in (
+        "fail closed",
+        "server-side",
+        "does not prove",
+        "production",
+    ):
+        assert marker.lower() in combined.lower(), marker
+
+
+def test_phase11_10b_application_shell_package_remains_discoverable() -> None:
     required_paths = (
         "frontend/package.json",
         "frontend/src/main.tsx",
@@ -105,27 +144,6 @@ def test_phase11_10b_application_shell_package_is_professionally_discoverable() 
     )
     for path in required_paths:
         assert (ROOT / path).is_file(), path
-
-    portal = _read("docs/README.md")
-    evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
-    qa = _read("docs/qa/QA_AND_RELEASE_GATES.md")
-
-    for marker in (
-        "architecture/PHASE11_10B_APPLICATION_SHELL.md",
-        "qa/PHASE11_10B_APPLICATION_SHELL_GATE.md",
-        "phase11-application-shell.yml",
-        "frontend/package.json",
-    ):
-        assert marker in portal or marker in evidence or marker in qa, marker
-
-    combined = portal + "\n" + evidence + "\n" + qa
-    for marker in (
-        "browser → DTMO API → governed integration adapter → upstream service",
-        "server-side RBAC",
-        "compatibility path",
-        "does not prove",
-    ):
-        assert marker.lower() in combined.lower(), marker
 
 
 def test_phase11_10a_architecture_baseline_remains_discoverable() -> None:
@@ -157,7 +175,6 @@ def test_phase11_10_execution_package_is_professionally_discoverable() -> None:
     evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
     current = _read("docs/project/CURRENT_STATE.md")
     root_readme = _read("README.md")
-
     for marker in (
         "PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md",
         "PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json",

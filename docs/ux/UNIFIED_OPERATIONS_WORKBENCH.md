@@ -1,6 +1,6 @@
 # DTMO Unified Operations Workbench
 
-Status: **Phase 11.10a PASS / REPOSITORY_COMPLETE; Phase 11.10b IN PROGRESS / CANONICAL SHELL IMPLEMENTATION**  
+Status: **Phase 11.10a PASS / REPOSITORY_COMPLETE; Phase 11.10b PASS / REPOSITORY_COMPLETE; Phase 11.10c IN PROGRESS / COMMAND CENTER**  
 Visual reference: approved next-generation command-center concept (design target only, not evidence).
 
 ## Purpose
@@ -18,9 +18,9 @@ The workbench follows a stable four-zone composition:
 - **main workspace** for the current operational task;
 - **right context rail** for selected-object facts and governed actions.
 
-Phase 11.10b implements this shell foundation under `/workbench/`. The command palette is navigation-only in this slice, the context rail starts with an explicit no-selection state and later workspace routes do not fabricate feature data.
+Phase 11.10b accepted this shell foundation under `/workbench/`. The command palette is navigation-only in the accepted shell, the context rail starts with an explicit no-selection state and later workspace routes do not fabricate feature data.
 
-The Command Center additionally uses a KPI row, operational widgets and a workflow strip inspired by the approved graphical reference; that functional content remains Phase 11.10c scope.
+Phase 11.10c implements the first functional workspace: the Command Center. Its KPI layer, recent-intelligence view, integration capability view, role-aware navigation and workflow orientation use attributable DTMO read models and explicit degraded/unavailable states.
 
 ## Primary journey
 
@@ -45,52 +45,38 @@ A representative analyst journey is:
 
 The normal journey remains inside DTMO.
 
-## Command Center target
+## Command Center
 
-The Command Center provides a truthful operational picture, not decorative pseudo-data.
+The active Phase 11.10c Command Center provides a truthful operational picture, not decorative pseudo-data.
 
 ### KPI layer
 
-Candidate metrics include:
+The implemented canonical read model includes:
 
-- threats/new intelligence;
-- IOC matches;
-- active incidents/cases;
-- high-risk vulnerabilities;
-- system/integration health;
-- pending human approvals.
+- total intelligence objects;
+- high/critical intelligence;
+- new intelligence in the preceding 24 hours;
+- candidate intelligence pending review;
+- reviewed intelligence awaiting a separate external-share decision;
+- intelligence with education relevance of at least 80.
 
-Every metric must have a defined canonical source, freshness rule and empty/degraded state before implementation.
+A missing canonical datastore produces `unavailable`/`null`, not synthetic zero values.
 
 ### Threat intelligence panel
 
-May include:
-
-- recent/high-priority intelligence;
-- severity trend;
-- campaign/actor activity;
-- vulnerability exploitation context;
-- education relevance;
-- geographic context only when source data justifies it.
+Phase 11.10c includes recent canonical intelligence with source, severity, education relevance, review state and discovery time. Later bounded slices may add trend, campaign/actor, vulnerability and geographic context only where attributable data contracts exist.
 
 ### Security operations panel
 
-May include:
-
-- open/in-progress cases;
-- unassigned work;
-- SLA warnings;
-- pending enrichment/analysis;
-- pending decision/approval;
-- recently resolved work.
+Case/task/SLA operational workload remains later TheHive/Investigation scope. The Command Center does not fabricate those values before their governed API contract exists.
 
 ### Framework integration panel
 
-Shows attributable health and activity for DTMO plus governed Taranis AI, IntelOwl, OpenCTI, MISP, TheHive and Cortex integration paths. Green status must mean a specifically defined health check, not assumed service availability.
+Phase 11.10c shows governed capability/configuration state for Taranis AI, IntelOwl, OpenCTI, MISP, TheHive and Cortex. A feature flag or configured API base never means `healthy`. Persisted connector execution may be shown only as attributable runtime observation and is not promoted to a general upstream-health claim.
 
 ### Quick actions
 
-Role- and context-aware actions may include search, analyze IOC, create case, run source, start enrichment, prepare sharing, generate report and inspect system health. Server authorization remains authoritative.
+Phase 11.10c exposes role-aware navigation based on server-issued permissions. Visibility is usability only. Review, analysis, source execution, case handoff, sharing and administration remain separately server-authorized.
 
 ## Object-centric workspace
 
@@ -106,6 +92,8 @@ Every compatible canonical object should open a shared context model with tabs s
 - Timeline/Audit.
 
 The right context rail may expose counts/status from IntelOwl, Cortex, OpenCTI, MISP and TheHive without requiring a separate upstream login. Until a bounded feature slice supplies attributable data, the rail must state that no object is selected rather than infer facts.
+
+The complete object-centric intelligence experience begins in **Phase 11.10d Unified Intelligence Workspace**, only after 11.10c is accepted and merged.
 
 ## Integrated capability expectations
 
@@ -183,9 +171,9 @@ The design must not imitate a decorative 'Hollywood hacker' interface.
 The interface programme is executed as bounded Phase 11.10 candidate-completion slices:
 
 - 11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`;
-- 11.10b canonical application shell — active;
-- 11.10c Command Center;
-- 11.10d Unified Intelligence Workspace;
+- 11.10b canonical application shell — `PASS / REPOSITORY_COMPLETE`;
+- 11.10c Command Center — active;
+- 11.10d Unified Intelligence Workspace — next after 11.10c acceptance/merge;
 - 11.10e IntelOwl/Cortex analysis;
 - 11.10f OpenCTI graph/entity workspace;
 - 11.10g MISP Sharing & Exchange;
@@ -203,4 +191,4 @@ Phase 11.11 remains blocked until 11.10p is explicitly accepted.
 
 ## Evidence boundary
 
-This document is product/UX architecture. The graphical reference and repository documentation are not evidence of live integration, staging acceptance, production-equivalent validation or production authorization.
+This document is product/UX architecture. The graphical reference and repository documentation are not evidence of live integration, staging acceptance, production-equivalent validation or production authorization. Repository/browser CI for 11.10c does not prove live upstream service health.

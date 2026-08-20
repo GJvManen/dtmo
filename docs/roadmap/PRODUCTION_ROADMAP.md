@@ -4,7 +4,7 @@ Last updated: **2026-08-20**
 
 ## Purpose
 
-This roadmap separates production authorization from product evolution and platform industrialisation. Repository engineering, release supply-chain evidence, accountable acceptance, deployment-bound validation, independent assurance and production authorization remain distinct evidence classes.
+This roadmap separates production authorization from product evolution and platform industrialisation. Repository engineering, accountable functional acceptance, deployment-bound validation, independent assurance and production authorization remain distinct evidence classes.
 
 ## Current position
 
@@ -16,12 +16,12 @@ This roadmap separates production authorization from product evolution and platf
 | Phase 8 | Production-equivalent validation | `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE` |
 | Phase 9 | Independent external assurance | `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE` |
 | Phase 10 | Formal production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
-| Phase 11.1–11.8 | Service integrations and integrated runtime industrialisation | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.9 | Migration and compatibility | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.1–11.9 | Service integrations, runtime and migration compatibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10 | Candidate completion + new production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.10a | Frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10b | Canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10c | Command Center | `NOT STARTED` |
+| Phase 11.10b | Canonical application shell | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10c | Command Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.10d | Unified Intelligence Workspace | `NOT STARTED` |
 | Phase 11.10p | Fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
 | Phase 11.11 | New independent external assurance | `NOT STARTED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
@@ -30,39 +30,25 @@ DTMO remains **not production authorized**. Phase 11 is `IN PROGRESS / ACTIVE` a
 
 ## Historical readiness evidence
 
-Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate they actually covered. Those claims are historical and are not transferred to the materially changed Phase 11 platform.
+Phase 8 remains `PASS / OWNER_ACCEPTED` and Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only. Those claims are historical and cannot be transferred to the materially changed Phase 11 candidate.
 
 ## Phase 11 platform industrialisation
 
-The authoritative detailed programme is `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`. The controlled order is Taranis → IntelOwl → OpenCTI → MISP → TheHive → Cortex historical decision/later bounded connector → integrated runtime → migration/compatibility → Unified Operations Workbench candidate completion → fresh production-equivalent validation → fresh independent assurance.
+The authoritative detailed programme is `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`. Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`. The accepted baseline includes Taranis AI, IntelOwl, OpenCTI, MISP, TheHive, Cortex, Kubernetes/Helm/GitOps, workload identity/external secrets, ingress/TLS/network segmentation, HA, observability, recovery, supply chain, capacity, upgrade/rollback and forward-first migration compatibility.
 
-### Phase 11.1–11.8 — Accepted integrated repository baseline
+Repository acceptance of these controls does not establish production-equivalent behavior.
 
-**Status:** `PASS / REPOSITORY_COMPLETE`
-
-Accepted controls include the complete service-integration baseline and Kubernetes/Helm/GitOps runtime industrialisation: workload identity/external secrets, ingress/TLS/network segmentation, HA/disruption, observability, backup/recovery, software supply chain, capacity/resource planning and upgrade/rollback contracts.
-
-These are bounded repository claims. They do not establish production-equivalent behavior or production authorization.
-
-### Phase 11.9 — Migration and compatibility
-
-**Status:** `PASS / REPOSITORY_COMPLETE`
-
-The accepted contract requires one connected Alembic revision graph, explicit migration functions, forward-first sequencing and backward-compatible rolling application overlap. Destructive changes require expand/migrate/contract. Application rollback never authorizes automatic database down migration.
-
-### Phase 11.10 — Candidate completion and new production-equivalent validation
+## Phase 11.10 — Candidate completion and validation
 
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`
 
-The owner-required next-generation interface materially changes the candidate. Therefore Phase 11.10 is executed in two controlled parts.
+The Unified Operations Workbench materially changes the candidate. Phase 11.10 therefore completes the workbench first, freezes one immutable candidate, and only then performs the fresh production-equivalent exercise.
 
-#### Part A — 11.10a–11.10o candidate completion
-
-The interface is built one bounded PR at a time:
+### Part A — 11.10a–11.10o candidate completion
 
 1. 11.10a frontend architecture/design contract — `PASS / REPOSITORY_COMPLETE`;
-2. **11.10b canonical application shell — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`**;
-3. 11.10c Command Center — `NOT STARTED`;
+2. 11.10b canonical application shell — `PASS / REPOSITORY_COMPLETE`;
+3. **11.10c Command Center — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`**;
 4. 11.10d Unified Intelligence Workspace — `NOT STARTED`;
 5. 11.10e IntelOwl/Cortex integrated analysis — `NOT STARTED`;
 6. 11.10f OpenCTI graph/entity workspace — `NOT STARTED`;
@@ -76,63 +62,55 @@ The interface is built one bounded PR at a time:
 14. 11.10n role-aware UX/accessibility — `NOT STARTED`;
 15. 11.10o consolidation/full functional acceptance — `NOT STARTED`.
 
-The canonical frontend security path is **browser → DTMO API → governed integration adapter → upstream service**. **Server-side RBAC**, provenance, human publication/share authority and separate case authority remain unchanged.
+The canonical security path remains **browser → DTMO API → governed integration adapter → upstream service**. **Server-side RBAC**, provenance, human publication/share authority and separate TheHive case authority remain authoritative. `/ui/console` remains a temporary **compatibility path**.
 
-##### Active 11.10b shell boundary
+### Active 11.10c Command Center
 
-11.10b implements the accepted architecture as a separately built React/TypeScript/Vite workbench under `/workbench/`. The direct frontend dependency set is exact-pinned and the committed npm lockfile is consumed with `npm ci` in CI and the frontend container build stage. Node/npm remain build-stage tooling; only built static assets enter the Python runtime image.
+The Command Center is a read-only canonical operational view. It provides intelligence volume, high/critical activity, 24-hour intake, review/share-decision workload, high education relevance, recent canonical intelligence and capability state for Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex.
 
-The shell includes task-oriented primary navigation, top status/command bar, navigation-only command palette, context rail, responsive/mobile behavior, skip/focus/reduced-motion baseline, semantic dark/light themes and same-origin static serving with strict CSP and immutable hashed-asset caching.
+The interface must fail closed:
 
-`/ui/console` remains a temporary **compatibility path** and is not a second feature-development target. Route foundations for future workspaces do not fabricate live intelligence, cases, vulnerabilities, integration status or approval state. Command Center functional content starts only in 11.10c.
+- canonical-store failure produces unavailable/null metrics rather than synthetic zero values;
+- feature enablement/configuration is not a general runtime-health claim;
+- persisted execution may be presented only as attributable observation;
+- role-aware visibility never becomes authorization;
+- no review/share/case/connector/admin mutation authority is added by the Command Center.
 
-Repository/browser shell acceptance **does not prove** live upstream integration behavior, production-equivalent operation, independent assurance or production authorization.
+Authoritative evidence is `docs/architecture/PHASE11_10C_COMMAND_CENTER.md`, `docs/qa/PHASE11_10C_COMMAND_CENTER_GATE.md`, `backend/tests/test_phase11_10c_command_center_contract.py`, `backend/tests/test_phase11_10c_command_center_browser.py` and `.github/workflows/phase11-command-center.yml`.
 
-#### Part B — 11.10p new production-equivalent validation
+Repository/browser acceptance **does not prove** live upstream health, production-equivalent operation, independent assurance or production authorization.
 
-After 11.10o acceptance, freeze one immutable integrated deployment identity and run the fresh production-equivalent validation. The complete package requires candidate identity, migration/compatibility, upgrade, rollback, health/readiness, representative saturation/capacity and recovery/continuity evidence.
+### Part B — 11.10p fresh production-equivalent validation
 
-```mermaid
-flowchart LR
-    C[11.10a-o candidate completion] --> F[Immutable integrated candidate]
-    F --> M[Migration + compatibility]
-    M --> U[Upgrade]
-    U --> H[Health]
-    H --> S[Saturation]
-    S --> R[Recovery]
-    R --> B[Exact prior-digest rollback]
-    B --> A[Accountable acceptance]
-```
+After 11.10o acceptance, freeze one immutable integrated deployment identity. 11.10p requires fresh evidence for candidate identity, migration/compatibility, upgrade, exact prior-digest rollback plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity.
 
-All external artifacts must be attributable to the same candidate fingerprint and production-equivalent environment. Historical Phase 8/9 evidence cannot satisfy this gate. Missing, ambiguous, inaccessible, placeholder or mixed-candidate evidence fails closed.
+All external evidence must identify the **same immutable** candidate fingerprint and production-equivalent environment. Application rollback does not authorize automatic database down migration. Historical Phase 8/9 evidence cannot satisfy the gate. Missing, ambiguous, inaccessible, placeholder, historical-only or mixed-candidate evidence must **fail closed**.
 
-Repository CI and the manifest validator support the gate but are not live-environment evidence. Design mockups and generated frontend visuals are design artifacts only. Phase 11.10 completes only when candidate completion is accepted, the complete 11.10p real-environment package is reviewed and an accountable owner records `PASS / OWNER_ACCEPTED`.
+The controlled package remains `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`, `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`, `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`, `tools/phase11_production_equivalent_validation.py`, `backend/tests/test_phase11_10_production_equivalent_validation.py` and `.github/workflows/phase11-production-equivalent-validation.yml`.
 
-### Phase 11.11 — New independent external assurance
+Repository CI and manifest validation support the gate but are not real-environment evidence. Phase 11.10 completes only when the candidate-completion programme and 11.10p evidence are explicitly `PASS / OWNER_ACCEPTED`.
+
+## Phase 11.11 — New independent external assurance
 
 **Status:** `NOT STARTED`
 
-Run fresh independent assurance against the same immutable integrated candidate only after Phase 11.10 acceptance. Historical Phase 9 assurance cannot satisfy this gate. Material candidate changes require a new production-equivalent evidence binding before assurance.
+Run fresh independent assurance against the same immutable integrated candidate only after Phase 11.10 acceptance. Historical Phase 9 assurance cannot satisfy this gate.
 
 ## Phase 12 — Formal production GO/NO-GO
 
 **Status:** `NOT STARTED`
 
-Phase 12 starts only after accepted Phase 11.10 and Phase 11.11 evidence for the same immutable integrated release identity plus required production ownership, IAM/secrets/network/recovery/monitoring/privacy/legal/change approvals.
-
-## Product and authority boundary
-
-DTMO remains the education-sector CTI and decision-support layer and becomes the canonical control plane for normal user workflows. Generic collection, enrichment, graph, exchange and case-management capabilities remain separate services. Frontend integration, deployment, validation, supply-chain metadata and signatures do not alter licensing boundaries, grant publication/share or case authority, or establish local compromise.
+Phase 12 begins only after accepted Phase 11.10 and Phase 11.11 evidence for the same release identity plus accountable production ownership, residual-risk, IAM/secrets/network/recovery/monitoring/privacy/legal/change prerequisites.
 
 ## Delivery discipline
 
-Each material repository change requires one bounded pull request with explicit acceptance criteria, exact-head CI, expected-head protection and synchronized professional documentation. Production-equivalent validation and independent assurance remain external evidence classes and cannot be manufactured by repository changes.
+Each material repository change requires one bounded PR with explicit acceptance criteria, exact-head CI, expected-head protection and synchronized professional documentation. Production-equivalent validation and independent assurance remain external evidence classes and cannot be manufactured by repository changes.
 
 ## Immediate sequence
 
-1. Complete **Phase 11.10b canonical application shell** on one fully green exact final head and merge with expected-head protection.
-2. Only then start **11.10c Command Center**.
-3. Continue 11.10d–11.10o one green merged bounded PR at a time.
-4. Freeze one immutable integrated candidate and execute **11.10p fresh production-equivalent validation**.
-5. After explicit Phase 11.10 acceptance, run Phase 11.11 independent external assurance against that same candidate.
-6. Enter Phase 12 only after both evidence classes are accepted and all production-specific prerequisites are reviewable.
+1. Complete **Phase 11.10c Command Center** on one fully green exact head and merge with expected-head protection.
+2. Only then start **11.10d Unified Intelligence Workspace**.
+3. Continue 11.10e–11.10o one green merged bounded PR at a time.
+4. Freeze one immutable candidate and execute **11.10p**.
+5. Run Phase 11.11 against that same candidate after explicit 11.10 acceptance.
+6. Enter Phase 12 only after both evidence classes are accepted.
