@@ -14,6 +14,11 @@ def _dist_root() -> Path:
     return Path(configured).expanduser().resolve()
 
 
+def workbench_built() -> bool:
+    """Return whether the canonical workbench index is available to this runtime."""
+    return (_dist_root() / "index.html").is_file()
+
+
 def _index_headers() -> dict[str, str]:
     return {
         "Cache-Control": "no-store",
@@ -28,7 +33,7 @@ def _index_headers() -> dict[str, str]:
 
 def _serve_index() -> Response:
     index = _dist_root() / "index.html"
-    if not index.is_file():
+    if not workbench_built():
         return RedirectResponse(
             url="/ui/console",
             status_code=307,
