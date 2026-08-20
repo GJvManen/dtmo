@@ -46,7 +46,7 @@ def test_frontend_architecture_preserves_canonical_trust_path() -> None:
         "server-side RBAC",
         "human/service identity separation",
         "no local-compromise inference",
-        "Phase 11.10b — canonical application shell",
+        "Phase 11.10b implemented the canonical shell",
     ):
         assert marker in text, f"missing frontend architecture marker: {marker}"
 
