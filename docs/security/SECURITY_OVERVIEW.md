@@ -7,15 +7,17 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository e
 
 DTMO protects confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence. Source trust, identity, authorization, evidence and human decision boundaries remain explicit and enforceable.
 
-DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9 and Phase 11.10a–11.10e are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**; the active bounded gate is **Phase 11.10f OpenCTI graph/entity workspace**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10g, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`.
+DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9 and Phase 11.10a–11.10f are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**; the active bounded gate is **Phase 11.10g MISP Sharing & Exchange**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10h, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`.
 
 ## Identity and access control
 
 - **Server-side RBAC remains authoritative.**
 - Human and service identities remain separate.
-- `read:intelligence` controls intelligence discovery, canonical object reading, analysis history/capability reads and OpenCTI graph/entity reads.
-- `review:intelligence` controls explicit IntelOwl/Cortex analyzer execution in the accepted 11.10e workspace.
+- `read:intelligence` controls intelligence discovery, canonical object reading, analysis history/capability reads, OpenCTI graph/entity reads and MISP sharing-state reads.
+- `review:intelligence` controls explicit intelligence review and remains distinct from external sharing approval.
+- `approve:share` controls human external sharing approval and requires a different human principal than the recorded reviewer.
 - `handoff:case` remains distinct from `approve:share`.
+- Service accounts cannot perform human review/share approval and cannot export intelligence to MISP.
 - Connectors, analyzers, graph clients, CI identities, Kubernetes service accounts, frontend controls and integrated platforms do not receive human publication/share or case-handoff authority.
 - Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/API/licensing/provider boundaries.
 - Enrichment, graph, exchange, case, build, deployment or evidence state does not establish DTMO-local exposure, exploitability or compromise.
@@ -23,7 +25,7 @@ DTMO is **not production authorized**. Phase 10 remains **`NO-GO / BLOCKED — P
 
 ## Separation of duties
 
-Human publication/share approval, case handoff, analyzer execution, graph/context reading, CI build identity, deployment, validation review, release signing and production authorization remain distinct authority domains. A connector, analyzer, graph node, Kubernetes workload, browser control, CI job, signed artifact or evidence validator cannot self-grant analyst approval or production authority.
+Human review, publication/share approval, case handoff, analyzer execution, graph/context reading, CI build identity, deployment, validation review, release signing and production authorization remain distinct authority domains. A connector, analyzer, graph node, Kubernetes workload, browser control, CI job, signed artifact or evidence validator cannot self-grant analyst approval or production authority.
 
 ## Accepted Phase 11 security baseline
 
@@ -35,41 +37,44 @@ Phase 11.10a accepted the frontend trust boundary **browser → DTMO API → gov
 
 Phase 11.10b accepted the separately built React/TypeScript/Vite `/workbench/` shell with committed dependency lockfile consumed by `npm ci`, build-stage-only Node/npm, strict same-origin CSP, immutable hashed assets, traversal-safe serving, responsive keyboard navigation, context rail and `/ui/console` as a migration **compatibility path**.
 
-Phase 11.10c accepted the read-only canonical Command Center with fail-closed canonical metrics and explicit separation between configuration and runtime observation. Phase 11.10d accepted read-only Unified Intelligence where search projections remain distinct from canonical detail/provenance. Phase 11.10e accepted human-triggered IntelOwl/Cortex analysis with durable evidence, server-side execution authorization and no-compromise/no-share-authority invariants.
+Phase 11.10c accepted the read-only canonical Command Center with fail-closed canonical metrics and explicit separation between configuration and runtime observation. Phase 11.10d accepted read-only Unified Intelligence where search projections remain distinct from canonical detail/provenance. Phase 11.10e accepted human-triggered IntelOwl/Cortex analysis with durable evidence, server-side execution authorization and no-compromise/no-share-authority invariants. Phase 11.10f accepted read-only OpenCTI graph/entity context over persisted mappings/revisions without inferring generic upstream relationship topology.
 
 These are repository engineering controls and do not prove provider enforcement, live availability, successful recovery, production-equivalent operation or production authorization.
 
-## Active Phase 11.10f OpenCTI graph/entity security boundary
+## Active Phase 11.10g MISP Sharing & Exchange security boundary
 
-The Knowledge Graph workspace is governed by same-origin DTMO APIs. All frontend-facing graph/entity reads require `read:intelligence`; UI state does not create authorization.
+The Sharing & Exchange workspace is governed by same-origin DTMO APIs. UI state does not create authorization and the browser never receives MISP credentials.
 
 Security invariants:
 
-- browser requests remain same-origin DTMO API calls rather than direct privileged OpenCTI GraphQL calls;
-- no OpenCTI token, upstream bearer credential, private key or human approval authority is stored as ordinary frontend state;
-- `GET /api/v1/opencti/capabilities` exposes feature/configuration state only and never converts it into a runtime-health claim;
-- `GET /api/v1/opencti/items/{item_id}/graph` reads one canonical DTMO item plus persisted OpenCTI mappings;
-- `GET /api/v1/opencti/entities/{mapping_id}` exposes persisted stable identity, STIX type, markings, confidence, references, provenance, snapshot identity and immutable revisions;
-- existing OpenCTI persistence enforces `external_share_authorized=false` and `local_compromise_proven=false`;
-- generic OpenCTI entity-to-entity relationship topology is not durably persisted by the current accepted DTMO boundary;
-- the browser therefore renders only attributable `canonical-mapping` edges and MUST NOT infer actor/campaign/malware/indicator/infrastructure relationships from co-occurrence or visual proximity;
-- an empty persisted mapping set is not promoted to an upstream-absence claim;
-- graph/entity presence, confidence or markings do **not prove** local exposure, exploitability, compromise, attribution certainty or remediation state;
-- canonical-data dependency failure is surfaced as unavailable and must **fail closed** rather than becoming a synthetic empty graph;
-- no OpenCTI write, connector invocation, MISP synchronization, TheHive case mutation or publication/share action is introduced by 11.10f;
+- canonical sharing-state reads require `read:intelligence`;
+- review remains a human `review:intelligence` decision;
+- external share approval remains a human `approve:share` decision performed by a principal different from the reviewer;
+- service accounts cannot perform the human review/share decisions and cannot export to MISP;
+- MISP export cannot grant its own approval and accepts only already reviewed/share-approved canonical state;
+- MISP-origin authoritative distribution and sharing-group restrictions cannot be changed on re-export;
+- requested TLP cannot be less restrictive than authoritative source TLP;
+- MISP-origin intelligence without authoritative source restriction evidence fails closed;
+- the current canonical revision uses a deterministic MISP event UUID and persisted `pending`, `success` or `uncertain` evidence blocks automatic replay;
+- uncertain delivery requires operator inspection rather than blind retry;
+- exported MISP events are created with `published=false`;
+- Phase 11.10g contains no Publish or Synchronize action and grants no such authority;
+- configuration is not promoted to live MISP health;
+- sharing-state dependency failure is unavailable rather than synthetic approval/export state;
+- transfer evidence does not prove downstream receipt, local compromise or remediation;
 - repository/browser mocks remain engineering evidence only.
 
-The dedicated Phase 11 OpenCTI Graph Workspace Gate may prove exact-head repository contracts, typecheck/build, server-side read authorization, persisted mapping/entity/revision rendering, explicit topology limitation and fail-closed UI behavior. It **does not prove** live OpenCTI health, completeness of upstream knowledge, local exposure/compromise, production-equivalent operation, independent assurance or production authorization.
+The dedicated Phase 11 MISP Sharing Exchange Gate may prove exact-head repository contracts, typecheck/build, server-side authority separation, handling/replay semantics and fail-closed UI behavior. It **does not prove** live MISP health, publication/synchronization, downstream consumption, production-equivalent operation, independent assurance or production authorization.
 
 ## Threat and vulnerability management
 
 Vulnerability findings remain provenance-bound evidence. A green scan does not establish absence of unknown vulnerabilities; a governed finding cannot be silently suppressed. Exceptions must remain accountable, time-bounded and bound to the exact artifact/finding identity.
 
-Frontend production dependency audit, container/package SBOMs and vulnerability controls remain regression gates during 11.10f. They do not establish vulnerability absence or production readiness.
+Frontend production dependency audit, container/package SBOMs and vulnerability controls remain regression gates during 11.10g. They do not establish vulnerability absence or production readiness.
 
 ## Secrets and signing identities
 
-Raw runtime secrets, TLS private keys and long-lived signing keys do not belong in Git, Helm values, frontend storage, documentation evidence or screenshots. Release signing uses short-lived workload identity. Registry/deployment credentials remain deployment-owned secrets.
+Raw runtime secrets, TLS private keys, MISP API keys and long-lived signing keys do not belong in Git, Helm values, frontend storage, documentation evidence or screenshots. Release signing uses short-lived workload identity. Registry/deployment credentials remain deployment-owned secrets.
 
 ## Availability, capacity and recovery
 
