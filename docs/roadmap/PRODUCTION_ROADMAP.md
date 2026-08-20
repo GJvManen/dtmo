@@ -23,8 +23,9 @@ This roadmap separates production authorization from product evolution and platf
 | Phase 11.10c | Command Center | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10d | Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10e | IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10f | OpenCTI graph/entity workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10g | MISP Sharing & Exchange | `NOT STARTED` |
+| Phase 11.10f | OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10g | MISP Sharing & Exchange | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.10h | TheHive Investigations & Cases | `NOT STARTED` |
 | Phase 11.10p | Fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
 | Phase 11.11 | New independent external assurance | `NOT STARTED` |
 | Phase 12 | New formal production go/no-go | `NOT STARTED` |
@@ -54,8 +55,8 @@ The Unified Operations Workbench materially changes the candidate. Phase 11.10 t
 3. 11.10c Command Center — `PASS / REPOSITORY_COMPLETE`;
 4. 11.10d Unified Intelligence Workspace — `PASS / REPOSITORY_COMPLETE`;
 5. 11.10e IntelOwl/Cortex integrated analysis — `PASS / REPOSITORY_COMPLETE`;
-6. **11.10f OpenCTI graph/entity workspace — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`**;
-7. 11.10g MISP Sharing & Exchange — `NOT STARTED`;
+6. 11.10f OpenCTI graph/entity workspace — `PASS / REPOSITORY_COMPLETE`;
+7. **11.10g MISP Sharing & Exchange — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`**;
 8. 11.10h TheHive Investigations & Cases — `NOT STARTED`;
 9. 11.10i Vulnerability & Exposure Center — `NOT STARTED`;
 10. 11.10j Sources & Collection Control Center — `NOT STARTED`;
@@ -67,30 +68,31 @@ The Unified Operations Workbench materially changes the candidate. Phase 11.10 t
 
 The canonical security path remains **browser → DTMO API → governed integration adapter → upstream service**. **Server-side RBAC**, provenance, human publication/share authority and separate TheHive case authority remain authoritative. `/ui/console` and earlier UI routes remain temporary **compatibility paths**.
 
-### Accepted 11.10a–11.10e workbench baseline
+### Accepted 11.10a–11.10f workbench baseline
 
-The accepted workbench includes the frontend architecture, canonical React/TypeScript/Vite shell, Command Center, Unified Intelligence/IOC Explorer and Integrated Analysis. Search projections do not become canonical truth; capability configuration does not become runtime health; IntelOwl/Cortex output does not prove local compromise or grant external-share/publication authority.
+The accepted workbench includes the frontend architecture, canonical React/TypeScript/Vite shell, Command Center, Unified Intelligence/IOC Explorer, Integrated Analysis and OpenCTI Graph/Entity. Search projections do not become canonical truth; capability configuration does not become runtime health; IntelOwl/Cortex output does not prove local compromise or grant external-share/publication authority; OpenCTI generic relationship topology is not inferred beyond persisted evidence.
 
-### Active 11.10f OpenCTI graph/entity workspace
+### Active 11.10g MISP Sharing & Exchange
 
-The active slice makes `/workbench/intelligence/graph` functional through read-only DTMO APIs over persisted OpenCTI/STIX mapping evidence.
+The active slice makes `/workbench/sharing` functional by composing existing DTMO governance and MISP export controls rather than adding a parallel authority path.
 
-It adds:
+It provides:
 
-- `GET /api/v1/opencti/capabilities` for feature/configuration state without inferred runtime health;
-- `GET /api/v1/opencti/items/{item_id}/graph` for canonical DTMO root plus persisted OpenCTI mapping nodes;
-- `GET /api/v1/opencti/entities/{mapping_id}` for stable identity, markings, confidence, external references, provenance, snapshot identity and immutable revision detail;
-- a responsive graph and equivalent accessible entity-list surface inside `/workbench/intelligence/graph`.
+- `GET /api/v1/sharing/items/{item_id}` for sanitized canonical review/share/restriction/export state;
+- existing `review:intelligence` review action;
+- existing `approve:share` approval action, which must be performed by a different human principal from the reviewer;
+- replay-protected export of an already reviewed/share-approved canonical revision through the existing MISP exporter;
+- a responsive decision-chain, handling-restriction and export-history UI.
 
-All reads require `read:intelligence`. The browser receives no OpenCTI credential and does not call `/graphql` directly.
+Service accounts cannot substitute for human review/share approval or export. Browser code calls DTMO APIs only and receives no MISP API key.
 
-The accepted Phase 11.4 persistence boundary does not durably store generic OpenCTI entity-to-entity relationship topology. Therefore the graph draws only proven `canonical-mapping` edges between the DTMO item and persisted OpenCTI mappings. Missing malware/campaign/actor/indicator/infrastructure topology must **fail closed** and must not be inferred from node coexistence or visual layout.
+For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions cannot be weakened. A deterministic current-revision export with `pending`, `success` or `uncertain` evidence blocks automatic replay; uncertain delivery requires inspection.
 
-An empty persisted mapping set does not prove OpenCTI absence. OpenCTI graph/entity presence, confidence or markings do **not prove** local exposure, exploitability, compromise, attribution certainty or remediation state and grant no external-share/publication authority.
+The MISP event is created with `published=false`. Phase 11.10g has no Publish or Synchronize action. Configuration does not establish runtime health, and technical event creation does not prove publication, synchronization, downstream consumption or local compromise.
 
-Authoritative evidence is `docs/architecture/PHASE11_10F_OPENCTI_GRAPH_ENTITY_WORKSPACE.md`, `docs/user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md`, `docs/qa/PHASE11_10F_OPENCTI_GRAPH_ENTITY_GATE.md`, `backend/tests/test_phase11_10f_opencti_graph_contract.py`, `backend/tests/test_phase11_10f_opencti_graph_browser.py` and `.github/workflows/phase11-opencti-graph-workspace.yml`.
+Authoritative evidence is `docs/architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md`, `docs/user/MISP_SHARING_EXCHANGE_WORKSPACE.md`, `docs/qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md`, `backend/tests/test_phase11_10g_misp_sharing_contract.py`, `backend/tests/test_phase11_10g_misp_sharing_browser.py` and `.github/workflows/phase11-misp-sharing-exchange.yml`.
 
-Repository/browser acceptance **does not prove** live OpenCTI connectivity/health, upstream completeness, production-equivalent operation, independent assurance or production authorization.
+Repository/browser acceptance **does not prove** live MISP connectivity/health, publication/synchronization, production-equivalent operation, independent assurance or production authorization.
 
 ### Part B — 11.10p fresh production-equivalent validation
 
@@ -120,9 +122,9 @@ Each material repository change requires one bounded PR with explicit acceptance
 
 ## Immediate sequence
 
-1. Complete **Phase 11.10f OpenCTI graph/entity workspace** on one fully green exact head and merge with expected-head protection.
-2. Only then start **11.10g MISP Sharing & Exchange**.
-3. Continue 11.10h–11.10o one green merged bounded PR at a time.
+1. Complete **Phase 11.10g MISP Sharing & Exchange** on one fully green exact head and merge with expected-head protection.
+2. Only then start **11.10h TheHive Investigations & Cases**.
+3. Continue 11.10i–11.10o one green merged bounded PR at a time.
 4. Freeze one immutable candidate and execute **11.10p**.
 5. Run Phase 11.11 against that same candidate after explicit 11.10 acceptance.
 6. Enter Phase 12 only after both evidence classes are accepted.
