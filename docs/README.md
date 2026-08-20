@@ -43,7 +43,10 @@ Phase 11.1–11.7b integration contracts remain accepted and discoverable throug
 
 Accepted integration and runtime documentation remains directly discoverable:
 
+- IntelOwl enrichment: [user/INTELOWL_ENRICHMENT_WORKFLOW.md](user/INTELOWL_ENRICHMENT_WORKFLOW.md). Phase 11.3 IntelOwl remains `PASS / REPOSITORY_COMPLETE`; enrichment is governed evidence and does not itself grant dissemination authority or prove local compromise.
+- Phase 11.4 OpenCTI remains `PASS / REPOSITORY_COMPLETE`; its accepted knowledge-graph integration boundary remains part of the controlled Phase 11 baseline and does not imply live OpenCTI connectivity or production authorization.
 - TheHive implementation: [TheHive integration](integrations/THEHIVE_HANDOFF.md), [TheHive contract](architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md), [TheHive runbook](operations/THEHIVE_HANDOFF_RUNBOOK.md), [TheHive administration](administration/THEHIVE_HANDOFF_CONFIGURATION.md) and **Phase 11.6 TheHive Handoff Implementation Gate**.
+- Phase 11.7 historical Cortex decision: [CORTEX_DECISION_GATE.md](qa/PHASE11_7_CORTEX_DECISION_GATE.md). This remains the accepted historical decision record and is not rewritten by the later 11.7b connector implementation.
 - Cortex analyzer connector: [CORTEX_ANALYZER_CONNECTOR.md](integrations/CORTEX_ANALYZER_CONNECTOR.md) and [PHASE11_7B_CORTEX_CONNECTOR_GATE.md](qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md).
 - Runtime foundation: [PHASE11_8_RUNTIME_FOUNDATION.md](architecture/PHASE11_8_RUNTIME_FOUNDATION.md) and [KUBERNETES_RUNTIME_CONFIGURATION.md](administration/KUBERNETES_RUNTIME_CONFIGURATION.md).
 - [11.8b workload identity and external secrets](architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md) (`PHASE11_8B_WORKLOAD_IDENTITY_SECRETS`) with [WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md](administration/WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md).
