@@ -114,4 +114,14 @@ The governed screenshot catalogue contains UI-01 through UI-10. These are docume
 
 DTMO is released under the **Apache License, Version 2.0**. Upstream products retain their own licenses, trademarks, service terms and operational boundaries. DTMO integrations must use authorized credentials and documented APIs and must not be used to bypass provider, organizational, privacy or legal controls.
 
+Governance and contribution entry points are preserved as explicit repository contracts:
+
+- `LICENSE` and `NOTICE` — project licensing and notices;
+- `SECURITY.md` — vulnerability reporting and security policy;
+- `CONTRIBUTING.md` — contribution requirements;
+- `CODE_OF_CONDUCT.md` — community conduct expectations;
+- `SUPPORTED_VERSIONS.md` — supported release/security-maintenance scope;
+- `docs/legal/LICENSING.md` — DTMO licensing model and boundaries;
+- `docs/legal/THIRD_PARTY.md` — third-party licensing and integration boundaries.
+
 DTMO is defensive security software. Publication/share authority remains human-governed, TheHive case authority remains distinct, and enrichment/correlation/graph presence does not prove local compromise.
