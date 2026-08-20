@@ -11,10 +11,15 @@ VERSIONS = ROOT / "database" / "migrations" / "versions"
 
 def _literal_assignment(tree: ast.Module, name: str) -> Any:
     for node in tree.body:
+        value: ast.expr | None = None
         if isinstance(node, ast.Assign):
-            for target in node.targets:
-                if isinstance(target, ast.Name) and target.id == name:
-                    return ast.literal_eval(node.value)
+            if any(isinstance(target, ast.Name) and target.id == name for target in node.targets):
+                value = node.value
+        elif isinstance(node, ast.AnnAssign):
+            if isinstance(node.target, ast.Name) and node.target.id == name:
+                value = node.value
+        if value is not None:
+            return ast.literal_eval(value)
     raise ValueError(f"missing {name}")
 
 
