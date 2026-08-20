@@ -16,6 +16,44 @@ type Session = {
   permissions: string[];
 };
 
+type CommandMetric = {
+  id: string;
+  label: string;
+  value: number | null;
+  tone: 'neutral' | 'critical' | 'warning' | 'accent';
+};
+
+type RecentIntelligence = {
+  id: string;
+  title: string;
+  source_id: string;
+  severity: string;
+  education_relevance: number;
+  review_status: string;
+  discovered_at: string;
+};
+
+type IntegrationCapability = {
+  id: string;
+  label: string;
+  state: string;
+  enabled: boolean;
+  configured: boolean;
+  scheduled_collection: boolean;
+  runtime_observation: string | null;
+  last_observed_at: string | null;
+  runtime_health_claim: boolean;
+};
+
+type CommandCenterSnapshot = {
+  generated_at: string;
+  data_state: 'available' | 'unavailable';
+  metrics: CommandMetric[];
+  recent_intelligence: RecentIntelligence[];
+  integrations: IntegrationCapability[];
+  evidence_boundary: string;
+};
+
 type WorkspaceDefinition = {
   path: string;
   label: string;
@@ -27,7 +65,7 @@ type WorkspaceDefinition = {
 };
 
 const workspaces: WorkspaceDefinition[] = [
-  { path: '/command-center', label: 'Command Center', group: 'Home', icon: '⌂', title: 'Command Center', description: 'Canonical operational landing workspace.', delivery: 'Functional command-center content is delivered in Phase 11.10c.' },
+  { path: '/command-center', label: 'Command Center', group: 'Home', icon: '⌂', title: 'Command Center', description: 'Canonical operational landing workspace.', delivery: 'Command Center is delivered in Phase 11.10c.' },
   { path: '/intelligence', label: 'Threat Intelligence', group: 'Intelligence', icon: '◎', title: 'Threat Intelligence', description: 'Canonical intelligence workspace and object navigation.', delivery: 'Unified intelligence content is delivered in Phase 11.10d.' },
   { path: '/intelligence/iocs', label: 'IOC Explorer', group: 'Intelligence', icon: '◇', title: 'IOC Explorer', description: 'IOC-oriented route within the canonical intelligence workspace.', delivery: 'IOC feature content is delivered with the unified intelligence workspace.' },
   { path: '/intelligence/graph', label: 'Knowledge Graph', group: 'Intelligence', icon: '⌘', title: 'Knowledge Graph', description: 'Graph route governed by DTMO API and provenance boundaries.', delivery: 'OpenCTI graph/entity content is delivered in Phase 11.10f.' },
@@ -68,6 +106,142 @@ function useShellStatus() {
   return { health, session };
 }
 
+function severityLabel(value: string) {
+  if (value === 'critical') return 'Critical';
+  if (value === 'high') return 'High';
+  if (value === 'medium') return 'Medium';
+  if (value === 'low') return 'Low';
+  return 'Informational';
+}
+
+function relativeTime(value: string | null) {
+  if (!value) return 'No runtime observation';
+  const delta = Date.now() - new Date(value).getTime();
+  if (!Number.isFinite(delta) || delta < 0) return new Date(value).toLocaleString();
+  const minutes = Math.floor(delta / 60_000);
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} h ago`;
+  return `${Math.floor(hours / 24)} d ago`;
+}
+
+function CommandCenter({ session, health }: { session?: Session; health?: Health }) {
+  const snapshot = useQuery({
+    queryKey: ['command-center'],
+    queryFn: () => fetchJson<CommandCenterSnapshot>('/api/v1/command-center'),
+    retry: false,
+    refetchInterval: 60_000,
+  });
+  const permissions = new Set(session?.permissions ?? []);
+  const quickActions = [
+    { label: 'Threat Intelligence', detail: 'Search and investigate canonical intelligence.', path: '/intelligence', permission: 'read:intelligence', icon: '◎' },
+    { label: 'Review queue', detail: 'Continue governed intelligence review.', path: '/intelligence', permission: 'review:intelligence', icon: '✓' },
+    { label: 'Collection control', detail: 'Manage sources and connector execution.', path: '/collection', permission: 'manage:connectors', icon: '↓' },
+    { label: 'Investigations', detail: 'Prepare or continue case handoff workflows.', path: '/investigations', permission: 'handoff:case', icon: '▣' },
+    { label: 'Sharing approvals', detail: 'Open the human-governed sharing workspace.', path: '/sharing', permission: 'approve:share', icon: '⇄' },
+    { label: 'Administration', detail: 'Manage identities, roles and policies.', path: '/administration', permission: 'manage:users', icon: '⚙' },
+  ].filter((item) => permissions.has(item.permission));
+  const data = snapshot.data;
+  const canonicalDataAvailable = !snapshot.isError && data?.data_state === 'available';
+  const enabledIntegrations = data?.integrations.filter((item) => item.enabled).length ?? 0;
+
+  return (
+    <section className="command-center" aria-labelledby="workspace-title">
+      <header className="workspace-heading command-heading">
+        <div>
+          <p className="eyebrow">Unified Operations Workbench</p>
+          <h1 id="workspace-title">Command Center</h1>
+          <p>Attributable operational overview of canonical DTMO intelligence, governed workload and integration capability.</p>
+        </div>
+        <div className="heading-statuses">
+          <span className="phase-badge">11.10c Command Center</span>
+          <span className={`phase-badge ${canonicalDataAvailable ? 'available' : 'unavailable'}`}>{canonicalDataAvailable ? 'Canonical data available' : 'Canonical data unavailable'}</span>
+        </div>
+      </header>
+
+      <section className="kpi-grid" aria-label="Operational KPIs">
+        {(data?.metrics ?? Array.from({ length: 6 }, (_, index) => ({ id: `loading-${index}`, label: 'Loading metric', value: null, tone: 'neutral' as const }))).map((metric) => (
+          <article className={`kpi-card tone-${metric.tone}`} key={metric.id}>
+            <p>{metric.label}</p>
+            <strong>{metric.value === null ? '—' : metric.value.toLocaleString()}</strong>
+            <span>{metric.value === null ? 'No attributable value' : 'Canonical DTMO store'}</span>
+          </article>
+        ))}
+      </section>
+
+      <div className="command-grid">
+        <article className="surface command-panel threat-panel">
+          <header className="panel-heading">
+            <div><p className="eyebrow">Threat picture</p><h2>Recent intelligence</h2></div>
+            <NavLink className="text-link" to="/intelligence">Open workspace →</NavLink>
+          </header>
+          {snapshot.isPending && <p className="panel-state">Loading canonical intelligence…</p>}
+          {(snapshot.isError || data?.data_state === 'unavailable') && <div className="panel-state error-state"><strong>Canonical store unavailable</strong><span>No threat counts or recent intelligence are synthesized while the canonical datastore cannot be observed.</span></div>}
+          {canonicalDataAvailable && !data?.recent_intelligence.length && <p className="panel-state">No canonical intelligence objects are currently recorded.</p>}
+          {canonicalDataAvailable && Boolean(data?.recent_intelligence.length) && (
+            <div className="intel-list">
+              {data?.recent_intelligence.map((item) => (
+                <div className="intel-row" key={item.id}>
+                  <span className={`severity-dot severity-${item.severity}`} aria-label={severityLabel(item.severity)} />
+                  <div className="intel-copy"><strong>{item.title}</strong><span>{item.source_id} · relevance {item.education_relevance} · {item.review_status}</span></div>
+                  <time dateTime={item.discovered_at}>{relativeTime(item.discovered_at)}</time>
+                </div>
+              ))}
+            </div>
+          )}
+        </article>
+
+        <article className="surface command-panel integration-panel">
+          <header className="panel-heading">
+            <div><p className="eyebrow">Framework integrations</p><h2>{enabledIntegrations}/{data?.integrations.length ?? 6} enabled</h2></div>
+            <span className="evidence-label">No inferred health</span>
+          </header>
+          {snapshot.isPending && <p className="panel-state">Loading integration capability…</p>}
+          {snapshot.isError && <p className="panel-state error-state">Integration capability could not be loaded.</p>}
+          {data && (
+            <div className="integration-list">
+              {data.integrations.map((integration) => (
+                <div className="integration-row" key={integration.id}>
+                  <span className={`integration-state state-${integration.state}`} aria-hidden="true" />
+                  <div><strong>{integration.label}</strong><span>{integration.state.replaceAll('-', ' ')} · {integration.runtime_observation ? `observed ${integration.runtime_observation}` : 'runtime not observed'}</span></div>
+                  <time>{relativeTime(integration.last_observed_at)}</time>
+                </div>
+              ))}
+            </div>
+          )}
+        </article>
+
+        <article className="surface command-panel quick-panel">
+          <header className="panel-heading"><div><p className="eyebrow">Role-aware access</p><h2>Quick actions</h2></div><span className="evidence-label">Visibility ≠ authority</span></header>
+          {!session && <p className="panel-state">No authorized session context available.</p>}
+          {session && !quickActions.length && <p className="panel-state">No quick actions are exposed for this principal.</p>}
+          <div className="quick-grid">
+            {quickActions.map((action) => (
+              <NavLink className="quick-action" to={action.path} key={action.label}>
+                <span aria-hidden="true">{action.icon}</span><div><strong>{action.label}</strong><small>{action.detail}</small></div>
+              </NavLink>
+            ))}
+          </div>
+        </article>
+
+        <article className="surface command-panel workflow-panel">
+          <header className="panel-heading"><div><p className="eyebrow">Operational flow</p><h2>Governed CTI lifecycle</h2></div><span className={`status-chip ${health?.status === 'healthy' ? 'success' : 'neutral'}`}><span className="status-dot" />{health?.status ?? 'unknown'}</span></header>
+          <div className="workflow-strip" aria-label="Collect enrich analyze investigate respond learn">
+            {['Collect', 'Enrich', 'Analyze', 'Investigate', 'Respond', 'Learn'].map((step, index) => <div key={step}><span>{index + 1}</span><strong>{step}</strong></div>)}
+          </div>
+          <p className="boundary-copy">Command Center is read-only. Review, sharing, case mutation, connector execution and administration remain separate server-authorized actions in their governed workspaces.</p>
+        </article>
+      </div>
+
+      <article className="surface evidence-surface">
+        <div><p className="eyebrow">Evidence boundary</p><h2>Operational visibility without synthetic claims</h2></div>
+        <p>{data?.evidence_boundary ?? 'Command Center never converts missing evidence into a healthy, zero-risk or production-ready claim.'}</p>
+      </article>
+    </section>
+  );
+}
+
 function WorkspaceFoundation({ workspace }: { workspace: WorkspaceDefinition }) {
   return (
     <section className="workspace-foundation" aria-labelledby="workspace-title">
@@ -80,27 +254,10 @@ function WorkspaceFoundation({ workspace }: { workspace: WorkspaceDefinition }) 
         <span className="phase-badge">11.10b shell foundation</span>
       </header>
       <div className="foundation-grid">
-        <article className="surface welcome-surface">
-          <span className="surface-icon" aria-hidden="true">{workspace.icon}</span>
-          <div>
-            <h2>Workspace route ready</h2>
-            <p>{workspace.delivery}</p>
-          </div>
-        </article>
-        <article className="surface boundary-surface">
-          <p className="eyebrow">Evidence boundary</p>
-          <h2>No synthetic operational state</h2>
-          <p>This shell deliberately does not fabricate intelligence, incidents, vulnerabilities, cases, connector health or approval state. Feature data appears only when its governed DTMO API contract is implemented in the corresponding bounded slice.</p>
-        </article>
+        <article className="surface welcome-surface"><span className="surface-icon" aria-hidden="true">{workspace.icon}</span><div><h2>Workspace route ready</h2><p>{workspace.delivery}</p></div></article>
+        <article className="surface boundary-surface"><p className="eyebrow">Evidence boundary</p><h2>No synthetic operational state</h2><p>This shell deliberately does not fabricate intelligence, incidents, vulnerabilities, cases, connector health or approval state. Feature data appears only when its governed DTMO API contract is implemented in the corresponding bounded slice.</p></article>
       </div>
-      <article className="surface compatibility-surface">
-        <div>
-          <p className="eyebrow">Migration compatibility</p>
-          <h2>Existing console remains available during bounded migration</h2>
-          <p>Legacy views remain compatibility paths while capabilities are migrated. They are not parallel targets for new feature development.</p>
-        </div>
-        <a className="button secondary" href="/ui/console">Open compatibility console</a>
-      </article>
+      <article className="surface compatibility-surface"><div><p className="eyebrow">Migration compatibility</p><h2>Existing console remains available during bounded migration</h2><p>Legacy views remain compatibility paths while capabilities are migrated. They are not parallel targets for new feature development.</p></div><a className="button secondary" href="/ui/console">Open compatibility console</a></article>
     </section>
   );
 }
@@ -108,27 +265,11 @@ function WorkspaceFoundation({ workspace }: { workspace: WorkspaceDefinition }) 
 function Navigation({ open, onNavigate }: { open: boolean; onNavigate: () => void }) {
   return (
     <aside className={`primary-nav ${open ? 'open' : ''}`} aria-label="Primaire navigatie">
-      <div className="brand-block">
-        <div className="brand-mark" aria-hidden="true">D</div>
-        <div><strong>DTMO</strong><span>Unified Operations</span></div>
-      </div>
+      <div className="brand-block"><div className="brand-mark" aria-hidden="true">D</div><div><strong>DTMO</strong><span>Unified Operations</span></div></div>
       <nav aria-label="Werkruimten">
-        {groups.map((group) => (
-          <div className="nav-group" key={group}>
-            <p>{group}</p>
-            {workspaces.filter((workspace) => workspace.group === group).map((workspace) => (
-              <NavLink key={workspace.path} to={workspace.path} onClick={onNavigate} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                <span className="nav-icon" aria-hidden="true">{workspace.icon}</span>
-                <span>{workspace.label}</span>
-              </NavLink>
-            ))}
-          </div>
-        ))}
+        {groups.map((group) => <div className="nav-group" key={group}><p>{group}</p>{workspaces.filter((workspace) => workspace.group === group).map((workspace) => <NavLink key={workspace.path} to={workspace.path} onClick={onNavigate} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}><span className="nav-icon" aria-hidden="true">{workspace.icon}</span><span>{workspace.label}</span></NavLink>)}</div>)}
       </nav>
-      <div className="nav-footer">
-        <a href="/docs">API documentation</a>
-        <a href="/ui/console">Compatibility console</a>
-      </div>
+      <div className="nav-footer"><a href="/docs">API documentation</a><a href="/ui/console">Compatibility console</a></div>
     </aside>
   );
 }
@@ -138,26 +279,15 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const results = useMemo(() => workspaces.filter((item) => `${item.label} ${item.group}`.toLowerCase().includes(query.trim().toLowerCase())), [query]);
-
-  useEffect(() => {
-    if (open) {
-      setQuery('');
-      window.setTimeout(() => inputRef.current?.focus(), 0);
-    }
-  }, [open]);
-
+  useEffect(() => { if (open) { setQuery(''); window.setTimeout(() => inputRef.current?.focus(), 0); } }, [open]);
   if (!open) return null;
   return (
     <div className="palette-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
       <section className="command-palette" role="dialog" aria-modal="true" aria-labelledby="palette-title">
         <header><div><p className="eyebrow">Navigation only</p><h2 id="palette-title">Command palette</h2></div><button type="button" className="icon-button" onClick={onClose} aria-label="Sluiten">×</button></header>
-        <label className="sr-only" htmlFor="palette-query">Zoek werkruimte</label>
-        <input ref={inputRef} id="palette-query" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ga naar werkruimte…" autoComplete="off" />
-        <div className="palette-results">
-          {results.map((item) => <button key={item.path} type="button" onClick={() => { navigate(item.path); onClose(); }}><span aria-hidden="true">{item.icon}</span><span><strong>{item.label}</strong><small>{item.group}</small></span></button>)}
-          {!results.length && <p className="empty-message">Geen werkruimte gevonden.</p>}
-        </div>
-        <footer>Phase 11.10b exposes safe navigation only. Governed actions remain in their feature slices and server-authorized APIs.</footer>
+        <label className="sr-only" htmlFor="palette-query">Zoek werkruimte</label><input ref={inputRef} id="palette-query" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Ga naar werkruimte…" autoComplete="off" />
+        <div className="palette-results">{results.map((item) => <button key={item.path} type="button" onClick={() => { navigate(item.path); onClose(); }}><span aria-hidden="true">{item.icon}</span><span><strong>{item.label}</strong><small>{item.group}</small></span></button>)}{!results.length && <p className="empty-message">Geen werkruimte gevonden.</p>}</div>
+        <footer>Navigation is safe convenience only. Governed mutations remain in server-authorized APIs.</footer>
       </section>
     </div>
   );
@@ -167,11 +297,7 @@ function ContextRail({ open, onClose }: { open: boolean; onClose: () => void }) 
   return (
     <aside className={`context-rail ${open ? 'open' : ''}`} aria-label="Objectcontext">
       <header><div><p className="eyebrow">Context</p><h2>Object details</h2></div><button type="button" className="icon-button" onClick={onClose} aria-label="Context sluiten">×</button></header>
-      <div className="context-empty">
-        <span aria-hidden="true">◇</span>
-        <h3>Geen object geselecteerd</h3>
-        <p>De context rail toont alleen attributable canonical data nadat een feature-workspace een object selecteert. Ontbrekende feiten worden niet afgeleid uit een geconfigureerde integratie.</p>
-      </div>
+      <div className="context-empty"><span aria-hidden="true">◇</span><h3>Geen object geselecteerd</h3><p>De context rail toont alleen attributable canonical data nadat een feature-workspace een object selecteert. Ontbrekende feiten worden niet afgeleid uit een geconfigureerde integratie.</p></div>
     </aside>
   );
 }
@@ -184,26 +310,15 @@ export function App() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => (localStorage.getItem('dtmo-workbench-theme') === 'light' ? 'light' : 'dark'));
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem('dtmo-workbench-theme', theme);
-  }, [theme]);
-
+  useEffect(() => { document.documentElement.dataset.theme = theme; localStorage.setItem('dtmo-workbench-theme', theme); }, [theme]);
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault();
-        setPaletteOpen(true);
-      }
-      if (event.key === 'Escape') {
-        setPaletteOpen(false);
-        setNavOpen(false);
-      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); setPaletteOpen(true); }
+      if (event.key === 'Escape') { setPaletteOpen(false); setNavOpen(false); }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, []);
-
   useEffect(() => setNavOpen(false), [location.pathname]);
 
   const healthLabel = health.isPending ? 'Status controleren' : health.isError ? 'Platformstatus onbekend' : `${health.data?.environment ?? 'unknown'} · ${health.data?.status ?? 'unknown'}`;
@@ -215,27 +330,16 @@ export function App() {
       <Navigation open={navOpen} onNavigate={() => setNavOpen(false)} />
       <div className="app-main">
         <header className="topbar">
-          <div className="topbar-start">
-            <button className="icon-button mobile-only" type="button" onClick={() => setNavOpen((value) => !value)} aria-label="Navigatie openen" aria-expanded={navOpen}>☰</button>
-            <div><p className="eyebrow">Dutch Threat Monitoring for Education</p><strong>Operations Workbench</strong></div>
-          </div>
-          <div className="topbar-center">
-            <button type="button" className="command-trigger" onClick={() => setPaletteOpen(true)}><span aria-hidden="true">⌕</span><span>Zoek of navigeer</span><kbd>Ctrl K</kbd></button>
-          </div>
-          <div className="topbar-actions">
-            <span className={`status-chip ${health.isError ? 'error' : health.data?.status === 'healthy' ? 'success' : 'neutral'}`} role="status"><span className="status-dot" />{healthLabel}</span>
-            <button type="button" className="icon-button" onClick={() => setContextOpen((value) => !value)} aria-label="Objectcontext wisselen" aria-expanded={contextOpen}>◇</button>
-            <button type="button" className="icon-button" onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} aria-label="Thema wisselen">{theme === 'dark' ? '☀' : '☾'}</button>
-          </div>
+          <div className="topbar-start"><button className="icon-button mobile-only" type="button" onClick={() => setNavOpen((value) => !value)} aria-label="Navigatie openen" aria-expanded={navOpen}>☰</button><div><p className="eyebrow">Dutch Threat Monitoring for Education</p><strong>Operations Workbench</strong></div></div>
+          <div className="topbar-center"><button type="button" className="command-trigger" onClick={() => setPaletteOpen(true)}><span aria-hidden="true">⌕</span><span>Zoek of navigeer</span><kbd>Ctrl K</kbd></button></div>
+          <div className="topbar-actions"><span className={`status-chip ${health.isError ? 'error' : health.data?.status === 'healthy' ? 'success' : 'neutral'}`} role="status"><span className="status-dot" />{healthLabel}</span><button type="button" className="icon-button" onClick={() => setContextOpen((value) => !value)} aria-label="Objectcontext wisselen" aria-expanded={contextOpen}>◇</button><button type="button" className="icon-button" onClick={() => setTheme((value) => value === 'dark' ? 'light' : 'dark')} aria-label="Thema wisselen">{theme === 'dark' ? '☀' : '☾'}</button></div>
         </header>
-        <div className="identity-strip" aria-live="polite">
-          <span>{principalLabel}</span>
-          <span>Publication/share authority remains server-side and human-governed.</span>
-        </div>
+        <div className="identity-strip" aria-live="polite"><span>{principalLabel}</span><span>Publication/share authority remains server-side and human-governed.</span></div>
         <main id="main-workspace" className="workspace">
           <Routes>
             <Route path="/" element={<Navigate to="/command-center" replace />} />
-            {workspaces.map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
+            <Route path="/command-center/*" element={<CommandCenter session={session.data} health={health.data} />} />
+            {workspaces.filter((workspace) => workspace.path !== '/command-center').map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
             <Route path="*" element={<Navigate to="/command-center" replace />} />
           </Routes>
         </main>
