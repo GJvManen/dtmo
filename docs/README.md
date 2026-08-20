@@ -15,13 +15,13 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 10 production go/no-go | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
 | Phase 11.1–11.7b integrations | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8 integrated runtime industrialisation | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.9 migration / compatibility | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10 production-equivalent validation | `NOT STARTED` |
+| Phase 11.9 migration / compatibility | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **not production authorized** |
 
-The active bounded programme step is **Phase 11.9 migration/compatibility**. Earlier Phase 8/9 evidence remains historical and candidate-bound. Fresh Phase 11.10 production-equivalent validation and Phase 11.11 independent external assurance remain required before Phase 12.
+The active bounded programme step is **Phase 11.10 integrated production-equivalent validation**. Earlier Phase 8/9 evidence remains historical and candidate-bound and cannot be reused for the materially changed integrated candidate. Fresh Phase 11.10 real-environment evidence and Phase 11.11 independent external assurance remain required before Phase 12.
 
 ## Start here
 
@@ -34,12 +34,12 @@ The active bounded programme step is **Phase 11.9 migration/compatibility**. Ear
 | Architecture / engineering | [Phase 11.9 Migration Compatibility](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md), [Phase 11.8i Upgrade/Rollback](architecture/PHASE11_8I_UPGRADE_ROLLBACK.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.9 Migration Compatibility](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
-| QA / release | [Phase 11.9 Migration Compatibility Gate](qa/PHASE11_9_MIGRATION_COMPATIBILITY_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
+| QA / release | [Phase 11.10 Production-Equivalent Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
 | Operations | [Phase 11.9 Migration Compatibility Runbook](operations/PHASE11_9_MIGRATION_COMPATIBILITY_RUNBOOK.md), [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
 
 ## Phase 11 programme documentation
 
-Phase 11.1–11.7b integration contracts remain accepted and discoverable through their architecture/integration/runbook/gate documents. Phase 11.8 runtime industrialisation is repository-complete, including runtime foundation, identity/secrets, ingress/network, HA, observability, recovery, supply-chain, capacity and exercised upgrade/rollback controls.
+Phase 11.1–11.7b integration contracts remain accepted and discoverable through their architecture/integration/runbook/gate documents. Phase 11.8 runtime industrialisation is repository-complete, including runtime foundation, identity/secrets, ingress/network, HA, observability, recovery, supply-chain, capacity and exercised upgrade/rollback controls. Phase 11.9 migration/compatibility is also `PASS / REPOSITORY_COMPLETE`.
 
 Accepted integration and runtime documentation remains directly discoverable:
 
@@ -58,29 +58,35 @@ Accepted integration and runtime documentation remains directly discoverable:
 - [11.8g supply-chain hardening](security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md) (`PHASE11_8G_SUPPLY_CHAIN_HARDENING`).
 - [11.8h capacity and resource planning](architecture/PHASE11_8H_CAPACITY_RESOURCE_PLANNING.md).
 - [11.8i exercised upgrade and rollback](architecture/PHASE11_8I_UPGRADE_ROLLBACK.md).
+- [11.9 migration compatibility architecture](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md), [runbook](operations/PHASE11_9_MIGRATION_COMPATIBILITY_RUNBOOK.md), and [gate](qa/PHASE11_9_MIGRATION_COMPATIBILITY_GATE.md).
 
 The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. No synthetic screenshot is promoted as operational, staging, production, or live-integration evidence.
 
-The active Phase 11.9 documentation set is:
+The active Phase 11.10 documentation set is:
 
-- [Migration Compatibility Architecture](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md)
-- [Migration Compatibility Runbook](operations/PHASE11_9_MIGRATION_COMPATIBILITY_RUNBOOK.md)
-- [Migration Compatibility Gate](qa/PHASE11_9_MIGRATION_COMPATIBILITY_GATE.md)
+- [Production-Equivalent Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md)
 - [Evidence Index](evidence/EVIDENCE_INDEX.md)
+- [Current State](project/CURRENT_STATE.md)
 - [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md)
+- repository contract: `backend/tests/test_phase11_10_production_equivalent_validation.py`
+- evidence schema/tool: `tools/phase11_production_equivalent_validation.py`
+- exact-head workflow: `.github/workflows/phase11-production-equivalent-validation.yml`
 
-## Phase 11.9 compatibility boundary
+## Phase 11.10 production-equivalent evidence boundary
 
 ```mermaid
 flowchart LR
-    A[Accepted application/schema baseline] --> F[Forward migration]
-    F --> C[Candidate application]
-    C --> E[Compatibility evidence]
-    E -->|application rollback| R[Prior application]
-    R --> S[Forward-compatible schema retained]
+    I[One immutable integrated candidate] --> M[Migration + compatibility]
+    M --> U[Upgrade]
+    U --> H[Health]
+    H --> S[Saturation]
+    S --> R[Recovery]
+    R --> B[Rollback]
+    B --> V[Post-rollback validation]
+    V --> A[Accountable 11.10 review]
 ```
 
-Rolling overlap requires backward-compatible schema behavior. Destructive changes require expand/migrate/contract. Application rollback does not authorize automatic database down migration, and ambiguous migration or compatibility evidence fails closed.
+Phase 11.10 requires fresh candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery evidence from one production-equivalent environment. Historical Phase 8/9 evidence cannot satisfy the gate. Missing, ambiguous, inaccessible or mixed-candidate evidence must fail closed. Repository-green status validates the evidence contract only; it does not prove production-equivalent execution and does not authorize production.
 
 ## Security and authority invariants
 
@@ -94,6 +100,7 @@ Rolling overlap requires backward-compatible schema behavior. Destructive change
 - workload identity credentials and runtime secret values are not committed to Git;
 - application rollback is not automatic database rollback;
 - migration compatibility evidence remains fail closed;
+- Phase 11.10 mixed-candidate or missing production-equivalent evidence remains fail closed;
 - repository CI remains engineering evidence only.
 
 ## Evidence and history model
