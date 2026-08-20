@@ -41,16 +41,21 @@ The active bounded programme step is **Phase 11.9 migration/compatibility**. Ear
 
 Phase 11.1–11.7b integration contracts remain accepted and discoverable through their architecture/integration/runbook/gate documents. Phase 11.8 runtime industrialisation is repository-complete, including runtime foundation, identity/secrets, ingress/network, HA, observability, recovery, supply-chain, capacity and exercised upgrade/rollback controls.
 
-Accepted Phase 11.8 control documentation remains directly discoverable:
+Accepted integration and runtime documentation remains directly discoverable:
 
-- [11.8b workload identity and external secrets](architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md) (`PHASE11_8B_WORKLOAD_IDENTITY_SECRETS`)
-- [11.8c ingress, TLS and network segmentation](architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md) (`PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION`)
-- [11.8d HA and disruption hardening](architecture/PHASE11_8D_HA_DISRUPTION.md) (`PHASE11_8D_HA_DISRUPTION`)
-- [11.8e observability hardening](architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md) (`PHASE11_8E_OBSERVABILITY_HARDENING`)
-- [11.8f recovery hardening](architecture/PHASE11_8F_RECOVERY_HARDENING.md) (`PHASE11_8F_RECOVERY_HARDENING`)
-- [11.8g supply-chain hardening](security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md) (`PHASE11_8G_SUPPLY_CHAIN_HARDENING`)
-- [11.8h capacity and resource planning](architecture/PHASE11_8H_CAPACITY_RESOURCE_PLANNING.md)
-- [11.8i exercised upgrade and rollback](architecture/PHASE11_8I_UPGRADE_ROLLBACK.md)
+- TheHive implementation: [TheHive integration](integrations/THEHIVE_HANDOFF.md), [TheHive contract](architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md), [TheHive runbook](operations/THEHIVE_HANDOFF_RUNBOOK.md), [TheHive administration](administration/THEHIVE_HANDOFF_CONFIGURATION.md) and **Phase 11.6 TheHive Handoff Implementation Gate**.
+- Cortex analyzer connector: [CORTEX_ANALYZER_CONNECTOR.md](integrations/CORTEX_ANALYZER_CONNECTOR.md) and [PHASE11_7B_CORTEX_CONNECTOR_GATE.md](qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md).
+- Runtime foundation: [PHASE11_8_RUNTIME_FOUNDATION.md](architecture/PHASE11_8_RUNTIME_FOUNDATION.md) and [KUBERNETES_RUNTIME_CONFIGURATION.md](administration/KUBERNETES_RUNTIME_CONFIGURATION.md).
+- [11.8b workload identity and external secrets](architecture/PHASE11_8B_WORKLOAD_IDENTITY_SECRETS.md) (`PHASE11_8B_WORKLOAD_IDENTITY_SECRETS`) with [WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md](administration/WORKLOAD_IDENTITY_EXTERNAL_SECRETS.md).
+- [11.8c ingress, TLS and network segmentation](architecture/PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION.md) (`PHASE11_8C_INGRESS_TLS_NETWORK_SEGMENTATION`) with [INGRESS_TLS_NETWORK_SEGMENTATION.md](administration/INGRESS_TLS_NETWORK_SEGMENTATION.md).
+- [11.8d HA and disruption hardening](architecture/PHASE11_8D_HA_DISRUPTION.md) (`PHASE11_8D_HA_DISRUPTION`).
+- [11.8e observability hardening](architecture/PHASE11_8E_OBSERVABILITY_HARDENING.md) (`PHASE11_8E_OBSERVABILITY_HARDENING`).
+- [11.8f recovery hardening](architecture/PHASE11_8F_RECOVERY_HARDENING.md) (`PHASE11_8F_RECOVERY_HARDENING`).
+- [11.8g supply-chain hardening](security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md) (`PHASE11_8G_SUPPLY_CHAIN_HARDENING`).
+- [11.8h capacity and resource planning](architecture/PHASE11_8H_CAPACITY_RESOURCE_PLANNING.md).
+- [11.8i exercised upgrade and rollback](architecture/PHASE11_8I_UPGRADE_ROLLBACK.md).
+
+The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness.
 
 The active Phase 11.9 documentation set is:
 
