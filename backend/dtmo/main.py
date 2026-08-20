@@ -57,6 +57,7 @@ from dtmo.unified_console import router as unified_console_router
 from dtmo.ux_preferences import router as ux_preferences_router
 from dtmo.vulnerability_console import router as vulnerability_console_router
 from dtmo.vulnerability_console_ui import router as vulnerability_console_ui_router
+from dtmo.workbench_frontend import router as workbench_frontend_router
 
 settings = get_settings()
 configure_logging(settings.log_level)
@@ -144,6 +145,7 @@ app.include_router(severity_experience_router)
 app.include_router(rc13_governance_router)
 app.include_router(rc13_administration_router)
 app.include_router(vulnerability_console_router)
+app.include_router(workbench_frontend_router)
 app.include_router(unified_console_router)
 app.include_router(rc13_analytics_router)
 app.include_router(frontend_router)
