@@ -1,13 +1,13 @@
 # DTMO Security Overview
 
-Last updated: **2026-08-18**  
+Last updated: **2026-08-20**  
 Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository enhancements**
 
 ## Security objectives
 
 DTMO protects confidentiality, integrity, availability, provenance, accountability and controlled dissemination of cyber threat intelligence. Security controls keep source trust, identity, authorization, evidence and human decision boundaries explicit and enforceable.
 
-DTMO is **not production authorized**. Phase 10 remains `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.8f are `PASS / REPOSITORY_COMPLETE`. The active bounded gate is **Phase 11.8g software supply-chain hardening**, `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+DTMO is **not production authorized**. Phase 10 remains `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11 is `IN PROGRESS / ACTIVE`. Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`. The active bounded gate is **Phase 11.10 production-equivalent validation**, `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`. Phase 11.11 and Phase 12 are `NOT STARTED`.
 
 ## Identity and access control
 
@@ -16,62 +16,71 @@ DTMO is **not production authorized**. Phase 10 remains `NO-GO / BLOCKED — PLA
 - `handoff:case` remains distinct from `approve:share`.
 - Connectors, CI identities, Kubernetes service accounts and integrated platforms do not receive human publication/share or case-handoff authority.
 - Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/API/licensing/provider boundaries.
-- External analyzer, graph, exchange, case, build or signing state does not itself prove DTMO-local exposure, exploitability or compromise.
+- External analyzer, graph, exchange, case, build, deployment or evidence state does not itself prove DTMO-local exposure, exploitability or compromise.
 - Missing, conflicting or unverifiable mandatory evidence fails closed.
 
 ## Separation of duties
 
-Human publication/share approval, case handoff, service execution, CI build identity and release signing remain distinct authority domains. A connector, analyzer, Kubernetes workload, CI job or signed artifact cannot self-grant analyst approval or production authority. Release attestations establish artifact provenance only; accountable production authorization remains a later Phase 12 decision after fresh Phase 11.10 validation and Phase 11.11 independent assurance for the same immutable candidate.
+Human publication/share approval, case handoff, service execution, CI build identity, deployment, validation review, release signing and production authorization remain distinct authority domains. A connector, analyzer, Kubernetes workload, CI job, signed artifact or evidence validator cannot self-grant analyst approval or production authority.
 
-## Accepted Phase 11.8 security baseline
+Phase 11.10 requires attributable deployment operator, validation operator, security/release reviewer and accountable-owner roles. Organizational policy determines whether individuals may hold more than one role, but evidence must preserve actor/reviewer attribution and accountable acceptance.
 
-Phase 11.8a–11.8f accepted repository controls cover immutable runtime image identity, non-root/read-only workloads, disabled service-account token automounting, external secret delivery boundaries, TLS ingress and network segmentation, application HA/disruption controls, opt-in observability and explicit recovery-domain requirements. These are repository engineering controls and do not prove provider enforcement, live availability, successful recovery or production readiness.
+## Accepted Phase 11.8–11.9 security baseline
 
-## Active Phase 11.8g software supply-chain boundary
+Phase 11.8 accepted repository controls cover immutable runtime image identity, non-root/read-only workloads, disabled service-account token automounting, workload identity, external secret delivery, ingress/TLS and network segmentation, application HA/disruption controls, opt-in observability, recovery requirements, software supply-chain hardening, capacity/resource planning and upgrade/rollback contracts.
 
-The active slice adds a governed software-artifact evidence chain:
+The supply-chain baseline includes Python and container CycloneDX SBOM generation, known-vulnerability evidence, a **minimal runtime** package surface, SHA-256 artifact identity, OIDC-backed signed provenance/SBOM mechanisms and no repository-stored long-lived signing key. An attestation proves a signed relationship between an artifact and declared evidence; it does **not prove** vulnerability absence, deployment admission or production readiness.
 
-- exact PR-head checkout and build identity;
-- Python and container CycloneDX SBOM generation;
-- Python dependency and container known-vulnerability evidence;
-- fail-closed container `HIGH`/`CRITICAL` vulnerability policy;
-- minimal runtime package surface with build-only Python tooling removed after dependency installation;
-- SHA-256 artifact subject identity;
-- release provenance and SBOM attestations signed through short-lived OIDC-backed identity;
-- consumer verification against expected repository/workflow/release identity;
-- no long-lived signing key stored in Git.
+Phase 11.9 accepted the forward-first migration/application compatibility contract. Rolling overlap requires backward-compatible schema behavior; destructive changes require expand/migrate/contract; application rollback never implies automatic database down migration.
+
+These are repository engineering controls and do not prove provider enforcement, live availability, successful recovery, production-equivalent behavior or production authorization.
+
+## Active Phase 11.10 production-equivalent security boundary
+
+The production-equivalent exercise must bind all evidence to one immutable integrated candidate and one approved environment. Required evidence classes are immutable candidate identity, migration/compatibility, upgrade, rollback, health/readiness, saturation/capacity and recovery/continuity.
 
 ```mermaid
 flowchart LR
-    S[Accepted source revision] --> B[Exact-head build]
-    B --> A[Wheel + minimal runtime container]
-    A --> SB[SBOM]
-    A --> V[Vulnerability evidence]
-    A --> H[SHA-256 subject]
-    H --> P[OIDC-backed signed provenance/SBOM]
-    P --> C[Consumer verification]
+    I[Immutable candidate identity] --> E[External validation evidence]
+    E --> C{Same candidate + environment?}
+    C -->|no| B[Fail closed]
+    C -->|yes| R[Security/release review]
+    R --> O[Accountable owner decision]
 ```
 
-An attestation proves a signed relationship between an artifact and its declared build/SBOM evidence. It does **not prove** that the artifact is vulnerability-free, safe for production, admitted by a deployment environment or production-authorized.
+Security requirements include:
+
+- application and prior application identities recorded by immutable `sha256:` digest;
+- workload identity/external secret controls remain effective during upgrade/recovery/rollback;
+- TLS/network boundaries remain controlled during the exercise;
+- no raw secrets, bearer tokens, private keys or unnecessary personal data are committed as evidence;
+- evidence references may use approved restricted storage;
+- every evidence item carries the same candidate fingerprint;
+- rollback restores the exact prior immutable application digest and includes post-rollback health;
+- database down migration is not automatically invoked by application rollback;
+- degraded or recovered states do not fabricate intelligence or broaden authority;
+- release-blocking findings remain blockers until closed or accountably dispositioned.
 
 ## Threat and vulnerability management
 
-Vulnerability findings remain provenance-bound evidence. A green scan does not establish absence of unknown vulnerabilities; a red governed finding cannot be silently suppressed. Any exception must remain accountable, time-bounded and bound to the exact artifact/finding identity. Rebuilding the same source does not establish binary equivalence to an earlier accepted artifact.
+Vulnerability findings remain provenance-bound evidence. A green scan does not establish absence of unknown vulnerabilities; a governed finding cannot be silently suppressed. Any exception must remain accountable, time-bounded and bound to the exact artifact/finding identity. Rebuilding the same source does not establish binary equivalence to an earlier accepted artifact.
+
+Production-equivalent validation does not replace vulnerability management. The exercised candidate must remain identifiable so findings and attestations can be reconciled to the exact deployed subject.
 
 ## Secrets and signing identities
 
-Raw runtime secrets, TLS private keys and long-lived signing keys do not belong in Git, Helm values, documentation evidence or screenshots. Release signing uses a short-lived workload identity path. Registry or deployment credentials remain deployment-owned secrets and are not introduced into repository supply-chain evidence.
+Raw runtime secrets, TLS private keys and long-lived signing keys do not belong in Git, Helm values, documentation evidence or screenshots. Release signing uses a short-lived workload identity path. Registry/deployment credentials remain deployment-owned secrets and are not introduced into repository evidence.
 
-## Availability, recovery and later controls
+## Availability, capacity and recovery
 
-Accepted HA, observability and recovery repository boundaries remain unchanged. Capacity/resource planning and exercised upgrade/rollback controls remain later bounded Phase 11.8 work. Phase 11.10 and 11.11 must still provide fresh production-equivalent validation and independent assurance for the immutable integrated candidate before Phase 12.
+Phase 11.8 HA, observability, capacity and recovery repository boundaries are accepted. Phase 11.10 must now provide real production-equivalent observations of health/readiness, representative saturation behavior and recovery/continuity for the integrated candidate. Recovery evidence records integrity outcomes and observed RPO/RTO where applicable.
 
 ## Data protection and privacy
 
-Artifact metadata, SBOMs and vulnerability evidence must avoid credentials, raw intelligence payloads, private notes and unnecessary personal data. Technical artifact verification does not establish legal authority to collect, enrich, synchronize, publish or redistribute intelligence.
+Artifact metadata, SBOMs, vulnerability evidence and Phase 11.10 manifests must avoid credentials, raw intelligence payloads, private notes and unnecessary personal data. Technical connectivity or evidence validation does not establish legal authority to collect, enrich, synchronize, publish or redistribute intelligence.
 
 ## Evidence boundary
 
-The Phase 11.8g repository gate can prove exact-head build, SBOM, vulnerability, hash, workflow and documentation contracts only. It cannot prove that a future release attestation exists until the release workflow runs, registry integrity, deployment verification/admission, runtime integrity, production-equivalent validation, independent assurance or production authorization.
+Repository CI can prove repository-controlled contracts and exact-head outputs only. It cannot prove live Kubernetes behavior, real production-equivalent migration, upgrade, rollback, saturation, recovery, independent assurance or production authorization. The Phase 11.10 manifest validator checks metadata consistency; it cannot independently prove the truth of referenced external evidence.
 
-Historical Phase 8 `PASS / OWNER_ACCEPTED` and Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED` evidence remains candidate-bound and is not reused for the materially changed Phase 11 platform.
+Historical Phase 8 `PASS / OWNER_ACCEPTED` and Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED` evidence remains candidate-bound and is not reused for the materially changed Phase 11 platform. Phase 11.11 independent external assurance remains `NOT STARTED` until Phase 11.10 is explicitly accepted.

@@ -5,7 +5,9 @@ Programme state: **`ACTIVE / HIGHEST PRIORITY`**
 
 ## Purpose
 
-Phase 10 concluded with `NO-GO / BLOCKED` for production authorization. Phase 11 is the successor industrialisation programme and is executed one bounded pull request at a time. Historical Phase 8/9 evidence remains candidate-bound and is not reused for the materially changed integrated platform.
+Phase 10 concluded with `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` for production authorization. Phase 11 is the successor industrialisation programme and is executed one bounded pull request at a time.
+
+Historical Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE` and historical Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`. Those evidence packages remain candidate-bound and are not reused for the materially changed integrated platform. E8.1–E8.10 and accepted Phase 11 repository work remain `PASS / REPOSITORY_COMPLETE` within their bounded claims.
 
 DTMO prefers mature service integrations over rebuilding generic collection, enrichment, graph, exchange and case-management platforms inside DTMO.
 
@@ -92,19 +94,47 @@ Repository acceptance establishes engineering graph/contract integrity only. It 
 ### 11.10 Integrated production-equivalent validation
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`
 
-The active bounded slice defines and validates the evidence contract for a new production-equivalent exercise against one immutable integrated deployment identity. Acceptance requires fresh migration/compatibility, upgrade, rollback, health, saturation and recovery evidence, all attributable to the same candidate and environment. Historical Phase 8/9 evidence is audit history only and cannot satisfy this gate. Missing, ambiguous, mixed-candidate or inaccessible evidence fails closed.
+The active bounded objective is a new production-equivalent exercise against one immutable integrated deployment identity. Operational acceptance requires fresh candidate identity, migration/compatibility, upgrade, rollback, health/readiness, saturation/capacity and recovery/continuity evidence, all attributable to the same candidate fingerprint and environment.
 
-Repository CI can validate the Phase 11.10 contract and exact-head binding, but repository-green status does not prove that a production-equivalent environment was deployed or exercised. Operational Phase 11.10 acceptance therefore remains separate from repository merge and is required before Phase 11.11.
+The controlled execution package consists of:
+
+- `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`;
+- `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
+- `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`;
+- `tools/phase11_production_equivalent_validation.py`;
+- `backend/tests/test_phase11_10_production_equivalent_validation.py`;
+- `.github/workflows/phase11-production-equivalent-validation.yml`;
+- `docs/evidence/EVIDENCE_INDEX.md`.
+
+The evidence template is intentionally incomplete until the real production-equivalent exercise supplies observations and references. The validator calculates one deterministic candidate fingerprint and fails closed on missing placeholders, malformed immutable identities, mixed-candidate evidence, historical-only references, wrong rollback target, missing post-rollback health, open release-blocking findings or incomplete accountable review.
+
+```mermaid
+flowchart LR
+    I[Immutable candidate + environment] --> M[Migration + compatibility]
+    M --> U[Upgrade]
+    U --> H[Health]
+    H --> S[Saturation]
+    S --> R[Recovery]
+    R --> B[Exact prior-digest rollback]
+    B --> V[Post-rollback health]
+    V --> O[Accountable owner review]
+```
+
+Historical Phase 8/9 evidence is audit history only and cannot satisfy this gate. Missing, ambiguous, inaccessible or mixed-candidate evidence fails closed.
+
+Repository CI can validate the Phase 11.10 contract and exact-head binding, but repository-green status does not prove that a production-equivalent environment was deployed or exercised. A valid manifest proves metadata consistency only; referenced external evidence still requires human review. Operational Phase 11.10 acceptance remains separate from repository merge and is required before Phase 11.11.
 
 ### 11.11 Independent external assurance
 **Status:** `NOT STARTED`
 
-Run fresh independent assurance against the same immutable integrated candidate only after Phase 11.10 production-equivalent evidence is complete and accepted.
+Run fresh independent assurance against the same immutable integrated candidate only after Phase 11.10 production-equivalent evidence is complete and explicitly `PASS / OWNER_ACCEPTED`. A material candidate change requires a new Phase 11.10 evidence binding first.
 
 ## Phase 12 — Production GO/NO-GO
 **Status:** `NOT STARTED`
 
 A `GO` requires accepted 11.10 and 11.11 evidence for the same immutable integrated release identity plus accountable production ownership, residual-risk, change/support and rollback authority. Missing evidence remains fail-closed.
+
+DTMO remains **not production authorized** until a future Phase 12 accountable decision grants a GO.
 
 ## Delivery discipline
 
@@ -113,5 +143,5 @@ Every bounded PR requires one primary objective, exact-head CI, expected-head me
 ## Immediate sequence
 
 1. Complete **Phase 11.10 integrated production-equivalent validation** for one immutable candidate using the full fresh evidence set; repository CI alone is insufficient for operational acceptance.
-2. Run **Phase 11.11 independent external assurance** against that same immutable integrated candidate only after 11.10 acceptance.
+2. Run **Phase 11.11 independent external assurance** against that same immutable integrated candidate only after explicit 11.10 acceptance.
 3. Enter Phase 12 only after both 11.10 and 11.11 are accepted for the same candidate.
