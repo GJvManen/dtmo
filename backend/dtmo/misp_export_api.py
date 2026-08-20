@@ -18,9 +18,11 @@ from dtmo.governance import (
     mark_misp_export_uncertain,
     prepare_misp_export,
 )
+from dtmo.misp_sharing_workspace import router as misp_sharing_workspace_router
 
 
 router = APIRouter(prefix="/api/v1", tags=["misp-export"])
+router.include_router(misp_sharing_workspace_router)
 
 
 def _validate_runtime_export_settings(settings: Settings) -> None:

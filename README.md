@@ -16,8 +16,9 @@ DTMO is an open Cyber Threat Intelligence (CTI) platform for education-sector se
 > **Phase 11.10c Command Center:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.10d Unified Intelligence Workspace:** `PASS / REPOSITORY_COMPLETE`  
 > **Phase 11.10e IntelOwl/Cortex integrated analysis:** `PASS / REPOSITORY_COMPLETE`  
-> **Active bounded slice:** Phase 11.10f OpenCTI graph/entity workspace — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
-> **Phase 11.10g MISP Sharing & Exchange:** `NOT STARTED`  
+> **Phase 11.10f OpenCTI graph/entity workspace:** `PASS / REPOSITORY_COMPLETE`  
+> **Active bounded slice:** Phase 11.10g MISP Sharing & Exchange — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`  
+> **Phase 11.10h TheHive Investigations & Cases:** `NOT STARTED`  
 > **Phase 11.10p fresh production-equivalent validation:** `NOT STARTED / CANDIDATE FREEZE REQUIRED`  
 > **Phase 11.11 independent external assurance:** `NOT STARTED`  
 > **Phase 12 production decision:** `NOT STARTED`  
@@ -33,13 +34,13 @@ DTMO is built around five principles: provenance first; fail closed; human autho
 
 The accepted DTMO baseline provides **Sources & Catalog**, canonical Intelligence, **Visual Analytics**, vulnerability intelligence, governed case handoff, **Administration** and **Governance**. The accepted Phase 11 integration baseline adds Taranis AI collection/canonicalization, IntelOwl enrichment, OpenCTI STIX knowledge-graph integration, governed MISP exchange, human-authorized TheHive case handoff and a bounded Cortex analyzer connector.
 
-The **DTMO Unified Operations Workbench** now has accepted frontend architecture, canonical application shell, Command Center, Unified Intelligence/IOC Explorer and Integrated Analysis. Phase 11.10f is making **Knowledge Graph** functional through persisted OpenCTI/STIX mapping evidence.
+The **DTMO Unified Operations Workbench** now has accepted frontend architecture, canonical application shell, Command Center, Unified Intelligence/IOC Explorer, Integrated Analysis and Knowledge Graph. Phase 11.10g is making **Sharing & Exchange** functional through the existing human review/share-approval and governed MISP export controls.
 
-The active OpenCTI graph/entity slice does not introduce a parallel graph backend. The browser uses DTMO-owned read APIs protected by `read:intelligence`. It renders one canonical DTMO intelligence root, persisted OpenCTI/STIX mappings, markings/confidence/provenance and immutable revision evidence.
+The active MISP slice does not introduce a parallel sharing authority. The browser uses only same-origin DTMO APIs. Canonical sharing state is readable with `read:intelligence`; review remains `review:intelligence`; external share approval remains `approve:share` and must be performed by a different human principal than the reviewer. Service accounts cannot substitute for these human decisions.
 
-The accepted Phase 11.4 persistence boundary does not durably store generic OpenCTI entity-to-entity relationship topology. DTMO therefore renders only proven `canonical-mapping` edges. Missing topology evidence must **fail closed** and is never inferred from co-occurrence, labels, entity types or visual proximity. An empty persisted mapping set is not evidence that OpenCTI has no related knowledge.
+The accepted exporter creates a deterministic MISP event with `published=false`. MISP publication and synchronization are intentionally outside Phase 11.10g. For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions remain binding and cannot be weakened on re-export. `pending`, `success` or `uncertain` evidence for the same canonical revision blocks automatic replay.
 
-OpenCTI configuration is not runtime-health evidence. Graph/entity presence, confidence or markings do **not prove** local exposure, exploitability, compromise, attribution certainty or remediation state and never grant external-share/publication authority.
+MISP configuration is not runtime-health evidence. Successful transfer does **not prove** publication, synchronization, downstream consumption, local compromise or production readiness.
 
 PostgreSQL remains canonical application truth. Redis, OpenSearch and S3-compatible object storage provide coordination, search and object persistence. Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service/licensing boundaries.
 
@@ -81,19 +82,19 @@ Phase 11.10 candidate completion is sequenced before fresh external validation b
 
 **11.10a architecture/design → 11.10b shell → 11.10c Command Center → 11.10d Intelligence → 11.10e IntelOwl/Cortex → 11.10f OpenCTI → 11.10g MISP → 11.10h TheHive → 11.10i Vulnerability/Exposure → 11.10j Sources/Collection → 11.10k Automation → 11.10l Governance/Evidence → 11.10m Operations/Admin → 11.10n role-aware UX/accessibility → 11.10o consolidation/full functional acceptance → candidate freeze → 11.10p fresh production-equivalent validation**.
 
-Phase 11.10f is the sole active bounded slice. The only permitted next slice after a fully green merge is **11.10g MISP Sharing & Exchange**.
+Phase 11.10g is the sole active bounded slice. The only permitted next slice after a fully green merge is **11.10h TheHive Investigations & Cases**.
 
-### Phase 11.10f evidence boundary
+### Phase 11.10g evidence boundary
 
-`/workbench/intelligence/graph` uses DTMO server APIs for capability state, persisted mapping graph and entity/revision detail. The browser is not a privileged OpenCTI client and never receives OpenCTI credentials.
+`/workbench/sharing` reads canonical DTMO governance state and uses the accepted review, share-approval and MISP export APIs. The browser is not a privileged MISP client and never receives MISP credentials.
 
-Only persisted DTMO↔OpenCTI identity mappings are rendered as relationships. Generic OpenCTI relationship topology is not persisted in the current DTMO boundary and must not be inferred. Graph dependency failures are unavailable rather than synthetic empty graphs.
+The reviewer and external-share approver must be separate human principals. Export cannot create its own approval. The resulting MISP event remains unpublished and there is no Phase 11.10g Publish or Synchronize action.
 
-Repository/browser CI validates this implementation contract only. It **does not prove** live OpenCTI connectivity or health, completeness of upstream knowledge, production-equivalent deployment/continuity, independent assurance or production authorization.
+Repository/browser CI validates this implementation contract only. It **does not prove** live MISP connectivity or health, publication/synchronization, production-equivalent deployment/continuity, independent assurance or production authorization.
 
 ## Product roadmap
 
-Phase 11.10g–11.10o continue the Unified Operations Workbench one bounded PR at a time. After 11.10o, one immutable integrated candidate is frozen for 11.10p.
+Phase 11.10h–11.10o continue the Unified Operations Workbench one bounded PR at a time. After 11.10o, one immutable integrated candidate is frozen for 11.10p.
 
 11.10p requires fresh evidence for candidate identity, migration/compatibility, upgrade, exact prior-digest rollback plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity. All evidence must bind to the **same immutable** candidate and one production-equivalent environment. Historical Phase 8 and Phase 9 evidence remains audit history only and cannot satisfy the materially changed candidate.
 
@@ -108,12 +109,13 @@ Start with:
 - [Executive Status](docs/project/EXECUTIVE_STATUS.md)
 - [Production Readiness Report](docs/project/PRODUCTION_READINESS_REPORT.md)
 - [Unified Operations Workbench](docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md)
+- [MISP Sharing & Exchange Workspace](docs/user/MISP_SHARING_EXCHANGE_WORKSPACE.md)
+- [Phase 11.10g MISP Sharing & Exchange Architecture](docs/architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md)
+- [Phase 11.10g MISP Sharing Gate](docs/qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md)
 - [OpenCTI Graph / Entity Workspace](docs/user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md)
 - [Integrated Analysis Workspace](docs/user/INTEGRATED_ANALYSIS_WORKSPACE.md)
 - [Unified Intelligence Workspace](docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md)
 - [Frontend Architecture](docs/architecture/FRONTEND_ARCHITECTURE.md)
-- [Phase 11.10f OpenCTI Graph / Entity Architecture](docs/architecture/PHASE11_10F_OPENCTI_GRAPH_ENTITY_WORKSPACE.md)
-- [Phase 11.10f OpenCTI Graph Gate](docs/qa/PHASE11_10F_OPENCTI_GRAPH_ENTITY_GATE.md)
 - [Evidence Index](docs/evidence/EVIDENCE_INDEX.md)
 - [Platform Industrialisation Roadmap](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md)
 

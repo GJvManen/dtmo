@@ -1,13 +1,11 @@
 # DTMO Unified Operations Workbench
 
-Status: **Phase 11.10a–11.10e PASS / REPOSITORY_COMPLETE; Phase 11.10f IN PROGRESS / OPENCTI GRAPH & ENTITY**  
+Status: **Phase 11.10a–11.10f PASS / REPOSITORY_COMPLETE; Phase 11.10g IN PROGRESS / MISP SHARING & EXCHANGE**  
 Visual reference: approved next-generation command-center concept (design target only, not evidence).
 
 ## Purpose
 
-The Unified Operations Workbench is the canonical DTMO browser experience. It converts the integrated DTMO framework into one professional operational product instead of exposing only a fraction of each underlying capability through disconnected views.
-
-The workbench is task- and object-oriented. Users should normally operate DTMO without having to decide which upstream platform UI to visit.
+The Unified Operations Workbench is the canonical DTMO browser experience. It converts the integrated DTMO framework into one professional operational product instead of exposing only a fraction of each underlying capability through disconnected views. The workbench is task- and object-oriented; users should normally operate DTMO without having to decide which upstream platform UI to visit.
 
 ## Target shell
 
@@ -18,9 +16,7 @@ The workbench follows a stable four-zone composition:
 - **main workspace** for the current operational task;
 - **right context rail** for selected-object facts and governed actions.
 
-Phase 11.10b accepted this shell foundation under `/workbench/`. The command palette is navigation-only, the context rail starts with an explicit no-selection state and workspace routes do not fabricate feature data.
-
-Phase 11.10c accepted the Command Center. Phase 11.10d accepted Threat Intelligence and IOC Explorer. Phase 11.10e accepted Analysis & Enrichment with persisted IntelOwl/Cortex evidence and human-triggered execution. Phase 11.10f is the active migration of OpenCTI graph/entity context into the same shell.
+Phase 11.10b accepted this shell foundation under `/workbench/`. Phase 11.10c accepted the Command Center. Phase 11.10d accepted Threat Intelligence and IOC Explorer. Phase 11.10e accepted Analysis & Enrichment. Phase 11.10f accepted persisted OpenCTI graph/entity context. Phase 11.10g is the active migration of governed MISP Sharing & Exchange into the same shell.
 
 ## Primary journey
 
@@ -36,12 +32,13 @@ A representative analyst journey is:
 4. run IntelOwl enrichment where authorized;
 5. run bounded Cortex analysis where authorized;
 6. inspect attributable OpenCTI graph/entity evidence;
-7. correlate with MISP and existing canonical intelligence;
+7. correlate with MISP and canonical intelligence;
 8. create or link a TheHive case when human-authorized;
 9. complete investigation tasks;
 10. prepare a governed sharing package;
-11. obtain separate human publication/share approval;
-12. review evidence, timeline and audit state.
+11. record independent human review and separate external-share approval;
+12. export an approved canonical revision as an unpublished MISP event where authorized;
+13. review evidence, timeline and audit state.
 
 The normal journey remains inside DTMO.
 
@@ -57,78 +54,62 @@ Phase 11.10d provides `/workbench/intelligence` and `/workbench/intelligence/ioc
 
 ### Integrated Analysis Workspace
 
-Phase 11.10e provides `/workbench/analysis`. It combines persisted IntelOwl and Cortex evidence against one canonical object. Capability/allowlist state is not runtime health. Read access requires `read:intelligence`; human-triggered analyzer execution requires server-side `review:intelligence`.
+Phase 11.10e provides `/workbench/analysis`. Capability/history reads require `read:intelligence`; human-triggered IntelOwl/Cortex analyzer execution requires `review:intelligence`. Cortex responders, autonomous side effects and local-compromise inference remain excluded.
 
-Cortex responders, automatic analyzer discovery and automatic IntelOwl fallback remain excluded. Analyzer output does not prove local compromise and grants no external-share/publication authority.
+### OpenCTI Graph / Entity Workspace
 
-## Active OpenCTI Graph / Entity Workspace
+Phase 11.10f provides `/workbench/intelligence/graph` through DTMO-owned read APIs. The browser never receives OpenCTI credentials and does not call OpenCTI `/graphql` directly. Only attributable persisted `canonical-mapping` relationships are rendered because the accepted DTMO persistence boundary does not durably store generic OpenCTI entity-to-entity topology. Missing topology evidence **fails closed**.
 
-Phase 11.10f makes `/workbench/intelligence/graph` functional through DTMO-owned read APIs:
+## Active MISP Sharing & Exchange Workspace
 
-- `/api/v1/opencti/capabilities`;
-- `/api/v1/opencti/items/{item_id}/graph`;
-- `/api/v1/opencti/entities/{mapping_id}`.
+Phase 11.10g makes `/workbench/sharing` functional without introducing a parallel sharing authority. The canonical flow is:
 
-The browser never receives OpenCTI credentials and does not call OpenCTI `/graphql` directly. Server-side `read:intelligence` remains authoritative.
+**inspect canonical state → human review → separate human share approval → unpublished MISP export**.
 
-The accepted Phase 11.4 persistence model stores stable OpenCTI/STIX mappings and immutable mapping revisions. It does not currently durably store generic OpenCTI entity-to-entity relationship topology. Therefore the visual graph draws only proven `canonical-mapping` edges from the selected DTMO canonical item to persisted OpenCTI mappings.
+The browser uses only DTMO APIs:
 
-The workspace must not infer a malware→campaign, actor→tool, indicator→infrastructure or other upstream relationship merely because two nodes are present. Missing topology evidence must **fail closed**.
+- `GET /api/v1/sharing/items/{item_id}` for canonical review/share/restriction/export state;
+- `POST /api/v1/intelligence/{item_id}/review` for `review:intelligence`;
+- `POST /api/v1/intelligence/{item_id}/share-approval` for `approve:share`;
+- `POST /api/v1/intelligence/{item_id}/misp-export` for a previously reviewed and share-approved canonical revision.
 
-An empty mapping graph means only that DTMO has no persisted OpenCTI mapping evidence for that item. It does not prove OpenCTI has no related knowledge. Graph presence, confidence and markings do not prove local exposure, exploitability, compromise, attribution certainty or remediation state.
+The share approver must be a **different human principal** from the recorded reviewer. Service accounts cannot substitute for human review/share approval or MISP export. UI visibility is not authorization; **server-side RBAC** remains authoritative.
 
-The entity detail surface exposes stable OpenCTI/STIX identity, entity type, markings, confidence, external references, snapshot identity and immutable revision history where recorded. Existing `external_share_authorized=false` and `local_compromise_proven=false` boundaries remain intact.
+For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions remain binding. The browser cannot weaken them. A deterministic current-revision export with `pending`, `success` or `uncertain` evidence blocks automatic replay; uncertain delivery requires operator inspection.
+
+The accepted exporter creates `published=false` events. Phase 11.10g intentionally exposes no MISP **Publish** or **Synchronize** action. MISP configuration does not establish live MISP health, and successful transfer does not prove publication, synchronization, downstream consumption or local compromise.
 
 ## Object-centric workspace
 
-Every compatible canonical object should open a shared context model with tabs such as:
-
-- Overview;
-- Evidence;
-- Enrichment;
-- Relationships/Graph;
-- Vulnerabilities/Exposure;
-- Cases/Tasks;
-- Sharing;
-- Timeline/Audit.
+Every compatible canonical object should open a shared context model with tabs such as Overview, Evidence, Enrichment, Relationships/Graph, Vulnerabilities/Exposure, Cases/Tasks, Sharing and Timeline/Audit.
 
 The right context rail may expose attributable counts/status from IntelOwl, Cortex, OpenCTI, MISP and TheHive without requiring a separate upstream login. Until a bounded feature slice supplies attributable data, missing facts are not inferred.
 
-The object-centric experience began with 11.10d; 11.10e added analysis and 11.10f adds read-only persisted OpenCTI graph/entity context. Later 11.10g–11.10h slices add exchange and case capabilities without bypassing the DTMO API boundary.
+The object-centric experience began with 11.10d; 11.10e added analysis, 11.10f added persisted OpenCTI graph/entity context, and 11.10g adds governed sharing/exchange. Phase 11.10h adds TheHive case capabilities without bypassing the DTMO API boundary.
 
 ## Integrated capability expectations
 
 ### Taranis AI
-
 Collection/assessment remains an upstream service boundary; normal operator workflows should be governed through DTMO Collection surfaces.
 
 ### IntelOwl
-
-Phase 11.10e exposes explicit analyzer selection, job state and persisted bounded enrichment history. IntelOwl results do not grant publication/share authority or prove local compromise.
+Phase 11.10e exposes explicit analyzer selection, job state and persisted bounded enrichment history. Results do not grant publication/share authority or prove local compromise.
 
 ### OpenCTI
-
-Phase 11.10f exposes persisted entity identity, STIX type, markings, confidence, provenance and immutable revisions in a graph/entity workspace. Only relationships supported by DTMO persistence may be displayed as relationships.
+Phase 11.10f exposes persisted entity identity, STIX type, markings, confidence, provenance and immutable revisions. Only relationships supported by DTMO persistence are displayed as relationships.
 
 ### MISP
-
-DTMO should expose inbound events/matches/correlations and governed outbound draft/review/approval workflows. Technical connectivity never grants sharing authority. This is Phase 11.10g scope.
+Phase 11.10g exposes governed review, independent share approval, authoritative handling restrictions, replay state and unpublished export. Technical connectivity never grants sharing or publication authority.
 
 ### TheHive
-
-DTMO should expose daily case, task, observable, assignment and timeline operations subject to accepted case-handoff authority.
+Phase 11.10h will expose daily case, task, observable, assignment and timeline operations subject to accepted case-handoff authority.
 
 ### Cortex
-
 Phase 11.10e exposes bounded analyzer execution and durable result history. Responders or autonomous side effects remain excluded until separately governed and explicitly accepted.
-
-### Vulnerability intelligence
-
-CVE/KEV/CVSS/EPSS and education relevance should be correlated with actors, campaigns, IOCs, cases and affected technology where attributable data exists.
 
 ## Workflow/automation target
 
-The future playbook surface uses explicit execution classes: `AUTOMATIC`, `HUMAN APPROVAL REQUIRED`, `MANUAL` and `PROHIBITED`. No graphical workflow may bypass RBAC, case authority, publication/share approval or other server-side controls.
+The future playbook surface uses explicit execution classes: `AUTOMATIC`, `HUMAN APPROVAL REQUIRED`, `MANUAL` and `PROHIBITED`. No graphical workflow may bypass RBAC, case authority, review/share approval or other server-side controls.
 
 ## Role-aware defaults
 
@@ -136,7 +117,7 @@ The same product can present different default workspaces for Executive/security
 
 ## Visual direction
 
-The target is a dense but calm SOC-grade interface with dark operations mode plus accessible light mode, clear hierarchy, semantic status/severity treatment, persistent context, compact drill-down surfaces, keyboard-first operation, responsive layouts and truthful loading/empty/degraded states. The design must not imitate a decorative 'Hollywood hacker' interface.
+The target is a dense but calm SOC-grade interface with dark operations mode plus accessible light mode, clear hierarchy, semantic status/severity treatment, persistent context, compact drill-down surfaces, keyboard-first operation, responsive layouts and truthful loading/empty/degraded states.
 
 ## Candidate-completion sequence
 
@@ -147,9 +128,9 @@ The interface programme is executed as bounded Phase 11.10 candidate-completion 
 - 11.10c Command Center — `PASS / REPOSITORY_COMPLETE`;
 - 11.10d Unified Intelligence Workspace — `PASS / REPOSITORY_COMPLETE`;
 - 11.10e IntelOwl/Cortex integrated analysis — `PASS / REPOSITORY_COMPLETE`;
-- 11.10f OpenCTI graph/entity workspace — active;
-- 11.10g MISP Sharing & Exchange — next after 11.10f acceptance/merge;
-- 11.10h TheHive Investigations & Cases;
+- 11.10f OpenCTI graph/entity workspace — `PASS / REPOSITORY_COMPLETE`;
+- 11.10g MISP Sharing & Exchange — active;
+- 11.10h TheHive Investigations & Cases — next after 11.10g acceptance/merge;
 - 11.10i Vulnerability & Exposure;
 - 11.10j Sources & Collection;
 - 11.10k Automation & Playbooks;
@@ -163,4 +144,4 @@ Phase 11.11 remains blocked until 11.10p is explicitly accepted.
 
 ## Evidence boundary
 
-This document is product/UX architecture. The graphical reference and repository documentation are not evidence of live integration, staging acceptance, production-equivalent validation or production authorization. Repository/browser CI for 11.10f does not prove live OpenCTI health/completeness, local exposure or compromise, independent assurance or production authorization.
+This document is product/UX architecture. Repository/browser CI for 11.10g can validate same-origin API usage, human authority separation, handling/replay semantics and fail-closed browser behavior. It does **not prove** live MISP health, publication/synchronization, production-equivalent validation, independent assurance or production authorization. DTMO remains **not production authorized**.

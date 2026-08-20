@@ -21,8 +21,9 @@ This checklist controls the post-Phase-10 industrialisation programme and future
 | Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser Command Center evidence |
 | Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser intelligence evidence |
 | Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser analysis evidence |
-| Phase 11.10f OpenCTI graph/entity workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Active repository/browser graph evidence |
-| Phase 11.10g MISP Sharing & Exchange | `NOT STARTED` | Future product evidence |
+| Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser graph evidence |
+| Phase 11.10g MISP Sharing & Exchange | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Active repository/browser governed exchange evidence |
+| Phase 11.10h TheHive Investigations & Cases | `NOT STARTED` | Future product evidence |
 | Phase 11.10p production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` | Future real-environment evidence |
 | Phase 11.11 independent external assurance | `NOT STARTED` | Independent assurance |
 | Phase 12 | `NOT STARTED` | Future production authorization |
@@ -35,8 +36,8 @@ Historical Phase 8/9 evidence remains candidate-bound and cannot be reused for t
 - Missing evidence is not implicit acceptance.
 - Historical evidence is preserved rather than relabelled.
 - Role-aware UI never substitutes for **server-side RBAC**.
-- Human publication/share authority remains separate from TheHive case authority and technical execution.
-- Analyzer or graph output is evidence, not proof of local compromise.
+- Human review and sharing approval remain separate human decisions; publication/share authority remains separate from TheHive case authority and technical execution.
+- Analyzer, graph, correlation or exchange output is evidence, not proof of local compromise.
 - Repository/browser CI **does not prove** live upstream health or production-equivalent operation.
 - Missing, placeholder, inaccessible, historical-only or mixed-candidate evidence must **fail closed**.
 
@@ -61,40 +62,41 @@ Historical Phase 8/9 evidence remains candidate-bound and cannot be reused for t
 - [x] Phase 11.10c canonical Command Center accepted and merged with expected-head protection.
 - [x] Phase 11.10d Unified Intelligence Workspace accepted and merged with expected-head protection.
 - [x] Phase 11.10e IntelOwl/Cortex integrated analysis accepted and merged with expected-head protection.
+- [x] Phase 11.10f OpenCTI graph/entity workspace accepted and merged with expected-head protection.
 
-## 3. Active Phase 11.10f — OpenCTI graph/entity workspace
+## 3. Active Phase 11.10g — MISP Sharing & Exchange
 
 Implementation criteria:
 
-- [x] Functional `/workbench/intelligence/graph` route added inside the accepted canonical shell.
-- [x] `GET /api/v1/opencti/capabilities` added for feature/configuration state without inferred runtime health.
-- [x] `GET /api/v1/opencti/items/{item_id}/graph` added for canonical item + persisted OpenCTI mapping projection.
-- [x] `GET /api/v1/opencti/entities/{mapping_id}` added for persisted entity/provenance/revision detail.
-- [x] All frontend-facing graph/entity reads protected by server-side `read:intelligence`.
-- [x] Browser contains no OpenCTI credential and no direct `/graphql` request.
-- [x] Canonical DTMO item is the graph root and persisted OpenCTI mappings are attributable nodes.
-- [x] Graph edges are limited to proven `canonical-mapping` evidence.
-- [x] Generic OpenCTI entity-to-entity relationship topology is explicitly marked not persisted and is not inferred.
-- [x] Stable OpenCTI/STIX identity, type, markings, confidence, external references, snapshot identity and immutable revisions are exposed where recorded.
-- [x] Existing `external_share_authorized=false` and `local_compromise_proven=false` persistence invariants preserved.
-- [x] Empty persisted mappings do not claim upstream absence.
-- [x] Dependency failure renders unavailable rather than a synthetic empty graph.
-- [x] Accessible entity-list navigation complements the SVG graph.
+- [x] Functional `/workbench/sharing` route added inside the accepted canonical shell.
+- [x] `GET /api/v1/sharing/items/{item_id}` added as a sanitized canonical sharing-state projection.
+- [x] Sharing-state reads protected by server-side `read:intelligence`.
+- [x] Existing review continues through `review:intelligence`.
+- [x] Existing external share approval continues through `approve:share`.
+- [x] Share approver must be a different human principal from the reviewer.
+- [x] Service accounts cannot substitute for human review/share approval and cannot export to MISP.
+- [x] Browser contains no MISP credential and calls only same-origin DTMO APIs.
+- [x] MISP-origin authoritative distribution, sharing-group and TLP restrictions remain enforced.
+- [x] Deterministic current-revision replay remains blocked for `pending`, `success` and `uncertain` export evidence.
+- [x] Uncertain delivery requires operator inspection rather than automatic replay.
+- [x] Exported MISP event remains `published=false`.
+- [x] Phase 11.10g exposes no Publish or Synchronize action.
+- [x] Configuration is not promoted to live MISP health.
+- [x] Dependency failure is unavailable rather than synthetic approval/export state.
 - [x] Dedicated repository and browser contracts added.
-- [x] Dedicated `Phase 11 OpenCTI Graph Workspace Gate` added.
+- [x] Dedicated `Phase 11 MISP Sharing Exchange Gate` added.
 - [ ] Final exact-head frontend `npm ci`, typecheck and production build are green.
-- [ ] Final exact-head OpenCTI graph repository contract is green.
+- [ ] Final exact-head Phase 11.10g repository contract is green.
 - [ ] Final exact-head browser acceptance is green.
-- [ ] Phase 11.4 OpenCTI contract/persistence regressions are green on the same head.
+- [ ] Accepted Phase 11.5 MISP and E8 governed-export regressions are green on the same head.
 - [ ] Existing security, accessibility, migration, runtime and supply-chain regressions are all green for the same exact head.
 - [ ] Professional current-state, evidence, QA and roadmap documentation is synchronized for the same head.
-- [ ] Phase 11.10f merged with expected-head protection only after every registered exact-head workflow is `completed/success`.
+- [ ] Phase 11.10g merged with expected-head protection only after every registered exact-head workflow is `completed/success`.
 
-Only after these items are complete may **Phase 11.10g MISP Sharing & Exchange** start.
+Only after these items are complete may **Phase 11.10h TheHive Investigations & Cases** start.
 
 ## 4. Remaining candidate-completion sequence
 
-- [ ] 11.10g MISP Sharing & Exchange.
 - [ ] 11.10h TheHive Investigations & Cases.
 - [ ] 11.10i Vulnerability & Exposure Center.
 - [ ] 11.10j Sources & Collection Control Center.

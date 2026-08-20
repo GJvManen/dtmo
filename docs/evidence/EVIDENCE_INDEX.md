@@ -8,7 +8,7 @@ This index maps current lifecycle stages to authoritative evidence classes and r
 
 ## Current lifecycle
 
-Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; **E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`**. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11.1–11.9 and Phase 11.10a–11.10e are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10f OpenCTI graph/entity workspace** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10g, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
+Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; **E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`**. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11.1–11.9 and Phase 11.10a–11.10f are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10g MISP Sharing & Exchange** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10h, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
 
 ## Evidence hierarchy
 
@@ -92,9 +92,9 @@ IntelOwl/Cortex output remains evidence rather than a verdict. It does not prove
 
 ### 11.10f OpenCTI graph/entity workspace
 
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Authoritative active chain:
+Accepted evidence chain:
 
 - `backend/dtmo/opencti_workspace.py`;
 - `backend/dtmo/persistence/opencti.py`;
@@ -107,17 +107,39 @@ Authoritative active chain:
 - `backend/tests/test_phase11_10f_opencti_graph_browser.py`;
 - `.github/workflows/phase11-opencti-graph-workspace.yml`.
 
-11.10f reuses the accepted Phase 11.4 OpenCTI mapping and immutable-revision persistence. The browser consumes only DTMO APIs protected by `read:intelligence`.
+11.10f reuses the accepted Phase 11.4 OpenCTI mapping and immutable-revision persistence. The browser consumes only DTMO APIs protected by `read:intelligence`. The persisted boundary does not contain general OpenCTI entity-to-entity relationship topology, so only proven `canonical-mapping` edges are rendered. Missing relationship evidence must **fail closed** and is not inferred.
 
-The persisted boundary does not contain general OpenCTI entity-to-entity relationship topology. The graph therefore renders only proven DTMO canonical-item → OpenCTI mapping edges (`canonical-mapping`). Missing relationship evidence must **fail closed** and must not be inferred from display names, entity types, OpenCTI presence or graph layout.
+An empty mapping result does not prove upstream absence. Configuration does not establish runtime health. OpenCTI identity, confidence, markings, graph presence or revisions do **not prove** local exposure, exploitability, compromise or attribution and grant no external-share/publication authority.
 
-An empty mapping result means only that no persisted mapping evidence exists for that canonical DTMO item. It does not prove upstream absence. Configuration does not establish runtime health. OpenCTI identity, confidence, markings, graph presence or revisions do **not prove** local exposure, exploitability, compromise, attribution certainty or remediation state and grant no external-share/publication authority.
+### 11.10g MISP Sharing & Exchange
 
-Repository/browser evidence does not prove live OpenCTI connectivity/health, completeness of OpenCTI knowledge, production-equivalent operation, independent assurance or production authorization.
+**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+
+Authoritative active chain:
+
+- `backend/dtmo/misp_sharing_workspace.py`;
+- `backend/dtmo/misp_export_api.py`;
+- `backend/dtmo/governance/misp_export.py`;
+- `backend/dtmo/governance/decisions.py`;
+- `backend/dtmo/auth/policy.py`;
+- `frontend/src/MispSharingWorkspace.tsx`;
+- `frontend/src/misp-sharing.css`;
+- `docs/architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md`;
+- `docs/user/MISP_SHARING_EXCHANGE_WORKSPACE.md`;
+- `docs/qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md`;
+- `backend/tests/test_phase11_10g_misp_sharing_contract.py`;
+- `backend/tests/test_phase11_10g_misp_sharing_browser.py`;
+- `.github/workflows/phase11-misp-sharing-exchange.yml`.
+
+The canonical workspace preserves the accepted human authority chain: `read:intelligence` for state inspection, `review:intelligence` for review and a different human principal with `approve:share` for sharing approval. The MISP export endpoint cannot grant approval itself. Service accounts cannot substitute for human review/share authority.
+
+For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions remain binding. A deterministic current-revision export with `pending`, `success` or `uncertain` evidence blocks automatic replay. The accepted exporter creates `published=false` MISP events only. There is no Phase 11.10g MISP publication or synchronization authority.
+
+Configuration does not establish live MISP health. Transfer evidence does not prove publication, synchronization, downstream consumption, local compromise, production-equivalent operation, independent assurance or production authorization. Missing state and uncertain delivery **fail closed**.
 
 ### Candidate-completion order
 
-11.10g MISP, 11.10h TheHive, 11.10i Vulnerability & Exposure, 11.10j Sources & Collection, 11.10k Automation & Playbooks, 11.10l Governance & Evidence, 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance remain `NOT STARTED`.
+11.10h TheHive, 11.10i Vulnerability & Exposure, 11.10j Sources & Collection, 11.10k Automation & Playbooks, 11.10l Governance & Evidence, 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance remain `NOT STARTED`.
 
 ## Phase 11.10p production-equivalent evidence
 
