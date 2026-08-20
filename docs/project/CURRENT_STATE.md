@@ -7,7 +7,7 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.8i are `PASS / REPOSITORY_COMPLETE`. The sole active bounded objective is **Phase 11.9 migration/compatibility**, currently `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`. The sole active bounded objective is **Phase 11.10 integrated production-equivalent validation**, currently `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
 ## Lifecycle position
 
@@ -27,6 +27,7 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1�
 | Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
 | Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8 integrated runtime industrialisation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE` |
@@ -36,8 +37,8 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1�
 | Phase 11.8g software supply-chain hardening | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8h capacity / resource planning | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8i exercised upgrade / rollback | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.9 migration/compatibility | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10 production-equivalent validation | `NOT STARTED` |
+| Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 | `NOT STARTED` |
 
@@ -45,29 +46,29 @@ The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1�
 
 Taranis, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed service/licensing boundaries. None gains DTMO human publication/share authority or establishes local compromise by itself. TheHive case-handoff authority remains distinct from publication/share authority.
 
-Phase 11.8 is repository-complete. Accepted controls cover the Helm/GitOps Kubernetes runtime foundation, workload identity/external-secret delivery, TLS ingress/network segmentation, application HA/disruption controls, observability boundaries, backup/restore/recovery controls, software supply-chain hardening, capacity/resource planning and exercised upgrade/rollback. These remain repository engineering controls only and do not establish live provider enforcement, production-equivalent behavior or production authorization.
+Phase 11.8 is repository-complete. Accepted controls cover the Helm/GitOps Kubernetes runtime foundation, workload identity/external-secret delivery, TLS ingress/network segmentation, application HA/disruption controls, observability boundaries, backup/restore/recovery controls, software supply-chain hardening, capacity/resource planning and exercised upgrade/rollback. Phase 11.9 adds the accepted forward-first migration/application compatibility contract. These remain engineering controls and do not themselves establish production-equivalent behavior or production authorization.
 
-## Active Phase 11.9 migration/compatibility boundary
+## Active Phase 11.10 validation boundary
 
-The active slice governs application/schema compatibility before production-equivalent validation. The repository contract requires a single connected Alembic revision chain with one root and one head, explicit upgrade/downgrade functions, forward-first deployment sequencing and fail-closed handling of ambiguous compatibility.
+Phase 11.10 requires fresh production-equivalent evidence for one immutable integrated deployment identity. The mandatory evidence classes are candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery.
 
 ```mermaid
 flowchart LR
-    B[Accepted application + schema baseline] --> M[Forward schema migration]
-    M --> C[Candidate application cutover]
-    C --> O[Compatibility / health evidence]
-    O -->|application reject| R[Application rollback]
-    R --> S[Schema remains forward-compatible]
-    S --> V[Post-rollback validation]
+    I[Immutable integrated candidate] --> M[Migration + compatibility]
+    M --> U[Upgrade]
+    U --> H[Health]
+    H --> S[Saturation]
+    S --> R[Recovery]
+    R --> B[Exact prior-digest rollback]
+    B --> V[Post-rollback health]
+    V --> A[11.10 evidence review]
 ```
 
-Rolling application overlap is permitted only when the schema remains backward compatible. Destructive changes require an explicit expand/migrate/contract sequence. Application rollback does **not** authorize automatic database down migration. Missing migration identity, disconnected/ambiguous revision history, compatibility evidence or accountable change authority must **fail closed**.
+Every artifact must identify the same candidate and environment. Historical Phase 8 staging evidence remains audit history only and is not reusable for Phase 11.10 acceptance. Missing, ambiguous, mixed-candidate or historical-only evidence must **fail closed**.
 
-## Governance and evidence boundary
+Repository CI may validate the Phase 11.10 evidence contract and exact-head metadata, but it cannot prove that the production-equivalent environment was deployed or exercised. Repository-green status alone therefore does not complete Phase 11.10 and does not authorize production.
 
-Repository CI may prove migration graph integrity, compatibility policy and deterministic contract behavior. It cannot prove migration of production data, live application/schema compatibility, production-equivalent continuity, independent assurance or production authorization.
-
-Historical Phase 8/9 evidence remains valid only for the earlier candidate and is not reused for the materially changed Phase 11 platform. Phase 11.10 must collect fresh production-equivalent upgrade, rollback, health, saturation, recovery and migration/compatibility evidence for one immutable integrated deployment identity. Phase 11.11 then provides new independent assurance before Phase 12.
+Phase 11.11 independent external assurance must run only after Phase 11.10 acceptance and against the same immutable integrated candidate.
 
 ## Phase 11 fixed order
 
@@ -78,8 +79,8 @@ Historical Phase 8/9 evidence remains valid only for the earlier candidate and i
 5. TheHive — `PASS / REPOSITORY_COMPLETE`;
 6. original Cortex conditional decision — historical `PASS / REPOSITORY_COMPLETE`;
 7. owner-required Cortex analyzer connector — `PASS / REPOSITORY_COMPLETE`;
-8. Kubernetes/Helm/GitOps and integrated runtime hardening — Phase 11.8 `PASS / REPOSITORY_COMPLETE`;
-9. migration/compatibility — active Phase 11.9;
-10. new production-equivalent validation;
+8. integrated runtime industrialisation — Phase 11.8 `PASS / REPOSITORY_COMPLETE`;
+9. migration/compatibility — Phase 11.9 `PASS / REPOSITORY_COMPLETE`;
+10. production-equivalent validation — active Phase 11.10;
 11. new independent external assurance;
 12. Phase 12 formal production GO/NO-GO.

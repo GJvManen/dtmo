@@ -56,9 +56,10 @@ def test_phase11_status_preserves_accepted_thehive_and_cortex_history() -> None:
         "Phase 11.8i exercised upgrade / rollback | `PASS / REPOSITORY_COMPLETE`",
     ):
         assert marker in state
+    assert "Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE`" in state
     assert (
-        "Phase 11.9 migration/compatibility | "
-        "`IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`"
+        "Phase 11.10 production-equivalent validation | "
+        "`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`"
     ) in state
     assert CONTRACT_GATE.exists()
     assert IMPLEMENTATION_GATE.exists()

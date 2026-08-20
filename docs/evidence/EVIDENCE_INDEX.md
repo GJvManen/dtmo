@@ -6,7 +6,7 @@ Last updated: **2026-08-20**
 
 This index maps lifecycle stages to evidence classes and authoritative professional documentation. It is not a CI chronology. Exact run/commit/job history remains in immutable operational records, pull requests and CI artifacts.
 
-**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.8i are `PASS / REPOSITORY_COMPLETE`; Phase 11.9 migration/compatibility is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`; Phase 12 is `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
+**Current lifecycle:** Phase 8 is `PASS / OWNER_ACCEPTED` and Phase 9 is `PASS / EXTERNAL_ASSURANCE_ACCEPTED` for the earlier candidate only; Phase 10 is `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`; Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`; Phase 11.10 production-equivalent validation is `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is not production authorized. Historical Phase 8/9 evidence remains candidate-bound and cannot satisfy Phase 11.10/11.11.
 
 ## Authoritative current-state sources
 
@@ -21,6 +21,10 @@ This index maps lifecycle stages to evidence classes and authoritative professio
 - `backend/tests/test_phase11_9_migration_compatibility.py`
 - `tools/phase11_migration_compatibility.py`
 - `.github/workflows/phase11-migration-compatibility.yml`
+- `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`
+- `backend/tests/test_phase11_10_production_equivalent_validation.py`
+- `tools/phase11_production_equivalent_validation.py`
+- `.github/workflows/phase11-production-equivalent-validation.yml`
 - `docs/security/SECURITY_OVERVIEW.md`
 - `docs/qa/QA_AND_RELEASE_GATES.md`
 - `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md`
@@ -61,16 +65,27 @@ Accepted repository evidence covers runtime foundation, workload identity/extern
 Phase 11.8i evidence remains `backend/tests/test_phase11_8i_upgrade_rollback.py`, `tools/phase11_upgrade_rollback_exercise.py`, `.github/workflows/phase11-upgrade-rollback.yml`, `docs/architecture/PHASE11_8I_UPGRADE_ROLLBACK.md`, `docs/operations/PHASE11_8I_UPGRADE_ROLLBACK_RUNBOOK.md` and `docs/qa/PHASE11_8I_UPGRADE_ROLLBACK_GATE.md`. Repository acceptance does not prove live rollback, stateful recovery, production-equivalent continuity or production authorization.
 
 ### Phase 11.9 Migration and compatibility
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-The bounded repository evidence target requires a single connected Alembic revision graph with exactly one root and one head, no duplicate/missing/disconnected revision identities, explicit upgrade/downgrade functions, forward-first deployment sequencing and explicit compatibility handling for rolling application overlap. Destructive schema changes require an expand/migrate/contract sequence. Application rollback does not authorize automatic database down migration; ambiguous compatibility must fail closed.
+The accepted repository evidence requires a single connected Alembic revision graph with exactly one root and one head, no duplicate/missing/disconnected revision identities, explicit upgrade/downgrade functions, forward-first deployment sequencing and explicit compatibility handling for rolling application overlap. Destructive schema changes require an expand/migrate/contract sequence. Application rollback does not authorize automatic database down migration; ambiguous compatibility must fail closed.
 
 Dedicated repository evidence is `backend/tests/test_phase11_9_migration_compatibility.py`, `tools/phase11_migration_compatibility.py`, `.github/workflows/phase11-migration-compatibility.yml`, `docs/architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md`, `docs/operations/PHASE11_9_MIGRATION_COMPATIBILITY_RUNBOOK.md` and `docs/qa/PHASE11_9_MIGRATION_COMPATIBILITY_GATE.md`.
 
-Exact-head CI may establish repository graph/contract integrity only. It does **not** prove migration of production data, live application/schema compatibility, production-equivalent continuity, independent assurance or production authorization. Missing migration identity, ambiguous graph/compatibility state or missing attributable evidence is not `PASS`.
+Repository acceptance establishes graph/contract integrity only. It does **not** prove migration of production data, live application/schema compatibility, production-equivalent continuity, independent assurance or production authorization.
 
-### Phase 11.10–11.11
-Fresh production-equivalent validation and fresh independent assurance must target the same immutable integrated candidate. Phase 11.10 must include new migration/compatibility, upgrade, rollback, health, saturation and recovery evidence. Historical Phase 8/9 evidence cannot satisfy these gates.
+### Phase 11.10 Integrated production-equivalent validation
+**Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
+
+The repository contract is defined by `backend/tests/test_phase11_10_production_equivalent_validation.py`, `tools/phase11_production_equivalent_validation.py`, `.github/workflows/phase11-production-equivalent-validation.yml` and `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`. It requires a single immutable integrated candidate identity and a single accountable production-equivalent environment identity across the complete evidence set.
+
+Operational acceptance requires fresh evidence classes for **candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery**. Each artifact must be attributable to the same candidate and environment, and must be fresh for Phase 11.10. Historical Phase 8/9 artifacts, mixed-candidate artifacts, ambiguous identity, inaccessible evidence or missing evidence cannot satisfy this gate and must fail closed.
+
+The repository workflow validates the evidence schema, lifecycle contract and exact-head metadata only. A green `.github/workflows/phase11-production-equivalent-validation.yml` run is **not** evidence that a production-equivalent environment was deployed or exercised and is not Phase 11.10 operational acceptance. Phase 11.11 remains blocked until the full real-environment evidence set has been supplied, reviewed and accepted for the same immutable candidate.
+
+### Phase 11.11 Independent external assurance
+**Status:** `NOT STARTED`.
+
+Fresh independent assurance must target the same immutable integrated candidate accepted in Phase 11.10. No historical Phase 9 assurance is transferable to the changed Phase 11 candidate.
 
 ### Phase 12
 **Status:** `NOT STARTED`.
