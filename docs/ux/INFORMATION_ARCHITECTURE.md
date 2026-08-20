@@ -1,12 +1,12 @@
 # DTMO Next-Generation Information Architecture
 
-Status: **Phase 11.10a–11.10d — PASS / REPOSITORY_COMPLETE; Phase 11.10e — ACTIVE INTEGRATED ANALYSIS WORKSPACE**
+Status: **Phase 11.10a–11.10e — PASS / REPOSITORY_COMPLETE; Phase 11.10f — ACTIVE OPENCTI GRAPH/ENTITY WORKSPACE**
 
 ## Principle
 
 Primary navigation is organized by operator intent, not by upstream product ownership. Service names remain visible as provenance, capability and health context.
 
-Phase 11.10b established the canonical `/workbench/` shell. Phase 11.10c delivered the Command Center, Phase 11.10d delivered functional Threat Intelligence and IOC Explorer, and Phase 11.10e is the active functional migration of Analysis & Enrichment. Route foundations for later workspaces do not imply that those features are already implemented or accepted.
+Phase 11.10b established the canonical `/workbench/` shell. Phase 11.10c delivered the Command Center, Phase 11.10d delivered Threat Intelligence and IOC Explorer, Phase 11.10e delivered Analysis & Enrichment, and Phase 11.10f is the active functional migration of OpenCTI graph/entity context. Route foundations for later workspaces do not imply that those features are implemented or accepted.
 
 ## Canonical navigation tree
 
@@ -19,7 +19,7 @@ Phase 11.10b established the canonical `/workbench/` shell. Phase 11.10c deliver
 - Threat Intelligence — accepted in Phase 11.10d.
 - IOC Explorer — accepted in Phase 11.10d.
 - Threat Actors & Campaigns — later bounded intelligence capability.
-- Knowledge Graph — Phase 11.10f.
+- Knowledge Graph — active in Phase 11.10f.
 - Threat Hunting — later bounded intelligence capability.
 
 ### Exposure
@@ -38,13 +38,13 @@ Phase 11.10b established the canonical `/workbench/` shell. Phase 11.10c deliver
 
 ### Analysis
 
-- Enrichment — active in Phase 11.10e through governed IntelOwl execution/history.
-- Cortex Analyses — active in Phase 11.10e through analyzer-only governed execution/history.
-- Analysis History — active combined canonical-object view in Phase 11.10e.
+- Enrichment — accepted in Phase 11.10e through governed IntelOwl execution/history.
+- Cortex Analyses — accepted in Phase 11.10e through analyzer-only governed execution/history.
+- Analysis History — accepted combined canonical-object view in Phase 11.10e.
 
 ### Sharing
 
-- MISP Exchange
+- MISP Exchange — Phase 11.10g.
 - Publication Queue
 - Sharing Approvals
 
@@ -88,102 +88,59 @@ Phase 11.10b established the canonical `/workbench/` shell. Phase 11.10c deliver
 
 ## Global surfaces
 
-The accepted architecture defines these global surfaces when authorized:
+The accepted architecture defines global search, command palette, notifications, selected object/context rail, environment/candidate identity, principal/role context, help/documentation, theme and accessibility preferences where attributable and authorized.
 
-- global search;
-- command palette;
-- notifications;
-- selected object/context rail;
-- current environment/candidate identity;
-- principal/role context;
-- help/documentation;
-- theme and accessibility preferences.
-
-The accepted shell implements global navigation, a navigation-only command palette, environment/platform status, principal context, context rail container and theme preference. Notifications, candidate identity and high-impact feature actions appear only when bounded contracts provide attributable data and authority.
+The accepted shell implements global navigation, a navigation-only command palette, environment/platform status, principal context, context rail container and theme preference. High-impact feature actions appear only when bounded contracts provide attributable data and authority.
 
 ## Unified Intelligence placement
 
-Phase 11.10d made the Intelligence domain functional without changing the authority model.
-
-`/workbench/intelligence` provides explicit governed search and investigation. `/workbench/intelligence/iocs` provides an indicator-oriented entry point over the same DTMO contracts. The browser calls DTMO endpoints only:
-
-- `/api/v1/intelligence/search` for index discovery;
-- `/api/v1/intelligence/{item_id}/workspace` for canonical object detail and provenance.
-
-Search results are discovery projections, not canonical truth. Selecting a result retrieves canonical DTMO state separately. Search/detail failures remain unavailable and must not be represented as synthetic empty or complete intelligence.
+Phase 11.10d made the Intelligence domain functional through `/workbench/intelligence` and `/workbench/intelligence/iocs`, using DTMO search and canonical detail/provenance APIs. Search results are discovery projections, not canonical truth. Search/detail failures remain unavailable rather than becoming synthetic empty or complete intelligence.
 
 ## Integrated Analysis placement
 
-Phase 11.10e makes the Analysis domain functional while preserving the same canonical API/authority model.
+Phase 11.10e made `/workbench/analysis` functional. It uses DTMO capability/history APIs plus human-triggered IntelOwl and Cortex analyzer execution. History/capability reads require server-side `read:intelligence`; execution requires `review:intelligence`. Analyzer output does not prove local compromise or create sharing/publication authority.
 
-`/workbench/analysis` is object-centric and may receive a canonical intelligence UUID through `?item=<uuid>`. It uses DTMO APIs only:
+## OpenCTI Graph / Entity placement
 
-- `/api/v1/analysis/capabilities` for configured IntelOwl/Cortex capability and explicit allowlists, without inferred runtime health;
-- `/api/v1/analysis/items/{item_id}/history` for persisted IntelOwl and Cortex evidence associated with the canonical item;
-- `/api/v1/intelowl/items/{item_id}/enrich` for the existing human-triggered IntelOwl action;
-- `/api/v1/analysis/items/{item_id}/cortex` for one explicit analyzer-only Cortex action.
+Phase 11.10f makes `/workbench/intelligence/graph` functional while preserving the canonical API and evidence model.
 
-History/capability reads require server-side `read:intelligence`. Execution requires `review:intelligence`. Cortex responders, automatic analyzer discovery and automatic IntelOwl fallback remain outside the active information architecture. Analyzer output does not prove local compromise or create sharing/publication authority.
+The browser calls only DTMO endpoints:
+
+- `/api/v1/opencti/capabilities`;
+- `/api/v1/opencti/items/{item_id}/graph`;
+- `/api/v1/opencti/entities/{mapping_id}`.
+
+Every read requires server-side `read:intelligence`. The browser does not receive an OpenCTI token and does not query `/graphql` directly.
+
+The graph root is the canonical DTMO intelligence item. OpenCTI nodes come from persisted stable OpenCTI/STIX mappings. Because the accepted persistence boundary does not durably store generic OpenCTI entity-to-entity relationship topology, only attributable `canonical-mapping` edges may be rendered. Missing relationship evidence must **fail closed** rather than being inferred from labels, entity types, confidence, co-occurrence or visual proximity.
+
+An empty mapping set is not an upstream-absence claim. OpenCTI configuration is not runtime health. Entity/graph presence does not prove local exposure, exploitability, compromise, attribution certainty or remediation state.
 
 ## Canonical object types
 
-The workbench must be able to represent and navigate at least these governed object classes where supported by canonical data:
-
-- intelligence item;
-- indicator/IOC;
-- vulnerability/CVE;
-- threat actor/intrusion set;
-- campaign;
-- malware/tool;
-- infrastructure/domain/IP/URL/hash;
-- source/connector;
-- case;
-- task;
-- observable;
-- analysis/enrichment job;
-- MISP event/attribute reference;
-- OpenCTI entity/relationship reference;
-- governance framework/control/mapping/evidence object;
-- user/service identity/role/policy;
-- runtime/integration health object.
+The workbench represents and navigates governed object classes where supported by canonical data, including intelligence items, indicators/IOCs, vulnerabilities/CVEs, threat actors/intrusion sets, campaigns, malware/tools, infrastructure/domain/IP/URL/hash, sources/connectors, cases, tasks, observables, analysis/enrichment jobs, MISP references, OpenCTI entity/mapping references, governance evidence and identity/role/runtime objects.
 
 ## Context rail contract
 
-The right context rail is driven by the selected object and may show identity/title/type, severity/classification, confidence, TLP/PAP/markings, provenance/source, related entities, enrichment/analysis counts and state, cases/tasks, vulnerabilities/exposure, sharing status, timeline/audit summary and principal-authorized actions where attributable.
+The right context rail is driven by selected attributable object state and may show identity/type, severity/classification, confidence, TLP/PAP/markings, provenance/source, related entities, enrichment/analysis counts, cases/tasks, vulnerabilities/exposure, sharing status, timeline/audit summary and authorized actions.
 
-The rail must never infer an unavailable fact merely because an upstream integration is configured. Until a feature slice integrates a selected object into the shared rail, it retains the explicit `Geen object geselecteerd` state rather than placeholder object facts. Phase 11.10d therefore renders canonical detail inside its own governed investigation surface; Phase 11.10e renders persisted analysis history in its own governed analysis surface while preserving the shell rail contract.
+The rail must never infer an unavailable fact because an integration is configured. Until a feature slice integrates shared rail selection, feature-specific detail remains inside its governed workspace. Phase 11.10f therefore shows OpenCTI entity/revision detail inside the Knowledge Graph workspace while preserving the shell **Context rail contract**.
 
 ## Command palette
 
-The end-state palette may support safe navigation and governed actions such as search, object open, case creation, enrichment, graph navigation, source runs, sharing preparation and approvals.
-
-The current command palette remains navigation-only. High-impact commands are deliberately absent until their own bounded server/API authorization contracts are implemented and accepted.
+The end-state palette may support safe navigation and separately governed actions. The current command palette remains navigation-only; it cannot bypass server-side authorization.
 
 ## Role-aware defaults
 
-Role-aware defaults may change the landing page and visible navigation groups, but they do not define authorization.
-
-- Executive: Command Center, risk/exposure, incidents, governance.
-- CISO: intelligence, exposure, cases, governance, approvals.
-- SOC Analyst: investigations, intelligence, analysis, automation.
-- CTI Analyst: intelligence, graph, analysis, collection, sharing.
-- Incident Responder: investigations, tasks, analysis, playbooks.
-- Administrator: collection, operations, administration.
-- Auditor: evidence, governance, audit and read-only operational context.
-
-Full role-aware presentation acceptance remains Phase 11.10n. **Server-side RBAC** remains authoritative throughout. Phase 11.10e separates `read:intelligence` history access from `review:intelligence` execution authority.
+Role-aware defaults may change landing page and visible navigation groups but do not define authorization. Executive, CISO, SOC Analyst, CTI Analyst, Incident Responder, Administrator and Auditor defaults remain distinct usability profiles. Full role-aware presentation acceptance remains Phase 11.10n. **Server-side RBAC** remains authoritative.
 
 ## Responsive behavior
 
-Desktop uses persistent navigation and optional persistent context rail. Tablet may collapse either region into drawers. Small mobile view prioritizes read-only situational awareness and explicitly supported low-risk actions; complex case/graph/playbook editing is not forced into an unsafe or unusable mobile layout.
-
-The accepted shell implements the responsive navigation/context baseline. Phase 11.10d added responsive intelligence search/result/detail composition. Phase 11.10e adds responsive object selection, two-engine execution and dual-history composition. Feature-specific responsive acceptance continues in later slices.
+Desktop uses persistent navigation and optional context rail. Tablet may collapse regions into drawers. Small mobile view prioritizes situational awareness and explicitly supported low-risk actions. Phase 11.10f adds responsive graph/entity composition plus an accessible entity list so navigation never depends on SVG interaction alone.
 
 ## Migration rule
 
-Existing Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance functionality must be mapped into this architecture before any legacy route is retired. No capability may disappear merely because navigation changes.
-
-`/workbench/` is the canonical built application route. `/ui/console` and prior UI routes remain temporary **compatibility paths** while migration proceeds and are not parallel feature-development targets.
+Existing Overview, Intelligence, Sources & Catalog, Visual Analytics, Administration and Governance functionality must be mapped into this architecture before legacy retirement. `/workbench/` is the canonical built product route. `/ui/console` and prior UI routes remain temporary **compatibility paths** and are not parallel feature-development targets.
 
 ## Candidate-completion state
 
@@ -191,8 +148,9 @@ Existing Overview, Intelligence, Sources & Catalog, Visual Analytics, Administra
 - 11.10b canonical shell — `PASS / REPOSITORY_COMPLETE`;
 - 11.10c Command Center — `PASS / REPOSITORY_COMPLETE`;
 - 11.10d Unified Intelligence Workspace — `PASS / REPOSITORY_COMPLETE`;
-- 11.10e IntelOwl/Cortex integrated analysis — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
-- 11.10f OpenCTI graph/entity workspace — `NOT STARTED`;
+- 11.10e IntelOwl/Cortex integrated analysis — `PASS / REPOSITORY_COMPLETE`;
+- 11.10f OpenCTI graph/entity workspace — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
+- 11.10g MISP Sharing & Exchange — `NOT STARTED`;
 - 11.10p fresh production-equivalent validation — `NOT STARTED / CANDIDATE FREEZE REQUIRED`;
 - Phase 11.11 — `NOT STARTED`;
 - Phase 12 — `NOT STARTED`.
@@ -201,4 +159,4 @@ DTMO remains **not production authorized**.
 
 ## Evidence boundary
 
-This information architecture and its implemented routes are repository product-design/engineering evidence only. They do not prove live IntelOwl/Cortex availability, analyzer/provider authorization, upstream completeness or health, production-equivalent validation, independent assurance or production authorization. Missing or ambiguous operational evidence must **fail closed**.
+This information architecture and its implemented routes are repository product-design/engineering evidence only. They do **not prove** live OpenCTI connectivity or health, complete upstream topology, local compromise, production-equivalent validation, independent assurance or production authorization. Missing or ambiguous operational evidence must **fail closed**.
