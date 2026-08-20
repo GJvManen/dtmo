@@ -4,7 +4,7 @@ Last reconciled: **2026-08-20**
 
 ## Purpose
 
-This document defines authoritative current-state documentation, active Phase 11.10 candidate-completion/execution material, historical/immutable records and conflict-resolution order.
+This document defines the authority order for current DTMO project decisions, accepted Phase 11 evidence, the active Phase 11.10 candidate-completion slice and historical records.
 
 ## Authority order
 
@@ -12,15 +12,15 @@ For current project decisions use:
 
 1. `docs/project/CURRENT_STATE.md`;
 2. `docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`;
-3. active bounded Phase 11.10 slice documentation — currently `docs/architecture/PHASE11_10B_APPLICATION_SHELL.md`, `docs/qa/PHASE11_10B_APPLICATION_SHELL_GATE.md`, `frontend/README.md`, the accepted `docs/architecture/FRONTEND_ARCHITECTURE.md`, `docs/architecture/UI_API_CONTRACT.md`, `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`, `docs/ux/INFORMATION_ARCHITECTURE.md` and `docs/ux/DESIGN_SYSTEM.md`;
-4. `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md` and `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md` for the future 11.10p external exercise;
+3. active Phase 11.10c material: `docs/architecture/PHASE11_10C_COMMAND_CENTER.md`, `docs/qa/PHASE11_10C_COMMAND_CENTER_GATE.md`, `backend/dtmo/command_center.py`, `backend/dtmo/api_command_center.py`, frontend implementation and `.github/workflows/phase11-command-center.yml`;
+4. accepted 11.10a/11.10b workbench architecture and shell material;
 5. `docs/project/PRODUCTION_READINESS_REPORT.md` and `docs/project/PRODUCTION_CHECKLIST.md`;
-6. `docs/evidence/EVIDENCE_INDEX.md` and the controlled Phase 11.10 evidence template;
-7. accepted Phase 11.8 and Phase 11.9 architecture, security, operations and QA documentation;
-8. accepted Cortex, TheHive, MISP, OpenCTI, IntelOwl and Taranis documentation;
+6. `docs/evidence/EVIDENCE_INDEX.md`;
+7. accepted Phase 11.8/11.9 architecture, operations, security and QA documentation;
+8. accepted Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex documentation;
 9. `docs/roadmap/PRODUCTION_ROADMAP.md`;
 10. security, governance and general QA documentation;
-11. `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md` as the immutable current production-authorization decision until superseded by Phase 12.
+11. `docs/production/PHASE10_PRODUCTION_GO_NO_GO.md` as the current immutable production-authorization decision until superseded by a future Phase 12 decision.
 
 Historical point-in-time records remain valid for what they originally described and are never rewritten to manufacture later acceptance.
 
@@ -28,94 +28,69 @@ Historical point-in-time records remain valid for what they originally described
 
 | Document class | Status | Maintenance expectation |
 |---|---|---|
-| Root README / docs portal | `CURRENT` | Update on material product/lifecycle change |
+| Root README / documentation portal | `CURRENT` | Update on material product/lifecycle change |
 | Current state / executive views | `CURRENT` | Reconcile together on lifecycle change |
 | Platform Industrialisation Roadmap | `CURRENT / ACTIVE` | Maintain through Phase 11 |
 | Phase 11.1–11.7b service docs | `CURRENT / ACCEPTED` | Preserve accepted boundaries |
-| Phase 11.8 runtime docs | `CURRENT / ACCEPTED` | Preserve accepted runtime boundaries |
+| Phase 11.8 runtime docs | `CURRENT / ACCEPTED` | Preserve accepted controls |
 | Phase 11.9 migration/compatibility docs | `CURRENT / ACCEPTED` | Preserve forward-first compatibility boundary |
-| Phase 11.10a frontend architecture/design docs | `CURRENT / ACCEPTED` | Preserve the accepted workbench architecture/design baseline |
-| Phase 11.10b canonical shell docs/code contract | `CURRENT / ACTIVE` | Govern canonical shell, build, routing and repository/browser acceptance |
-| Phase 11.10 external gate/runbook/evidence contract | `CURRENT / DEFERRED UNTIL 11.10p` | Govern fresh production-equivalent validation after candidate freeze |
-| Production roadmap/readiness/checklist | `CURRENT` | Reconcile on readiness-gate change |
-| Security/governance model | `CURRENT` | Reconcile on material control changes |
-| Historical phase runbooks/evidence | `HISTORICAL / SUPPORTING` | Never rewrite original evidence claims |
-| `docs/development/runs/` | `HISTORICAL / IMMUTABLE` | Never rewrite to simulate current state |
+| Phase 11.10a frontend architecture/design | `CURRENT / ACCEPTED` | Preserve accepted workbench architecture |
+| Phase 11.10b canonical shell | `CURRENT / ACCEPTED` | Preserve accepted build/routing/accessibility baseline |
+| Phase 11.10c Command Center | `CURRENT / ACTIVE` | Govern canonical read model, fail-closed UI and exact-head browser acceptance |
+| Phase 11.10 external gate/runbook | `CURRENT / DEFERRED UNTIL 11.10p` | Govern fresh production-equivalent exercise after candidate freeze |
+| Production roadmap/readiness/checklist | `CURRENT` | Reconcile on readiness change |
+| Security/governance model | `CURRENT` | Reconcile on material control change |
+| Historical evidence/run records | `HISTORICAL / IMMUTABLE` | Never rewrite original evidence claims |
 
 ## Current release truth
-
-The professional documentation consistently distinguishes:
 
 - Phases 1–7 `PASS`;
 - RC13 `PASS / OWNER_ACCEPTED`;
 - E8.1–E8.10 `PASS / REPOSITORY_COMPLETE`;
-- historical Phase 8 `PASS / OWNER_ACCEPTED`;
-- historical Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED`;
+- Phase 8 `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`;
+- Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`;
 - Phase 10 `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`;
 - Phase 11 `IN PROGRESS / ACTIVE`;
 - Phase 11.1–11.9 `PASS / REPOSITORY_COMPLETE`;
 - Phase 11.10 `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`;
 - Phase 11.10a `PASS / REPOSITORY_COMPLETE`;
-- Phase 11.10b `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
-- Phase 11.10c `NOT STARTED`;
+- Phase 11.10b `PASS / REPOSITORY_COMPLETE`;
+- Phase 11.10c `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
+- Phase 11.10d `NOT STARTED`;
 - Phase 11.10p `NOT STARTED / CANDIDATE FREEZE REQUIRED`;
 - Phase 11.11 `NOT STARTED`;
 - Phase 12 `NOT STARTED`;
 - DTMO **not production authorized**.
 
-## Active Phase 11.10b documentation rule
+## Active Phase 11.10c documentation rule
 
-Documentation may describe the implemented canonical shell, its build inputs, route structure and repository/browser evidence only to the extent attributable to repository state. It must not imply that Command Center or later feature workspaces are already complete, that an upstream service was exercised, or that production-equivalent validation occurred.
+Documentation may describe Command Center behavior only where attributable to repository implementation and exact-head browser/contract evidence.
 
-The active 11.10b package preserves:
+The active package preserves:
 
-- one canonical built DTMO product route at `/workbench/`;
-- `/ui/console` as a temporary **compatibility path**, not a parallel feature target;
-- a committed npm dependency lockfile consumed with `npm ci`;
-- separately built React/TypeScript/Vite assets served through the DTMO origin;
-- normal request path **browser → DTMO API → governed integration adapter → upstream service**;
-- **server-side RBAC** and least privilege;
-- human/service identity separation;
-- human publication/share authority;
-- separate TheHive case authority;
-- no local-compromise inference from enrichment, graph presence or correlation;
-- accessible dark/light semantic shell design;
-- truthful loading/empty/degraded state, including an explicit no-object context state;
-- no synthetic operational state in route foundations;
-- mockups/generated visuals as design artifacts only.
+- one canonical `/workbench/command-center` workspace;
+- canonical DTMO read models rather than browser-to-upstream privileged calls;
+- **browser → DTMO API → governed integration adapter → upstream service**;
+- **server-side RBAC** as the authority boundary;
+- role-aware visibility as usability only;
+- separate human publication/share and TheHive case authority;
+- explicit distinction between integration configuration and runtime observation;
+- no `healthy` claim solely from a feature flag/API base;
+- `null`/unavailable metrics when canonical evidence is unavailable rather than synthetic zeros;
+- accessible/responsive behavior inherited from the accepted shell;
+- `/ui/console` as a migration **compatibility path** only;
+- repository/browser mocks and fixtures classified as engineering evidence only.
 
-A successful 11.10b repository/browser gate establishes shell/build/routing consistency only. It **does not prove** live upstream behavior, production-equivalent validation, independent assurance or production authorization.
+A successful Phase 11 Command Center Gate **does not prove** live upstream behavior, production-equivalent operation, independent assurance or production authorization.
 
 ## Phase 11.10p external documentation rule
 
-The existing production-equivalent execution procedure, candidate fingerprint, manifest schema and fail-closed evidence checks remain authoritative for 11.10p after candidate completion and freeze. Documentation must not imply that required external evidence exists until that exercise actually occurs and the referenced evidence has been reviewed.
+The existing production-equivalent validation gate, runbook, candidate fingerprinting and evidence manifest remain authoritative for 11.10p after candidate completion and freeze.
 
-A successful repository validator result establishes only that supplied metadata satisfies the contract. It does not prove the truth of external observations, live Kubernetes behavior, real migration/rollback/recovery, independent assurance or production authorization.
+The external package requires one **same immutable** candidate/environment identity, candidate and prior image digests, forward-first migration, exact prior-digest rollback, post-rollback health, no automatic database down migration, health/readiness, saturation/capacity and recovery/continuity evidence. Historical Phase 8/9 evidence cannot satisfy the new candidate. Missing, inaccessible, placeholder or mixed-candidate evidence must **fail closed**.
 
-The external package preserves:
+A successful repository validator establishes metadata consistency only; it does not prove the truth of external observations.
 
-- one immutable candidate and environment identity;
-- exact candidate and prior application image digests;
-- forward-first migration compatibility and no automatic database down migration;
-- post-upgrade and post-rollback health evidence;
-- representative saturation/capacity observations;
-- recovery integrity and RPO/RTO observations where applicable;
-- no historical Phase 8/9 evidence reuse;
-- no secrets or raw credential material in repository evidence;
-- RBAC, provenance, least privilege, human publication/share authority and separate service/licensing boundaries.
+## Maintenance rule
 
-No synthetic screenshot, generated design, local Compose run, emulator result or repository CI artifact is promoted as live production-equivalent evidence. Mermaid diagrams are documentation models only.
-
-## Evidence and claim rules
-
-Repository CI cannot manufacture production-equivalent acceptance; owner acceptance cannot manufacture independent assurance; independent assurance cannot manufacture production authorization. Historical Phase 8/9 evidence remains candidate-bound. Fresh Phase 11.10 and Phase 11.11 evidence is required before Phase 12.
-
-Framework mappings, frontend state and integrated service state remain bounded claims and do not imply blanket compliance, local exposure, compromise, case necessity or dissemination authority without separate attributable evidence.
-
-## Historical / immutable material
-
-Historical documents may contain lifecycle terminology that is no longer current. This is acceptable only where the document is clearly a point-in-time record. Historical text must not be used as primary current-state evidence or rewritten to manufacture later acceptance.
-
-## Reconciliation gate
-
-Material documentation changes must satisfy `docs/qa/CURRENT_STATE_RECONCILIATION.md` and professional documentation contract tests before protected merge. Current lifecycle state is reconciled across README, docs portal, current state, executive views, readiness report/checklist, documentation status, evidence index, QA/release gates, production roadmap and active Phase 11 documents.
+Whenever lifecycle state, architecture, security boundary, product scope or governance claims materially change, affected current documents and documentation-contract tests are updated in the same bounded PR. Historical evidence remains unchanged.
