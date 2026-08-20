@@ -74,7 +74,7 @@ def test_workspace_exposes_governed_unpublished_export_boundary(page: Page) -> N
     expect(page.get_by_text("11.10g MISP Sharing", exact=True)).to_be_visible()
     expect(page.get_by_text("Reviewed by reviewer@example.invalid", exact=True)).to_be_visible()
     expect(page.get_by_text("Approved by publisher@example.invalid", exact=True)).to_be_visible()
-    expect(page.get_by_text("TLP:AMBER", exact=True)).to_be_visible()
+    expect(page.get_by_role("combobox", name="TLP")).to_have_value("tlp:amber")
     expect(page.get_by_role("button", name="Export approved intelligence")).to_be_enabled()
     expect(page.get_by_text("Runtime health: not inferred", exact=True)).to_be_visible()
     expect(page.get_by_text("Publication authority: no", exact=True)).to_be_visible()
