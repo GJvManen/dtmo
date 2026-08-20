@@ -94,7 +94,7 @@ After exact-head acceptance and merge of 11.10f, the only next bounded priority 
 - Phase 11.4 OpenCTI remains `PASS / REPOSITORY_COMPLETE`; authoritative service-boundary material includes `architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md`, `integrations/OPENCTI_INTEGRATION.md`, `operations/OPENCTI_INTEGRATION_RUNBOOK.md`, `qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md` and `qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md`.
 - Phase 11.5 MISP remains `PASS / REPOSITORY_COMPLETE`; governed exchange remains subject to DTMO human sharing approval and handling restrictions.
 - **Phase 11.6 TheHive Handoff Implementation Gate** remains accepted through `architecture/THEHIVE_DTMO_HANDOFF_CONTRACT.md`, `integrations/THEHIVE_HANDOFF.md`, `operations/THEHIVE_HANDOFF_RUNBOOK.md`, `user/THEHIVE_CASE_HANDOFF.md`, `administration/THEHIVE_HANDOFF_CONFIGURATION.md` and `qa/PHASE11_6_THEHIVE_HANDOFF_IMPLEMENTATION_GATE.md`.
-- Phase 11.7 historical Cortex decision remains accepted; the 11.7b analyzer connector remains exposed through `integrations/CORTEX_ANALYZER_CONNECTOR.md`, `operations/CORTEX_ANALYZER_RUNBOOK.md` and `qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`. Responders remain outside the accepted analyzer boundary.
+- Phase 11.7 historical Cortex decision remains accepted through `qa/PHASE11_7_CORTEX_DECISION_GATE.md`; the 11.7b analyzer connector remains exposed through `integrations/CORTEX_ANALYZER_CONNECTOR.md`, `operations/CORTEX_ANALYZER_RUNBOOK.md` and `qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`. Responders remain outside the accepted analyzer boundary.
 
 ## Accepted Phase 11.8 / 11.9 industrialisation baseline
 
