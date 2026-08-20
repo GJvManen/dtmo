@@ -20,15 +20,22 @@ CURRENT_SURFACES = (
     "docs/security/SECURITY_OVERVIEW.md",
 )
 
-CANDIDATE_COMPLETION_SURFACES = tuple(path for path in CURRENT_SURFACES if path != "docs/security/SECURITY_OVERVIEW.md")
+CANDIDATE_COMPLETION_SURFACES = tuple(
+    path for path in CURRENT_SURFACES if path != "docs/security/SECURITY_OVERVIEW.md"
+)
 
 STALE_ACTIVE_MARKERS = (
     "Phase 11.10a frontend architecture/design contract | `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT`",
     "Phase 11.10b canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
     "Phase 11.10c Command Center | `NOT STARTED`",
+    "Phase 11.10c Command Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+    "Phase 11.10d Unified Intelligence Workspace | `NOT STARTED`",
     "current bounded priority is **Phase 11.10b",
     "sole active bounded objective is now **Phase 11.10b",
     "Continue only **Phase 11.10b",
+    "current bounded priority is **Phase 11.10c",
+    "sole active bounded objective is **Phase 11.10c",
+    "Continue only **Phase 11.10c",
 )
 
 
@@ -63,12 +70,13 @@ def test_current_surfaces_preserve_prior_candidate_evidence_boundary() -> None:
         assert "REPOSITORY_COMPLETE" in text, path
 
 
-def test_phase11_10c_candidate_completion_truth_is_professionally_reconciled() -> None:
+def test_phase11_10d_candidate_completion_truth_is_professionally_reconciled() -> None:
     for path in CANDIDATE_COMPLETION_SURFACES:
         text = _read(path)
         assert "11.10a" in text, f"Phase 11.10a missing from {path}"
         assert "11.10b" in text, f"Phase 11.10b missing from {path}"
         assert "11.10c" in text, f"Phase 11.10c missing from {path}"
+        assert "11.10d" in text, f"Phase 11.10d missing from {path}"
         assert "11.10p" in text, f"Phase 11.10p boundary missing from {path}"
         assert "production" in text.lower(), path
 
@@ -76,8 +84,9 @@ def test_phase11_10c_candidate_completion_truth_is_professionally_reconciled() -
     for marker in (
         "Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10c Command Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
-        "Phase 11.10d Unified Intelligence Workspace | `NOT STARTED`",
+        "Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.10d Unified Intelligence Workspace | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.10e IntelOwl/Cortex integrated analysis | `NOT STARTED`",
         "Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED`",
     ):
         assert marker in current, marker
@@ -93,7 +102,42 @@ def test_phase11_10c_candidate_completion_truth_is_professionally_reconciled() -
         assert marker in roadmap, marker
 
 
-def test_phase11_10c_command_center_package_is_professionally_discoverable() -> None:
+def test_phase11_10d_unified_intelligence_package_is_professionally_discoverable() -> None:
+    required_paths = (
+        "frontend/src/UnifiedIntelligenceWorkspace.tsx",
+        "frontend/src/unified-intelligence.css",
+        "docs/architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md",
+        "docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md",
+        "docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md",
+        "backend/tests/test_phase11_10d_unified_intelligence_workspace_contract.py",
+        "backend/tests/test_phase11_10d_unified_intelligence_workspace_browser.py",
+        ".github/workflows/phase11-unified-intelligence-workspace.yml",
+    )
+    for path in required_paths:
+        assert (ROOT / path).is_file(), path
+
+    portal = _read("docs/README.md")
+    evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
+    qa = _read("docs/qa/QA_AND_RELEASE_GATES.md")
+    combined = portal + "\n" + evidence + "\n" + qa
+    for marker in (
+        "PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md",
+        "PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md",
+        "UNIFIED_INTELLIGENCE_WORKSPACE.md",
+        "phase11-unified-intelligence-workspace.yml",
+    ):
+        assert marker in combined, marker
+
+    for marker in (
+        "fail closed",
+        "server-side",
+        "does not prove",
+        "production",
+    ):
+        assert marker.lower() in combined.lower(), marker
+
+
+def test_phase11_10c_command_center_package_remains_professionally_discoverable() -> None:
     required_paths = (
         "backend/dtmo/command_center.py",
         "backend/dtmo/api_command_center.py",
@@ -107,26 +151,6 @@ def test_phase11_10c_command_center_package_is_professionally_discoverable() -> 
     )
     for path in required_paths:
         assert (ROOT / path).is_file(), path
-
-    portal = _read("docs/README.md")
-    evidence = _read("docs/evidence/EVIDENCE_INDEX.md")
-    qa = _read("docs/qa/QA_AND_RELEASE_GATES.md")
-    combined = portal + "\n" + evidence + "\n" + qa
-    for marker in (
-        "PHASE11_10C_COMMAND_CENTER.md",
-        "PHASE11_10C_COMMAND_CENTER_GATE.md",
-        "phase11-command-center.yml",
-        "command_center.py",
-    ):
-        assert marker in combined, marker
-
-    for marker in (
-        "fail closed",
-        "server-side",
-        "does not prove",
-        "production",
-    ):
-        assert marker.lower() in combined.lower(), marker
 
 
 def test_phase11_10b_application_shell_package_remains_discoverable() -> None:
