@@ -27,6 +27,17 @@ The canonical web application provides one operator experience for **Overview**,
 
 PostgreSQL remains canonical DTMO application truth. Redis, OpenSearch and S3-compatible object storage support coordination, search and object persistence. Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate service and licensing boundaries; none independently establishes local compromise or grants DTMO publication/share authority.
 
+### Accepted Phase 11 service integration baseline
+
+| Integration | Status | Authority boundary |
+|---|---|---|
+| Phase 11.3 IntelOwl | `PASS / REPOSITORY_COMPLETE` | Enrichment evidence only; no publication/share authority and no local-compromise inference |
+| Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE` | STIX knowledge-graph integration remains a separate service/API/licensing boundary |
+| Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE` | Governed exchange remains subject to DTMO human sharing approval and handling restrictions |
+| Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE` | Human case-handoff authority remains separate from publication/share authority |
+| Phase 11.7 Cortex decision | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` | Historical conditional decision remains immutable |
+| Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` | Analyzer-only enrichment; responders and autonomous side effects remain excluded |
+
 ## Phase 11 composed intelligence pipeline
 
 ```mermaid
