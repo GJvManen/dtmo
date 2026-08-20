@@ -1,9 +1,8 @@
 FROM node:22.22.3-bookworm-slim@sha256:e21fc383b50d5347dc7a9f1cae45b8f4e2f0d39f7ade28e4eef7d2934522b752 AS frontend-build
 
 WORKDIR /frontend
-COPY frontend/package.json ./
-RUN npm install --package-lock-only --ignore-scripts \
-    && npm ci
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
 COPY frontend/index.html frontend/tsconfig.json frontend/vite.config.ts ./
 COPY frontend/src ./src
 RUN npm run build
