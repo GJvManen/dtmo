@@ -267,9 +267,13 @@
   margin-top: 0;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1500px) {
   .intelligence-search-form {
-    grid-template-columns: minmax(260px, 2fr) repeat(3, minmax(140px, 1fr));
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  }
+
+  .search-query-field {
+    grid-column: 1 / -1;
   }
 
   .intelligence-search-button {
