@@ -32,7 +32,7 @@ def test_canonical_workbench_shell_navigation_and_context(page: Page) -> None:
     expect(page.get_by_role("heading", name="Command Center", level=1)).to_be_visible()
     expect(page.get_by_role("navigation", name="Werkruimten")).to_be_visible()
     expect(page.get_by_text("Geen object geselecteerd")).to_be_visible()
-    expect(page.get_by_text("No synthetic operational state")).to_be_visible()
+    expect(page.get_by_role("heading", name="Operational visibility without synthetic claims", level=2)).to_be_visible()
     expect(page.get_by_role("link", name="Compatibility console", exact=True)).to_be_visible()
 
     page.keyboard.press("Control+k")
@@ -42,6 +42,7 @@ def test_canonical_workbench_shell_navigation_and_context(page: Page) -> None:
     palette.get_by_role("button").filter(has_text="Threat Intelligence").click()
     page.wait_for_url("**/workbench/intelligence")
     expect(page.get_by_role("heading", name="Threat Intelligence", level=1)).to_be_visible()
+    expect(page.get_by_text("No synthetic operational state")).to_be_visible()
 
 
 @pytest.mark.browser
