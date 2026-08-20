@@ -16,15 +16,16 @@ This directory contains the authoritative professional documentation for Dutch T
 | Phase 11.1–11.7b integrations | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.8 integrated runtime industrialisation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.9 migration / compatibility | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
-| Phase 11.10a frontend architecture/design contract | `IN PROGRESS / REPOSITORY ARCHITECTURE CONTRACT` |
-| Phase 11.10b–11.10o candidate completion | `NOT STARTED` |
+| Phase 11.10 candidate completion + production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
+| Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10b canonical application shell | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.10c–11.10o candidate completion | `NOT STARTED` |
 | Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 production go/no-go | `NOT STARTED` |
 | Production readiness | **not production authorized** |
 
-The active bounded programme step is **Phase 11.10a frontend architecture and design contract** inside the still-active Phase 11.10 stage. The owner-required Unified Operations Workbench materially changes the integrated candidate, so the fresh external production-equivalent exercise is now intentionally sequenced as 11.10p after candidate completion and candidate freeze. Earlier Phase 8/9 evidence remains historical and candidate-bound and cannot be reused.
+The active bounded programme step is **Phase 11.10b canonical application shell**. Phase 11.10a is accepted as the frontend architecture/design baseline. The Unified Operations Workbench materially changes the integrated candidate, so fresh external production-equivalent execution remains sequenced as 11.10p after candidate completion and candidate freeze. Earlier Phase 8/9 evidence remains historical and candidate-bound and cannot be reused.
 
 ## Start here
 
@@ -34,11 +35,11 @@ The active bounded programme step is **Phase 11.10a frontend architecture and de
 | Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md), [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Platform Industrialisation Roadmap](roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [Current State](project/CURRENT_STATE.md) |
 | Analyst / reviewer | [User Guide](user/USER_GUIDE.md), [Information Architecture](ux/INFORMATION_ARCHITECTURE.md), [System Workflows](architecture/SYSTEM_WORKFLOWS.md), [Screenshot Catalogue](visual/screenshots/README.md) |
 | Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md), [Kubernetes Runtime Configuration](administration/KUBERNETES_RUNTIME_CONFIGURATION.md), [Security Overview](security/SECURITY_OVERVIEW.md) |
-| Architecture / engineering | [Frontend Architecture](architecture/FRONTEND_ARCHITECTURE.md), [UI/API Contract](architecture/UI_API_CONTRACT.md), [Phase 11.9 Migration Compatibility](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
-| UX / frontend | [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Information Architecture](ux/INFORMATION_ARCHITECTURE.md), [Design System](ux/DESIGN_SYSTEM.md), [Frontend UX](ux/FRONTEND_UX.md) |
+| Architecture / engineering | [Frontend Architecture](architecture/FRONTEND_ARCHITECTURE.md), [UI/API Contract](architecture/UI_API_CONTRACT.md), [Phase 11.10b Application Shell](architecture/PHASE11_10B_APPLICATION_SHELL.md), [Phase 11.9 Migration Compatibility](architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md), [System Architecture](architecture/SYSTEM_ARCHITECTURE.md) |
+| UX / frontend | [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md), [Information Architecture](ux/INFORMATION_ARCHITECTURE.md), [Design System](ux/DESIGN_SYSTEM.md), [Frontend UX](ux/FRONTEND_UX.md), [`frontend/README.md`](../frontend/README.md) |
 | Security / CISO | [Security Overview](security/SECURITY_OVERVIEW.md), [Threat Model](security/THREAT_MODEL.md), [Risk Register](security/RISK_REGISTER.md), [Phase 11.10 Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md) |
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md), [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
-| QA / release | [Phase 11.10a Frontend Architecture Gate](qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md), [Phase 11.10 Production-Equivalent Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
+| QA / release | [Phase 11.10b Application Shell Gate](qa/PHASE11_10B_APPLICATION_SHELL_GATE.md), [Phase 11.10a Frontend Architecture Gate](qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md), [Phase 11.10 Production-Equivalent Validation Gate](qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md), [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md), [Evidence Index](evidence/EVIDENCE_INDEX.md) |
 | Operations | [Phase 11.10 Production-Equivalent Validation Runbook](operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md), [Operating Model](operations/OPERATING_MODEL.md), [Operations Manual](operations/OPERATIONS_MANUAL.md) |
 
 ## Phase 11 programme documentation
@@ -66,9 +67,9 @@ Accepted integration and runtime documentation remains directly discoverable:
 
 The governed screenshot catalogue now contains UI-01 through UI-10. These are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. **No synthetic screenshot is promoted** as operational, staging, production, or live-integration evidence.
 
-## Active Phase 11.10a — Unified Operations Workbench architecture
+## Accepted Phase 11.10a — frontend architecture/design baseline
 
-The first bounded candidate-completion slice is architecture only. It defines the target product/control-plane structure before implementation starts:
+Phase 11.10a is `PASS / REPOSITORY_COMPLETE`. Its accepted package remains:
 
 - [Frontend Architecture](architecture/FRONTEND_ARCHITECTURE.md)
 - [UI/API Contract](architecture/UI_API_CONTRACT.md)
@@ -80,6 +81,27 @@ The first bounded candidate-completion slice is architecture only. It defines th
 - exact-head workflow: `.github/workflows/phase11-frontend-architecture.yml`
 
 The architectural invariant is **browser → DTMO API → governed integration adapter → upstream service**. The browser does not become a privileged direct client for Taranis AI, IntelOwl, OpenCTI, MISP, TheHive or Cortex. Server-side RBAC, provenance, human publication/share authority and separate case authority remain unchanged.
+
+## Active Phase 11.10b — canonical application shell
+
+11.10b implements the accepted architecture without importing 11.10c feature scope:
+
+- [Application Shell Architecture](architecture/PHASE11_10B_APPLICATION_SHELL.md)
+- [Application Shell QA Gate](qa/PHASE11_10B_APPLICATION_SHELL_GATE.md)
+- frontend build definition: `frontend/package.json`
+- frontend implementation: `frontend/src/main.tsx`, `frontend/src/App.tsx`, `frontend/src/styles.css`
+- same-origin serving boundary: `backend/dtmo/workbench_frontend.py`
+- repository contract: `backend/tests/test_phase11_10b_application_shell_contract.py`
+- browser contract: `backend/tests/test_phase11_10b_application_shell_browser.py`
+- exact-head workflow: `.github/workflows/phase11-application-shell.yml`
+- frontend operating/build documentation: `frontend/README.md`
+- direct dependency license summary: `frontend/THIRD_PARTY_NOTICES.md`
+
+The canonical supported product route becomes `/workbench/` in built deployments. `/ui/console` remains a migration **compatibility path** only. The shell contains task-oriented navigation, top status/command bar, navigation-only command palette, responsive/mobile navigation, context rail and semantic dark/light themes. It does not fabricate Command Center metrics, integration health, cases, vulnerabilities or other operational data.
+
+The final 11.10b exact head must consume a committed npm lockfile with `npm ci`, preserve the frontend/container supply-chain gates and keep all registered exact-head workflows green. Repository shell evidence **does not prove** live service connectivity, production-equivalent operation, independent assurance or production authorization.
+
+11.10c Command Center remains `NOT STARTED` until 11.10b is accepted and merged.
 
 11.10a–11.10o complete the materially changed product candidate one bounded PR at a time. 11.10p then performs the fresh production-equivalent exercise against the frozen immutable integrated candidate. Phase 11.11 remains blocked until Phase 11.10 is explicitly accepted.
 
@@ -113,7 +135,7 @@ flowchart LR
     V --> A[Accountable 11.10 review]
 ```
 
-Phase 11.10p requires fresh candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery evidence from one production-equivalent environment. Historical Phase 8/9 evidence cannot satisfy the gate. Missing, ambiguous, inaccessible or mixed-candidate evidence must fail closed. Repository-green status validates repository contracts only; it does not prove production-equivalent execution and does not authorize production.
+Phase 11.10p requires fresh candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery evidence from one production-equivalent environment. Historical Phase 8/9 evidence cannot satisfy the gate. Missing, ambiguous, inaccessible or mixed-candidate evidence must **fail closed**. Repository-green status validates repository contracts only; it does not prove production-equivalent execution and does not authorize production.
 
 ## Security and authority invariants
 
