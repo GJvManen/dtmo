@@ -27,7 +27,18 @@ These classes are not interchangeable. Repository CI **does not prove** producti
 
 Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed service/licensing boundaries. Accepted Phase 11.1–11.9 evidence covers integration contracts plus runtime, workload identity/external secrets, ingress/TLS/network segmentation, HA/disruption, observability, backup/restore/recovery, supply-chain hardening, capacity, exercised upgrade/rollback and forward-first migration compatibility.
 
-Application rollback does not authorize automatic database down migration. Configuration or CI success does not establish live service health.
+Accepted runtime and supply-chain workflow evidence remains explicitly indexed through:
+
+- `.github/workflows/phase11-runtime-foundation.yml`;
+- `.github/workflows/phase11-workload-identity-secrets.yml`;
+- `.github/workflows/phase11-ingress-tls-network.yml`;
+- `.github/workflows/phase11-ha-disruption.yml`;
+- `.github/workflows/phase11-supply-chain-hardening.yml`;
+- `.github/workflows/release-artifact-attestation.yml`;
+- `.github/workflows/phase11-upgrade-rollback.yml`;
+- `.github/workflows/phase11-migration-compatibility.yml`.
+
+Application rollback does not authorize automatic database down migration. Configuration or CI success does not establish live service health, production-equivalent behavior or production authorization.
 
 ## Phase 11.10 candidate-completion evidence
 
