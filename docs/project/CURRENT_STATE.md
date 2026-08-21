@@ -1,15 +1,15 @@
 # DTMO Current Project State
 
-Last reconciled: **2026-08-20**  
+Last reconciled: **2026-08-21**  
 Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 repository enhancements**
 
 ## Executive summary
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a–11.10g are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a–11.10h are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The sole active bounded objective is **Phase 11.10h TheHive Investigations & Cases**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10g delivered the accepted human-governed MISP Sharing & Exchange workspace. Phase 11.10h makes the canonical `/workbench/investigations` route functional by composing DTMO's accepted Phase 11.6 TheHive case-handoff and durable reconciliation controls with a read-only canonical investigation-state projection.
+The sole active bounded objective is **Phase 11.10i — Vulnerability & Exposure Center**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10i connects the canonical `/workbench/exposure` route to a read-only DTMO vulnerability intelligence workspace over the accepted server-authorized vulnerability analytics projection. CVSS, EPSS, CISA KEV, CWE and vendor/product mappings remain prioritization evidence only: they do not establish local exposure, exploitability, compromise, remediation or safety.
 
 Fresh production-equivalent execution remains deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
 
@@ -50,8 +50,8 @@ Fresh production-equivalent execution remains deferred until 11.10a–11.10o are
 | Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10h TheHive Investigations & Cases | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10i Vulnerability & Exposure Center | `NOT STARTED` |
+| Phase 11.10h TheHive Investigations & Cases | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10i Vulnerability & Exposure Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.10j Sources & Collection Control Center | `NOT STARTED` |
 | Phase 11.10k Automation & Playbooks | `NOT STARTED` |
 | Phase 11.10l Governance & Evidence Center | `NOT STARTED` |
@@ -62,130 +62,74 @@ Fresh production-equivalent execution remains deferred until 11.10a–11.10o are
 | Phase 11.11 independent external assurance | `NOT STARTED` |
 | Phase 12 | `NOT STARTED` |
 
-## Accepted service and runtime boundaries
+## Governing service and trust boundaries
 
-Taranis, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed service/licensing boundaries. None gains DTMO human publication/share authority or establishes local compromise by itself. TheHive case-handoff authority remains distinct from publication/share authority.
-
-Phase 11.8 is repository-complete across Kubernetes/Helm/GitOps runtime foundation, workload identity/external-secret delivery, ingress/TLS and network segmentation, HA/disruption, observability, backup/recovery, supply-chain, capacity and exercised upgrade/rollback. Phase 11.9 adds the accepted forward-first migration/application compatibility contract. Application rollback does not authorize automatic database down migration.
-
-These are engineering controls. Repository CI does not by itself establish production-equivalent behavior or production authorization.
-
-## Accepted Unified Operations Workbench baseline
+Taranis, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed service/licensing boundaries. None gains DTMO human publication/share authority or establishes local compromise by itself. The browser remains an unprivileged same-origin DTMO client. Server-side RBAC, provenance, handling restrictions and human authority remain authoritative.
 
 The canonical trust path remains:
 
-**browser → DTMO API → governed integration adapter → upstream service**
+```mermaid
+flowchart LR
+    B[Browser] -->|same-origin request| D[DTMO API]
+    D -->|server-side RBAC| P[Canonical projections]
+    P --> C[(Canonical DTMO store)]
+    P --> R[(Raw evidence + SHA-256)]
+    D -->|governed adapters only| U[Upstream services]
+```
 
-The browser is not a privileged integration broker. Role-aware presentation is usability only; **server-side RBAC** remains authoritative.
+Repository CI validates repository contracts only. It does not establish production-equivalent behavior, independent assurance or production authorization.
 
-Accepted workbench slices are:
+## Accepted Unified Operations Workbench slices
 
-- 11.10a frontend architecture/design;
-- 11.10b React/TypeScript/Vite canonical `/workbench/` shell and migration compatibility paths;
-- 11.10c read-only Command Center with fail-closed canonical operational state;
-- 11.10d Unified Intelligence Workspace with governed search, canonical detail and provenance;
-- 11.10e Integrated Analysis with human-triggered IntelOwl enrichment, analyzer-only Cortex execution and durable evidence history;
-- 11.10f OpenCTI graph/entity workspace over persisted OpenCTI/STIX mapping and revision evidence without inferred upstream topology;
-- 11.10g MISP Sharing & Exchange with separate human review/share approval, handling-restriction preservation and unpublished replay-protected export.
+Accepted repository-complete workbench slices are:
 
-IntelOwl/Cortex, OpenCTI and MISP-derived context are evidence, not verdicts. They grant no implicit external-share/publication authority and do not prove local compromise.
+- 11.10a frontend architecture/design contract;
+- 11.10b canonical React/TypeScript/Vite application shell;
+- 11.10c Command Center;
+- 11.10d Unified Intelligence Workspace;
+- 11.10e IntelOwl/Cortex Integrated Analysis;
+- 11.10f OpenCTI graph/entity workspace;
+- 11.10g MISP Sharing & Exchange;
+- 11.10h TheHive Investigations & Cases.
 
-## Accepted Phase 11.10f OpenCTI graph/entity boundary
+The active 11.10i slice adds Vulnerability & Exposure without creating a parallel vulnerability datastore or browser-held upstream credential path.
 
-Phase 11.10f made `/workbench/intelligence/graph` functional through DTMO-owned read APIs over already persisted OpenCTI evidence.
+## Accepted Phase 11.10h TheHive boundary
 
-Frontend-facing contracts are:
+Phase 11.10h is repository-complete. `/workbench/investigations` composes canonical intelligence/provenance with durable TheHive case-handoff evidence. `GET /api/v1/thehive/items/{item_id}/investigation` requires `read:intelligence`; `POST /api/v1/thehive/items/{item_id}/cases` retains explicit human `handoff:case` authority. Reserved or ambiguous handoff state fails closed and requires reconciliation. The UI does not receive TheHive credentials and does not infer responder action, remediation, compromise or production evidence.
 
-- `GET /api/v1/opencti/capabilities`;
-- `GET /api/v1/opencti/items/{item_id}/graph`;
-- `GET /api/v1/opencti/entities/{mapping_id}`.
-
-Every endpoint requires server-side `read:intelligence`. No OpenCTI write, connector invocation, MISP synchronization, case creation or publication/share action was added.
-
-The Phase 11.4 persistence baseline contains stable OpenCTI/STIX object mappings and immutable revisions. It does **not** durably contain generic OpenCTI entity-to-entity relationship topology. The accepted graph therefore renders only attributable `canonical-mapping` edges between the selected canonical DTMO intelligence object and its persisted OpenCTI mappings. Missing upstream relationship evidence must **fail closed** and must not be visually inferred.
-
-Authoritative Phase 11.10f material remains:
-
-- `backend/dtmo/opencti_workspace.py`;
-- `frontend/src/OpenCTIGraphWorkspace.tsx`;
-- `frontend/src/opencti-graph.css`;
-- `docs/architecture/PHASE11_10F_OPENCTI_GRAPH_ENTITY_WORKSPACE.md`;
-- `docs/user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md`;
-- `docs/qa/PHASE11_10F_OPENCTI_GRAPH_ENTITY_GATE.md`;
-- `backend/tests/test_phase11_10f_opencti_graph_contract.py`;
-- `backend/tests/test_phase11_10f_opencti_graph_browser.py`;
-- `.github/workflows/phase11-opencti-graph-workspace.yml`.
-
-Repository/browser evidence for that accepted slice does not prove live OpenCTI health, completeness of OpenCTI knowledge, local exposure or compromise, production-equivalent operation, independent assurance or production authorization.
-
-## Accepted Phase 11.10g MISP Sharing & Exchange boundary
-
-Phase 11.10g replaced the `/workbench/sharing` placeholder with a canonical human-governed MISP workflow. It reuses accepted controls rather than inventing a parallel authority path.
-
-The decision sequence is:
-
-1. inspect canonical sharing state with `read:intelligence`;
-2. record human review with `review:intelligence`;
-3. record independent human share approval with `approve:share`, performed by a principal different from the reviewer;
-4. export an already reviewed and share-approved canonical revision to MISP through the existing governed export API;
-5. leave MISP publication and synchronization outside the accepted slice.
-
-The export adapter creates `published=false` events only. For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions remain binding and cannot be weakened on re-export. A persisted `pending`, `success` or `uncertain` export for the current deterministic event UUID blocks automatic replay. An uncertain external result requires operator inspection.
-
-Frontend/browser paths never receive a MISP API key or call MISP directly. Configuration is not live-service health. Successful event creation does not establish MISP publication, synchronization, downstream consumption, local compromise or production readiness.
-
-Authoritative Phase 11.10g material:
-
-- `backend/dtmo/misp_sharing_workspace.py`;
-- `backend/dtmo/misp_export_api.py`;
-- `backend/dtmo/governance/misp_export.py`;
-- `frontend/src/MispSharingWorkspace.tsx`;
-- `frontend/src/misp-sharing.css`;
-- `docs/architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md`;
-- `docs/user/MISP_SHARING_EXCHANGE_WORKSPACE.md`;
-- `docs/qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md`;
-- `backend/tests/test_phase11_10g_misp_sharing_contract.py`;
-- `backend/tests/test_phase11_10g_misp_sharing_browser.py`;
-- `.github/workflows/phase11-misp-sharing-exchange.yml`.
-
-Repository/browser evidence for this accepted slice does **not prove** live MISP health, publication/synchronization, production-equivalent operation, independent assurance or production authorization.
-
-## Active Phase 11.10h TheHive Investigations & Cases boundary
-
-Phase 11.10h replaces the `/workbench/investigations` placeholder with one canonical investigation workspace over DTMO canonical intelligence, provenance and durable TheHive handoff evidence.
-
-The read projection is:
-
-- `GET /api/v1/thehive/items/{item_id}/investigation` requiring `read:intelligence`.
-
-The existing accepted mutation boundary remains:
-
-- `POST /api/v1/thehive/items/{item_id}/cases` requiring `handoff:case` and an explicit human principal.
-
-The workspace never receives TheHive credentials and never calls `/api/v1/case` directly. Canonical provenance, feature/configuration prerequisites, source handling restrictions and separate case-handoff authority remain server-side. `reserved` or `ambiguous` handoff evidence is presented as a manual-reconciliation condition and blocks a blind new UI request.
-
-The accepted Phase 11.6 persistence stores handoff state only. It does not persist/read back generic TheHive alerts, tasks, case timeline or subsequent case state. Phase 11.10h therefore does not fabricate those objects. A delivered handoff proves only the confirmed case identity returned at creation time and persisted by DTMO; it does not prove later upstream action, external sharing, responder execution or local compromise.
-
-Authoritative Phase 11.10h material:
+Authoritative material remains:
 
 - `backend/dtmo/thehive_handoff.py`;
 - `frontend/src/InvestigationsWorkspace.tsx`;
-- `frontend/src/investigations.css`;
 - `docs/architecture/PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md`;
 - `docs/user/THEHIVE_INVESTIGATIONS_WORKSPACE.md`;
 - `docs/qa/PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md`;
-- `backend/tests/test_phase11_10h_thehive_investigations_contract.py`;
-- `backend/tests/test_phase11_10h_thehive_investigations_api.py`;
-- `backend/tests/test_phase11_10h_thehive_investigations_browser.py`;
 - `.github/workflows/phase11-thehive-investigations.yml`.
 
-Repository/browser evidence for this active slice does **not prove** live TheHive health, license entitlement, upstream case completeness, responder/remediation execution, local compromise, production-equivalent operation, independent assurance or production authorization.
+## Active Phase 11.10i Vulnerability & Exposure boundary
 
-After Phase 11.10h exact-head acceptance and merge, the only next bounded priority is **Phase 11.10i — Vulnerability & Exposure**.
+Phase 11.10i makes `/workbench/exposure` functional through `ExposureWorkspace`. The frontend reads `GET /api/v1/console/vulnerability-analytics?window=30d` through same-origin DTMO APIs. Server-side `read:intelligence` remains authoritative; no scanner or upstream service credential is exposed to the browser.
+
+The workspace supports evidence-backed prioritization using CVSS, EPSS and CISA KEV indicators and retains raw-evidence linkage when available. These fields are intelligence inputs, not assertions about an organization's assets. Missing, malformed, inaccessible or degraded evidence must remain visible and fail closed rather than being converted into a healthy or zero-risk state.
+
+Authoritative Phase 11.10i material:
+
+- `frontend/src/ExposureWorkspace.tsx`;
+- `frontend/src/App.tsx` canonical `/exposure` routing;
+- `docs/architecture/PHASE11_10I_VULNERABILITY_EXPOSURE.md`;
+- `docs/user/VULNERABILITY_EXPOSURE_WORKSPACE.md`;
+- `docs/qa/PHASE11_10I_VULNERABILITY_EXPOSURE_GATE.md`;
+- `backend/tests/test_phase11_10i_vulnerability_exposure_contract.py`;
+- `.github/workflows/phase11-vulnerability-exposure.yml`.
+
+Acceptance requires the dedicated exact-head gate, application-shell/frontend gates and Professional Documentation Gate to be `completed/success` on the same final commit. Green repository CI remains **non-production evidence**.
+
+After 11.10i is accepted and merged, the next bounded priority is **Phase 11.10j — Sources & Collection Control Center**.
 
 ## Phase 11.10p external validation boundary
 
-Fresh production-equivalent validation remains mandatory, but is the final 11.10 candidate step **11.10p** after 11.10a–11.10o candidate completion and functional acceptance.
+Fresh production-equivalent validation remains mandatory as the final 11.10 candidate step after 11.10a–11.10o candidate completion and functional acceptance.
 
 11.10p requires fresh production-equivalent evidence for the **same immutable** integrated deployment identity and one production-equivalent environment. Required evidence remains candidate identity, migration/compatibility, upgrade, exact-prior-digest rollback with post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity.
 
