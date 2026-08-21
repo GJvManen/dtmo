@@ -87,7 +87,7 @@ The accepted runtime and migration documentation remains explicitly discoverable
 
 ## Governed visual evidence boundary
 
-The governed screenshot catalogue now contains UI-01 through UI-10. These visuals are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. They also do not establish production-equivalent behavior, external assurance or production authorization, and no synthetic screenshot is promoted as operational evidence.
+The governed screenshot catalogue now contains UI-01 through UI-10. These visuals are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. No synthetic screenshot is promoted as operational evidence, proof of live connectivity, staging acceptance, production-equivalent behavior, external assurance or production authorization.
 
 ## Phase 11.10 external validation package
 
