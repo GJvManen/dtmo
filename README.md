@@ -25,13 +25,25 @@ Education environments combine broad digital estates, sensitive information, clo
 
 DTMO is built around five principles: **provenance first; fail closed; human authority remains human; least privilege by design; evidence-based governance**.
 
-## Unified Operations Workbench
+## Product capabilities
 
-The canonical workbench now has repository-complete slices for frontend architecture, application shell, Command Center, Unified Intelligence/IOC Explorer, IntelOwl/Cortex Analysis, OpenCTI Graph/Entity, MISP Sharing & Exchange, TheHive Investigations & Cases, Vulnerability & Exposure, Sources & Collection and Automation & Playbooks.
+The canonical Unified Operations Workbench provides governed capabilities across the operational CTI lifecycle:
 
-**Phase 11.10l Governance & Evidence is active.** `/workbench/governance` consumes DTMO-owned same-origin governance APIs under server-side RBAC. It reuses the existing explicit repository-backed governance crosswalk rather than inventing a parallel compliance store.
+- **Command Center and Unified Intelligence** for current intelligence, IOC discovery, severity-aware triage, provenance and trends;
+- **Sources & Catalog** for governed source registration, validation, test execution and collection control without exposing server-side credentials;
+- **Integrated Analysis** through IntelOwl and the bounded Cortex analyzer connector, where enrichment remains evidence rather than an automated compromise verdict;
+- **OpenCTI graph/entity exploration** using persisted topology and provenance without inventing relationships;
+- **MISP Sharing & Exchange** under explicit human share/publication authority;
+- **TheHive Investigations & Cases** with separate human case-handoff authority and durable reconciliation evidence;
+- **Vulnerability & Exposure** using CVSS, EPSS, KEV and canonical vulnerability intelligence without inferring local exposure;
+- **Visual Analytics** for governed operational and trend views inside the canonical application shell;
+- **Automation & Playbooks** for bounded, policy-controlled orchestration that cannot self-grant human review or publication authority;
+- **Administration** for role-aware, server-authorized operational controls;
+- **Governance** for repository-backed framework mappings, provenance, authority boundaries and evidence interpretation.
 
-The governance crosswalk contains scoped typed relationships for **Normenkader IBP**, **MITRE ATT&CK**, **NIST CSF 2.0** and **CVSS 4.0 context**. These are partial evidence relationships, not certification, blanket compliance, semantic equivalence, control-effectiveness proof or production authorization. Unrecorded framework objects remain unmapped and unavailable evidence fails closed.
+## Architecture
+
+DTMO separates browser presentation, canonical application state and upstream integration boundaries. PostgreSQL remains canonical application truth; Redis supports coordination, OpenSearch provides search projection, and S3-compatible object storage provides governed object persistence. Taranis AI, IntelOwl, OpenCTI, MISP, TheHive and Cortex remain separate governed service and licensing boundaries.
 
 Normal frontend operations follow:
 
@@ -40,28 +52,44 @@ flowchart LR
     B[Browser] --> W[DTMO Unified Operations Workbench]
     W --> A[DTMO API]
     A --> R[Server-side RBAC + audit]
-    R --> D[(Canonical DTMO state/evidence)]
+    R --> D[(Canonical PostgreSQL state)]
+    R --> Q[Redis coordination]
+    R --> O[OpenSearch projection]
+    R --> S3[S3-compatible object storage]
     R --> G[Governed adapters and contracts]
-    G --> S[Taranis / IntelOwl / OpenCTI / MISP / TheHive / Cortex]
+    G --> T[Taranis AI]
+    G --> I[IntelOwl]
+    G --> C[Cortex analyzers]
+    G --> OI[OpenCTI]
+    G --> M[MISP]
+    G --> H[TheHive]
 ```
 
-The browser does not receive privileged upstream credentials. Role-aware presentation is a usability function; **server-side RBAC remains authoritative**.
+The browser does not receive privileged upstream credentials. Role-aware presentation is a usability function; **server-side RBAC remains authoritative**. Human intelligence review, external-share approval, publication, TheHive case handoff, connector execution, administration and production authorization remain separate authority domains.
+
+The accepted Phase 11.8 platform baseline includes Kubernetes/Helm/GitOps, workload identity, external secret delivery, ingress/TLS, network segmentation, HA/disruption controls, observability, backup/recovery, supply-chain hardening, capacity planning and upgrade/rollback. Phase 11.9 adds the connected forward-first migration/compatibility contract. Application rollback does not authorize automatic database down migration.
+
+## Unified Operations Workbench
+
+The canonical workbench now has repository-complete slices for frontend architecture, application shell, Command Center, Unified Intelligence/IOC Explorer, IntelOwl/Cortex Analysis, OpenCTI Graph/Entity, MISP Sharing & Exchange, TheHive Investigations & Cases, Vulnerability & Exposure, Sources & Collection and Automation & Playbooks.
+
+**Phase 11.10l Governance & Evidence is active.** `/workbench/governance` consumes DTMO-owned same-origin governance APIs under server-side RBAC. It reuses the existing explicit repository-backed governance crosswalk rather than inventing a parallel compliance store.
+
+The governance crosswalk contains scoped typed relationships for **Normenkader IBP**, **MITRE ATT&CK**, **NIST CSF 2.0** and **CVSS 4.0 context**. These are partial evidence relationships, not certification, blanket compliance, semantic equivalence, control-effectiveness proof or production authorization. Unrecorded framework objects remain unmapped and unavailable evidence fails closed.
 
 ## Authority and evidence boundaries
 
-Human intelligence review, external-share approval, publication, TheHive case handoff, connector execution, administration and production authorization remain separate authority domains. Service accounts, connectors, analyzers, CI identities and browser controls cannot self-grant human approval powers.
-
-Enrichment output does not prove compromise. Graph presence does not prove exposure. MISP transfer does not prove publication. TheHive case identity does not prove remediation. CVSS/EPSS/KEV do not prove local exposure. Source/automation success does not prove source truth. Governance mappings do not prove compliance or environment effectiveness.
+Service accounts, connectors, analyzers, CI identities and browser controls cannot self-grant human approval powers. Enrichment output does not prove compromise. Graph presence does not prove exposure. MISP transfer does not prove publication. TheHive case identity does not prove remediation. CVSS/EPSS/KEV do not prove local exposure. Source/automation success does not prove source truth. Governance mappings do not prove compliance or environment effectiveness.
 
 Repository CI is exact-head engineering evidence only. It does **not** prove production-equivalent operation, owner acceptance, independent assurance or production authorization.
 
-## Platform baseline
+## Current maturity and release position
 
-PostgreSQL remains canonical application truth. Redis, OpenSearch and S3-compatible object storage provide coordination, search and object persistence. Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed service/licensing boundaries.
+Phases 1–7, RC13, E8.1–E8.10 and Phase 11.1–11.9 are accepted repository baselines according to their authoritative evidence records. Phase 8 staging and Phase 9 external assurance remain accepted only as **historical candidate-bound evidence**. Because the integrated platform has materially changed, Phase 10 remains **NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED** until the new Phase 11 candidate completes its fresh validation and assurance sequence.
 
-The accepted Phase 11.8 platform baseline includes Kubernetes/Helm/GitOps, workload identity, external-secret delivery, ingress/TLS, network segmentation, HA/disruption controls, observability, backup/recovery, supply-chain hardening, capacity planning and upgrade/rollback. Phase 11.9 adds the connected forward-first migration/compatibility contract. Application rollback does not authorize automatic database down migration.
+Phase 11.10a–11.10k are `PASS / REPOSITORY_COMPLETE`. Phase 11.10l remains `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10p, Phase 11.11 and Phase 12 have not yet established production-equivalent validation, independent assurance or production authorization for the materially changed candidate.
 
-## Release sequence
+## Product roadmap
 
 Phase 11.10l must first reach one final unchanged exact head with every registered workflow `completed/success`, synchronized professional documentation, a mergeable PR and ready-for-review state. Merge uses squash plus expected-head protection. Only then may **11.10m Operations & Administration** start, followed by 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance.
 
@@ -72,3 +100,9 @@ After 11.10o, one immutable candidate is frozen for **11.10p fresh production-eq
 Start with [`docs/README.md`](docs/README.md), [`docs/project/CURRENT_STATE.md`](docs/project/CURRENT_STATE.md), [`docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md`](docs/roadmap/PLATFORM_INDUSTRIALISATION_ROADMAP.md), [`docs/security/SECURITY_OVERVIEW.md`](docs/security/SECURITY_OVERVIEW.md), [`docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`](docs/governance/GOVERNANCE_MAPPING_REGISTRY.md) and [`docs/evidence/EVIDENCE_INDEX.md`](docs/evidence/EVIDENCE_INDEX.md).
 
 The active 11.10l package is documented in [`docs/architecture/PHASE11_10L_GOVERNANCE_EVIDENCE.md`](docs/architecture/PHASE11_10L_GOVERNANCE_EVIDENCE.md), [`docs/user/GOVERNANCE_EVIDENCE_WORKSPACE.md`](docs/user/GOVERNANCE_EVIDENCE_WORKSPACE.md) and [`docs/qa/PHASE11_10L_GOVERNANCE_EVIDENCE_GATE.md`](docs/qa/PHASE11_10L_GOVERNANCE_EVIDENCE_GATE.md).
+
+## Open source and responsible use
+
+DTMO is released under the **Apache License, Version 2.0**. Its open-source architecture does not weaken operational governance: upstream services keep their own licensing and service boundaries, credentials remain server-side, external sharing/publication requires explicit human authority, and repository evidence must not be misrepresented as production-equivalent validation or independent assurance.
+
+Use DTMO only with authorized data sources, infrastructure and testing scopes. Preserve provenance, handling restrictions, privacy obligations and accountable human decision-making throughout the intelligence lifecycle.
