@@ -16,11 +16,31 @@ def test_external_frameworks_never_claim_inferred_crosswalks() -> None:
     snapshot = governance_snapshot()
     for framework_id in ("normenkader-ibp", "mitre-attack"):
         framework = _framework(snapshot, framework_id)
-        assert framework["coverage"] == "unmapped"
-        assert framework["mapping_ids"] == []
+        assert framework["coverage"] == "mapped_partial"
+        assert framework["mapping_ids"]
+        assert "expliciete" in str(framework["note"]).lower()
+        assert "geen certificering" in str(framework["note"]).lower()
+        provenance = framework["provenance"]
+        assert isinstance(provenance, list)
+        assert "backend/dtmo/governance_crosswalk.py" in provenance
+        assert "docs/governance/GOVERNANCE_MAPPING_REGISTRY.md" in provenance
+
+    normenkader = _framework(snapshot, "normenkader-ibp")
+    for control_id in ("ID.02", "SM.07"):
+        assert control_id in normenkader["mapping_ids"]
+
+    attack = _framework(snapshot, "mitre-attack")
+    for technique_id in ("T1078", "T1087"):
+        assert technique_id in attack["mapping_ids"]
+
     cvss = _framework(snapshot, "cvss")
     assert cvss["coverage"] == "context_only"
-    assert cvss["mapping_ids"] == []
+    assert cvss["mapping_ids"]
+    assert "scoring-context" in str(cvss["note"]).lower()
+
+    claim_boundary = str(snapshot["claim_boundary"]).lower()
+    for boundary in ("certification", "full compliance", "semantic equivalence", "production authorization"):
+        assert boundary in claim_boundary
 
 
 def test_cvss_context_matches_canonical_ingest_contract() -> None:
@@ -29,7 +49,8 @@ def test_cvss_context_matches_canonical_ingest_contract() -> None:
     assert "metadata:" in schema
     assert "cvss" not in schema
     cvss = _framework(governance_snapshot(), "cvss")
-    assert "geen first-class" in str(cvss["coverage_label"]).lower()
+    assert cvss["coverage"] == "context_only"
+    assert "context" in str(cvss["coverage_label"]).lower()
 
 
 def test_internal_mappings_have_real_repository_provenance() -> None:
