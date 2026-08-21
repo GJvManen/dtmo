@@ -69,6 +69,18 @@ The browser does not receive privileged upstream credentials. Role-aware present
 
 The accepted Phase 11.8 platform baseline includes Kubernetes/Helm/GitOps, workload identity, external secret delivery, ingress/TLS, network segmentation, HA/disruption controls, observability, backup/recovery, supply-chain hardening, capacity planning and upgrade/rollback. Phase 11.9 adds the connected forward-first migration/compatibility contract. Application rollback does not authorize automatic database down migration.
 
+## Accepted Phase 11 service integration baseline
+
+The accepted service phases remain explicit repository-complete boundaries and are not replaced by the later workbench UX:
+
+- **Phase 11.3 IntelOwl** — governed enrichment integration remains `PASS / REPOSITORY_COMPLETE`; enrichment evidence does not establish local compromise or human publication/share authority.
+- **Phase 11.4 OpenCTI** — knowledge-graph integration remains `PASS / REPOSITORY_COMPLETE`; persisted mappings and graph evidence are not inferred beyond recorded evidence.
+- **Phase 11.5 MISP** — consolidation remains `PASS / REPOSITORY_COMPLETE`; transfer remains separate from publication and subject to DTMO human sharing authority.
+- **Phase 11.6 TheHive** — incident/case handoff remains `PASS / REPOSITORY_COMPLETE`; case creation is a distinct explicit human authority and case identity does not prove compromise or remediation.
+- **Phase 11.7 Cortex** — the historical decision gate remains accepted, with the later analyzer-only connector boundary preserving responder/remediation separation.
+
+These accepted boundaries remain distinct service/licensing domains with server-side credentials and fail-closed evidence interpretation.
+
 ## Unified Operations Workbench
 
 The canonical workbench now has repository-complete slices for frontend architecture, application shell, Command Center, Unified Intelligence/IOC Explorer, IntelOwl/Cortex Analysis, OpenCTI Graph/Entity, MISP Sharing & Exchange, TheHive Investigations & Cases, Vulnerability & Exposure, Sources & Collection and Automation & Playbooks.
