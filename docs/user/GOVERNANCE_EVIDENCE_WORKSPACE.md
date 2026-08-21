@@ -1,17 +1,21 @@
 # Governance & Evidence Workspace
 
-The canonical **Governance & Evidence** workspace is available at `/workbench/governance`. It shows repository-backed framework coverage, explicit mappings, provenance and separation-of-duties boundaries through DTMO-owned APIs.
+The canonical **Governance & Evidence** workspace is available at `/workbench/governance`. It renders repository-backed governance knowledge from DTMO's same-origin `GET /api/v1/governance/knowledge` API and never converts missing mappings into compliance claims.
 
-## Reading framework status
+## Framework coverage
 
-A framework labelled **unmapped** is intentionally not treated as implemented, compliant or equivalent to another framework. Normenkader IBP and MITRE ATT&CK therefore remain explicit gaps until governed repository-backed control or technique mappings exist. CVSS may appear as context-only where no first-class score/vector mapping exists.
+The workspace exposes explicit coverage states. Normenkader IBP and MITRE ATT&CK remain unmapped until an explicit repository-backed control or technique crosswalk exists. CVSS remains context-only where DTMO has no first-class governed score mapping. Internal DTMO security and release governance may be displayed as mapped only where the API returns repository provenance.
 
-## Reading mappings and evidence
+Seeing a framework in the workspace does not prove compliance, certification, control effectiveness, local compromise, remediation, independent assurance or production readiness.
 
-Mappings are shown with their source document and section. A displayed mapping proves only that DTMO has an explicit repository-backed statement at that provenance location. It does not prove operational effectiveness, external assurance, audit acceptance, production readiness or production authorization.
+## Repository mappings and provenance
+
+Each governed internal mapping includes its source document and section. Operators should use those references to inspect the authoritative evidence rather than infer equivalence from labels or free-form tags. Missing or inaccessible canonical governance data fails closed: the workspace shows the unavailable state rather than a PASS or zero-risk result.
 
 ## Authority boundaries
 
-Governance visibility is read-only. It does not grant review, case-creation, connector execution, remediation, external sharing, publication or administrative authority. Human review/share/publication decisions remain governed by their separate server-side permissions and workflows.
+Governance visibility does not grant human review, case creation, remediation, connector execution, external-share approval, publication authority or production authority. Those authorities remain separate server-side RBAC and human-governed decisions.
 
-If governance knowledge cannot be loaded, the workspace fails closed and does not synthesize a healthy or compliant state.
+## Evidence interpretation
+
+Repository CI and browser fixtures prove only repository-controlled exact-head behavior. They are not production-equivalent validation and are not independent external assurance. Historical Phase 8/9 evidence remains candidate-bound and cannot be reused as proof for the materially changed Phase 11 integrated candidate.
