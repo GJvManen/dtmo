@@ -1,6 +1,6 @@
 # DTMO Platform Industrialisation Roadmap
 
-Last updated: **2026-08-20**  
+Last updated: **2026-08-21**  
 Programme state: **`ACTIVE / HIGHEST PRIORITY`**
 
 ## Purpose
@@ -88,7 +88,7 @@ The accepted contract requires one connected single-root/single-head Alembic cha
 ### 11.10 Integrated production-equivalent validation
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`
 
-The Unified Operations Workbench materially changes the candidate. Candidate-completion slices are therefore accepted before one immutable integrated candidate is frozen for the fresh 11.10p real-environment exercise.
+The Unified Operations Workbench materially changes the candidate. Candidate-completion slices are accepted before one immutable integrated candidate is frozen for the fresh 11.10p real-environment exercise.
 
 #### Candidate-completion sequence
 
@@ -99,8 +99,8 @@ The Unified Operations Workbench materially changes the candidate. Candidate-com
 - **11.10e IntelOwl/Cortex integrated analysis** — `PASS / REPOSITORY_COMPLETE`;
 - **11.10f OpenCTI graph/entity workspace** — `PASS / REPOSITORY_COMPLETE`;
 - **11.10g MISP Sharing & Exchange** — `PASS / REPOSITORY_COMPLETE`;
-- **11.10h TheHive Investigations & Cases** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
-- **11.10i Vulnerability & Exposure Center** — `NOT STARTED`;
+- **11.10h TheHive Investigations & Cases** — `PASS / REPOSITORY_COMPLETE`;
+- **11.10i Vulnerability & Exposure Center** — `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`;
 - **11.10j Sources & Collection Control Center** — `NOT STARTED`;
 - **11.10k Automation & Playbooks** — `NOT STARTED`;
 - **11.10l Governance & Evidence Center** — `NOT STARTED`;
@@ -109,46 +109,37 @@ The Unified Operations Workbench materially changes the candidate. Candidate-com
 - **11.10o Consolidation and full functional acceptance** — `NOT STARTED`;
 - **11.10p Fresh production-equivalent validation** — `NOT STARTED / CANDIDATE FREEZE REQUIRED`.
 
-#### Accepted workbench foundation through 11.10g
+#### Accepted workbench foundation through 11.10h
 
 The accepted canonical path is **browser → DTMO API → governed integration adapter → upstream service**. The browser never becomes a privileged upstream integration client. **Server-side RBAC**, provenance, human publication/share authority, separate TheHive case authority and fail-closed behavior remain authoritative.
 
-11.10a–11.10g delivered the frontend architecture, React/TypeScript/Vite canonical shell, Command Center, Unified Intelligence Workspace, Integrated Analysis workspace, OpenCTI Graph/Entity workspace and MISP Sharing/Exchange workspace. IntelOwl/Cortex output remains evidence rather than a compromise verdict. OpenCTI generic relationship topology is not inferred beyond persisted mapping evidence. MISP technical transfer remains separate from publication/synchronization authority.
+11.10a–11.10h delivered the frontend architecture, React/TypeScript/Vite canonical shell, Command Center, Unified Intelligence Workspace, Integrated Analysis workspace, OpenCTI Graph/Entity workspace, MISP Sharing/Exchange workspace and TheHive Investigations & Cases workspace. IntelOwl/Cortex output remains evidence rather than a compromise verdict. OpenCTI generic relationship topology is not inferred beyond persisted mapping evidence. MISP technical transfer remains separate from publication/synchronization authority. TheHive case handoff remains an explicit human authority and ambiguous state requires reconciliation.
 
-#### 11.10h active TheHive Investigations & Cases
+#### 11.10i active Vulnerability & Exposure Center
 
-11.10h makes `/workbench/investigations` functional using the accepted Phase 11.6 human-authorized TheHive handoff/persistence boundary rather than a parallel case backend.
+11.10i makes `/workbench/exposure` functional through the canonical `ExposureWorkspace` and the already accepted DTMO vulnerability analytics projection.
 
 Frontend-facing state contract:
 
-- `GET /api/v1/thehive/items/{item_id}/investigation` — canonical intelligence, provenance and durable handoff state protected by `read:intelligence`.
+- `GET /api/v1/console/vulnerability-analytics?window=30d` — vulnerability intelligence and prioritization evidence protected by server-side `read:intelligence`.
 
-Existing governed action remains authoritative:
+The browser remains same-origin and receives no scanner or upstream vulnerability-service credential. CVSS, EPSS, CISA KEV, CWE and vendor/product mappings are prioritization evidence only. They do not prove a local asset is affected, exposed, exploitable or compromised. Absence of a vulnerability record does not prove safety.
 
-- `POST /api/v1/thehive/items/{item_id}/cases` — explicit human `handoff:case` case creation.
+Raw-evidence linkage is retained where available. Missing, malformed, inaccessible or degraded evidence remains explicit and **fails closed** rather than becoming a healthy or zero-risk claim. This read-only slice introduces no remediation, scanner execution, publication/share or case mutation authority.
 
-Service accounts cannot substitute for human case authority. Canonical provenance remains mandatory. The browser never receives TheHive credentials or organization authorization and does not call TheHive directly. TLP/PAP and authoritative source restrictions fail closed.
+Authoritative 11.10i package:
 
-Durable `reserved`, `delivered`, `ambiguous` and `failed` handoff evidence is exposed. `reserved` or `ambiguous` state requires manual reconciliation and the canonical UI blocks a blind new case request. A delivered result proves only stable case identity at creation time.
+- `frontend/src/ExposureWorkspace.tsx`;
+- `frontend/src/App.tsx` canonical `/exposure` routing;
+- `docs/architecture/PHASE11_10I_VULNERABILITY_EXPOSURE.md`;
+- `docs/user/VULNERABILITY_EXPOSURE_WORKSPACE.md`;
+- `docs/qa/PHASE11_10I_VULNERABILITY_EXPOSURE_GATE.md`;
+- `backend/tests/test_phase11_10i_vulnerability_exposure_contract.py`;
+- `.github/workflows/phase11-vulnerability-exposure.yml`.
 
-The accepted persistence does not mirror generic TheHive alerts, tasks, case timeline, later case state or responder results. 11.10h therefore does not infer them. Configuration is not live TheHive health. Case/handoff evidence does not prove external-share authority, responder/remediation execution, local compromise or production readiness.
+The slice may be accepted only when all workflows registered for one final exact head are `completed/success`, professional documentation is current, the PR is ready for review and merge uses expected-head protection.
 
-Authoritative 11.10h package:
-
-- `backend/dtmo/thehive_handoff.py`;
-- `backend/dtmo/integrations/thehive.py`;
-- `backend/dtmo/persistence/thehive.py`;
-- `frontend/src/InvestigationsWorkspace.tsx`;
-- `frontend/src/investigations.css`;
-- `docs/architecture/PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md`;
-- `docs/user/THEHIVE_INVESTIGATIONS_WORKSPACE.md`;
-- `docs/qa/PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md`;
-- `backend/tests/test_phase11_10h_thehive_investigations_contract.py`;
-- `backend/tests/test_phase11_10h_thehive_investigations_api.py`;
-- `backend/tests/test_phase11_10h_thehive_investigations_browser.py`;
-- `.github/workflows/phase11-thehive-investigations.yml`.
-
-Only after 11.10h is accepted and merged may **11.10i Vulnerability & Exposure Center** begin.
+Only after 11.10i is accepted and merged may **11.10j Sources & Collection Control Center** begin.
 
 #### 11.10p Fresh production-equivalent validation
 
@@ -160,7 +151,7 @@ The execution package remains:
 - `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
 - `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`;
 - `tools/phase11_production_equivalent_validation.py`;
-- `backend/tests/test_phase11_10_production_equivalent_validation.py`;
+- `backend/tests/test_phase11_10_proDUCTION_EQUIVALENT_VALIDATION.py`;
 - `.github/workflows/phase11-production-equivalent-validation.yml`.
 
 Historical Phase 8/9 evidence cannot satisfy 11.10p. Missing, ambiguous, inaccessible, historical-only or mixed-candidate evidence must **fail closed**. Repository CI validates repository contracts only and does not prove production-equivalent execution or production authorization.
@@ -177,9 +168,9 @@ A production `GO` requires accepted 11.10 and 11.11 evidence for the same releas
 
 ## Immediate sequence
 
-1. Complete **11.10h TheHive Investigations & Cases** on one exact green head and merge with expected-head protection.
-2. Start **11.10i Vulnerability & Exposure Center** only after 11.10h is merged.
-3. Continue 11.10j–11.10o one bounded green PR at a time.
+1. Complete **11.10i Vulnerability & Exposure Center** on one exact green head and merge with expected-head protection.
+2. Start **11.10j Sources & Collection Control Center** only after 11.10i is merged.
+3. Continue 11.10k–11.10o one bounded green PR at a time.
 4. Freeze one immutable candidate and execute **11.10p**.
 5. Complete fresh **Phase 11.11** independent assurance for that same candidate.
 6. Enter **Phase 12** only after 11.10 and 11.11 are accepted.
