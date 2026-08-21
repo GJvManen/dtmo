@@ -6,6 +6,7 @@ import { AnalysisWorkspace } from './AnalysisWorkspace';
 import { AutomationWorkspace } from './AutomationWorkspace';
 import { CollectionWorkspace } from './CollectionWorkspace';
 import { ExposureWorkspace } from './ExposureWorkspace';
+import { GovernanceWorkspace } from './GovernanceWorkspace';
 import { InvestigationsWorkspace } from './InvestigationsWorkspace';
 import { MispSharingWorkspace } from './MispSharingWorkspace';
 import { OpenCTIGraphWorkspace } from './OpenCTIGraphWorkspace';
@@ -255,6 +256,7 @@ function WorkspaceFoundation({ workspace }: { workspace: WorkspaceDefinition }) 
   if (workspace.path === '/automation') return <AutomationWorkspace />;
   if (workspace.path === '/collection') return <CollectionWorkspace />;
   if (workspace.path === '/exposure') return <ExposureWorkspace />;
+  if (workspace.path === '/governance') return <GovernanceWorkspace />;
   if (workspace.path === '/investigations') return <InvestigationsWorkspace />;
   if (workspace.path === '/sharing') return <MispSharingWorkspace />;
   return (
