@@ -19,18 +19,25 @@ def test_governance_workspace_is_wired_to_canonical_route() -> None:
     assert "/api/v1/governance/knowledge" in workspace
 
 
-def test_governance_framework_claims_remain_explicit_and_fail_closed() -> None:
+def test_governance_framework_claims_use_explicit_crosswalk_and_fail_closed() -> None:
     backend = read("backend/dtmo/governance_knowledge.py")
+    crosswalk = read("backend/dtmo/governance_crosswalk.py")
     workspace = read("frontend/src/GovernanceWorkspace.tsx").lower()
     architecture = read("docs/architecture/PHASE11_10L_GOVERNANCE_EVIDENCE.md").lower()
     user = read("docs/user/GOVERNANCE_EVIDENCE_WORKSPACE.md").lower()
-    assert '"coverage": "unmapped"' in backend
-    assert '"coverage": "context_only"' in backend
+    assert "control_crosswalk" in backend
+    assert '"coverage": "mapped_internal"' in backend
+    assert 'coverage = "mapped_partial"' in backend
+    assert 'coverage = "context_only"' in backend
+    for marker in ("ID.02", "SM.07", "T1078", "T1087", "CVSS:4.0"):
+        assert marker in crosswalk
     assert "no inferred crosswalks" in workspace
     assert "mapping visibility ≠ compliance approval" in workspace
     assert "normenkader ibp" in architecture
     assert "mitre att&ck" in architecture
+    assert "nist csf" in architecture
     assert "cvss" in architecture
+    assert "partial" in architecture
     assert "does not prove compliance" in user
 
 
