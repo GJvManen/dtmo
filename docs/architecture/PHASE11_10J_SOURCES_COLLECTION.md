@@ -31,7 +31,7 @@ flowchart LR
 - Validation checks governed endpoint policy; it does not prove upstream trust or availability.
 - Test execution is bounded and non-ingesting.
 - Run is an explicit human-admin action. Connector isolation remains fail closed after repeated failures.
-- Successful connectivity, testing or ingestion does **not** prove source truth, compromise, review completion, publication authority, external-share authority, production readiness or production authorization.
+- Successful connectivity, testing or ingestion does not prove source truth, compromise, review completion, publication authority, external-share authority, production readiness or production authorization.
 - Collected records continue through canonical DTMO normalization/provenance. Existing review, case and sharing authorities remain separate.
 
 ## Acceptance scope
