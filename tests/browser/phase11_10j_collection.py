@@ -70,7 +70,9 @@ def main() -> None:
         page.get_by_role("button", name="validate").click()
         page.get_by_text("Last bounded action").wait_for()
         assert page.get_by_text("Attributable collection without inferred trust").is_visible()
-        assert "production authorization" in page.locator("body").inner_text().lower()
+        body = page.locator("body").inner_text().lower()
+        assert "production readiness" in body
+        assert "publication authorization" in body
         browser.close()
 
 
