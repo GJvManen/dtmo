@@ -62,7 +62,7 @@ def main() -> None:
         }))
 
         page.goto(BASE_URL, wait_until="networkidle")
-        page.get_by_role("link", name="Collection").click()
+        page.get_by_role("link", name="Collection", exact=True).click()
         page.get_by_role("heading", name="Sources & Collection").wait_for()
         assert page.get_by_text("Collection ≠ publication").is_visible()
         assert page.get_by_text("Fixture source").is_visible()
