@@ -4,18 +4,22 @@ The canonical **Governance & Evidence** workspace is available at `/workbench/go
 
 ## Framework coverage
 
-The workspace exposes explicit coverage states. Normenkader IBP and MITRE ATT&CK remain unmapped until an explicit repository-backed control or technique crosswalk exists. CVSS remains context-only where DTMO has no first-class governed score mapping. Internal DTMO security and release governance may be displayed as mapped only where the API returns repository provenance.
+The workspace exposes only explicit repository-backed relationships. The authoritative crosswalk is maintained in `backend/dtmo/governance_crosswalk.py` and documented in `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`.
 
-Seeing a framework in the workspace does not prove compliance, certification, control effectiveness, local compromise, remediation, independent assurance or production readiness.
+Normenkader IBP has explicit partial control relationships where implementation evidence exists. MITRE ATT&CK has explicit typed detection/threat-classification context; DTMO does not infer techniques from free text. NIST CSF has explicit partial outcome/category relationships. CVSS remains `context-only` scoring context rather than a compliance framework or proof of local exposure.
+
+The crosswalk is intentionally incomplete. Framework objects without an explicit typed relationship remain unmapped. Seeing a framework or mapping in the workspace does not prove compliance, certification, control effectiveness, local compromise, remediation, independent assurance, production readiness or production authorization.
 
 ## Repository mappings and provenance
 
-Each governed internal mapping includes its source document and section. Operators should use those references to inspect the authoritative evidence rather than infer equivalence from labels or free-form tags. Missing or inaccessible canonical governance data fails closed: the workspace shows the unavailable state rather than a PASS or zero-risk result.
+Internal governance mappings include source document and section. External framework relationships retain their DTMO control identifier, framework/object identifier, relationship type, rationale and implementation/source references. Operators should inspect those references rather than infer equivalence from labels or free-form tags.
+
+Missing or inaccessible canonical governance data fails closed: the workspace shows unavailable state rather than a PASS, compliant or zero-risk result. A partial mapping does not prove compliance.
 
 ## Authority boundaries
 
-Governance visibility does not grant human review, case creation, remediation, connector execution, external-share approval, publication authority or production authority. Those authorities remain separate server-side RBAC and human-governed decisions.
+Governance visibility is read-oriented convenience, not authorization. It does not grant human review, case creation, remediation, connector execution, external-share approval, publication authority, administration authority or production authority. Those authorities remain separate server-side RBAC and human-governed decisions.
 
 ## Evidence interpretation
 
-Repository CI and browser fixtures prove only repository-controlled exact-head behavior. They are not production-equivalent validation and are not independent external assurance. Historical Phase 8/9 evidence remains candidate-bound and cannot be reused as proof for the materially changed Phase 11 integrated candidate.
+Repository CI and browser fixtures prove only repository-controlled exact-head behavior. They are not production-equivalent validation and are not independent external assurance. Historical Phase 8/9 evidence remains candidate-bound and cannot be reused as proof for the materially changed Phase 11 integrated candidate. Phase 10 remains **NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED**.
