@@ -10,7 +10,7 @@ The scheduler panel shows jobs reported by the DTMO `/health` control plane. The
 
 Select a connector-backed playbook and use **Run bounded collection playbook** only when you are an authorized human principal. The browser sends the action to DTMO; DTMO performs the connector call server-side. `manage:connectors` remains the authoritative execution permission and the workspace does not provide a browser-side bypass.
 
-A successful run may collect and ingest attributable intelligence. It does **not** prove source truth or compromise and does not create a case, contain or remediate an asset, complete intelligence review, approve external sharing, publish intelligence or grant production authorization.
+A successful run may collect and ingest attributable intelligence. A successful automation run does not prove source truth, compromise or containment and does not create a case, remediate an asset, complete intelligence review, approve external sharing, publish intelligence or grant production authorization.
 
 ## Service accounts and credentials
 
