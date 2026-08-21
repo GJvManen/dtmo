@@ -1,16 +1,24 @@
-# Phase 11.10l Governance & Evidence Gate
+# Phase 11.10l Governance & Evidence Acceptance Gate
 
-Acceptance requires the canonical `/workbench/governance` route to render repository-backed governance knowledge exclusively through DTMO-owned APIs, with deterministic contract and browser coverage on the unchanged exact PR head.
+Status: **IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED**
 
-Required evidence:
+## Acceptance scope
 
-- `GET /api/v1/governance/knowledge` remains RBAC-protected and fail-closed;
-- Normenkader IBP and MITRE ATT&CK are not presented as mapped unless explicit governed crosswalk evidence exists;
-- CVSS remains context-only unless a first-class governed mapping exists;
-- repository-backed DTMO mappings show provenance and source sections;
-- governance visibility does not grant review, case, remediation, connector, sharing, publication or production authority;
-- missing/stale/inaccessible evidence is never converted into PASS or compliance;
-- deterministic repository contracts and Chromium browser acceptance succeed;
-- Professional Documentation Gate and every registered workflow for the final exact head are `completed/success`.
+Phase 11.10l is accepted only when the canonical `/workbench/governance` workspace is wired to `GovernanceWorkspace`, reads governance state exclusively through DTMO-owned APIs, and every registered workflow for the unchanged final PR head completes successfully.
 
-Repository CI is repository-controlled exact-head evidence only. It is not production-equivalent validation or external assurance. Phase 10 remains **NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED**.
+The bounded gate verifies:
+
+- `GET /api/v1/governance/knowledge` remains the canonical browser-facing governance source;
+- server-side `read:intelligence` authorization remains authoritative;
+- Normenkader IBP and MITRE ATT&CK are not represented as mapped without explicit repository-backed crosswalks;
+- CVSS remains context-only where no first-class mapping exists;
+- repository-backed internal mappings retain source/provenance references;
+- missing or inaccessible governance state fails closed and is not converted into compliance, assurance or zero-risk claims;
+- governance visibility grants no review, external-share, publication or production authority;
+- browser acceptance exercises the canonical application-shell route rather than a parallel test UI.
+
+## Exact-head evidence rule
+
+The dedicated **Phase 11 Governance Evidence Workspace Gate** provides **repository-controlled exact-head evidence only**. Its contract/browser fixtures do not establish live compliance, certification, independent external assurance, production-equivalent operation or production authorization. Any new commit invalidates all prior workflow evidence and requires a complete new exact-head cycle.
+
+Phase 10 remains **NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED**. Phase 11.10p production-equivalent validation, Phase 11.11 independent external assurance and Phase 12 formal production GO/NO-GO remain later gates.
