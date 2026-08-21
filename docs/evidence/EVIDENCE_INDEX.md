@@ -44,6 +44,8 @@ Application rollback does not authorize automatic database down migration. Confi
 
 ## Phase 11.10 candidate-completion evidence
 
+For lifecycle discoverability, every bounded slice is explicitly indexed: **11.10a** Frontend Architecture & Design, **11.10b** Application Shell, **11.10c** Command Center, **11.10d** Unified Intelligence, **11.10e** IntelOwl/Cortex Integrated Analysis, **11.10f** OpenCTI Graph & Entity, **11.10g** MISP Sharing & Exchange, **11.10h** TheHive Investigations & Cases, **11.10i** Vulnerability & Exposure, **11.10j** Sources & Collection, **11.10k** Automation & Playbooks and **11.10l** Governance & Evidence. Slices 11.10a–11.10k are `PASS / REPOSITORY_COMPLETE`; 11.10l remains `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. This index records repository evidence state only and does not establish production-equivalent behavior, independent assurance or production authorization.
+
 ### 11.10a–11.10g
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
