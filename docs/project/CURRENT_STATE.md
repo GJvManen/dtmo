@@ -7,9 +7,9 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a–11.10i are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a–11.10k are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The sole active bounded objective is **Phase 11.10j — Sources & Collection Control Center**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10j makes the canonical `/collection` route functional through the existing DTMO source catalog, source registry and governed connector execution APIs. `manage:connectors` plus the server-side human-admin gate remain authoritative; source credentials remain server-side references; validation/test/run results remain attributable collection evidence rather than source-truth, compromise, review, sharing, publication or production claims.
+The sole active bounded objective is **Phase 11.10l — Governance & Evidence Center**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10l makes the canonical `/governance` route functional through the DTMO-owned governance knowledge API and renders only repository-backed framework coverage, mappings, provenance and authority boundaries. Normenkader IBP and MITRE ATT&CK remain explicitly unmapped where no repository-backed crosswalk exists; CVSS remains context-only where no first-class score mapping exists. Missing or unmapped evidence is not converted into compliance, assurance, review/share/publication authority or production authorization.
 
 Fresh production-equivalent execution remains deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
 
@@ -52,9 +52,9 @@ Fresh production-equivalent execution remains deferred until 11.10a–11.10o are
 | Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10h TheHive Investigations & Cases | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10j Sources & Collection Control Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10k Automation & Playbooks | `NOT STARTED` |
-| Phase 11.10l Governance & Evidence Center | `NOT STARTED` |
+| Phase 11.10j Sources & Collection Control Center | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10k Automation & Playbooks | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10l Governance & Evidence Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.10m Operations & Administration | `NOT STARTED` |
 | Phase 11.10n role-aware UX/accessibility | `NOT STARTED` |
 | Phase 11.10o consolidation/full functional acceptance | `NOT STARTED` |
@@ -91,9 +91,11 @@ Accepted repository-complete workbench slices are:
 - 11.10f OpenCTI graph/entity workspace;
 - 11.10g MISP Sharing & Exchange;
 - 11.10h TheHive Investigations & Cases;
-- 11.10i Vulnerability & Exposure Center.
+- 11.10i Vulnerability & Exposure Center;
+- 11.10j Sources & Collection Control Center;
+- 11.10k Automation & Playbooks.
 
-The active 11.10j slice adds Sources & Collection without creating a second connector control plane or exposing upstream credential values to the browser.
+The active 11.10l slice adds Governance & Evidence without introducing browser-side compliance inference, external-framework equivalence or approval authority.
 
 ## Accepted Phase 11.10h TheHive boundary
 
@@ -124,9 +126,9 @@ Authoritative Phase 11.10i material:
 - `backend/tests/test_phase11_10i_vulnerability_exposure_contract.py`;
 - `.github/workflows/phase11-vulnerability-exposure.yml`.
 
-## Active Phase 11.10j Sources & Collection boundary
+## Accepted Phase 11.10j Sources & Collection boundary
 
-Phase 11.10j makes `/workbench/collection` functional through `CollectionWorkspace` and the existing `/api/v1/admin/sources` control plane. Catalog bootstrap remains idempotent and disabled-by-default, endpoint validation and bounded test remain separate from ingestion, and an explicit run remains a human-admin action. Connector isolation, persistent audit, canonical normalization and provenance remain authoritative.
+Phase 11.10j is repository-complete. `/workbench/collection` is functional through `CollectionWorkspace` and the existing `/api/v1/admin/sources` control plane. Catalog bootstrap remains idempotent and disabled-by-default, endpoint validation and bounded test remain separate from ingestion, and an explicit run remains a human-admin action. Connector isolation, persistent audit, canonical normalization and provenance remain authoritative.
 
 Credentials remain server-side references resolved only by governed adapters. Connectivity, validation, test completion or ingestion does not prove source truth, local compromise, review completion, external-share approval, publication authority, production-equivalent behavior or production authorization.
 
@@ -142,7 +144,41 @@ Authoritative Phase 11.10j material:
 - `tests/browser/phase11_10j_collection.py`;
 - `.github/workflows/phase11-sources-collection.yml`.
 
-Acceptance requires the dedicated exact-head gate, application-shell/frontend gates and Professional Documentation Gate to be `completed/success` on the same final commit. Green repository CI remains **non-production evidence**. After 11.10j is accepted and merged, the next bounded priority is **Phase 11.10k — Automation & Playbooks**.
+## Accepted Phase 11.10k Automation & Playbooks boundary
+
+Phase 11.10k is repository-complete. `/workbench/automation` renders `AutomationWorkspace` and reuses the DTMO-owned scheduler observations and existing connector execution paths rather than creating browser-side orchestration. Human-facing execution remains gated by `manage:connectors`; service-account browser sessions are not presented as human execution authority; connector credentials and upstream calls remain server-side.
+
+A schedule or successful connector playbook proves only the recorded scheduler or bounded connector action. It does not prove source truth, compromise, containment, remediation, case creation, review/share/publication authority, production readiness or production authorization.
+
+Authoritative Phase 11.10k material:
+
+- `frontend/src/AutomationWorkspace.tsx`;
+- `frontend/src/App.tsx` canonical `/automation` routing;
+- `docs/architecture/PHASE11_10K_AUTOMATION_PLAYBOOKS.md`;
+- `docs/user/AUTOMATION_PLAYBOOKS_WORKSPACE.md`;
+- `docs/qa/PHASE11_10K_AUTOMATION_PLAYBOOKS_GATE.md`;
+- `backend/tests/test_phase11_10k_automation_playbooks_contract.py`;
+- `.github/workflows/phase11-automation-playbooks.yml`.
+
+## Active Phase 11.10l Governance & Evidence boundary
+
+Phase 11.10l makes `/workbench/governance` functional through `GovernanceWorkspace` and `GET /api/v1/governance/knowledge`. The workspace displays explicit framework coverage states, repository-backed internal mappings, provenance and separation-of-duties boundaries. External framework crosswalks are never inferred: Normenkader IBP and MITRE ATT&CK remain unmapped until explicit repository-backed control/technique mappings exist, while CVSS remains context-only where no first-class scoring mapping exists.
+
+Governance visibility does not prove compliance, certification, independent assurance, production-equivalent behavior or production authorization. It does not grant human review, sharing or publication authority. Missing canonical governance evidence fails closed rather than being converted into a PASS claim.
+
+Authoritative Phase 11.10l material:
+
+- `backend/dtmo/governance_knowledge.py`;
+- `frontend/src/GovernanceWorkspace.tsx`;
+- `frontend/src/App.tsx` canonical `/governance` routing;
+- `docs/architecture/PHASE11_10L_GOVERNANCE_EVIDENCE.md`;
+- `docs/user/GOVERNANCE_EVIDENCE_WORKSPACE.md`;
+- `docs/qa/PHASE11_10L_GOVERNANCE_EVIDENCE_GATE.md`;
+- `backend/tests/test_phase11_10l_governance_evidence_contract.py`;
+- `tests/browser/phase11_10l_governance.py`;
+- `.github/workflows/phase11-governance-evidence.yml`.
+
+Acceptance requires the dedicated exact-head gate, application-shell/frontend gates and Professional Documentation Gate to be `completed/success` on the same final commit. Green repository CI remains **non-production evidence**. After 11.10l is accepted and merged, the next bounded priority is **Phase 11.10m — Operations & Administration**.
 
 ## Phase 11.10p external validation boundary
 
