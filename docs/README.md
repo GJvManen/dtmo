@@ -85,6 +85,10 @@ The accepted runtime and migration documentation remains explicitly discoverable
 - `security/PHASE11_8G_SUPPLY_CHAIN_HARDENING.md`, `operations/PHASE11_8G_SUPPLY_CHAIN_RUNBOOK.md` and `qa/PHASE11_8G_SUPPLY_CHAIN_GATE.md`;
 - `architecture/PHASE11_9_MIGRATION_COMPATIBILITY.md`, `operations/PHASE11_9_MIGRATION_COMPATIBILITY_RUNBOOK.md` and `qa/PHASE11_9_MIGRATION_COMPATIBILITY_GATE.md`.
 
+## Governed visual evidence boundary
+
+The governed screenshot catalogue now contains UI-01 through UI-10. These visuals are controlled documentation illustrations only. They are not proof of live-source connectivity, staging acceptance, production-equivalent behavior, external assurance or production authorization, and no synthetic screenshot is promoted as operational evidence.
+
 ## Phase 11.10 external validation package
 
 The existing execution package remains authoritative for 11.10p:
