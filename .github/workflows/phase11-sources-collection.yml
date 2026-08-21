@@ -70,10 +70,12 @@ jobs:
       - name: Start built canonical workbench
         shell: bash
         run: |
-          python -m http.server 4173 --directory frontend/dist > /tmp/dtmo-phase11-10j-http.log 2>&1 &
+          set -euo pipefail
+          ln -sfn dist frontend/workbench
+          python -m http.server 4173 --directory frontend > /tmp/dtmo-phase11-10j-http.log 2>&1 &
           echo $! > /tmp/dtmo-phase11-10j-http.pid
           for i in {1..30}; do
-            if curl --fail --silent http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            if curl --fail --silent http://127.0.0.1:4173/workbench/ >/dev/null; then exit 0; fi
             sleep 1
           done
           cat /tmp/dtmo-phase11-10j-http.log
@@ -81,7 +83,7 @@ jobs:
 
       - name: Run Sources & Collection browser acceptance
         env:
-          DTMO_BROWSER_BASE_URL: http://127.0.0.1:4173
+          DTMO_BROWSER_BASE_URL: http://127.0.0.1:4173/workbench/
         run: python tests/browser/phase11_10j_collection.py
 
       - name: Record repository evidence boundary
