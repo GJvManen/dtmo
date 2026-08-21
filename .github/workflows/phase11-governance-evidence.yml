@@ -6,9 +6,11 @@ on:
       - 'frontend/src/App.tsx'
       - 'frontend/src/GovernanceWorkspace.tsx'
       - 'backend/dtmo/governance_knowledge.py'
+      - 'backend/dtmo/governance_crosswalk.py'
       - 'backend/tests/test_phase11_10l_governance_evidence_contract.py'
       - 'tests/browser/phase11_10l_governance.py'
       - 'docs/architecture/PHASE11_10L_GOVERNANCE_EVIDENCE.md'
+      - 'docs/governance/GOVERNANCE_MAPPING_REGISTRY.md'
       - 'docs/qa/PHASE11_10L_GOVERNANCE_EVIDENCE_GATE.md'
       - 'docs/user/GOVERNANCE_EVIDENCE_WORKSPACE.md'
       - '.github/workflows/phase11-governance-evidence.yml'
@@ -99,7 +101,7 @@ jobs:
               'sha': os.environ.get('GITHUB_SHA'),
               'run_id': os.environ.get('GITHUB_RUN_ID'),
               'scope': 'Phase 11.10l Governance & Evidence',
-              'claim_boundary': 'Repository-controlled exact-head contract and browser evidence only; no external-framework equivalence, compliance certification, independent assurance, review/share/publication authority or production authorization is inferred.',
+              'claim_boundary': 'Repository-controlled exact-head contract and browser evidence only; explicit typed partial framework mappings do not establish certification, blanket compliance, independent assurance, review/share/publication authority or production authorization.',
           }
           Path('artifacts/phase11-10l-governance-evidence.json').write_text(json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8')
           PY
