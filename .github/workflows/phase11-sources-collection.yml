@@ -1,0 +1,113 @@
+name: Phase 11 Sources Collection Workspace Gate
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/src/App.tsx'
+      - 'frontend/src/CollectionWorkspace.tsx'
+      - 'backend/dtmo/admin_sources.py'
+      - 'backend/tests/test_phase11_10j_sources_collection_contract.py'
+      - 'tests/browser/phase11_10j_collection.py'
+      - 'docs/architecture/PHASE11_10J_SOURCES_COLLECTION.md'
+      - 'docs/qa/PHASE11_10J_SOURCES_COLLECTION_GATE.md'
+      - 'docs/user/SOURCES_COLLECTION_WORKSPACE.md'
+      - '.github/workflows/phase11-sources-collection.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sources-collection:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install exact frontend dependency graph
+        working-directory: frontend
+        run: npm ci
+
+      - name: Verify dependency manifests remain immutable
+        run: git diff --exit-code -- frontend/package.json frontend/package-lock.json
+
+      - name: Typecheck and build canonical workbench
+        working-directory: frontend
+        run: npm run build
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install backend test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Run Phase 11.10j repository contracts
+        run: python -m pytest -q backend/tests/test_phase11_10j_sources_collection_contract.py
+
+      - name: Install Chromium for browser acceptance
+        run: python -m playwright install --with-deps chromium
+
+      - name: Start built canonical workbench
+        shell: bash
+        run: |
+          set -euo pipefail
+          ln -sfn dist frontend/workbench
+          python -m http.server 4173 --directory frontend > /tmp/dtmo-phase11-10j-http.log 2>&1 &
+          echo $! > /tmp/dtmo-phase11-10j-http.pid
+          for i in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4173/workbench/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/dtmo-phase11-10j-http.log
+          exit 1
+
+      - name: Run Sources & Collection browser acceptance
+        env:
+          DTMO_BROWSER_BASE_URL: http://127.0.0.1:4173/workbench/
+        run: python tests/browser/phase11_10j_collection.py
+
+      - name: Record repository evidence boundary
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          payload = {
+              'workflow': 'Phase 11 Sources Collection Workspace Gate',
+              'sha': os.environ.get('GITHUB_SHA'),
+              'run_id': os.environ.get('GITHUB_RUN_ID'),
+              'scope': 'Phase 11.10j Sources & Collection',
+              'claim_boundary': 'Repository-controlled exact-head contract and browser evidence only; no live source health, source truth, compromise, publication authority, production-equivalent operation or production authorization is inferred.',
+          }
+          Path('artifacts/phase11-10j-sources-collection.json').write_text(json.dumps(payload, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+
+      - name: Upload non-sensitive Phase 11.10j evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: phase11-10j-sources-collection-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/
+          if-no-files-found: error
