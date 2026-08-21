@@ -45,7 +45,7 @@ def test_all_current_surfaces_preserve_phase11_release_truth() -> None:
         assert "REPOSITORY_COMPLETE" in text, path
 
 
-def test_phase11_10i_current_state_is_exact_and_fail_closed() -> None:
+def test_phase11_10j_current_state_is_exact_and_fail_closed() -> None:
     current = _read("docs/project/CURRENT_STATE.md")
     for marker in (
         "Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE`",
@@ -56,25 +56,25 @@ def test_phase11_10i_current_state_is_exact_and_fail_closed() -> None:
         "Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.10h TheHive Investigations & Cases | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10i Vulnerability & Exposure Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
-        "Phase 11.10j Sources & Collection Control Center | `NOT STARTED`",
+        "Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.10j Sources & Collection Control Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED`",
     ):
         assert marker in current, marker
 
     for stale in (
-        "sole active bounded objective is **Phase 11.10h",
-        "Phase 11.10h TheHive Investigations & Cases | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
-        "Phase 11.10i Vulnerability & Exposure Center | `NOT STARTED`",
+        "sole active bounded objective is **Phase 11.10i",
+        "Phase 11.10i Vulnerability & Exposure Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.10j Sources & Collection Control Center | `NOT STARTED`",
     ):
         assert stale not in current, stale
 
     for marker in (
-        "CVSS",
-        "EPSS",
-        "KEV",
+        "manage:connectors",
+        "human-admin",
+        "secret",
+        "provenance",
         "fail closed",
-        "server-side RBAC",
         "repository CI",
         "not production authorized",
         "same immutable",
@@ -82,15 +82,17 @@ def test_phase11_10i_current_state_is_exact_and_fail_closed() -> None:
         assert marker.lower() in current.lower(), marker
 
 
-def test_phase11_10i_package_is_professionally_discoverable() -> None:
+def test_phase11_10j_package_is_professionally_discoverable() -> None:
     required_paths = (
-        "frontend/src/ExposureWorkspace.tsx",
+        "frontend/src/CollectionWorkspace.tsx",
         "frontend/src/App.tsx",
-        "docs/architecture/PHASE11_10I_VULNERABILITY_EXPOSURE.md",
-        "docs/user/VULNERABILITY_EXPOSURE_WORKSPACE.md",
-        "docs/qa/PHASE11_10I_VULNERABILITY_EXPOSURE_GATE.md",
-        "backend/tests/test_phase11_10i_vulnerability_exposure_contract.py",
-        ".github/workflows/phase11-vulnerability-exposure.yml",
+        "backend/dtmo/admin_sources.py",
+        "docs/architecture/PHASE11_10J_SOURCES_COLLECTION.md",
+        "docs/user/SOURCES_COLLECTION_WORKSPACE.md",
+        "docs/qa/PHASE11_10J_SOURCES_COLLECTION_GATE.md",
+        "backend/tests/test_phase11_10j_sources_collection_contract.py",
+        "tests/browser/phase11_10j_collection.py",
+        ".github/workflows/phase11-sources-collection.yml",
     )
     for path in required_paths:
         assert (ROOT / path).is_file(), path
@@ -99,17 +101,17 @@ def test_phase11_10i_package_is_professionally_discoverable() -> None:
         _read(path)
         for path in (
             "docs/project/CURRENT_STATE.md",
-            "docs/architecture/PHASE11_10I_VULNERABILITY_EXPOSURE.md",
-            "docs/user/VULNERABILITY_EXPOSURE_WORKSPACE.md",
-            "docs/qa/PHASE11_10I_VULNERABILITY_EXPOSURE_GATE.md",
+            "docs/architecture/PHASE11_10J_SOURCES_COLLECTION.md",
+            "docs/user/SOURCES_COLLECTION_WORKSPACE.md",
+            "docs/qa/PHASE11_10J_SOURCES_COLLECTION_GATE.md",
         )
     )
     for marker in (
-        "PHASE11_10I_VULNERABILITY_EXPOSURE",
-        "Vulnerability & Exposure",
-        "CVSS",
-        "EPSS",
-        "KEV",
+        "Sources & Collection",
+        "manage:connectors",
+        "human administrator",
+        "server-side",
+        "provenance",
         "fail closed",
         "production",
     ):
