@@ -115,6 +115,6 @@ The active 11.10l package is documented in [`docs/architecture/PHASE11_10L_GOVER
 
 ## Open source and responsible use
 
-DTMO is released under the **Apache License, Version 2.0**. Its open-source architecture does not weaken operational governance: upstream services keep their own licensing and service boundaries, credentials remain server-side, external sharing/publication requires explicit human authority, and repository evidence must not be misrepresented as production-equivalent validation or independent assurance.
+DTMO is released under the **Apache License, Version 2.0**. The repository governance entry points are `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` and `docs/legal/THIRD_PARTY.md`; `LICENSE` and `NOTICE` remain the canonical licensing notices. Its open-source architecture does not weaken operational governance: upstream services keep their own licensing and service boundaries, credentials remain server-side, external sharing/publication requires explicit human authority, and repository evidence must not be misrepresented as production-equivalent validation or independent assurance.
 
 Use DTMO only with authorized data sources, infrastructure and testing scopes. Preserve provenance, handling restrictions, privacy obligations and accountable human decision-making throughout the intelligence lifecycle.
