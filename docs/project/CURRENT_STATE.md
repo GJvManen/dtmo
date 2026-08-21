@@ -7,9 +7,9 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 DTMO has completed Phases 1–7, RC13 functional acceptance and E8.1–E8.10 product evolution. Phase 8 and Phase 9 evidence remain historical and candidate-bound. Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. DTMO is **not production authorized**.
 
-The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a–11.10h are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
+The active programme is **Phase 11 — Platform Industrialisation**. Phase 11.1–11.9 and Phase 11.10a–11.10i are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The sole active bounded objective is **Phase 11.10i — Vulnerability & Exposure Center**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10i connects the canonical `/workbench/exposure` route to a read-only DTMO vulnerability intelligence workspace over the accepted server-authorized vulnerability analytics projection. CVSS, EPSS, CISA KEV, CWE and vendor/product mappings remain prioritization evidence only: they do not establish local exposure, exploitability, compromise, remediation or safety.
+The sole active bounded objective is **Phase 11.10j — Sources & Collection Control Center**, status `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10j makes the canonical `/collection` route functional through the existing DTMO source catalog, source registry and governed connector execution APIs. `manage:connectors` plus the server-side human-admin gate remain authoritative; source credentials remain server-side references; validation/test/run results remain attributable collection evidence rather than source-truth, compromise, review, sharing, publication or production claims.
 
 Fresh production-equivalent execution remains deferred until 11.10a–11.10o are complete and one immutable integrated candidate is frozen for 11.10p.
 
@@ -51,8 +51,8 @@ Fresh production-equivalent execution remains deferred until 11.10a–11.10o are
 | Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10h TheHive Investigations & Cases | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10i Vulnerability & Exposure Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10j Sources & Collection Control Center | `NOT STARTED` |
+| Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10j Sources & Collection Control Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
 | Phase 11.10k Automation & Playbooks | `NOT STARTED` |
 | Phase 11.10l Governance & Evidence Center | `NOT STARTED` |
 | Phase 11.10m Operations & Administration | `NOT STARTED` |
@@ -90,9 +90,10 @@ Accepted repository-complete workbench slices are:
 - 11.10e IntelOwl/Cortex Integrated Analysis;
 - 11.10f OpenCTI graph/entity workspace;
 - 11.10g MISP Sharing & Exchange;
-- 11.10h TheHive Investigations & Cases.
+- 11.10h TheHive Investigations & Cases;
+- 11.10i Vulnerability & Exposure Center.
 
-The active 11.10i slice adds Vulnerability & Exposure without creating a parallel vulnerability datastore or browser-held upstream credential path.
+The active 11.10j slice adds Sources & Collection without creating a second connector control plane or exposing upstream credential values to the browser.
 
 ## Accepted Phase 11.10h TheHive boundary
 
@@ -107,11 +108,11 @@ Authoritative material remains:
 - `docs/qa/PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md`;
 - `.github/workflows/phase11-thehive-investigations.yml`.
 
-## Active Phase 11.10i Vulnerability & Exposure boundary
+## Accepted Phase 11.10i Vulnerability & Exposure boundary
 
-Phase 11.10i makes `/workbench/exposure` functional through `ExposureWorkspace`. The frontend reads `GET /api/v1/console/vulnerability-analytics?window=30d` through same-origin DTMO APIs. Server-side `read:intelligence` remains authoritative; no scanner or upstream service credential is exposed to the browser.
+Phase 11.10i is repository-complete. `/workbench/exposure` is functional through `ExposureWorkspace`, reading `GET /api/v1/console/vulnerability-analytics?window=30d` through same-origin DTMO APIs. Server-side `read:intelligence` remains authoritative; no scanner or upstream service credential is exposed to the browser.
 
-The workspace supports evidence-backed prioritization using CVSS, EPSS and CISA KEV indicators and retains raw-evidence linkage when available. These fields are intelligence inputs, not assertions about an organization's assets. Missing, malformed, inaccessible or degraded evidence must remain visible and fail closed rather than being converted into a healthy or zero-risk state.
+The workspace supports evidence-backed prioritization using CVSS, EPSS and CISA KEV indicators and retains raw-evidence linkage when available. These fields are intelligence inputs, not assertions about an organization's assets. Missing, malformed, inaccessible or degraded evidence remains visible and fail closed rather than being converted into a healthy or zero-risk state.
 
 Authoritative Phase 11.10i material:
 
@@ -123,9 +124,25 @@ Authoritative Phase 11.10i material:
 - `backend/tests/test_phase11_10i_vulnerability_exposure_contract.py`;
 - `.github/workflows/phase11-vulnerability-exposure.yml`.
 
-Acceptance requires the dedicated exact-head gate, application-shell/frontend gates and Professional Documentation Gate to be `completed/success` on the same final commit. Green repository CI remains **non-production evidence**.
+## Active Phase 11.10j Sources & Collection boundary
 
-After 11.10i is accepted and merged, the next bounded priority is **Phase 11.10j — Sources & Collection Control Center**.
+Phase 11.10j makes `/workbench/collection` functional through `CollectionWorkspace` and the existing `/api/v1/admin/sources` control plane. Catalog bootstrap remains idempotent and disabled-by-default, endpoint validation and bounded test remain separate from ingestion, and an explicit run remains a human-admin action. Connector isolation, persistent audit, canonical normalization and provenance remain authoritative.
+
+Credentials remain server-side references resolved only by governed adapters. Connectivity, validation, test completion or ingestion does not prove source truth, local compromise, review completion, external-share approval, publication authority, production-equivalent behavior or production authorization.
+
+Authoritative Phase 11.10j material:
+
+- `frontend/src/CollectionWorkspace.tsx`;
+- `frontend/src/App.tsx` canonical `/collection` routing;
+- `backend/dtmo/admin_sources.py`;
+- `docs/architecture/PHASE11_10J_SOURCES_COLLECTION.md`;
+- `docs/user/SOURCES_COLLECTION_WORKSPACE.md`;
+- `docs/qa/PHASE11_10J_SOURCES_COLLECTION_GATE.md`;
+- `backend/tests/test_phase11_10j_sources_collection_contract.py`;
+- `tests/browser/phase11_10j_collection.py`;
+- `.github/workflows/phase11-sources-collection.yml`.
+
+Acceptance requires the dedicated exact-head gate, application-shell/frontend gates and Professional Documentation Gate to be `completed/success` on the same final commit. Green repository CI remains **non-production evidence**. After 11.10j is accepted and merged, the next bounded priority is **Phase 11.10k — Automation & Playbooks**.
 
 ## Phase 11.10p external validation boundary
 
