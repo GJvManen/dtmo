@@ -13,9 +13,30 @@ Historical Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; his
 
 Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`, including Taranis, IntelOwl, OpenCTI, MISP, TheHive, Cortex, Kubernetes/runtime hardening, workload identity/secrets, ingress/TLS/network segmentation, HA, observability, recovery, supply-chain controls, capacity, exercised upgrade/rollback and migration/compatibility.
 
+### Accepted stage index through 11.9
+
+- **11.1–11.2 Taranis AI** — `PASS / REPOSITORY_COMPLETE`;
+- **11.3 IntelOwl enrichment integration** — `PASS / REPOSITORY_COMPLETE`;
+- **11.4 OpenCTI knowledge-graph integration** — `PASS / REPOSITORY_COMPLETE`;
+- **11.5 MISP consolidation** — `PASS / REPOSITORY_COMPLETE`;
+- **11.6 TheHive incident/case handoff** — `PASS / REPOSITORY_COMPLETE`;
+- **11.7 Cortex decision gate** — `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`;
+- **11.7b Cortex analyzer connector** — `PASS / REPOSITORY_COMPLETE`;
+- **11.8 Integrated runtime industrialisation** — `PASS / REPOSITORY_COMPLETE`;
+- **11.8a Runtime foundation** — `PASS / REPOSITORY_COMPLETE`;
+- **11.8b Workload identity and external secret delivery** — `PASS / REPOSITORY_COMPLETE`;
+- **11.8c Ingress/TLS and network segmentation** — `PASS / REPOSITORY_COMPLETE`;
+- **11.8d HA and disruption hardening** — `PASS / REPOSITORY_COMPLETE`;
+- **11.8e Observability hardening** — `PASS / REPOSITORY_COMPLETE`;
+- **11.8f Backup, restore and recovery hardening** — `PASS / REPOSITORY_COMPLETE`;
+- **11.8g Software supply-chain hardening** — `PASS / REPOSITORY_COMPLETE`;
+- **11.8h Capacity and resource planning** — `PASS / REPOSITORY_COMPLETE`;
+- **11.8i Exercised upgrade and rollback** — `PASS / REPOSITORY_COMPLETE`;
+- **11.9 Migration and compatibility** — `PASS / REPOSITORY_COMPLETE`.
+
 Application rollback does not authorize automatic database down migration. Missing or ambiguous evidence must **fail closed**.
 
-### 11.10 Integrated candidate completion and validation
+### 11.10 Integrated production-equivalent validation
 
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`
 
