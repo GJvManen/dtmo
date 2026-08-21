@@ -108,9 +108,18 @@ After acceptance of 11.10l, the next bounded priorities remain 11.10m Operations
 
 After 11.10o, one immutable integrated candidate must be frozen. Fresh evidence must cover candidate identity, migration/compatibility, upgrade, rollback to the exact prior immutable digest plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity for the **same immutable candidate** and production-equivalent environment.
 
-Authoritative package remains `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`, `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`, `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`, `tools/phase11_production_equivalent_validation.py`, its tests and workflow.
+The authoritative repository execution chain remains explicit:
 
-Historical Phase 8/9 evidence is audit history only. Missing, inaccessible, placeholder, historical-only or mixed-candidate evidence must **fail closed**.
+- `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`;
+- `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
+- `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`;
+- `tools/phase11_production_equivalent_validation.py`;
+- `backend/tests/test_phase11_10_production_equivalent_validation.py`;
+- `.github/workflows/phase11-production-equivalent-validation.yml`.
+
+That later gate requires fresh evidence for candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery for one immutable candidate. Missing, inaccessible, placeholder, historical-only or mixed-candidate evidence must **fail closed**. Repository workflow success alone is not production-equivalent evidence and does not authorize production.
+
+Historical Phase 8/9 evidence is audit history only and cannot be reused as proof for the materially changed candidate.
 
 ## Phase 11.11 and Phase 12
 
