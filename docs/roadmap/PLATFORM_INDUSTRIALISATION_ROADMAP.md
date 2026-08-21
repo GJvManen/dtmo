@@ -5,42 +5,106 @@ Programme state: **`ACTIVE / HIGHEST PRIORITY`**
 
 ## Purpose and release truth
 
-Phase 10 concluded **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11 is delivered one bounded PR at a time with exact-head CI, professional documentation and expected-head merge protection. DTMO remains **not production authorized**.
+Phase 10 concluded with **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11 is the successor industrialisation programme and is delivered one bounded PR at a time with exact-head CI, professional documentation and expected-head merge protection. DTMO remains **not production authorized**.
 
-Historical Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; historical Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`. Those packages cannot be reused for the materially changed integrated candidate.
+Historical Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE` and historical Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`. Those packages are immutable history and cannot be reused for the materially changed integrated candidate.
+
+## Fixed priority order
+
+1. 11.1 Taranis AI architecture/API/data-model/identity/licensing assessment.
+2. 11.2 Taranis → DTMO canonical adapter.
+3. 11.3 IntelOwl enrichment integration.
+4. 11.4 OpenCTI STIX knowledge-graph integration.
+5. 11.5 MISP consolidation and authoritative governed sharing model.
+6. 11.6 TheHive incident/case handoff.
+7. 11.7 Cortex conditional decision gate.
+8. 11.7b owner-required Cortex analyzer connector.
+9. 11.8 Kubernetes/Helm/GitOps plus HA/secrets/network/observability/recovery/supply-chain/capacity/upgrade hardening.
+10. 11.9 migration/compatibility.
+11. 11.10 integrated candidate completion and new production-equivalent validation.
+12. Phase 11.11 new independent external assurance.
+13. Phase 12 formal production GO/NO-GO.
 
 ## Phase 11 — Platform industrialisation
 
-Phase 11.1–11.9 are `PASS / REPOSITORY_COMPLETE`, including Taranis, IntelOwl, OpenCTI, MISP, TheHive, Cortex, Kubernetes/runtime hardening, workload identity/secrets, ingress/TLS/network segmentation, HA, observability, recovery, supply-chain controls, capacity, exercised upgrade/rollback and migration/compatibility.
+### 11.1–11.2 Taranis AI
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-### Accepted stage index through 11.9
+The accepted Taranis programme preserves Taranis as a separate service/licensing boundary. Phase 11.1 assessed architecture/API/data-model/identity/licensing constraints; Phase 11.2 Taranis → DTMO canonical adapter established the governed canonical integration without vendoring Taranis source or moving privileged upstream credentials into the browser.
 
-- **11.1–11.2 Taranis AI** — `PASS / REPOSITORY_COMPLETE`;
-- **11.3 IntelOwl enrichment integration** — `PASS / REPOSITORY_COMPLETE`;
-- **11.4 OpenCTI knowledge-graph integration** — `PASS / REPOSITORY_COMPLETE`;
-- **11.5 MISP consolidation** — `PASS / REPOSITORY_COMPLETE`;
-- **11.6 TheHive incident/case handoff** — `PASS / REPOSITORY_COMPLETE`;
-- **11.7 Cortex decision gate** — `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`;
-- **11.7b Cortex analyzer connector** — `PASS / REPOSITORY_COMPLETE`;
-- **11.8 Integrated runtime industrialisation** — `PASS / REPOSITORY_COMPLETE`;
-- **11.8a Runtime foundation** — `PASS / REPOSITORY_COMPLETE`;
-- **11.8b Workload identity and external secret delivery** — `PASS / REPOSITORY_COMPLETE`;
-- **11.8c Ingress/TLS and network segmentation** — `PASS / REPOSITORY_COMPLETE`;
-- **11.8d HA and disruption hardening** — `PASS / REPOSITORY_COMPLETE`;
-- **11.8e Observability hardening** — `PASS / REPOSITORY_COMPLETE`;
-- **11.8f Backup, restore and recovery hardening** — `PASS / REPOSITORY_COMPLETE`;
-- **11.8g Software supply-chain hardening** — `PASS / REPOSITORY_COMPLETE`;
-- **11.8h Capacity and resource planning** — `PASS / REPOSITORY_COMPLETE`;
-- **11.8i Exercised upgrade and rollback** — `PASS / REPOSITORY_COMPLETE`;
-- **11.9 Migration and compatibility** — `PASS / REPOSITORY_COMPLETE`.
+### 11.3 IntelOwl enrichment integration
+**Status:** `PASS / REPOSITORY_COMPLETE`
 
-Application rollback does not authorize automatic database down migration. Missing or ambiguous evidence must **fail closed**.
+IntelOwl enrichment remains server-side and governed. Analyzer output is evidence and does not itself establish compromise, remediation, publication authority or production readiness.
+
+### 11.4 OpenCTI knowledge-graph integration
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+The OpenCTI STIX knowledge-graph integration preserves canonical DTMO provenance and does not infer relationship topology beyond persisted mapping evidence.
+
+### 11.5 MISP consolidation
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+MISP consolidation preserves the authoritative governed sharing model: technical transfer is separate from human review, external-share approval and publication authority.
+
+### 11.6 TheHive incident/case handoff
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+TheHive handoff preserves explicit human case-creation/handoff authority. Connectivity, intelligence presence or an upstream case identifier does not prove compromise, containment or remediation.
+
+### 11.7 Cortex decision gate
+**Status:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`
+
+The Cortex decision gate remains preserved as historical decision evidence and must not be rewritten as a current production claim.
+
+### 11.7b Cortex analyzer connector
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+The owner-required Cortex analyzer connector remains bounded by the same server-side credentials, RBAC, provenance and non-inference rules as other enrichment services.
+
+### 11.8 Integrated runtime industrialisation
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+The accepted platform baseline covers Kubernetes/Helm/GitOps, workload identity, external secret delivery, ingress/TLS, network segmentation, HA/disruption controls, observability, backup/recovery, software supply-chain hardening, capacity planning and upgrade/rollback. Repository evidence does not itself prove production-equivalent behavior.
+
+#### 11.8a Runtime foundation
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+#### 11.8b Workload identity and external secret delivery
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+#### 11.8c Ingress/TLS and network segmentation
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+#### 11.8d HA and disruption hardening
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+#### 11.8e Observability hardening
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+#### 11.8f Backup, restore and recovery hardening
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+#### 11.8g Software supply-chain hardening
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+#### 11.8h Capacity and resource planning
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+#### 11.8i Exercised upgrade and rollback
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+Accepted runtime evidence requires immutable image identities, safe rollout controls, post-upgrade/post-rollback health, recovery boundaries and restoration of the exact prior digest. Application rollback never authorizes automatic database down migration. Missing or ambiguous evidence must **fail closed**.
+
+### 11.9 Migration and compatibility
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+The accepted contract requires one connected single-root/single-head Alembic chain, forward-first migration, backward-compatible rolling overlap and expand/migrate/contract for destructive changes. Ambiguity must **fail closed**.
 
 ### 11.10 Integrated production-equivalent validation
-
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`
 
-The Unified Operations Workbench materially changes the candidate. Candidate-completion slices 11.10a–11.10o must be accepted before one immutable integrated candidate is frozen for 11.10p.
+The Unified Operations Workbench materially changes the candidate. Candidate-completion slices 11.10a–11.10o must be accepted before one immutable integrated candidate is frozen for the fresh 11.10p production-equivalent exercise.
 
 #### Candidate-completion sequence
 
@@ -97,25 +161,30 @@ Only after 11.10l is accepted and merged may **11.10m Operations & Administratio
 
 After 11.10o acceptance, freeze one immutable integrated candidate. 11.10p requires fresh candidate identity, migration/compatibility, upgrade, rollback to the exact prior immutable digest with post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity evidence for the **same immutable** candidate and approved production-equivalent environment.
 
-The execution package remains `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`, `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`, `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`, `tools/phase11_production_equivalent_validation.py`, tests and `.github/workflows/phase11-production-equivalent-validation.yml`.
+The execution package remains:
 
-Historical Phase 8/9 evidence cannot satisfy 11.10p. Missing, ambiguous, inaccessible, historical-only or mixed-candidate evidence must **fail closed**.
+- `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`;
+- `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
+- `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`;
+- `tools/phase11_production_equivalent_validation.py`;
+- `backend/tests/test_phase11_10_proDUCTION_EQUIVALENT_VALIDATION.py`;
+- `.github/workflows/phase11-production-equivalent-validation.yml`.
+
+Historical Phase 8/9 evidence cannot satisfy 11.10p. Missing, ambiguous, inaccessible, historical-only or mixed-candidate evidence must **fail closed**. Repository CI validates repository contracts only and does not prove production-equivalent execution or production authorization.
 
 ### Phase 11.11 Independent external assurance
-
 **Status:** `NOT STARTED`
 
-Fresh independent assurance may start only after Phase 11.10 is explicitly `PASS / OWNER_ACCEPTED` and must target the same immutable candidate.
+Fresh independent assurance may start only after Phase 11.10 is explicitly `PASS / OWNER_ACCEPTED` and must target the same immutable integrated candidate.
 
 ## Phase 12 — Production GO/NO-GO
-
 **Status:** `NOT STARTED`
 
 A production `GO` requires accepted 11.10 and 11.11 evidence for the same release identity plus accountable ownership, residual-risk, support/change and rollback authority. Missing evidence remains fail-closed.
 
 ## Immediate sequence
 
-1. Complete **11.10l Governance & Evidence Center** on one exact green head and merge with expected-head protection.
+1. Complete **11.10l Governance & Evidence Center** on one final exact green head and merge with expected-head protection.
 2. Start **11.10m Operations & Administration** only after 11.10l is merged.
 3. Continue 11.10n and 11.10o one bounded green PR at a time.
 4. Freeze one immutable candidate and execute **11.10p**.
