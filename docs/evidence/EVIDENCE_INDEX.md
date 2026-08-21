@@ -27,6 +27,8 @@ These classes are not interchangeable. Repository CI **does not prove** producti
 
 Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed service/licensing boundaries. Accepted Phase 11.1–11.9 evidence covers integration contracts plus runtime, workload identity/external secrets, ingress/TLS/network segmentation, HA/disruption, observability, backup/restore/recovery, supply-chain hardening, capacity, exercised upgrade/rollback and forward-first migration compatibility.
 
+Accepted service implementation evidence includes `.github/workflows/phase11-thehive-handoff-implementation.yml`. That workflow is repository-controlled implementation evidence only: it does not establish live TheHive health, case-state truth beyond recorded handoff evidence, production-equivalent operation, external assurance or production authorization.
+
 Accepted runtime and supply-chain workflow evidence remains explicitly indexed through:
 
 - `.github/workflows/phase11-runtime-foundation.yml`;
