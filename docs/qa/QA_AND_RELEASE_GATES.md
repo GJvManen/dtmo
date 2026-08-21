@@ -7,34 +7,34 @@ DTMO separates repository engineering evidence, accountable functional acceptanc
 ## Core release principles
 
 1. **Exact-head evidence** — PR evidence belongs only to the exact final PR head.
-2. **New commit, new evidence** — any new commit invalidates earlier exact-head acceptance evidence for that PR.
-3. **No inferred PASS** — queued, in-progress, skipped, cancelled, failed, stale or inaccessible evidence is not `PASS`.
+2. **New commit, new evidence** — any new commit invalidates earlier exact-head acceptance evidence.
+3. **No inferred PASS** — queued, in-progress, skipped, cancelled, failed, stale, missing or inaccessible evidence is not `PASS`.
 4. **Expected-head merge protection** — merge must reject a moved head.
 5. **Evidence classes remain separate** — CI, owner acceptance, real-environment validation, external assurance and production authorization are not interchangeable.
 6. **Historical evidence is immutable** — later lifecycle changes do not rewrite prior candidate evidence.
 7. **One bounded objective per PR** — the next slice does not start before the current slice is green and merged.
-8. **Professional documentation is a merge criterion** — affected authoritative documentation and its CI contracts must be current on the exact head.
-9. **External evidence remains external** — fixtures, emulators, screenshots, mock responses and CI artifacts do not prove production-equivalent operation.
-10. **UI convenience is not authority** — role-aware visibility never replaces **server-side RBAC** or required human approval.
+8. **Professional documentation is a merge criterion** — affected authoritative documentation and tests must be current on the exact head.
+9. **External evidence remains external** — fixtures, emulators, screenshots and CI artifacts do not prove production-equivalent operation.
+10. **UI convenience is not authority** — role-aware visibility never replaces server-side RBAC or required human approval.
 
 ## Current acceptance status
 
 | Stage | Status |
 |---|---|
 | Phases 1–7 | `PASS` |
-| RC13 functional console | `PASS / OWNER_ACCEPTED` |
+| RC13 | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | `PASS / REPOSITORY_COMPLETE` |
 | Phase 8 | `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE` |
 | Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE` |
 | Phase 10 | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
 | Phase 11 | `IN PROGRESS / ACTIVE` |
 | Phase 11.1–11.9 | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
-| Phase 11.10a–11.10h | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10i Vulnerability & Exposure Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
-| Phase 11.10j Sources & Collection Control Center | `NOT STARTED` |
-| Phase 11.10p production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
-| Phase 11.11 independent external assurance | `NOT STARTED` |
+| Phase 11.10 | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
+| Phase 11.10a–11.10k | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10l Governance & Evidence | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` |
+| Phase 11.10m–11.10o | `NOT STARTED` |
+| Phase 11.10p | `NOT STARTED / CANDIDATE FREEZE REQUIRED` |
+| Phase 11.11 | `NOT STARTED` |
 | Phase 12 | `NOT STARTED` |
 
 DTMO is **not production authorized**.
@@ -47,60 +47,55 @@ DTMO is **not production authorized**.
 | Security & identity | Authentication, authorization, secrets, privileged actions | Repository CI + deployed assurance |
 | Data integrity & recovery | Migration, persistence, integrity, recovery | Repository CI + deployed validation |
 | Connector reliability | Contract/state/retry/timeout/replay/provenance/isolation | Repository CI + deployed validation |
-| Governance | Mapping truth and authority separation | Repository CI + governance review |
+| Governance | Explicit mapping truth, provenance and authority separation | Repository CI + governance review |
 | Platform integration | Upstream API/model interoperability | Phase 11 repository evidence |
 | Integrated runtime | Kubernetes/Helm/GitOps, identity, network, HA, recovery, observability, supply chain | Phase 11 repository + deployed evidence |
-| Workbench slices 11.10a–h | Accepted bounded functionality | Repository/browser evidence |
-| Vulnerability & Exposure | Canonical vulnerability evidence, prioritization semantics and fail-closed degraded state | Active Phase 11.10i repository/browser evidence |
-| Candidate workspaces | Remaining bounded workbench capabilities, browser E2E, RBAC, accessibility | Phase 11.10j–11.10o repository/owner evidence |
+| Workbench 11.10a–11.10k | Accepted bounded functionality | Repository/browser evidence |
+| Governance & Evidence | Explicit partial crosswalks, no inferred compliance, fail-closed evidence | Active Phase 11.10l repository/browser evidence |
+| Candidate workspaces | Operations/Admin, role-aware UX/accessibility, consolidation | Phase 11.10m–11.10o repository/owner evidence |
 | Production-equivalent validation | Same-candidate migration/upgrade/rollback/health/saturation/recovery | Phase 11.10p real-environment evidence |
 | Independent assurance | Independent assessment of integrated candidate | Phase 11.11 |
 | Production decision | Formal accountable GO/NO-GO | Phase 12 |
 
-## Accepted Phase 11.10a–11.10h baseline
+## Accepted Phase 11.10a–11.10k baseline
 
-The accepted workbench sequence preserves the invariant **browser → DTMO API → governed integration adapter → upstream service**, with server-side RBAC and human authority boundaries intact. Command Center, Unified Intelligence, Integrated Analysis, OpenCTI, MISP and TheHive repository/browser acceptance remain regression protected. None of these accepted slices proves live upstream health, local compromise or production authorization.
+The accepted workbench sequence preserves **browser → DTMO API → governed integration adapter/data contract → governed service/evidence source**, server-side RBAC, provenance, replay protection, human review/share/publication authority and separate case authority. None of the accepted slices proves live upstream health, local compromise, independent assurance or production authorization.
 
-## Active Phase 11.10i Vulnerability & Exposure gate
+## Active Phase 11.10l Governance & Evidence gate
 
-Dedicated gate: `docs/qa/PHASE11_10I_VULNERABILITY_EXPOSURE_GATE.md`  
-Workflow: `.github/workflows/phase11-vulnerability-exposure.yml`
+Dedicated gate: `docs/qa/PHASE11_10L_GOVERNANCE_EVIDENCE_GATE.md`  
+Workflow: `.github/workflows/phase11-governance-evidence.yml`
 
 The final exact head must prove:
 
-- `/workbench/exposure` is wired to `ExposureWorkspace` inside the canonical application shell;
-- browser code calls the same-origin DTMO API only;
-- the workspace uses the accepted canonical vulnerability analytics projection rather than a parallel datastore;
-- server-side `read:intelligence` remains the authoritative access boundary;
-- CVSS, EPSS, KEV, CWE and vendor/product mappings are represented as prioritization evidence rather than local-exposure or compromise assertions;
-- missing, malformed, inaccessible or degraded evidence fails closed and is not rendered as a healthy or zero-risk state;
-- no browser-held scanner/upstream credentials are introduced;
-- no remediation, publication/share or case authority is introduced;
-- deterministic contract coverage and frontend production build succeed;
-- application-shell and relevant accessibility/frontend regression gates succeed;
-- professional current-state, architecture, user/operator, QA and evidence-boundary documentation is synchronized.
+- `/workbench/governance` is wired to `GovernanceWorkspace` in the canonical application shell;
+- the browser uses only the same-origin `GET /api/v1/governance/knowledge` DTMO API;
+- server-side `read:intelligence` remains authoritative;
+- the API reuses the explicit typed repository crosswalk in `backend/dtmo/governance_crosswalk.py` and the Governance Mapping Registry;
+- Normenkader IBP, MITRE ATT&CK and NIST CSF mappings are surfaced only where explicit repository relationships exist;
+- CVSS remains context-only scoring semantics;
+- partial relationships are never rendered as certification, blanket compliance, semantic equivalence or environment effectiveness;
+- unrecorded mappings and unavailable evidence fail closed rather than becoming PASS/compliant/healthy;
+- governance visibility grants no review, case, remediation, connector, external-share, publication, administration or production authority;
+- deterministic contract and Chromium browser tests succeed;
+- frontend production build succeeds;
+- Professional Documentation Gate and every other workflow registered for the final unchanged head are `completed/success`.
 
-Repository/browser acceptance **does not prove** live vulnerability-source health, asset exposure, exploitability, compromise, remediation, production-equivalent operation, independent assurance or production authorization.
+Repository CI for this gate is **repository-controlled exact-head evidence only**. It is not production-equivalent validation, owner acceptance, independent assurance or production authorization.
 
-Any commit after an all-green run invalidates that run for merge acceptance. Merge requires every workflow registered for the final exact head to be `completed/success`, the PR to be ready for review and expected-head protection to match that same SHA.
+## Merge acceptance procedure
 
-After 11.10i exact-head acceptance and protected merge, the only next bounded priority is **Phase 11.10j — Sources & Collection Control Center**.
+A bounded PR may be merged only when all of the following are true at the same final unchanged SHA:
 
-## Phase 11.10p production-equivalent gate
+1. every registered workflow is `completed/success`;
+2. no queued, in-progress, skipped, cancelled, failed, stale or missing exact-head evidence remains;
+3. the PR is mergeable and ready for review;
+4. professional documentation and documentation-contract tests are synchronized;
+5. the head has not moved since verification;
+6. squash merge uses expected-head protection.
 
-After 11.10o, one immutable integrated candidate is frozen. Fresh real-environment evidence must cover candidate identity, migration/compatibility, upgrade, exact prior-digest rollback with post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity.
+After accepted merge of 11.10l, exactly the next bounded priority is **11.10m Operations & Administration**.
 
-Authoritative package:
+## Later external gates
 
-- `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`;
-- `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
-- `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`;
-- `tools/phase11_production_equivalent_validation.py`;
-- `backend/tests/test_phase11_10_production_equivalent_validation.py`;
-- `.github/workflows/phase11-production-equivalent-validation.yml`.
-
-All external evidence must identify the **same immutable** candidate and environment. Historical Phase 8/9 evidence cannot satisfy 11.10p. Missing, placeholder, inaccessible or mixed-candidate evidence must **fail closed**. Repository CI alone cannot complete 11.10.
-
-## Phase 11.11 and Phase 12
-
-Phase 11.11 remains `NOT STARTED` until 11.10 is explicitly `PASS / OWNER_ACCEPTED` and must assess the same immutable candidate. Phase 12 remains `NOT STARTED`; only an accountable Phase 12 GO can authorize production.
+Phase 11.10p remains `NOT STARTED / CANDIDATE FREEZE REQUIRED` until 11.10a–11.10o are complete and one immutable candidate is frozen. Historical Phase 8/9 evidence cannot satisfy it. Phase 11.11 then requires fresh independent assurance for that same candidate. Phase 12 is the later formal accountable production GO/NO-GO.
