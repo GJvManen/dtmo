@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import { AnalysisWorkspace } from './AnalysisWorkspace';
+import { AutomationWorkspace } from './AutomationWorkspace';
 import { CollectionWorkspace } from './CollectionWorkspace';
 import { ExposureWorkspace } from './ExposureWorkspace';
 import { InvestigationsWorkspace } from './InvestigationsWorkspace';
@@ -251,6 +252,7 @@ function CommandCenter({ session, health }: { session?: Session; health?: Health
 }
 
 function WorkspaceFoundation({ workspace }: { workspace: WorkspaceDefinition }) {
+  if (workspace.path === '/automation') return <AutomationWorkspace />;
   if (workspace.path === '/collection') return <CollectionWorkspace />;
   if (workspace.path === '/exposure') return <ExposureWorkspace />;
   if (workspace.path === '/investigations') return <InvestigationsWorkspace />;
