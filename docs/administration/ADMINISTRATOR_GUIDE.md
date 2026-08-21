@@ -1,11 +1,11 @@
 # DTMO Administrator Guide
 
 **Audience:** authorized administrators, security administrators and auditors  
-**Scope:** identity, RBAC, privileged Administration, source governance and controlled operational configuration.
+**Scope:** identity, RBAC, privileged Administration, source governance, automation boundaries and controlled operational configuration.
 
 ## 1. Administrative security model
 
-DTMO Administration is governed by server-side authorization. UI visibility is never the final authorization decision. Human and service identities must remain distinguishable and least privilege is the default.
+DTMO Administration is governed by server-side authorization. UI visibility is never the final authorization decision. Human and service identities remain distinguishable and least privilege is the default.
 
 ```mermaid
 flowchart TD
@@ -17,103 +17,34 @@ flowchart TD
     A --> L[Audit + correlation record]
 ```
 
-Relevant workflows: **WF-05 Authentication and bearer trust**, **WF-06 RBAC and privileged Administration**, **WF-07 Audit and correlation**.
+Relevant workflows include authentication/bearer trust, RBAC/privileged administration and audit/correlation. A successful UI action is not sufficient administrative evidence unless resulting state and audit are attributable.
 
-## 2. Roles and principals
+## 2. Roles and authority separation
 
-Administrators should manage principals according to business role rather than convenience. Changes to privileged roles must be attributable and reviewable. Service identities must not silently acquire human-only approval authority.
+Administrators manage principals according to business role rather than convenience. Changes to privileged roles must be attributable and reviewable. Service identities must not silently acquire human-only approval authority.
 
-Typical product roles include analyst, reviewer, publisher and administrator roles where configured. Exact permissions remain defined by the server-side authorization model.
+Key permissions remain server-authoritative and separated by purpose: `read:intelligence`, `review:intelligence`, `approve:share`, `handoff:case`, `manage:connectors` and administration permissions are not interchangeable. Technical access, CI/deployment identity and service connectivity do not grant human review, sharing, publication, case or production authority.
 
-![DTMO Administration and RBAC — runtime UI with sanitized synthetic fixture data](../visual/screenshots/administration-rbac.png)
+## 3. Source and automation governance
 
-*Figure UI-09 — Actual DTMO Administration surface. Visible controls do not override server-side authorization.*
+The Sources & Collection control plane separates source definitions, runtime registration and operational state. Administrators verify source identity/endpoint purpose, execution profile, secret references, enablement, provenance expectations and manual-execution rules. Raw credential values remain server-side; repository, browser and evidence artifacts contain references rather than secrets.
 
-## 3. Privileged Administration workflow
+Automation & Playbooks reuses governed connector execution. Automation success is execution evidence only: it does not prove source truth, compromise, remediation, review completion, publication/share authority or production readiness.
 
-```mermaid
-flowchart LR
-    C[Requested change] --> I[Identify principal and role]
-    I --> A[Authorization check]
-    A --> V[Validate requested configuration]
-    V --> E[Execute permitted change]
-    E --> U[Update runtime/canonical state]
-    U --> L[Audit actor, action, target, correlation ID]
-    L --> R[Review / operational evidence]
-```
+## 4. Phase 11.10l Governance & Evidence boundary
 
-A successful UI action is not sufficient administrative evidence unless the resulting state and audit trail are attributable.
+The canonical `/workbench/governance` workspace is read-oriented. It consumes `GET /api/v1/governance/knowledge` under server-side `read:intelligence`; viewing a framework or mapping grants **no administrative permission**.
 
-## 4. Source governance
+The repository contains explicit typed partial mappings for Normenkader IBP, MITRE ATT&CK and NIST CSF plus CVSS context in `backend/dtmo/governance_crosswalk.py` and `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`. Administrators must not convert these scoped relationships into blanket compliance, certification or environment-effectiveness claims. Unrecorded framework objects remain unmapped and missing evidence fails closed.
 
-The **Sources & Catalogue** surface separates source definitions, runtime registration and operational status. Administrators should verify source identity/endpoint purpose, execution profile, secret references, enablement, health, provenance expectations, manual-execution rules and external-sharing approval boundaries.
+Governance visibility does not authorize role changes, connector execution, review, case creation, remediation, external sharing, publication or production. Any future governance write capability must use a separately authorized, attributable server-side mutation contract; Phase 11.10l introduces none.
 
-![DTMO Sources and Catalogue — runtime UI with sanitized synthetic fixture data](../visual/screenshots/sources-catalogue.png)
+## 5. Audit, correlation and evidence handling
 
-*Figure UI-03 — Actual DTMO source-administration surface. Registration or display does not prove external-source reachability.*
+Privileged actions must retain actor, action, target, result and request/correlation context. Audit evidence must avoid secrets and unnecessary personal data. Evidence is interpreted according to its class: repository CI is repository engineering evidence; owner acceptance, production-equivalent validation, independent assurance and production authorization remain separate decisions.
 
-## 5. Secrets and credentials
+## 6. Current lifecycle
 
-Raw secrets, tokens or production credentials must not be stored in documentation, evidence manifests or screenshots. Secret references should be used where the product supports them. Production credentials must not be reused for fixture-backed documentation capture or unrelated staging evidence.
+Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11.10a–11.10k are `PASS / REPOSITORY_COMPLETE`; Phase 11.10l is `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10 as a whole remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`. Phase 11.10m–11.10o, Phase 11.11 and Phase 12 are `NOT STARTED`; 11.10p requires later immutable candidate freeze. DTMO is **not production authorized**.
 
-## 6. MISP administration and sharing boundary
-
-MISP connectivity and MISP export authority are distinct. Read access can support analysis without granting external publication rights. Governed export requires the configured permissions and human approval chain.
-
-```mermaid
-flowchart TD
-    M[MISP intelligence/context] --> A[Analyst/reviewer assessment]
-    A --> S{External share requested?}
-    S -- No --> K[Keep internal]
-    S -- Yes --> P[Permission + approval checks]
-    P -->|Denied| D[Block + audit]
-    P -->|Approved| X[Governed export]
-    X --> L[Audit/share evidence]
-```
-
-Relevant workflow: **WF-03**.
-
-## 7. AIL administration boundary
-
-AIL is used as governed read/enrichment/correlation context. Administrators should preserve data-minimization controls and avoid exposing unnecessary raw paste/leak content when an indicator-level analytical relationship is sufficient.
-
-Relevant workflow: **WF-04**.
-
-## 8. Audit and correlation
-
-Administrative and security-relevant actions should produce attributable evidence with actor identity, action, target/object, outcome, timestamp and request/correlation context where applicable. Failed or denied authorization is also security-relevant evidence.
-
-```mermaid
-sequenceDiagram
-    participant U as User/service
-    participant API as DTMO API
-    participant AUTH as Authorization
-    participant AUDIT as Audit
-    U->>API: Request + correlation context
-    API->>AUTH: Resolve identity / permission
-    AUTH-->>API: Permit or deny
-    API->>AUDIT: Actor + action + target + outcome + correlation ID
-    API-->>U: Governed response
-```
-
-![DTMO read-only audit evidence viewer — runtime UI with sanitized synthetic fixture data](../visual/screenshots/audit-correlation.png)
-
-*Figure UI-10 — Actual DTMO read-only audit evidence surface with sanitized deterministic events and event hashes. This figure demonstrates rendered auditability controls; it does not prove that the shown events occurred in staging or production.*
-
-## 9. Operational administration
-
-Administrative changes that affect deployment, data stores, IAM, recovery or monitoring should follow the formal change/rollback process. Repository CI and local Docker behavior can support validation but do not substitute for accepted production-equivalent staging evidence.
-
-Relevant workflows: **WF-09 Observability**, **WF-10 Backup/recovery/rollback** and **WF-11 Deployment/immutable identity**.
-
-## 10. Screenshot and evidence boundary
-
-The screenshots referenced by this guide are documentation illustrations from the real DTMO UI with sanitized synthetic fixture data unless explicitly labelled otherwise. They are safe visual examples, not evidence that a privileged change was performed in the approved staging environment.
-
-## 11. Related documentation
-
-- [`PRODUCT_GUIDE.md`](../product/PRODUCT_GUIDE.md)
-- [`USER_GUIDE.md`](../user/USER_GUIDE.md)
-- [`SECURITY_OVERVIEW.md`](../security/SECURITY_OVERVIEW.md)
-- [`SYSTEM_WORKFLOWS.md`](../architecture/SYSTEM_WORKFLOWS.md)
-- [`OPERATIONS_MANUAL.md`](../operations/OPERATIONS_MANUAL.md)
+Historical Phase 8 `PASS / OWNER_ACCEPTED` and Phase 9 `PASS / EXTERNAL_ASSURANCE_ACCEPTED` evidence remains candidate-bound history and cannot be reused for the materially changed Phase 11 candidate.
