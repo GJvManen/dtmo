@@ -59,12 +59,10 @@ def test_phase11_10e_documentation_status_remains_accepted_during_later_slice() 
     assert "Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10h TheHive Investigations & Cases | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE`" in current
-    assert "Phase 11.10j Sources & Collection Control Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
+    assert "Phase 11.10j Sources & Collection Control Center | `PASS / REPOSITORY_COMPLETE`" in current
+    assert "Phase 11.10k Automation & Playbooks | `PASS / REPOSITORY_COMPLETE`" in current
+    assert "Phase 11.10l Governance & Evidence Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
     for text in (roadmap, portal, evidence):
-        assert "11.10e" in text
-        assert "11.10f" in text
-        assert "11.10g" in text
-        assert "11.10h" in text
-        assert "11.10i" in text
-        assert "11.10j" in text
+        for phase in ("11.10e", "11.10f", "11.10g", "11.10h", "11.10i", "11.10j", "11.10k", "11.10l"):
+            assert phase in text
     assert "not production authorized" in current.lower()
