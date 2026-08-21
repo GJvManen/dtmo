@@ -46,12 +46,12 @@ def main() -> None:
         page.goto(BASE_URL, wait_until="networkidle")
         page.get_by_role("link", name="Governance & Evidence", exact=True).click()
         page.get_by_role("heading", name="Governance & Evidence").wait_for()
-        assert page.get_by_text("Mapping visibility ≠ compliance approval").is_visible()
-        assert page.get_by_text("Normenkader IBP").is_visible()
-        assert page.get_by_text("MITRE ATT&CK").is_visible()
-        assert page.get_by_text("CVSS").is_visible()
-        assert page.get_by_text("DTMO security & release governance").is_visible()
-        assert page.get_by_text("Evidence without synthetic assurance").is_visible()
+        assert page.get_by_text("Mapping visibility ≠ compliance approval", exact=True).is_visible()
+        assert page.get_by_text("Normenkader IBP", exact=True).is_visible()
+        assert page.get_by_text("MITRE ATT&CK", exact=True).is_visible()
+        assert page.get_by_text("CVSS", exact=True).is_visible()
+        assert page.get_by_text("DTMO security & release governance", exact=True).is_visible()
+        assert page.get_by_text("Evidence without synthetic assurance", exact=True).is_visible()
         body = page.locator("body").inner_text().lower()
         assert "no inferred crosswalks" in body
         assert "publication" in body
