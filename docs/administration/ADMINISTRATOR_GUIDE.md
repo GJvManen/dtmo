@@ -17,7 +17,7 @@ flowchart TD
     A --> L[Audit + correlation record]
 ```
 
-Relevant workflows include authentication/bearer trust, RBAC/privileged administration and audit/correlation. A successful UI action is not sufficient administrative evidence unless resulting state and audit are attributable.
+Relevant workflows include authentication/bearer trust, RBAC/privileged administration and audit/correlation. The maintained workflow catalogue is [`SYSTEM_WORKFLOWS.md`](../architecture/SYSTEM_WORKFLOWS.md). A successful UI action is not sufficient administrative evidence unless resulting state and audit are attributable.
 
 ## 2. Roles and authority separation
 
@@ -28,6 +28,8 @@ Key permissions remain server-authoritative and separated by purpose: `read:inte
 ## 3. Source and automation governance
 
 The Sources & Collection control plane separates source definitions, runtime registration and operational state. Administrators verify source identity/endpoint purpose, execution profile, secret references, enablement, provenance expectations and manual-execution rules. Raw credential values remain server-side; repository, browser and evidence artifacts contain references rather than secrets.
+
+Production credentials must not be reused in local, fixture-backed, documentation or CI environments. Credential references used for repository validation do not prove that a production secret exists, is valid or is authorized for a deployment.
 
 Automation & Playbooks reuses governed connector execution. Automation success is execution evidence only: it does not prove source truth, compromise, remediation, review completion, publication/share authority or production readiness.
 
@@ -42,6 +44,10 @@ Governance visibility does not authorize role changes, connector execution, revi
 ## 5. Audit, correlation and evidence handling
 
 Privileged actions must retain actor, action, target, result and request/correlation context. Audit evidence must avoid secrets and unnecessary personal data. Evidence is interpreted according to its class: repository CI is repository engineering evidence; owner acceptance, production-equivalent validation, independent assurance and production authorization remain separate decisions.
+
+![DTMO audit and correlation — runtime UI with sanitized synthetic fixture data](../visual/screenshots/audit-correlation.png)
+
+The screenshot is a governed documentation illustration. It does not prove that the shown events occurred in staging or production, and it does not establish production-equivalent validation, independent assurance or production authorization.
 
 ## 6. Current lifecycle
 
