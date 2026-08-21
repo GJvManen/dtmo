@@ -73,16 +73,21 @@ async def test_canonical_governance_shows_framework_coverage_and_real_mappings()
 
         normenkader = page.locator('[data-governance-framework="normenkader-ibp"]')
         await expect(normenkader).to_contain_text("Normenkader IBP")
-        await expect(normenkader).to_contain_text("Nog niet gemapt")
-        await expect(normenkader).to_contain_text("geen equivalence geclaimd")
+        await expect(normenkader).to_contain_text("Expliciete partiële crosswalk")
+        await expect(normenkader).to_contain_text("partiële crosswalk en geen certificering")
+        await expect(normenkader).to_contain_text("ID.02")
+        await expect(normenkader).to_contain_text("SM.07")
 
         attack = page.locator('[data-governance-framework="mitre-attack"]')
         await expect(attack).to_contain_text("MITRE ATT&CK")
-        await expect(attack).to_contain_text("Nog niet gemapt")
+        await expect(attack).to_contain_text("Expliciete contextrelaties")
+        await expect(attack).to_contain_text("T1078")
+        await expect(attack).to_contain_text("T1087")
 
         cvss = page.locator('[data-governance-framework="cvss"]')
         await expect(cvss).to_contain_text("CVSS")
-        await expect(cvss).to_contain_text("Context, geen first-class score")
+        await expect(cvss).to_contain_text("Context-only")
+        await expect(cvss).to_contain_text("scoring-context")
 
         internal = page.locator('[data-governance-framework="dtmo-governance"]')
         await expect(internal).to_contain_text("Repository-backed")
@@ -93,11 +98,11 @@ async def test_canonical_governance_shows_framework_coverage_and_real_mappings()
             "publication/share authority"
         )
         await expect(page.locator("#governance-status")).to_contain_text(
-            "4 frameworks · 6 repository-backed mappings"
+            "5 frameworks · 6 repository-backed mappings"
         )
-        await expect(page.locator("#governance-claim-boundary")).to_contain_text(
-            "never inferred"
-        )
+        claim_boundary = page.locator("#governance-claim-boundary")
+        await expect(claim_boundary).to_contain_text("only when explicitly defined")
+        await expect(claim_boundary).to_contain_text("do not constitute certification")
         assert external_requests == []
 
         await context.close()
