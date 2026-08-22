@@ -1,0 +1,23 @@
+name: Phase 11.10q2 Bootstrap Integration Readiness Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  q2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deterministic test dependencies
+        run: python -m pip install pytest pydantic pydantic-settings
+      - name: Validate governed bootstrap content and integration readiness
+        env:
+          PYTHONPATH: backend
+        run: python -m pytest -q backend/tests/test_phase11_10q2_bootstrap_integration_readiness.py
