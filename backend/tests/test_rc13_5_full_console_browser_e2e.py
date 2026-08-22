@@ -437,18 +437,21 @@ async def test_complete_canonical_console_journey_in_one_browser_session() -> No
         assert all(mutation_request_ids)
         assert len(set(mutation_request_ids)) == 2
 
-        # 6. Governance: framework coverage, provenance and authority boundaries are visible.
+        # 6. Governance: explicit repository-backed coverage, provenance and authority boundaries are visible.
         await page.get_by_role("button", name="Governance").click()
         governance = page.locator("#governance-knowledge")
         await expect(governance).to_be_visible()
         await expect(page.locator('[data-governance-framework="normenkader-ibp"]')).to_contain_text(
-            "Nog niet gemapt"
+            "Expliciete partiële crosswalk"
+        )
+        await expect(page.locator('[data-governance-framework="normenkader-ibp"]')).to_contain_text(
+            "ID.02"
         )
         await expect(page.locator('[data-governance-framework="mitre-attack"]')).to_contain_text(
-            "Nog niet gemapt"
+            "Expliciete contextrelaties"
         )
         await expect(page.locator('[data-governance-framework="cvss"]')).to_contain_text(
-            "Context, geen first-class score"
+            "Context-only"
         )
         await expect(page.locator('[data-governance-mapping="exact-head-evidence"]')).to_contain_text(
             "Exact-head release evidence"

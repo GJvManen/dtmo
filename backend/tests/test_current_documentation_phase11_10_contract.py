@@ -45,7 +45,7 @@ def test_all_current_surfaces_preserve_phase11_release_truth() -> None:
         assert "REPOSITORY_COMPLETE" in text, path
 
 
-def test_phase11_10j_current_state_is_exact_and_fail_closed() -> None:
+def test_phase11_10l_current_state_is_exact_and_fail_closed() -> None:
     current = _read("docs/project/CURRENT_STATE.md")
     for marker in (
         "Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE`",
@@ -57,24 +57,28 @@ def test_phase11_10j_current_state_is_exact_and_fail_closed() -> None:
         "Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.10h TheHive Investigations & Cases | `PASS / REPOSITORY_COMPLETE`",
         "Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10j Sources & Collection Control Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.10j Sources & Collection Control Center | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.10k Automation & Playbooks | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.10l Governance & Evidence Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED`",
     ):
         assert marker in current, marker
 
     for stale in (
-        "sole active bounded objective is **Phase 11.10i",
-        "Phase 11.10i Vulnerability & Exposure Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
-        "Phase 11.10j Sources & Collection Control Center | `NOT STARTED`",
+        "sole active bounded objective is **Phase 11.10j",
+        "Phase 11.10j Sources & Collection Control Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
+        "Phase 11.10k Automation & Playbooks | `NOT STARTED`",
+        "Phase 11.10l Governance & Evidence Center | `NOT STARTED`",
     ):
         assert stale not in current, stale
 
     for marker in (
-        "manage:connectors",
-        "human-admin",
-        "secret",
+        "repository-backed",
+        "normenkader ibp",
+        "mitre att&ck",
+        "cvss",
         "provenance",
-        "fail closed",
+        "fails closed",
         "repository CI",
         "not production authorized",
         "same immutable",
@@ -82,17 +86,17 @@ def test_phase11_10j_current_state_is_exact_and_fail_closed() -> None:
         assert marker.lower() in current.lower(), marker
 
 
-def test_phase11_10j_package_is_professionally_discoverable() -> None:
+def test_phase11_10l_package_is_professionally_discoverable() -> None:
     required_paths = (
-        "frontend/src/CollectionWorkspace.tsx",
+        "frontend/src/GovernanceWorkspace.tsx",
         "frontend/src/App.tsx",
-        "backend/dtmo/admin_sources.py",
-        "docs/architecture/PHASE11_10J_SOURCES_COLLECTION.md",
-        "docs/user/SOURCES_COLLECTION_WORKSPACE.md",
-        "docs/qa/PHASE11_10J_SOURCES_COLLECTION_GATE.md",
-        "backend/tests/test_phase11_10j_sources_collection_contract.py",
-        "tests/browser/phase11_10j_collection.py",
-        ".github/workflows/phase11-sources-collection.yml",
+        "backend/dtmo/governance_knowledge.py",
+        "docs/architecture/PHASE11_10L_GOVERNANCE_EVIDENCE.md",
+        "docs/user/GOVERNANCE_EVIDENCE_WORKSPACE.md",
+        "docs/qa/PHASE11_10L_GOVERNANCE_EVIDENCE_GATE.md",
+        "backend/tests/test_phase11_10l_governance_evidence_contract.py",
+        "tests/browser/phase11_10l_governance.py",
+        ".github/workflows/phase11-governance-evidence.yml",
     )
     for path in required_paths:
         assert (ROOT / path).is_file(), path
@@ -101,18 +105,19 @@ def test_phase11_10j_package_is_professionally_discoverable() -> None:
         _read(path)
         for path in (
             "docs/project/CURRENT_STATE.md",
-            "docs/architecture/PHASE11_10J_SOURCES_COLLECTION.md",
-            "docs/user/SOURCES_COLLECTION_WORKSPACE.md",
-            "docs/qa/PHASE11_10J_SOURCES_COLLECTION_GATE.md",
+            "docs/architecture/PHASE11_10L_GOVERNANCE_EVIDENCE.md",
+            "docs/user/GOVERNANCE_EVIDENCE_WORKSPACE.md",
+            "docs/qa/PHASE11_10L_GOVERNANCE_EVIDENCE_GATE.md",
         )
     )
     for marker in (
-        "Sources & Collection",
-        "manage:connectors",
-        "human administrator",
-        "server-side",
+        "Governance & Evidence",
+        "Normenkader IBP",
+        "MITRE ATT&CK",
+        "CVSS",
+        "repository-backed",
         "provenance",
-        "fail closed",
+        "fail",
         "production",
     ):
         assert marker.lower() in combined.lower(), marker

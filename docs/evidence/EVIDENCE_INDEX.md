@@ -1,187 +1,127 @@
 # DTMO Evidence Index
 
-Last updated: **2026-08-20**
+Last updated: **2026-08-21**
 
 ## Purpose
 
-This index maps current lifecycle stages to authoritative evidence classes and repository evidence chains. It is not a CI chronology. Historical run records, pull-request discussions and workflow artifacts remain immutable at their original candidate and moment.
+This index maps current lifecycle stages to authoritative evidence classes and repository evidence chains. It is not a CI chronology. Historical workflow artifacts and external assurance remain bound to their original candidate.
 
 ## Current lifecycle
 
-Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; **E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`**. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**. Phase 11.1–11.9 and Phase 11.10a–11.10g are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10h TheHive Investigations & Cases** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10i, Phase 11.10p, Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
+Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**.
+
+Phase 11.1–11.9 and Phase 11.10a–11.10k are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10l Governance & Evidence** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10m–11.10o, Phase 11.11 and Phase 12 are `NOT STARTED`; Phase 11.10p is `NOT STARTED / CANDIDATE FREEZE REQUIRED`. DTMO is **not production authorized**.
 
 ## Evidence hierarchy
 
 1. **Repository-controlled engineering evidence** — exact-head CI, contracts, builds, browser tests, migrations and runtime contracts.
-2. **Supply-chain evidence** — artifact hashes, SBOM/provenance/signing for the exact release subject.
+2. **Supply-chain evidence** — artifact hashes, SBOM, provenance and signing for the exact release subject.
 3. **Accountable functional evidence** — explicit owner acceptance of product behavior.
 4. **Real-environment evidence** — production-equivalent exercise bound to one immutable deployment identity.
 5. **Independent assurance** — assessment independent from repository CI.
 6. **Formal production authorization** — accountable GO/NO-GO for a specific candidate.
 
-These classes are not interchangeable. Repository CI **does not prove** production-equivalent operation or production authorization.
+These classes are not interchangeable. Repository CI **does not prove** production-equivalent operation, independent assurance or production authorization.
 
-## Accepted Phase 11 integration evidence
+## Accepted Phase 11 integration and industrialisation baseline
 
-The accepted service integrations remain `PASS / REPOSITORY_COMPLETE` and separate service/licensing boundaries:
+Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed service/licensing boundaries. Accepted Phase 11.1–11.9 evidence covers integration contracts plus runtime, workload identity/external secrets, ingress/TLS/network segmentation, HA/disruption, observability, backup/restore/recovery, supply-chain hardening, capacity, exercised upgrade/rollback and forward-first migration compatibility.
 
-- Taranis AI — architecture, adapter and exact-head integration gates;
-- IntelOwl — governed enrichment and immutable history;
-- **Phase 11.4 OpenCTI** — `docs/architecture/OPENCTI_DTMO_INTEGRATION_CONTRACT.md`, `docs/integrations/OPENCTI_INTEGRATION.md`, `docs/operations/OPENCTI_INTEGRATION_RUNBOOK.md`, `docs/qa/PHASE11_4_OPENCTI_CONTRACT_GATE.md`, `docs/qa/PHASE11_4_OPENCTI_PERSISTENCE_GATE.md`;
-- **Phase 11.5 MISP** — governed consolidation/read/export evidence with human sharing authority retained by DTMO;
-- TheHive — governed handoff evidence with case authority distinct from sharing authority; accepted implementation workflow remains `.github/workflows/phase11-thehive-handoff-implementation.yml`;
-- Cortex historical decision plus 11.7b analyzer-only connector evidence.
+Accepted service implementation evidence includes `.github/workflows/phase11-thehive-handoff-implementation.yml`. That workflow is repository-controlled implementation evidence only: it does not establish live TheHive health, case-state truth beyond recorded handoff evidence, production-equivalent operation, external assurance or production authorization.
 
-No enrichment, graph, correlation, MISP or TheHive integration grants autonomous DTMO publication/share authority or proves local compromise.
+Accepted runtime and supply-chain workflow evidence remains explicitly indexed through:
 
-## Accepted Phase 11.8 / 11.9 evidence
+- `.github/workflows/phase11-runtime-foundation.yml`;
+- `.github/workflows/phase11-workload-identity-secrets.yml`;
+- `.github/workflows/phase11-ingress-tls-network.yml`;
+- `.github/workflows/phase11-ha-disruption.yml`;
+- `.github/workflows/phase11-supply-chain-hardening.yml`;
+- `.github/workflows/release-artifact-attestation.yml`;
+- `.github/workflows/phase11-upgrade-rollback.yml`;
+- `.github/workflows/phase11-migration-compatibility.yml`.
 
-Phase 11.8 is `PASS / REPOSITORY_COMPLETE` across runtime foundation, workload identity/external secret delivery, ingress/TLS/network segmentation, HA/disruption hardening, observability, backup/restore/recovery, software supply-chain hardening, capacity/resource planning and exercised upgrade/rollback. Phase 11.9 is `PASS / REPOSITORY_COMPLETE` for the connected migration graph and forward-first compatibility model.
-
-Accepted workflow evidence remains explicitly indexed through `.github/workflows/phase11-runtime-foundation.yml`, `.github/workflows/phase11-workload-identity-secrets.yml`, `.github/workflows/phase11-ingress-tls-network.yml`, `.github/workflows/phase11-ha-disruption.yml`, `.github/workflows/phase11-supply-chain-hardening.yml`, `.github/workflows/release-artifact-attestation.yml`, `.github/workflows/phase11-upgrade-rollback.yml` and `.github/workflows/phase11-migration-compatibility.yml`.
-
-Rollback requires exact prior immutable identity and post-rollback health. Application rollback does not authorize automatic database down migration. Repository acceptance is not live-cluster or production-equivalent evidence.
+Application rollback does not authorize automatic database down migration. Configuration or CI success does not establish live service health, production-equivalent behavior or production authorization.
 
 ## Phase 11.10 candidate-completion evidence
 
-### 11.10a frontend architecture/design
+For lifecycle discoverability, every bounded slice is explicitly indexed: **11.10a** Frontend Architecture & Design, **11.10b** Application Shell, **11.10c** Command Center, **11.10d** Unified Intelligence, **11.10e** IntelOwl/Cortex Integrated Analysis, **11.10f** OpenCTI Graph & Entity, **11.10g** MISP Sharing & Exchange, **11.10h** TheHive Investigations & Cases, **11.10i** Vulnerability & Exposure, **11.10j** Sources & Collection, **11.10k** Automation & Playbooks and **11.10l** Governance & Evidence. Slices 11.10a–11.10k are `PASS / REPOSITORY_COMPLETE`; 11.10l remains `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. This index records repository evidence state only and does not establish production-equivalent behavior, independent assurance or production authorization.
+
+### 11.10a–11.10g
 
 **Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Authoritative evidence includes `docs/architecture/FRONTEND_ARCHITECTURE.md`, `docs/architecture/UI_API_CONTRACT.md`, `docs/ux/UNIFIED_OPERATIONS_WORKBENCH.md`, `docs/ux/INFORMATION_ARCHITECTURE.md`, `docs/ux/DESIGN_SYSTEM.md`, `docs/qa/PHASE11_10A_FRONTEND_ARCHITECTURE_GATE.md`, `backend/tests/test_phase11_10a_frontend_architecture_contract.py` and `.github/workflows/phase11-frontend-architecture.yml`.
-
-### 11.10b canonical application shell
-
-**Status:** `PASS / REPOSITORY_COMPLETE`.
-
-The accepted trust path is **browser → DTMO API → governed integration adapter → upstream service**. `/ui/console` remains a migration **compatibility path**. **Server-side RBAC** remains authoritative.
-
-### 11.10c Command Center
-
-**Status:** `PASS / REPOSITORY_COMPLETE`.
-
-The Command Center is a read-only canonical projection. Missing canonical-store evidence produces unavailable/null state rather than synthetic zero values. Integration configuration is not promoted to general runtime health.
-
-### 11.10d Unified Intelligence Workspace
-
-**Status:** `PASS / REPOSITORY_COMPLETE`.
-
-Accepted evidence includes `docs/architecture/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE.md`, `docs/user/UNIFIED_INTELLIGENCE_WORKSPACE.md`, `docs/qa/PHASE11_10D_UNIFIED_INTELLIGENCE_WORKSPACE_GATE.md`, `frontend/src/UnifiedIntelligenceWorkspace.tsx`, its contract/browser tests and `.github/workflows/phase11-unified-intelligence-workspace.yml`.
-
-Search hits are discovery projections; canonical object detail comes separately from DTMO persistence. Dependency failures **fail closed**.
-
-### 11.10e IntelOwl/Cortex integrated analysis
-
-**Status:** `PASS / REPOSITORY_COMPLETE`.
-
-Accepted evidence chain:
-
-- `backend/dtmo/intelowl_execution.py`;
-- `backend/dtmo/persistence/cortex.py`;
-- `database/migrations/versions/0015_cortex_analysis_history.py`;
-- `frontend/src/AnalysisWorkspace.tsx`;
-- `frontend/src/analysis-workspace.css`;
-- `docs/architecture/PHASE11_10E_INTEGRATED_ANALYSIS_WORKSPACE.md`;
-- `docs/user/INTEGRATED_ANALYSIS_WORKSPACE.md`;
-- `docs/qa/PHASE11_10E_INTEGRATED_ANALYSIS_GATE.md`;
-- `backend/tests/test_phase11_10e_integrated_analysis_contract.py`;
-- `backend/tests/test_phase11_10e_integrated_analysis_browser.py`;
-- `.github/workflows/phase11-integrated-analysis-workspace.yml`.
-
-IntelOwl/Cortex output remains evidence rather than a verdict. It does not prove local compromise and grants no external-share/publication/case authority.
-
-### 11.10f OpenCTI graph/entity workspace
-
-**Status:** `PASS / REPOSITORY_COMPLETE`.
-
-Accepted evidence chain:
-
-- `backend/dtmo/opencti_workspace.py`;
-- `backend/dtmo/persistence/opencti.py`;
-- `frontend/src/OpenCTIGraphWorkspace.tsx`;
-- `frontend/src/opencti-graph.css`;
-- `docs/architecture/PHASE11_10F_OPENCTI_GRAPH_ENTITY_WORKSPACE.md`;
-- `docs/user/OPENCTI_GRAPH_ENTITY_WORKSPACE.md`;
-- `docs/qa/PHASE11_10F_OPENCTI_GRAPH_ENTITY_GATE.md`;
-- `backend/tests/test_phase11_10f_opencti_graph_contract.py`;
-- `backend/tests/test_phase11_10f_opencti_graph_browser.py`;
-- `.github/workflows/phase11-opencti-graph-workspace.yml`.
-
-11.10f reuses the accepted Phase 11.4 OpenCTI mapping and immutable-revision persistence. The browser consumes only DTMO APIs protected by `read:intelligence`. The persisted boundary does not contain general OpenCTI entity-to-entity relationship topology, so only proven `canonical-mapping` edges are rendered. Missing relationship evidence must **fail closed** and is not inferred.
-
-An empty mapping result does not prove upstream absence. Configuration does not establish runtime health. OpenCTI identity, confidence, markings, graph presence or revisions do **not prove** local exposure, exploitability, compromise or attribution and grant no external-share/publication authority.
-
-### 11.10g MISP Sharing & Exchange
-
-**Status:** `PASS / REPOSITORY_COMPLETE`.
-
-Accepted evidence chain:
-
-- `backend/dtmo/misp_sharing_workspace.py`;
-- `backend/dtmo/misp_export_api.py`;
-- `backend/dtmo/governance/misp_export.py`;
-- `backend/dtmo/governance/decisions.py`;
-- `backend/dtmo/auth/policy.py`;
-- `frontend/src/MispSharingWorkspace.tsx`;
-- `frontend/src/misp-sharing.css`;
-- `docs/architecture/PHASE11_10G_MISP_SHARING_EXCHANGE.md`;
-- `docs/user/MISP_SHARING_EXCHANGE_WORKSPACE.md`;
-- `docs/qa/PHASE11_10G_MISP_SHARING_EXCHANGE_GATE.md`;
-- `backend/tests/test_phase11_10g_misp_sharing_contract.py`;
-- `backend/tests/test_phase11_10g_misp_sharing_browser.py`;
-- `.github/workflows/phase11-misp-sharing-exchange.yml`.
-
-The canonical workspace preserves the accepted human authority chain: `read:intelligence` for state inspection, `review:intelligence` for review and a different human principal with `approve:share` for sharing approval. The MISP export endpoint cannot grant approval itself. Service accounts cannot substitute for human review/share authority.
-
-For MISP-origin intelligence, authoritative distribution, sharing-group and TLP restrictions remain binding. A deterministic current-revision export with `pending`, `success` or `uncertain` evidence blocks automatic replay. The accepted exporter creates `published=false` MISP events only. There is no MISP publication or synchronization authority.
-
-Configuration does not establish live MISP health. Transfer evidence does not prove publication, synchronization, downstream consumption, local compromise, production-equivalent operation, independent assurance or production authorization. Missing state and uncertain delivery **fail closed**.
+Accepted packages cover frontend architecture/design, canonical application shell, Command Center, Unified Intelligence, IntelOwl/Cortex integrated analysis, OpenCTI graph/entity and MISP Sharing & Exchange. Human review/share/publication authority remains separate; enrichment, topology and transfer evidence do not prove compromise or publication.
 
 ### 11.10h TheHive Investigations & Cases
 
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Authoritative evidence includes `backend/dtmo/thehive_handoff.py`, TheHive integration/persistence, `frontend/src/InvestigationsWorkspace.tsx`, architecture/user/QA material, deterministic tests and `.github/workflows/phase11-thehive-investigations.yml`. Case mutation remains explicit human `handoff:case` authority. Ambiguous handoff state fails closed; case identity does not prove compromise, remediation or later upstream case state.
+
+### 11.10i Vulnerability & Exposure
+
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Authoritative evidence includes `frontend/src/ExposureWorkspace.tsx`, the canonical vulnerability analytics API projection, `docs/architecture/PHASE11_10I_VULNERABILITY_EXPOSURE.md`, `docs/user/VULNERABILITY_EXPOSURE_WORKSPACE.md`, `docs/qa/PHASE11_10I_VULNERABILITY_EXPOSURE_GATE.md`, deterministic tests and `.github/workflows/phase11-vulnerability-exposure.yml`. CVSS/EPSS/KEV are prioritization inputs, not proof of local exposure or compromise.
+
+### 11.10j Sources & Collection
+
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Authoritative evidence includes `backend/dtmo/admin_sources.py`, `frontend/src/CollectionWorkspace.tsx`, architecture/user/QA material, deterministic contract/browser tests and `.github/workflows/phase11-sources-collection.yml`. Source credentials remain server-side references; validation/test/run evidence does not prove source truth, compromise or production health.
+
+### 11.10k Automation & Playbooks
+
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Authoritative evidence includes `frontend/src/AutomationWorkspace.tsx`, governed connector execution contracts, architecture/user/QA material, deterministic tests and `.github/workflows/phase11-automation-playbooks.yml`. Automation never acquires human review/share/publication, case, remediation or production authority and does not prove source truth or compromise.
+
+### 11.10l Governance & Evidence
+
 **Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
 
-Authoritative active chain:
+Authoritative active evidence chain:
 
-- `backend/dtmo/thehive_handoff.py`;
-- `backend/dtmo/integrations/thehive.py`;
-- `backend/dtmo/persistence/thehive.py`;
-- `frontend/src/InvestigationsWorkspace.tsx`;
-- `frontend/src/investigations.css`;
-- `docs/architecture/PHASE11_10H_THEHIVE_INVESTIGATIONS_CASES.md`;
-- `docs/user/THEHIVE_INVESTIGATIONS_WORKSPACE.md`;
-- `docs/qa/PHASE11_10H_THEHIVE_INVESTIGATIONS_GATE.md`;
-- `backend/tests/test_phase11_10h_thehive_investigations_contract.py`;
-- `backend/tests/test_phase11_10h_thehive_investigations_api.py`;
-- `backend/tests/test_phase11_10h_thehive_investigations_browser.py`;
-- `.github/workflows/phase11-thehive-investigations.yml`.
+- `backend/dtmo/governance_knowledge.py`;
+- `backend/dtmo/governance_crosswalk.py`;
+- `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`;
+- `frontend/src/GovernanceWorkspace.tsx`;
+- `frontend/src/App.tsx` canonical `/governance` routing;
+- `docs/architecture/PHASE11_10L_GOVERNANCE_EVIDENCE.md`;
+- `docs/user/GOVERNANCE_EVIDENCE_WORKSPACE.md`;
+- `docs/qa/PHASE11_10L_GOVERNANCE_EVIDENCE_GATE.md`;
+- `backend/tests/test_phase11_10l_governance_evidence_contract.py`;
+- `tests/browser/phase11_10l_governance.py`;
+- `.github/workflows/phase11-governance-evidence.yml`.
 
-The investigation projection requires `read:intelligence`; the accepted mutation remains a separate explicit human `handoff:case` action. Canonical provenance, TLP/PAP and authoritative handling restrictions remain server-side prerequisites. The browser receives no TheHive credential and does not invoke TheHive directly.
+The Governance surface uses the explicit typed partial crosswalk already present in the repository. Normenkader IBP relationships include explicitly recorded control identifiers such as `ID.02`, `ID.05`, `SM.02`, `SM.04`, `SM.07`, `SM.11`, `OP.02`, `BC.03` and `GO.03` where implementation evidence exists. MITRE ATT&CK relationships are explicit threat/detection/classification context and are not inferred from free text. NIST CSF relationships are partial outcomes/categories. CVSS is `context-only` scoring semantics.
 
-Durable handoff state is evidence for DTMO request/reconciliation history. A `reserved` or `ambiguous` record requires manual reconciliation and the canonical UI blocks a blind new request. A delivered record proves only the stable case identity confirmed during creation. It does not prove subsequent upstream case state.
+These mappings are **not** certification, complete compliance, semantic equivalence, proof of control effectiveness in an environment, local compromise, audit acceptance, independent assurance or production authorization. Unrecorded framework objects remain unmapped. Missing or inaccessible evidence must **fail closed**.
 
-The accepted Phase 11.6 persistence does not contain generic alerts, tasks, case timeline, later case state or responder results. Those objects are not inferred. Configuration does not establish live TheHive health. Handoff/case identity does not prove external-share authority, responder/remediation execution, local compromise, production-equivalent operation, independent assurance or production authorization. Missing or ambiguous evidence must **fail closed**.
+Governance visibility is read-oriented and grants no review, case, remediation, connector, external-share, publication, administration or production authority. Repository CI remains exact-head engineering evidence only.
 
 ### Candidate-completion order
 
-11.10i Vulnerability & Exposure, 11.10j Sources & Collection, 11.10k Automation & Playbooks, 11.10l Governance & Evidence, 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance remain `NOT STARTED`.
+After acceptance of 11.10l, the next bounded priorities remain 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance. No later slice may start while the active bounded PR is unaccepted.
 
 ## Phase 11.10p production-equivalent evidence
 
 **Status:** `NOT STARTED / CANDIDATE FREEZE REQUIRED`.
 
-After 11.10o, one immutable integrated candidate is frozen. Fresh evidence must cover **candidate identity**, **migration/compatibility**, **upgrade**, **rollback** to the exact prior immutable digest plus post-rollback **health**, representative **saturation**/capacity and **recovery**/continuity.
+After 11.10o, one immutable integrated candidate must be frozen. Fresh evidence must cover candidate identity, migration/compatibility, upgrade, rollback to the exact prior immutable digest plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity for the **same immutable candidate** and production-equivalent environment.
 
-Authoritative external execution package:
+The authoritative repository execution chain remains explicit:
 
 - `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`;
 - `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
 - `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`;
-- `backend/tests/test_phase11_10_production_equivalent_validation.py`;
 - `tools/phase11_production_equivalent_validation.py`;
+- `backend/tests/test_phase11_10_production_equivalent_validation.py`;
 - `.github/workflows/phase11-production-equivalent-validation.yml`.
 
-Every accepted item must bind to the **same immutable** candidate and production-equivalent environment. Historical Phase 8/9 evidence is audit history only. Missing, inaccessible, placeholder, historical-only or mixed-candidate evidence must **fail closed**.
+That later gate requires fresh evidence for candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery for one immutable candidate. Missing, inaccessible, placeholder, historical-only or mixed-candidate evidence must **fail closed**. Repository workflow success alone is not production-equivalent evidence and does not authorize production.
+
+Historical Phase 8/9 evidence is audit history only and cannot be reused as proof for the materially changed candidate.
 
 ## Phase 11.11 and Phase 12
 
