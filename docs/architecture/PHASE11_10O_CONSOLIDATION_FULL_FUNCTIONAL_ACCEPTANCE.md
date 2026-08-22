@@ -32,7 +32,7 @@ Repository acceptance must cover representative end-to-end journeys across the u
 - accessibility-critical keyboard, focus, semantics, resize/reflow and non-color-cue behavior;
 - fail-closed handling for missing telemetry, inaccessible dependencies and unauthorized actions.
 
-Acceptance must use deterministic contract/browser evidence on the exact candidate head. Existing historical Phase 8/9 evidence remains audit history only and is not proof for this materially changed candidate.
+Acceptance must use deterministic contract/browser evidence on the exact candidate head. Historical Phase 8/9 evidence remains audit history only and is not proof for this materially changed candidate.
 
 ## Evidence boundary
 
