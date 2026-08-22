@@ -1,0 +1,25 @@
+name: Phase 11 Role-aware UX Accessibility Gate
+
+on:
+  pull_request:
+    paths:
+      - 'dtmo/**'
+      - 'tests/**'
+      - 'docs/**'
+      - '.github/workflows/phase11-role-aware-ux-accessibility.yml'
+
+jobs:
+  role-aware-ux-accessibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+      - name: Run Phase 11.10n contract tests
+        run: |
+          pytest -q tests/test_phase11_10n_role_aware_ux_accessibility.py
