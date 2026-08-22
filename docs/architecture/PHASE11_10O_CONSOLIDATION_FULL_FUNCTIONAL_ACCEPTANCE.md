@@ -6,7 +6,7 @@ Status: **IN PROGRESS / REPOSITORY-CONTROLLED CONSOLIDATION**
 
 Phase 11.10o is the bounded consolidation and full functional acceptance slice for the Phase 11.10a–11.10n product surfaces already accepted into `main`. It must prove, at repository level, that the canonical shell, intelligence, sources, analytics, investigations, automation, sharing, governance, operations, administration and role-aware accessibility paths coexist as one coherent product without reopening previously accepted authority boundaries.
 
-This phase does **not** establish production-equivalent operation, independent assurance, owner acceptance or production authorization. Phase 11.10p remains a separate later validation slice and may start only after 11.10o is accepted and one immutable candidate is frozen.
+This phase does not establish production-equivalent operation, independent assurance, owner acceptance or production authorization. Phase 11.10p remains a separate later validation slice and may start only after 11.10o is accepted and one immutable candidate is frozen.
 
 ## Consolidation boundaries
 
