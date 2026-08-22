@@ -1,0 +1,21 @@
+name: Phase 11.11 Independent External Assurance Contract Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install deterministic test dependency
+        run: python -m pip install pytest
+      - name: Validate Phase 11.11 assurance contract
+        run: python -m pytest -q backend/tests/test_phase11_11_independent_external_assurance_contract.py
