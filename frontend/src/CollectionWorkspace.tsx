@@ -150,7 +150,7 @@ export function CollectionWorkspace() {
             </article>
           </div>
 
-          <article className="surface evidence-surface"><div><p className="eyebrow">Evidence boundary</p><h2>Attributable collection without inferred trust</h2></div><p>Activation, connectivity, successful testing or ingestion proves only the recorded administrative or collection action. It does not prove source truth, compromise, review completion, external-share authority, production readiness or publication authorization. Connector isolation and server-side RBAC remain fail closed.</p></article>
+          <article className="surface evidence-surface"><div><p className="eyebrow">Evidence boundary</p><h2>Attributable collection without inferred trust</h2></div><p>Connectivity, successful testing or ingestion proves only the recorded collection action. Activation additionally proves only the recorded administrative state change. Neither proves source truth, compromise, review completion, external-share authority, production readiness or publication authorization. Connector isolation and server-side RBAC remain fail closed.</p></article>
         </>
       )}
     </section>
