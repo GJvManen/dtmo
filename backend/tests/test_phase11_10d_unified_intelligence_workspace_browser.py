@@ -131,7 +131,8 @@ def test_unified_intelligence_search_selects_canonical_detail_and_provenance(pag
     expect(page.get_by_text("CVE-2026-4242", exact=True)).to_be_visible()
     expect(page.get_by_role("heading", name="Provenance chain", level=4)).to_be_visible()
     expect(page.get_by_text("Primary advisory", exact=True)).to_be_visible()
-    expect(page.get_by_text("Indexed discovery is not canonical truth", exact=True)).to_be_visible()
+    expect(page.get_by_role("heading", name="Canonical recent view without fabricated content", level=2)).to_be_visible()
+    expect(page.get_by_text("Search remains a separate governed projection.", exact=False)).to_be_visible()
 
 
 @pytest.mark.browser
