@@ -152,9 +152,45 @@ def test_unified_intelligence_fails_closed_when_search_dependency_is_unavailable
 
 
 @pytest.mark.browser
-def test_ioc_explorer_uses_same_governed_unified_workspace(page: Page) -> None:
+def test_ioc_explorer_lists_persisted_observables_filters_and_pivots(page: Page) -> None:
     page.route("**/api/v1/ui/session", _session)
+    page.route(
+        "**/api/v1/iocs?**",
+        lambda route: _json(
+            route,
+            {
+                "records": [
+                    {
+                        "record_id": "00000000-0000-0000-0000-000000000099",
+                        "item_id": ITEM_ID,
+                        "item_title": "Education ransomware campaign activity",
+                        "source_id": "trusted-feed",
+                        "severity": "high",
+                        "confidence_score": 87,
+                        "observable_type": "domain",
+                        "observable_value": "malicious.example",
+                        "handling": "tlp:amber",
+                        "status": "reported_without_inference",
+                        "analyzers": ["dns"],
+                        "created_at": "2026-08-20T12:10:00+00:00",
+                        "external_share_authorized": False,
+                        "local_compromise_proven": False,
+                    }
+                ],
+                "evidence_boundary": "Persisted governed observables only; no maliciousness or compromise verdict.",
+            },
+        ),
+    )
+
     page.goto(f"{BASE_URL}/workbench/intelligence/iocs")
     expect(page.get_by_role("heading", name="IOC Explorer", level=1)).to_be_visible()
-    expect(page.get_by_text("11.10q Functional recovery", exact=True)).to_be_visible()
-    expect(page.get_by_label("Search canonical intelligence")).to_have_attribute("placeholder", "Domain, IP, hash, CVE or indicator context…")
+    expect(page.get_by_text("Canonical IOC inventory", exact=True)).to_be_visible()
+    expect(page.get_by_text("No text-derived or synthetic IOCs", exact=True)).to_be_visible()
+    expect(page.get_by_text("malicious.example", exact=True)).to_be_visible()
+    page.get_by_label("Type").select_option("domain")
+    page.get_by_label("Severity").select_option("high")
+    page.get_by_label("Minimum confidence").fill("80")
+    expect(page.get_by_text("malicious.example", exact=True)).to_be_visible()
+    expect(page.get_by_role("link", name="Enrich / analyze")).to_have_attribute("href", f"/workbench/analysis?item={ITEM_ID}")
+    expect(page.get_by_role("link", name="Graph")).to_have_attribute("href", f"/workbench/intelligence/graph?item={ITEM_ID}")
+    expect(page.get_by_role("link", name="Investigate")).to_have_attribute("href", f"/workbench/investigations?item={ITEM_ID}")
