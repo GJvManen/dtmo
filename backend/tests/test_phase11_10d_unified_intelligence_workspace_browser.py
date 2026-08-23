@@ -146,7 +146,8 @@ def test_unified_intelligence_fails_closed_when_search_dependency_is_unavailable
     page.goto(f"{BASE_URL}/workbench/intelligence")
     page.get_by_label("Search canonical intelligence").fill("malware")
     page.get_by_role("button", name="Search intelligence").click()
-    expect(page.get_by_text("Search service unavailable", exact=True)).to_be_visible()
+    expect(page.get_by_text("Intelligence discovery unavailable", exact=True)).to_be_visible()
+    expect(page.get_by_text("search backend unavailable: RuntimeError", exact=False)).to_be_visible()
     expect(page.get_by_text("No intelligence matched this query", exact=True)).to_have_count(0)
 
 
