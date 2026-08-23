@@ -42,7 +42,8 @@ def test_canonical_workbench_shell_navigation_and_context(page: Page) -> None:
     palette.get_by_role("button").filter(has_text="Threat Intelligence").click()
     page.wait_for_url("**/workbench/intelligence")
     expect(page.get_by_role("heading", name="Threat Intelligence", level=1)).to_be_visible()
-    expect(page.get_by_text("Indexed discovery is not canonical truth")).to_be_visible()
+    expect(page.get_by_text("Recent intelligence is read from canonical DTMO persistence", exact=False)).to_be_visible()
+    expect(page.get_by_role("heading", name="Canonical recent view without fabricated content", level=2)).to_be_visible()
 
     page.get_by_role("link", name="Operations").click()
     page.wait_for_url("**/workbench/operations")
