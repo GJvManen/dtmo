@@ -15,9 +15,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install deterministic test dependencies
-        run: python -m pip install pytest fastapi pydantic pydantic-settings sqlalchemy prometheus-client
+      - name: Install project and deterministic test dependencies
+        run: python -m pip install -e '.[test]'
       - name: Validate actionable governed integration settings
-        env:
-          PYTHONPATH: backend
         run: python -m pytest -q backend/tests/test_phase11_10q_admin_integration_settings.py
