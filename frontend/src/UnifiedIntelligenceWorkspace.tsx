@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 
+import { IocExplorerWorkspace } from './IocExplorerWorkspace';
+
 type IntelligenceSearchResult = {
   id: string;
   title: string;
@@ -101,20 +103,19 @@ export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?:
     finally { setDetailLoading(false); }
   }
 
-  const title = isIoc ? 'IOC Explorer' : 'Threat Intelligence';
-  const description = isIoc ? 'Indicator-oriented discovery over governed DTMO intelligence.' : 'Recent canonical intelligence, search, triage and attributable investigation in one workspace.';
+  if (isIoc) return <IocExplorerWorkspace />;
 
   return (
     <section className="unified-intelligence" aria-labelledby="workspace-title">
       <header className="workspace-heading intelligence-heading">
-        <div><p className="eyebrow">Unified Operations Workbench</p><h1 id="workspace-title">{title}</h1><p>{description}</p></div>
+        <div><p className="eyebrow">Unified Operations Workbench</p><h1 id="workspace-title">Threat Intelligence</h1><p>Recent canonical intelligence, search, triage and attributable investigation in one workspace.</p></div>
         <div className="heading-statuses"><span className="phase-badge">11.10q Functional recovery</span><span className="phase-badge available">Read-only investigation</span></div>
       </header>
 
       <article className="surface intelligence-search-surface">
-        <div className="panel-heading"><div><p className="eyebrow">Governed discovery</p><h2>{isIoc ? 'Search indicators and intelligence' : 'Search canonical intelligence'}</h2></div><span className="evidence-label">Canonical data · no synthetic results</span></div>
+        <div className="panel-heading"><div><p className="eyebrow">Governed discovery</p><h2>Search canonical intelligence</h2></div><span className="evidence-label">Canonical data · no synthetic results</span></div>
         <form className="intelligence-search-form" onSubmit={runSearch}>
-          <label className="search-query-field"><span>Search canonical intelligence</span><input value={query} onChange={(event) => setQuery(event.target.value)} minLength={2} maxLength={300} required placeholder={isIoc ? 'Domain, IP, hash, CVE or indicator context…' : 'Threat, campaign, actor, CVE, technology…'} autoComplete="off" /></label>
+          <label className="search-query-field"><span>Search canonical intelligence</span><input value={query} onChange={(event) => setQuery(event.target.value)} minLength={2} maxLength={300} required placeholder="Threat, campaign, actor, CVE, technology…" autoComplete="off" /></label>
           <label><span>Severity</span><select value={severity} onChange={(event) => setSeverity(event.target.value)}><option value="">All severities</option><option value="critical">Critical</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option><option value="informational">Informational</option></select></label>
           <label><span>Minimum education relevance</span><input type="number" min={0} max={100} value={minimumRelevance} onChange={(event) => setMinimumRelevance(Number(event.target.value))} /></label>
           <label><span>Maximum results</span><input type="number" min={1} max={200} value={size} onChange={(event) => setSize(Number(event.target.value))} /></label>
@@ -126,9 +127,8 @@ export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?:
       <div className="intelligence-workspace-grid">
         <article className="surface intelligence-results-panel">
           <header className="panel-heading"><div><p className="eyebrow">Discovery</p><h2>{discoveryMode === 'recent' ? 'Recent canonical intelligence' : 'Intelligence results'}</h2></div><span className="evidence-label">{discoveryMode === 'loading' ? 'Loading…' : `${results.length} available`}</span></header>
-          {isIoc && discoveryMode === 'empty' && <div className="intelligence-empty"><strong>IOC inventory is the next recovery slice</strong><span>Use governed search for now; this route does not fabricate an IOC inventory from arbitrary text.</span></div>}
-          {!isIoc && discoveryMode === 'loading' && <p className="panel-state">Loading recent canonical intelligence…</p>}
-          {!isIoc && discoveryMode === 'empty' && <div className="intelligence-empty"><strong>No canonical intelligence recorded yet</strong><span>Run an enabled governed source from Sources & Collection. Successful ingestion will appear here without requiring a blind search.</span></div>}
+          {discoveryMode === 'loading' && <p className="panel-state">Loading recent canonical intelligence…</p>}
+          {discoveryMode === 'empty' && <div className="intelligence-empty"><strong>No canonical intelligence recorded yet</strong><span>Run an enabled governed source from Sources &amp; Collection. Successful ingestion will appear here without requiring a blind search.</span></div>}
           {searching && <p className="panel-state">Searching the governed intelligence index…</p>}
           {searchError && <div className="panel-state error-state"><strong>Intelligence discovery unavailable</strong><span>{searchError}. No empty-result or platform-health conclusion is inferred.</span></div>}
           {!searching && !searchError && discoveryMode === 'search' && results.length === 0 && <div className="intelligence-empty"><strong>No intelligence matched this query</strong><span>This describes the queried DTMO search index only; it does not prove absence from upstream sources.</span></div>}
