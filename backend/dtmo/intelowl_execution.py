@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Annotated, Any
 from uuid import UUID
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dtmo.api.routes import get_session
@@ -16,7 +18,7 @@ from dtmo.integrations.cortex import CortexAdapter, CortexPolicyError
 from dtmo.integrations.intelowl import IntelOwlAdapter, IntelOwlPolicyError
 from dtmo.persistence.cortex import CortexAnalysisRecord, CortexAnalysisRepository
 from dtmo.persistence.intelowl import IntelOwlEnrichmentRepository
-from dtmo.persistence.models import IntelOwlEnrichmentRecord
+from dtmo.persistence.models import IntelligenceItem, IntelOwlEnrichmentRecord
 
 router = APIRouter(tags=["analysis"])
 
@@ -32,15 +34,41 @@ class IntelOwlExecutionResponse(BaseModel):
     record_id: UUID
     item_id: UUID
     job_id: str
+    observable_type: str
+    observable_value: str
+    handling: str
     status: str
     partial: bool
     analyzers: list[str]
+    created_at: datetime
     external_share_authorized: bool
     local_compromise_proven: bool
 
 
 class IntelOwlHistoryResponse(BaseModel):
     records: list[IntelOwlExecutionResponse]
+
+
+class IocInventoryRecord(BaseModel):
+    record_id: UUID
+    item_id: UUID
+    item_title: str
+    source_id: str
+    severity: str
+    confidence_score: int
+    observable_type: str
+    observable_value: str
+    handling: str
+    status: str
+    analyzers: list[str]
+    created_at: datetime
+    external_share_authorized: bool
+    local_compromise_proven: bool
+
+
+class IocInventoryResponse(BaseModel):
+    records: list[IocInventoryRecord]
+    evidence_boundary: str
 
 
 class CortexExecutionRequest(BaseModel):
@@ -95,9 +123,33 @@ def _intelowl_response(record: IntelOwlEnrichmentRecord) -> IntelOwlExecutionRes
         record_id=record.id,
         item_id=record.item_id,
         job_id=record.job_id,
+        observable_type=record.observable_type,
+        observable_value=record.observable_value,
+        handling=record.handling,
         status=record.status,
         partial=record.partial,
         analyzers=list(record.analyzers),
+        created_at=record.created_at,
+        external_share_authorized=record.external_share_authorized,
+        local_compromise_proven=record.local_compromise_proven,
+    )
+
+
+def _ioc_response(record: IntelOwlEnrichmentRecord, item: IntelligenceItem) -> IocInventoryRecord:
+    severity = item.severity.value if hasattr(item.severity, "value") else str(item.severity)
+    return IocInventoryRecord(
+        record_id=record.id,
+        item_id=record.item_id,
+        item_title=item.title,
+        source_id=item.source_id,
+        severity=severity,
+        confidence_score=item.confidence_score,
+        observable_type=record.observable_type,
+        observable_value=record.observable_value,
+        handling=record.handling,
+        status=record.status,
+        analyzers=list(record.analyzers),
+        created_at=record.created_at,
         external_share_authorized=record.external_share_authorized,
         local_compromise_proven=record.local_compromise_proven,
     )
@@ -173,6 +225,31 @@ async def enrichment_history(
     del principal
     records = await IntelOwlEnrichmentRepository(session).list_for_item(item_id)
     return IntelOwlHistoryResponse(records=[_intelowl_response(record) for record in records])
+
+
+@router.get("/api/v1/iocs", response_model=IocInventoryResponse)
+async def ioc_inventory(
+    principal: Annotated[Principal, Depends(require_permission(Permission.READ_INTELLIGENCE))],
+    session: Annotated[AsyncSession, Depends(get_session)],
+    size: Annotated[int, Query(ge=1, le=500)] = 200,
+) -> IocInventoryResponse:
+    """Return persisted observables from governed enrichment runs as the canonical IOC inventory."""
+
+    del principal
+    statement = (
+        select(IntelOwlEnrichmentRecord, IntelligenceItem)
+        .join(IntelligenceItem, IntelligenceItem.id == IntelOwlEnrichmentRecord.item_id)
+        .order_by(IntelOwlEnrichmentRecord.created_at.desc())
+        .limit(size)
+    )
+    rows = (await session.execute(statement)).all()
+    return IocInventoryResponse(
+        records=[_ioc_response(record, item) for record, item in rows],
+        evidence_boundary=(
+            "IOC inventory contains observables persisted from governed DTMO enrichment executions only. "
+            "Presence does not prove maliciousness or local compromise and does not authorize external sharing."
+        ),
+    )
 
 
 @router.get("/api/v1/analysis/capabilities", response_model=AnalysisCapabilitiesResponse)
