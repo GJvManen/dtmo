@@ -1,0 +1,27 @@
+name: Phase 11.10q Threat Intelligence Default Discovery Gate
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  threat-intelligence-default-discovery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install contract test dependency
+        run: python -m pip install pytest
+      - name: Validate default canonical discovery contract
+        run: python -m pytest -q backend/tests/test_phase11_10q_threat_intelligence_default_discovery.py
+      - name: Build canonical workbench
+        working-directory: frontend
+        run: npm ci && npm run build
