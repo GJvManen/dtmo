@@ -156,5 +156,5 @@ def test_ioc_explorer_uses_same_governed_unified_workspace(page: Page) -> None:
     page.route("**/api/v1/ui/session", _session)
     page.goto(f"{BASE_URL}/workbench/intelligence/iocs")
     expect(page.get_by_role("heading", name="IOC Explorer", level=1)).to_be_visible()
-    expect(page.get_by_text("11.10d Unified Intelligence", exact=True)).to_be_visible()
+    expect(page.get_by_text("11.10q Functional recovery", exact=True)).to_be_visible()
     expect(page.get_by_label("Search canonical intelligence")).to_have_attribute("placeholder", "Domain, IP, hash, CVE or indicator context…")
