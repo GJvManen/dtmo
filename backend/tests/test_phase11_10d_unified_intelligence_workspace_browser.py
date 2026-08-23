@@ -116,7 +116,8 @@ def test_unified_intelligence_search_selects_canonical_detail_and_provenance(pag
 
     page.goto(f"{BASE_URL}/workbench/intelligence")
     expect(page.get_by_role("heading", name="Threat Intelligence", level=1)).to_be_visible()
-    expect(page.get_by_text("Search is explicit", exact=True)).to_be_visible()
+    expect(page.get_by_text("Canonical data · no synthetic results", exact=True)).to_be_visible()
+    expect(page.get_by_text("Recent intelligence is read from canonical DTMO persistence.", exact=False)).to_be_visible()
     page.get_by_label("Search canonical intelligence").fill("ransomware")
     page.get_by_label("Severity").select_option("high")
     page.get_by_label("Minimum education relevance").fill("80")
