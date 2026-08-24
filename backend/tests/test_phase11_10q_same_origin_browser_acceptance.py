@@ -102,7 +102,7 @@ async def test_canonical_workbench_uses_real_same_origin_api_and_persistence() -
             ("/workbench/intelligence", "Threat Intelligence"),
             ("/workbench/intelligence/iocs", "IOC Explorer"),
             ("/workbench/intelligence/graph", "Knowledge Graph"),
-            ("/workbench/exposure", "Exposure"),
+            ("/workbench/exposure", "Vulnerability & Exposure Center"),
             ("/workbench/analysis", "Analysis & Enrichment"),
             ("/workbench/sharing", "Sharing & Exchange"),
             ("/workbench/automation", "Automation & Playbooks"),
