@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AdministrationSecurityAudit } from './AdministrationSecurityAudit';
 import { AdministrationWorkspace } from './AdministrationWorkspace';
 import { App } from './App';
+import { FrameworkIntegrationReadiness } from './FrameworkIntegrationReadiness';
 import './styles.css';
 import './command-center.css';
 import './unified-intelligence.css';
@@ -25,7 +26,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter basename="/workbench">
         <Routes>
-          <Route path="/administration" element={<><AdministrationWorkspace /><AdministrationSecurityAudit /></>} />
+          <Route path="/administration" element={<><AdministrationWorkspace /><FrameworkIntegrationReadiness /><AdministrationSecurityAudit /></>} />
           <Route path="*" element={<App />} />
         </Routes>
       </BrowserRouter>
