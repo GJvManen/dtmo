@@ -35,6 +35,11 @@ function displayDate(value: string) {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
 }
 
+function analysisHref(record: IocRecord) {
+  const params = new URLSearchParams({ item: record.item_id, observable_type: record.observable_type, observable_value: record.observable_value });
+  return `/workbench/analysis?${params.toString()}`;
+}
+
 export function IocExplorerWorkspace() {
   const [inventory, setInventory] = useState<IocInventory | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -102,7 +107,7 @@ export function IocExplorerWorkspace() {
             <span className="result-copy"><strong>{record.observable_value}</strong><small>{record.observable_type} · {record.source_id} · confidence {record.confidence_score}/100 · {record.handling}</small><span>{record.item_title}</span></span>
             <span className="result-meta"><b>{record.severity.toLowerCase()}</b><small>{displayDate(record.created_at)}</small></span>
             <span className="heading-statuses">
-              <a className="button secondary" href={`/workbench/analysis?item=${encodeURIComponent(record.item_id)}`}>Enrich / analyze</a>
+              <a className="button secondary" href={analysisHref(record)}>Enrich / analyze selected IOC</a>
               <a className="button secondary" href={`/workbench/intelligence/graph?item=${encodeURIComponent(record.item_id)}`}>Graph</a>
               <a className="button secondary" href={`/workbench/investigations?item=${encodeURIComponent(record.item_id)}`}>Investigate</a>
             </span>
