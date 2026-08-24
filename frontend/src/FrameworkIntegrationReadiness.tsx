@@ -7,6 +7,8 @@ type IntegrationRow = {
   enabled: boolean;
   api_base: string;
   credential_configured: boolean;
+  can_activate: boolean;
+  activation_blockers: string[];
   state: 'ready' | 'credential-required' | 'configuration-required' | 'disabled';
 };
 
@@ -54,28 +56,27 @@ export function FrameworkIntegrationReadiness() {
   if (!allowed) return null;
 
   const rows = integrations.data ?? [];
-  const actionable = rows.filter((row) => !row.enabled && row.api_base.trim().length > 0 && row.credential_configured);
+  const actionable = rows.filter((row) => row.can_activate);
 
   return (
     <section className="workspace-foundation" aria-labelledby="framework-readiness-title" data-admin-section="framework-activation-readiness">
       <article className="surface command-panel">
-        <header className="panel-heading"><div><p className="eyebrow">Framework integrations</p><h2 id="framework-readiness-title">Activation readiness</h2></div><span className="evidence-label">Explicit activation · no auto-enable</span></header>
-        <p className="boundary-copy">A configured endpoint plus a server-side credential makes an integration actionable for explicit enablement, not healthy. Component-specific scopes, analyzer allowlists, organization settings and upstream reachability remain separate runtime requirements.</p>
+        <header className="panel-heading"><div><p className="eyebrow">Framework integrations</p><h2 id="framework-readiness-title">Activation readiness</h2></div><span className="evidence-label">Server-derived blockers · no auto-enable</span></header>
+        <p className="boundary-copy">Activation readiness is derived by the server. Endpoint and credential presence are necessary but not sufficient: required object scopes, analyzer allowlists, organization scope and durable checkpoint configuration are evaluated before enablement. Runtime health remains a separate observation.</p>
         {integrations.isPending && <p className="panel-state">Loading integration readiness…</p>}
         {integrations.isError && <p className="panel-state error-state">Integration readiness unavailable: {integrations.error.message}</p>}
         {!integrations.isPending && !integrations.isError && rows.length > 0 && <div className="quick-grid">
           {rows.map((row) => {
-            const canActivate = !row.enabled && row.api_base.trim().length > 0 && row.credential_configured;
-            const status = row.enabled ? row.state : canActivate ? 'configured · activation required' : row.api_base.trim().length === 0 ? 'endpoint required' : 'credential required';
+            const status = row.enabled ? row.state : row.can_activate ? 'configured · activation required' : 'configuration blocked';
             return <article className="quick-action" key={row.id} data-framework-readiness={row.id}>
-              <span aria-hidden="true">◇</span><div><strong>{row.name}</strong><small>{status}</small><small>{row.enabled ? 'Enabled in DTMO; runtime health is not implied.' : canActivate ? 'Endpoint and credential are present; explicit enablement remains required.' : 'Complete governed configuration before activation.'}</small></div>
-              {canActivate && <button type="button" disabled={activation.isPending} onClick={() => activation.mutate(row)}>Enable {row.name}</button>}
+              <span aria-hidden="true">◇</span><div><strong>{row.name}</strong><small>{status}</small><small>{row.activation_blockers.length > 0 ? `Required before activation: ${row.activation_blockers.join(', ')}.` : row.enabled ? 'Required configuration is present; runtime health is not implied.' : 'All activation prerequisites are present; explicit enablement remains required.'}</small></div>
+              {row.can_activate && <button type="button" disabled={activation.isPending} onClick={() => activation.mutate(row)}>Enable {row.name}</button>}
             </article>;
           })}
         </div>}
-        {!integrations.isPending && !integrations.isError && actionable.length === 0 && <p className="panel-state">No configured-but-disabled framework integration is currently awaiting activation.</p>}
+        {!integrations.isPending && !integrations.isError && actionable.length === 0 && <p className="panel-state">No fully configured, disabled framework integration is currently awaiting activation.</p>}
         {activation.isError && <p className="panel-state error-state">Activation failed closed: {activation.error.message}</p>}
-        {activation.isSuccess && <p className="panel-state">Integration enablement persisted through the governed Administration API. Verify component-specific readiness and runtime observation separately.</p>}
+        {activation.isSuccess && <p className="panel-state">Integration enablement persisted through the governed Administration API. Verify runtime observation separately.</p>}
       </article>
     </section>
   );

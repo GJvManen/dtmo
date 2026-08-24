@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal
 from dtmo.config import get_settings
+from dtmo.integration_readiness import activation_blockers, integration_readiness
 
 router = APIRouter()
 settings = get_settings()
@@ -30,12 +31,6 @@ _INTEGRATIONS = {
 class IntegrationPatch(BaseModel):
     enabled: bool | None = None
     api_base: str | None = None
-
-
-def _secret_present(value: object) -> bool:
-    getter = getattr(value, "get_secret_value", None)
-    raw = getter() if callable(getter) else value
-    return bool(str(raw or "").strip())
 
 
 def _apply_persisted_runtime_configuration() -> None:
@@ -73,25 +68,11 @@ def _persist_runtime_configuration() -> None:
 
 
 def _integration_row(integration_id: str) -> dict[str, object]:
-    name, enabled_attr, api_attr, secret_attr = _INTEGRATIONS[integration_id]
-    enabled = bool(getattr(settings, enabled_attr))
-    api_base = str(getattr(settings, api_attr)).strip()
-    credential_configured = _secret_present(getattr(settings, secret_attr))
-    if enabled and api_base and credential_configured:
-        state = "ready"
-    elif enabled and api_base:
-        state = "credential-required"
-    elif enabled:
-        state = "configuration-required"
-    else:
-        state = "disabled"
+    _, _, api_attr, _ = _INTEGRATIONS[integration_id]
+    readiness = {row.id: row for row in integration_readiness(settings)}[integration_id]
     return {
-        "id": integration_id,
-        "name": name,
-        "enabled": enabled,
-        "api_base": api_base,
-        "credential_configured": credential_configured,
-        "state": state,
+        **readiness.as_dict(),
+        "api_base": str(getattr(settings, api_attr)).strip(),
         "credential_boundary": "Credentials remain server-side and are never returned by this API.",
     }
 
@@ -118,6 +99,9 @@ def update_integration(
     if spec is None:
         raise HTTPException(status_code=404, detail="unknown integration")
     _, enabled_attr, api_attr, _ = spec
+    original_api_base = str(getattr(settings, api_attr))
+    current_enabled = bool(getattr(settings, enabled_attr))
+    proposed_enabled = payload.enabled if payload.enabled is not None else current_enabled
     if payload.api_base is not None:
         api_base = payload.api_base.strip().rstrip("/")
         if api_base and not api_base.startswith(("http://", "https://")):
@@ -125,6 +109,13 @@ def update_integration(
         if settings.production and api_base and not api_base.startswith("https://"):
             raise HTTPException(status_code=422, detail="production integration endpoints require HTTPS")
         setattr(settings, api_attr, api_base)
+    blockers = activation_blockers(settings, integration_id)
+    if proposed_enabled and blockers:
+        setattr(settings, api_attr, original_api_base)
+        raise HTTPException(
+            status_code=422,
+            detail="integration activation blocked: " + ", ".join(blockers),
+        )
     if payload.enabled is not None:
         setattr(settings, enabled_attr, payload.enabled)
     _persist_runtime_configuration()
@@ -163,7 +154,7 @@ _PAGE = """<!doctype html>
     return body;
   }
   function render(rows) {
-    document.getElementById('integration-list').innerHTML = rows.map((row) => `<article class="card" data-integration="${esc(row.id)}"><div class="page-heading"><div><strong>${esc(row.name)}</strong><p>${esc(row.state)}</p></div><label><input data-enabled type="checkbox" ${row.enabled ? 'checked' : ''}> Enabled</label></div><label>API base<input data-api-base value="${esc(row.api_base)}" placeholder="https://platform.example/api"></label><p class="muted">Credential: ${row.credential_configured ? 'configured server-side' : 'not configured'}.</p><button class="button secondary" data-save type="button">Opslaan</button><div data-result class="diagnostic" role="status"></div></article>`).join('');
+    document.getElementById('integration-list').innerHTML = rows.map((row) => `<article class="card" data-integration="${esc(row.id)}"><div class="page-heading"><div><strong>${esc(row.name)}</strong><p>${esc(row.state)}</p></div><label><input data-enabled type="checkbox" ${row.enabled ? 'checked' : ''}> Enabled</label></div><label>API base<input data-api-base value="${esc(row.api_base)}" placeholder="https://platform.example/api"></label><p class="muted">Credential: ${row.credential_configured ? 'configured server-side' : 'not configured'}.</p><p class="muted">Activation blockers: ${row.activation_blockers.length ? row.activation_blockers.map(esc).join(', ') : 'none'}.</p><button class="button secondary" data-save type="button">Opslaan</button><div data-result class="diagnostic" role="status"></div></article>`).join('');
   }
   async function load() {
     const status = document.getElementById('integration-status'); status.textContent = 'Integraties laden…';
