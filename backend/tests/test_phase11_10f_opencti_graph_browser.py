@@ -98,7 +98,7 @@ def test_graph_workspace_renders_persisted_mapping_graph_and_entity_evidence(pag
 
     page.goto(f"{BASE_URL}/workbench/intelligence/graph?item={ITEM_ID}")
     expect(page.get_by_role("heading", name="Knowledge Graph", level=1)).to_be_visible()
-    expect(page.get_by_text("11.10f OpenCTI Graph", exact=True)).to_be_visible()
+    expect(page.get_by_text("11.10q Functional recovery", exact=True)).to_be_visible()
     expect(page.get_by_text("2 OpenCTI mappings", exact=True)).to_be_visible()
     expect(page.get_by_text("Relationship topology", exact=True)).to_be_visible()
     expect(page.get_by_text("not persisted", exact=True)).to_be_visible()
