@@ -1,0 +1,23 @@
+name: Phase 11.10q Object-driven Sharing Recovery Gate
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/src/MispSharingWorkspace.tsx'
+      - 'backend/tests/test_phase11_10q_object_driven_sharing.py'
+      - '.github/workflows/phase11-10q-object-driven-sharing.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  object-driven-sharing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify object-driven governed sharing contract
+        run: python -m pytest -q backend/tests/test_phase11_10q_object_driven_sharing.py
