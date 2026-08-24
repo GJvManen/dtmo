@@ -82,7 +82,13 @@ async def test_canonical_workbench_uses_real_same_origin_api_and_persistence() -
         await registration.get_by_label("HTTPS endpoint").fill("https://example.invalid/dtmo-same-origin-acceptance.json")
         await registration.get_by_label("Interval seconds").fill("3600")
         await registration.get_by_label("Reliability").select_option("medium")
-        await registration.get_by_role("button", name="Register disabled source", exact=True).click()
+        async with page.expect_response(
+            lambda response: response.url == f"{BASE_URL}/api/v1/admin/sources"
+            and response.request.method == "POST"
+        ) as registration_response_info:
+            await registration.get_by_role("button", name="Register disabled source", exact=True).click()
+        registration_response = await registration_response_info.value
+        assert registration_response.status == 201
 
         sources_response = await context.request.get(f"{BASE_URL}/api/v1/admin/sources")
         assert sources_response.status == 200
