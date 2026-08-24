@@ -31,6 +31,8 @@ The repository contains multiple functional React workspaces and server-side API
 
 The first confirmed shell defect is now under remediation: the canonical Administration route previously fell through to the generic `WorkspaceFoundation` placeholder even though `AdministrationWorkspace.tsx` existed. The canonical IOC route also used the generic unified-intelligence IOC mode rather than the dedicated IOC Explorer workspace. These routes are now wired to their dedicated React components on the remediation branch. This is necessary but not sufficient; default data and runtime integration behavior remain blocked.
 
+The canonical Operations route is now backed by same-origin runtime health, telemetry, alert and connector-capability contracts rather than the generic placeholder. As a further acceptance hardening step, the canonical primary navigation no longer exposes the legacy `Compatibility console` link. Legacy `/ui/*` routes remain compatibility endpoints only; they are no longer presented as a normal operator escape hatch from the canonical shell. This does not constitute owner acceptance and does not remove any other BLOCKED row above.
+
 ## Mandatory remediation order
 
 1. **Eliminate legacy-only primary flows.** Route every canonical menu item to its actual functional workspace and migrate remaining Operations/Administration functionality out of `/ui/*` compatibility pages.

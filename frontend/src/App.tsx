@@ -328,7 +328,7 @@ function Navigation({ open, onNavigate }: { open: boolean; onNavigate: () => voi
       <nav aria-label="Werkruimten">
         {groups.map((group) => <div className="nav-group" key={group}><p>{group}</p>{workspaces.filter((workspace) => workspace.group === group).map((workspace) => <NavLink key={workspace.path} to={workspace.path} onClick={onNavigate} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}><span className="nav-icon" aria-hidden="true">{workspace.icon}</span><span>{workspace.label}</span></NavLink>)}</div>)}
       </nav>
-      <div className="nav-footer"><a href="/docs">API documentation</a><a href="/ui/console">Compatibility console</a></div>
+      <div className="nav-footer"><a href="/docs">API documentation</a></div>
     </aside>
   );
 }

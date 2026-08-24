@@ -33,7 +33,8 @@ def test_canonical_workbench_shell_navigation_and_context(page: Page) -> None:
     expect(page.get_by_role("navigation", name="Werkruimten")).to_be_visible()
     expect(page.get_by_text("Geen object geselecteerd")).to_be_visible()
     expect(page.get_by_role("heading", name="Operational visibility without synthetic claims", level=2)).to_be_visible()
-    expect(page.get_by_role("link", name="Compatibility console", exact=True)).to_be_visible()
+    expect(page.get_by_role("link", name="Compatibility console", exact=True)).to_have_count(0)
+    expect(page.locator('aside.primary-nav a[href^="/ui/"]')).to_have_count(0)
 
     page.keyboard.press("Control+k")
     palette = page.get_by_role("dialog", name="Command palette")
@@ -62,6 +63,7 @@ def test_shell_has_keyboard_skip_link_and_mobile_navigation(page: Page) -> None:
     expect(menu).to_be_visible()
     menu.click()
     expect(page.get_by_role("navigation", name="Werkruimten")).to_be_visible()
+    expect(page.locator('aside.primary-nav a[href^="/ui/"]')).to_have_count(0)
     page.get_by_role("link", name="Operations").click()
     page.wait_for_url("**/workbench/operations")
     expect(page.get_by_role("heading", name="Operations", level=1)).to_be_visible()
