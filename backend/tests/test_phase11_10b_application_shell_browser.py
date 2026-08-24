@@ -48,7 +48,9 @@ def test_canonical_workbench_shell_navigation_and_context(page: Page) -> None:
     page.get_by_role("link", name="Operations").click()
     page.wait_for_url("**/workbench/operations")
     expect(page.get_by_role("heading", name="Operations", level=1)).to_be_visible()
-    expect(page.get_by_text("No synthetic operational state")).to_be_visible()
+    expect(page.get_by_role("heading", name="Operational snapshot", level=2)).to_be_visible()
+    expect(page.get_by_text("Missing telemetry stays unavailable", exact=False)).to_be_visible()
+    expect(page.get_by_role("heading", name="Act without legacy fallback", level=2)).to_be_visible()
 
 
 @pytest.mark.browser
