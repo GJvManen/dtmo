@@ -21,7 +21,7 @@ def test_canonical_administration_uses_same_origin_governed_read_and_patch() -> 
     backend = BACKEND.read_text(encoding="utf-8")
     assert "credentials: 'same-origin'" in workspace
     assert "'/api/v1/admin/integrations'" in workspace
-    assert "method: 'PATCH'" in workspace
+    assert "writeJson<IntegrationRow>(`/api/v1/admin/integrations/${encodeURIComponent(id)}`, 'PATCH'" in workspace
     assert "/api/v1/admin/integrations/${encodeURIComponent(id)}" in workspace
     assert 'require_permission(Permission.MANAGE_CONNECTORS)' in backend
     assert '@router.patch("/api/v1/admin/integrations/{integration_id}")' in backend
