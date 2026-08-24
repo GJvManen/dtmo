@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import { AdministrationSecurityAudit } from './AdministrationSecurityAudit';
 import { AdministrationWorkspace } from './AdministrationWorkspace';
 import { App } from './App';
 import './styles.css';
@@ -24,7 +25,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter basename="/workbench">
         <Routes>
-          <Route path="/administration" element={<AdministrationWorkspace />} />
+          <Route path="/administration" element={<><AdministrationWorkspace /><AdministrationSecurityAudit /></>} />
           <Route path="*" element={<App />} />
         </Routes>
       </BrowserRouter>
