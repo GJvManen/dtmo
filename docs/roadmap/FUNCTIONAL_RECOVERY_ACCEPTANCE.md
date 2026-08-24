@@ -29,6 +29,8 @@ Green repository CI is not sufficient acceptance for Phase 11.10q. The canonical
 
 The repository contains multiple functional React workspaces and server-side APIs, but the current product still has an integration gap between those slices and the canonical shell/runtime defaults. Tests that prove individual components, API contracts or mocked journeys therefore do not establish a usable product. The remediation must now focus on **canonical integration parity and default operational usability**, not on additional isolated component gates.
 
+The first confirmed shell defect is now under remediation: the canonical Administration route previously fell through to the generic `WorkspaceFoundation` placeholder even though `AdministrationWorkspace.tsx` existed. The canonical IOC route also used the generic unified-intelligence IOC mode rather than the dedicated IOC Explorer workspace. These routes are now wired to their dedicated React components on the remediation branch. This is necessary but not sufficient; default data and runtime integration behavior remain blocked.
+
 ## Mandatory remediation order
 
 1. **Eliminate legacy-only primary flows.** Route every canonical menu item to its actual functional workspace and migrate remaining Operations/Administration functionality out of `/ui/*` compatibility pages.
