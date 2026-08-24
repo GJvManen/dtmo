@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
+import { ThreatIntelligencePopulation } from './ThreatIntelligencePopulation';
+
 type VulnerabilityRow = {
   cve_id?: string;
   title?: string;
@@ -61,6 +63,7 @@ export function ExposureWorkspace() {
   const [product, setProduct] = useState('');
   const [cwe, setCwe] = useState('');
   const [minimumEpss, setMinimumEpss] = useState(0);
+  const inventory = rows(query.data);
 
   const visible = useMemo(() => rows(query.data).filter((row) => {
     if (priority === 'kev' && row.kev !== true) return false;
@@ -94,7 +97,16 @@ export function ExposureWorkspace() {
       {query.isPending && <p className="panel-state">Loading canonical vulnerability evidence…</p>}
       {query.isError && <div className="panel-state error-state"><strong>Vulnerability evidence unavailable</strong><span>The workspace fails closed and does not synthesize exposure state.</span></div>}
       {query.data?.degraded_reasons?.length ? <div className="panel-state error-state"><strong>Evidence degraded</strong><span>{query.data.degraded_reasons.join(' · ')}</span></div> : null}
-      {!query.isPending && !query.isError && visible.length === 0 && <div className="panel-state"><strong>No attributable vulnerability evidence matches this view</strong><span>Adjust the filters or run an enabled governed vulnerability source from Sources &amp; Collection. An empty view does not prove absence of vulnerabilities or exposure.</span></div>}
+      {!query.isPending && !query.isError && inventory.length === 0 && <>
+        <div className="panel-state"><strong>No attributable vulnerability evidence is recorded yet</strong><span>Use an already-enabled governed source below. An empty canonical projection does not prove absence of vulnerabilities or exposure.</span></div>
+        <ThreatIntelligencePopulation
+          title="Populate canonical vulnerability evidence"
+          reloadLabel="Reload vulnerability evidence"
+          enabledSourcesLabel="Enabled governed sources for vulnerability population"
+          onPopulated={() => { void query.refetch(); }}
+        />
+      </>}
+      {!query.isPending && !query.isError && inventory.length > 0 && visible.length === 0 && <div className="panel-state"><strong>No attributable vulnerability evidence matches these filters</strong><span>Adjust the filters. A filtered empty view does not prove absence of vulnerabilities or exposure.</span></div>}
       {visible.length > 0 && <div className="intel-list" role="list">{visible.map((row, index) => <article className="intel-row" role="listitem" key={`${row.cve_id ?? row.title ?? 'vulnerability'}-${index}`}>
         <span className={`severity-dot ${(score(row) ?? 0) >= 9 ? 'severity-critical' : (score(row) ?? 0) >= 7 ? 'severity-high' : 'severity-medium'}`} />
         <div className="intel-copy"><strong>{row.cve_id ?? row.title ?? 'Unidentified vulnerability'}</strong><span>{row.source_id ?? 'canonical source'} · CVSS {score(row) ?? '—'} · EPSS {row.epss ?? '—'} · {row.kev ? 'CISA KEV evidence present' : 'no KEV evidence'}</span><span>{[...(row.vendors ?? []), ...(row.products ?? []), ...(row.cwes ?? [])].slice(0,6).join(' · ') || 'No attributable vendor/product/CWE mapping'}</span><span>Discovered {displayDate(row.discovered_at)}</span></div>
@@ -102,7 +114,7 @@ export function ExposureWorkspace() {
       </article>)}</div>}
     </div>
 
-    <article className="surface evidence-surface"><div><p className="eyebrow">Evidence boundary</p><h2>Prioritize vulnerabilities without inventing local exposure</h2></div><p>CVSS, EPSS, KEV, vendor, product and CWE are canonical intelligence attributes. The source pivot opens attributable evidence only. Neither the inventory nor its filters establish that a local asset is affected, reachable, exploitable, compromised or remediated, and they grant no scanner, remediation, case, publication or sharing authority.</p></article>
+    <article className="surface evidence-surface"><div><p className="eyebrow">Evidence boundary</p><h2>Prioritize vulnerabilities without inventing local exposure</h2></div><p>CVSS, EPSS, KEV, vendor, product and CWE are canonical intelligence attributes. When the canonical vulnerability projection is empty, an authorized operator can execute an already-enabled governed source from this workspace and then explicitly reload the projection. The source pivot opens attributable evidence only. Neither population, the inventory nor its filters establish that a local asset is affected, reachable, exploitable, compromised or remediated, and they grant no scanner, remediation, case, publication or sharing authority.</p></article>
     <p className="evidence-label">{query.data?.evidence_boundary ?? 'Repository/runtime data shown here does not constitute production-equivalent validation or production authorization.'}</p>
   </section>;
 }
