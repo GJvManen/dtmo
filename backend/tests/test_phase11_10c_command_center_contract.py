@@ -56,35 +56,45 @@ class _FailingSession:
 
 
 @pytest.mark.asyncio
-async def test_canonical_store_failure_never_synthesizes_zero_metrics() -> None:
+async def test_canonical_store_failure_never_synthesizes_zero_metrics_or_trends() -> None:
     snapshot = await build_command_center_snapshot(
         cast(Any, _FailingSession()),
         Settings(_env_file=None),
     )
     assert snapshot["data_state"] == "unavailable"
     assert snapshot["recent_intelligence"] == []
+    assert snapshot["trends"] == {"intelligence_7d": [], "severity_distribution": []}
     assert all(metric["value"] is None for metric in snapshot["metrics"])
     assert "rather than synthesized" in snapshot["evidence_boundary"]
 
 
-def test_frontend_command_center_uses_governed_api_and_explicit_boundaries() -> None:
+def test_frontend_command_center_uses_governed_api_graphs_pivots_and_explicit_boundaries() -> None:
     app_source = (ROOT / "frontend/src/App.tsx").read_text(encoding="utf-8")
     styles = (ROOT / "frontend/src/command-center.css").read_text(encoding="utf-8")
     api_source = (ROOT / "backend/dtmo/api_command_center.py").read_text(encoding="utf-8")
+    model_source = (ROOT / "backend/dtmo/command_center.py").read_text(encoding="utf-8")
 
     for marker in (
         "/api/v1/command-center",
         "Command Center",
         "Canonical data unavailable",
-        "No inferred health",
+        "Integration readiness",
+        "Intelligence arrivals · 7 days",
+        "Severity composition",
+        "Open administration →",
+        "Inspect collection",
         "Visibility ≠ authority",
         "Operational visibility without synthetic claims",
     ):
         assert marker in app_source
     assert "Permission.READ_INTELLIGENCE" in api_source
     assert "runtime_health_claim" in app_source
+    assert '"intelligence_7d"' in model_source
+    assert '"severity_distribution"' in model_source
     assert ".kpi-grid" in styles
     assert ".integration-list" in styles
+    assert ".trend-chart" in styles
+    assert ".severity-bars" in styles
     assert ".workflow-strip" in styles
 
 
