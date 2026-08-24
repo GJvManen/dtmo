@@ -12,6 +12,7 @@ import { InvestigationsWorkspace } from './InvestigationsWorkspace';
 import { IocExplorerWorkspace } from './IocExplorerWorkspace';
 import { MispSharingWorkspace } from './MispSharingWorkspace';
 import { OpenCTIGraphWorkspace } from './OpenCTIGraphWorkspace';
+import { OperationsWorkspace } from './OperationsWorkspace';
 import { UnifiedIntelligenceWorkspace } from './UnifiedIntelligenceWorkspace';
 
 type Health = {
@@ -299,6 +300,7 @@ function WorkspaceFoundation({ workspace }: { workspace: WorkspaceDefinition }) 
   if (workspace.path === '/exposure') return <ExposureWorkspace />;
   if (workspace.path === '/governance') return <GovernanceWorkspace />;
   if (workspace.path === '/investigations') return <InvestigationsWorkspace />;
+  if (workspace.path === '/operations') return <OperationsWorkspace />;
   if (workspace.path === '/sharing') return <MispSharingWorkspace />;
   return (
     <section className="workspace-foundation" aria-labelledby="workspace-title">

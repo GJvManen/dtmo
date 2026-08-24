@@ -1,0 +1,37 @@
+name: Phase 11.10q Operations Recovery Gate
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/src/App.tsx'
+      - 'frontend/src/OperationsWorkspace.tsx'
+      - 'backend/tests/test_phase11_10q_operations_recovery.py'
+      - 'docs/architecture/PHASE11_10Q_OPERATIONS_CANONICALIZATION.md'
+      - '.github/workflows/phase11-10q-operations-recovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  operations-recovery:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build canonical workbench
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install contract-test dependency
+        run: python -m pip install pytest
+      - name: Verify canonical Operations recovery contract
+        run: python -m pytest -q backend/tests/test_phase11_10q_operations_recovery.py
