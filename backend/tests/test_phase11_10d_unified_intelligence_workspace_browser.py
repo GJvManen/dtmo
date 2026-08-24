@@ -191,6 +191,9 @@ def test_ioc_explorer_lists_persisted_observables_filters_and_pivots(page: Page)
     page.get_by_label("Severity").select_option("high")
     page.get_by_label("Minimum confidence").fill("80")
     expect(page.get_by_text("malicious.example", exact=True)).to_be_visible()
-    expect(page.get_by_role("link", name="Enrich / analyze", exact=True)).to_have_attribute("href", f"/workbench/analysis?item={ITEM_ID}")
+    expect(page.get_by_role("link", name="Enrich / analyze selected IOC", exact=True)).to_have_attribute(
+        "href",
+        f"/workbench/analysis?item={ITEM_ID}&observable_type=domain&observable_value=malicious.example",
+    )
     expect(page.get_by_role("link", name="Graph", exact=True)).to_have_attribute("href", f"/workbench/intelligence/graph?item={ITEM_ID}")
     expect(page.get_by_role("link", name="Investigate", exact=True)).to_have_attribute("href", f"/workbench/investigations?item={ITEM_ID}")
