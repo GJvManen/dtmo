@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 
 import { IocExplorerWorkspace } from './IocExplorerWorkspace';
+import { ThreatIntelligencePopulation } from './ThreatIntelligencePopulation';
 
 type IntelligenceSearchResult = {
   id: string;
@@ -62,11 +63,14 @@ export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?:
   const [detail, setDetail] = useState<IntelligenceWorkspaceDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
+  const [populationRefresh, setPopulationRefresh] = useState(0);
   const isIoc = mode === 'ioc';
 
   useEffect(() => {
     if (isIoc) return;
     let active = true;
+    setDiscoveryMode('loading');
+    setSearchError(null);
     void getJson<CommandCenterSnapshot>('/api/v1/command-center').then((snapshot) => {
       if (!active) return;
       if (snapshot.data_state !== 'available') {
@@ -79,7 +83,7 @@ export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?:
       setResults([]); setDiscoveryMode('error'); setSearchError(error instanceof Error ? error.message : 'Canonical intelligence unavailable');
     });
     return () => { active = false; };
-  }, [isIoc]);
+  }, [isIoc, populationRefresh]);
 
   async function runSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -128,7 +132,10 @@ export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?:
         <article className="surface intelligence-results-panel">
           <header className="panel-heading"><div><p className="eyebrow">Discovery</p><h2>{discoveryMode === 'recent' ? 'Recent canonical intelligence' : 'Intelligence results'}</h2></div><span className="evidence-label">{discoveryMode === 'loading' ? 'Loading…' : `${results.length} available`}</span></header>
           {discoveryMode === 'loading' && <p className="panel-state">Loading recent canonical intelligence…</p>}
-          {discoveryMode === 'empty' && <div className="intelligence-empty"><strong>No canonical intelligence recorded yet</strong><span>Run an enabled governed source from Sources &amp; Collection. Successful ingestion will appear here without requiring a blind search.</span></div>}
+          {discoveryMode === 'empty' && <>
+            <div className="intelligence-empty"><strong>No canonical intelligence recorded yet</strong><span>Use an already-enabled governed source below, or open Sources &amp; Collection to validate, test and activate one explicitly.</span></div>
+            <ThreatIntelligencePopulation onPopulated={() => setPopulationRefresh((current) => current + 1)} />
+          </>}
           {searching && <p className="panel-state">Searching the governed intelligence index…</p>}
           {searchError && <div className="panel-state error-state"><strong>Intelligence discovery unavailable</strong><span>{searchError}. No empty-result or platform-health conclusion is inferred.</span></div>}
           {!searching && !searchError && discoveryMode === 'search' && results.length === 0 && <div className="intelligence-empty"><strong>No intelligence matched this query</strong><span>This describes the queried DTMO search index only; it does not prove absence from upstream sources.</span></div>}
@@ -154,7 +161,7 @@ export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?:
         </article>
       </div>
 
-      <article className="surface evidence-surface intelligence-evidence"><div><p className="eyebrow">Evidence boundary</p><h2>Canonical recent view without fabricated content</h2></div><p>The default Threat Intelligence view is populated only from objects already present in canonical DTMO persistence. Search remains a separate governed projection. Missing content stays visibly missing and is never converted into synthetic intelligence, live-source health, staging acceptance or production authorization.</p></article>
+      <article className="surface evidence-surface intelligence-evidence"><div><p className="eyebrow">Evidence boundary</p><h2>Canonical recent view without fabricated content</h2></div><p>The default Threat Intelligence view is populated only from objects already present in canonical DTMO persistence. When that persistence is empty, an authorized operator can execute an already-enabled governed source from the same canonical workspace and then explicitly reload recent persistence. Search remains a separate governed projection. Missing content stays visibly missing and is never converted into synthetic intelligence, live-source health, staging acceptance or production authorization.</p></article>
     </section>
   );
 }
