@@ -74,6 +74,14 @@ def _metric(metric_id: str, label: str, value: int | None, tone: str) -> dict[st
     return {"id": metric_id, "label": label, "value": value, "tone": tone}
 
 
+def _severity_value(value: object) -> str:
+    return str(getattr(value, "value", value))
+
+
+def _empty_trends() -> dict[str, list[dict[str, Any]]]:
+    return {"intelligence_7d": [], "severity_distribution": []}
+
+
 async def build_command_center_snapshot(
     session: AsyncSession,
     settings: Settings,
@@ -84,6 +92,7 @@ async def build_command_center_snapshot(
     latest_runs: dict[str, ConnectorRun] = {}
     data_state = "available"
     recent_intelligence: list[dict[str, Any]] = []
+    trends = _empty_trends()
     metrics = [
         _metric("intelligence-total", "Intelligence objects", None, "neutral"),
         _metric("high-priority", "High / critical", None, "critical"),
@@ -163,13 +172,59 @@ async def build_command_center_snapshot(
                 "id": str(item.id),
                 "title": item.title,
                 "source_id": item.source_id,
-                "severity": str(item.severity),
+                "severity": _severity_value(item.severity),
                 "education_relevance": item.education_relevance,
                 "review_status": item.review_status,
                 "discovered_at": item.discovered_at.astimezone(UTC).isoformat(),
             }
             for item in items
         ]
+
+        seven_day_start = (now - timedelta(days=6)).replace(
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+        )
+        daily_counts = {
+            (seven_day_start + timedelta(days=offset)).date(): 0
+            for offset in range(7)
+        }
+        trend_rows = (
+            await session.execute(
+                select(IntelligenceItem.discovered_at)
+                .where(IntelligenceItem.discovered_at >= seven_day_start)
+            )
+        ).all()
+        for row in trend_rows:
+            discovered_at = row[0]
+            day = discovered_at.astimezone(UTC).date()
+            if day in daily_counts:
+                daily_counts[day] += 1
+
+        severity_rows = (
+            await session.execute(
+                select(IntelligenceItem.severity, func.count())
+                .group_by(IntelligenceItem.severity)
+            )
+        ).all()
+        severity_counts = {
+            severity.value: 0
+            for severity in IntelligenceSeverity
+        }
+        for severity, count in severity_rows:
+            severity_counts[_severity_value(severity)] = int(count or 0)
+
+        trends = {
+            "intelligence_7d": [
+                {"date": day.isoformat(), "count": count}
+                for day, count in daily_counts.items()
+            ],
+            "severity_distribution": [
+                {"severity": severity.value, "count": severity_counts.get(severity.value, 0)}
+                for severity in IntelligenceSeverity
+            ],
+        }
 
         connector_runs = (
             await session.scalars(
@@ -182,6 +237,7 @@ async def build_command_center_snapshot(
             latest_runs.setdefault(run.connector_id, run)
     except Exception:
         data_state = "unavailable"
+        trends = _empty_trends()
         with suppress(Exception):
             await session.rollback()
 
@@ -190,9 +246,10 @@ async def build_command_center_snapshot(
         "data_state": data_state,
         "metrics": metrics,
         "recent_intelligence": recent_intelligence,
+        "trends": trends,
         "integrations": build_integration_capabilities(settings, latest_runs),
         "evidence_boundary": (
-            "Command Center values are canonical DTMO read models. Enabled or configured "
+            "Command Center values and trends are canonical DTMO read models. Enabled or configured "
             "integrations are not labelled healthy without runtime observation, and missing "
             "canonical-store evidence is reported as unavailable rather than synthesized."
         ),
