@@ -2,9 +2,9 @@
 
 ## Status
 
-`IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`
+`REPOSITORY RECOVERY IMPLEMENTED / OWNER FUNCTIONAL RETEST REQUIRED`
 
-Phase 11.10a established the frontend architecture and Phase 11.10b delivered the canonical React/TypeScript/Vite application shell. Phase 11.10c is the first functional workspace implemented inside that shell.
+Phase 11.10q extends the original Phase 11.10c Command Center so the canonical landing workspace is not limited to point-in-time counters and integration labels. It now provides attributable trends, integration actionability and direct pivots into the governed workspaces while retaining the same read-only authority boundary.
 
 ## Objective
 
@@ -19,6 +19,7 @@ flowchart LR
     R --> D[(PostgreSQL canonical intelligence)]
     R --> C[DTMO runtime configuration]
     D --> E[Persisted connector execution evidence]
+    D --> T[7-day arrivals + severity distribution]
     R --> B
 ```
 
@@ -35,8 +36,18 @@ The Command Center exposes:
 - reviewed intelligence still requiring a separate external-share decision;
 - intelligence with education relevance of at least 80;
 - the six most recently discovered canonical intelligence objects;
+- a seven-day canonical intelligence-arrival series derived from `discovered_at`;
+- a current canonical severity distribution across informational, low, medium, high and critical objects;
 - governed capability state for Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex;
+- explicit counts for integrations requiring configuration and integrations with persisted runtime observation;
+- direct pivots from integration readiness to Administration or Collection;
 - role-aware quick navigation derived from the authenticated principal's server-issued permissions.
+
+## Trend semantics
+
+The trend panels are read models, not forecasts. The seven-day chart counts canonical intelligence records by UTC discovery date. Days with no canonical records are represented as zero only when the canonical datastore was successfully queried; datastore failure produces no trend series at all.
+
+Severity composition is derived from canonical persisted intelligence and is rendered as a distribution, not as an organizational risk score. Neither chart proves source truth, compromise, exposure, incident impact, production health or remediation status.
 
 ## Integration-state semantics
 
@@ -50,6 +61,8 @@ An integration can be:
 
 `enabled` does **not** mean healthy or reachable. For connector-backed integrations such as Taranis and MISP, the latest persisted connector run may be shown as a runtime observation. The read model keeps `runtime_health_claim=false`; upstream service health is not inferred from configuration or a historical run.
 
+The Command Center provides an actionable navigation path: configuration-required integrations pivot to Administration and other integration rows can pivot to Collection. Navigation does not grant authority; target workspaces and APIs continue to enforce their own RBAC and governance rules.
+
 ## Fail-closed data behavior
 
 If the canonical datastore cannot be queried, the API returns:
@@ -57,9 +70,10 @@ If the canonical datastore cannot be queried, the API returns:
 - `data_state=unavailable`;
 - metric values as `null`, not `0`;
 - no fabricated recent-intelligence records;
+- empty trend series rather than synthetic zeros;
 - integration configuration state only.
 
-The frontend renders an explicit unavailable state. It must not transform missing evidence into zero threats, zero pending decisions, healthy integrations or a production-ready claim.
+The frontend renders explicit unavailable states for both trend panels. It must not transform missing evidence into zero threats, a flat trend, zero pending decisions, healthy integrations or a production-ready claim.
 
 ## Authority boundary
 
@@ -75,28 +89,26 @@ The Command Center itself grants no authority to:
 - run connectors;
 - administer users, roles or policies.
 
-Quick-action visibility is convenience only. Every mutation remains authorized by its own server-side permission check and human-governance boundary.
+Quick-action and readiness-link visibility are convenience only. Every mutation remains authorized by its own server-side permission check and human-governance boundary.
 
 ## UX structure
 
-The workspace implements the operational composition defined by the Unified Operations Workbench design:
+The recovered workspace contains:
 
 1. lifecycle/status heading;
 2. six canonical KPI cards;
 3. recent intelligence / threat-picture panel;
-4. integration capability panel with explicit no-inferred-health wording;
-5. role-aware quick actions;
-6. governed CTI lifecycle strip: Collect → Enrich → Analyze → Investigate → Respond → Learn;
-7. permanent evidence-boundary statement.
+4. actionable integration-readiness panel with explicit no-inferred-health semantics;
+5. seven-day intelligence-arrival bar chart;
+6. canonical severity-distribution bars;
+7. role-aware quick actions;
+8. governed CTI lifecycle strip: Collect → Enrich → Analyze → Investigate → Respond → Learn;
+9. permanent evidence-boundary statement.
 
 Responsive behavior is required down to narrow mobile layouts and inherits the keyboard, contrast, focus, theme and navigation contracts accepted in Phase 11.10b.
 
-## Scope boundary
+## Phase 11.10q acceptance boundary
 
-Phase 11.10c does not implement the full intelligence-object workspace, enrichment execution, OpenCTI graph interaction, MISP exchange, TheHive case management, exposure management, collection control, automation, governance evidence management or administration. Those remain bounded Phase 11.10d–11.10m slices.
+The repository implementation now satisfies the Command Center recovery requirement for actionable readiness, real canonical graphs/trends and links into underlying workspaces. This does not retire the owner-functional blocker by itself. Green CI and browser fixtures remain repository evidence only; the accountable owner must still validate the canonical interface against the accepted same-origin environment before the Command Center row in `FUNCTIONAL_RECOVERY_ACCEPTANCE.md` can become PASS.
 
-Repository and browser CI for this slice do not prove live upstream service health, production-equivalent continuity, independent assurance or production authorization.
-
-## Next bounded priority
-
-After Phase 11.10c is accepted and merged, the only next implementation slice is **Phase 11.10d — Unified Intelligence Workspace**.
+Repository and browser CI do not prove live upstream service health, production-equivalent continuity, independent assurance or production authorization.
