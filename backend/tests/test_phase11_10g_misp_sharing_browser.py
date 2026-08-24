@@ -71,7 +71,7 @@ def test_workspace_exposes_governed_unpublished_export_boundary(page: Page) -> N
     page.goto(f"{BASE_URL}/workbench/sharing?item={ITEM_ID}")
 
     expect(page.get_by_role("heading", name="Sharing & Exchange", level=1)).to_be_visible()
-    expect(page.get_by_text("11.10g MISP Sharing", exact=True)).to_be_visible()
+    expect(page.get_by_text("11.10g MISP Sharing · 11.10q recovery", exact=True)).to_be_visible()
     expect(page.get_by_text("Reviewed by reviewer@example.invalid", exact=True)).to_be_visible()
     expect(page.get_by_text("Approved by publisher@example.invalid", exact=True)).to_be_visible()
     expect(page.get_by_role("combobox", name="TLP")).to_have_value("tlp:amber")
