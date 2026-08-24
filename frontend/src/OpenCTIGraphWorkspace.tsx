@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 
+import { ThreatIntelligencePopulation } from './ThreatIntelligencePopulation';
 import './opencti-graph.css';
 
 type Capability = { enabled: boolean; configured: boolean; allowed_entity_types: string[]; runtime_health_claim: boolean; upstream_relationship_topology_persisted: boolean; external_share_authority: boolean; local_compromise_proof: boolean };
@@ -31,6 +32,7 @@ export function OpenCTIGraphWorkspace() {
   const [roots, setRoots] = useState<RecentIntelligence[]>([]);
   const [rootsState, setRootsState] = useState<'loading' | 'available' | 'empty' | 'error'>('loading');
   const [rootsError, setRootsError] = useState<string | null>(null);
+  const [populationRefresh, setPopulationRefresh] = useState(0);
   const [itemId, setItemId] = useState(initialItem);
   const [graph, setGraph] = useState<Graph | null>(null);
   const [selected, setSelected] = useState<Entity | null>(null);
@@ -41,6 +43,8 @@ export function OpenCTIGraphWorkspace() {
   useEffect(() => {
     json<Capability>('/api/v1/opencti/capabilities').then(setCapability).catch(() => setCapability(null));
     let active = true;
+    setRootsState('loading');
+    setRootsError(null);
     void json<CommandCenterSnapshot>('/api/v1/command-center').then((snapshot) => {
       if (!active) return;
       if (snapshot.data_state !== 'available') { setRoots([]); setRootsState('error'); setRootsError('Canonical DTMO persistence is unavailable'); return; }
@@ -51,7 +55,7 @@ export function OpenCTIGraphWorkspace() {
       setRoots([]); setRootsState('error'); setRootsError(reason instanceof Error ? reason.message : 'Canonical graph roots unavailable');
     });
     return () => { active = false; };
-  }, []);
+  }, [populationRefresh]);
 
   async function loadGraphFor(id: string) {
     const normalized = id.trim();
@@ -94,10 +98,13 @@ export function OpenCTIGraphWorkspace() {
       <section className="surface" aria-label="Discoverable graph roots">
         <header><div><p className="eyebrow">Canonical discovery</p><h2>Recent intelligence roots</h2></div><span className="evidence-label">{rootsState === 'loading' ? 'Loading…' : `${roots.length} available`}</span></header>
         {rootsState === 'loading' && <p className="panel-state">Loading canonical graph roots…</p>}
-        {rootsState === 'empty' && <div className="graph-empty"><strong>No canonical intelligence roots recorded yet</strong><p>Run a governed source from Sources &amp; Collection. Persisted intelligence will become selectable here without UUID entry.</p></div>}
+        {rootsState === 'empty' && <>
+          <div className="graph-empty"><strong>No canonical intelligence roots recorded yet</strong><p>Use an already-enabled governed source below. After ingestion, reload canonical graph roots without leaving this workspace.</p></div>
+          <ThreatIntelligencePopulation onPopulated={() => setPopulationRefresh((current) => current + 1)} />
+        </>}
         {rootsState === 'error' && <div className="panel-state error-state"><strong>Graph root discovery unavailable</strong><span>{rootsError}. No upstream-health or absence conclusion is inferred.</span></div>}
         {rootsState === 'available' && <div className="entity-list" aria-label="Recent canonical graph roots">{roots.map((root) => <button type="button" className="entity-row" key={root.id} onClick={() => void loadGraphFor(root.id)} aria-pressed={itemId === root.id}><span><strong>{root.title}</strong><small>{root.source_id} · {root.severity} · discovered {new Date(root.discovered_at).toLocaleString()}</small></span><span><small>education relevance</small><strong>{root.education_relevance}</strong></span></button>)}</div>}
-        <p className="boundary-copy">Roots are discovered from canonical DTMO persistence. Selecting a root reads only DTMO-persisted graph mappings; the browser does not query OpenCTI directly.</p>
+        <p className="boundary-copy">Roots are discovered from canonical DTMO persistence. Selecting a root reads only DTMO-persisted graph mappings; the browser does not query OpenCTI directly. Population can execute only an already-enabled governed source and does not change source activation, endpoints or credentials.</p>
       </section>
 
       <details className="surface graph-loader"><summary>Advanced: open a known canonical item ID</summary><form onSubmit={loadGraph}><label htmlFor="graph-item">Canonical DTMO item UUID</label><div><input id="graph-item" value={itemId} onChange={(event) => setItemId(event.target.value)} placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" required /><button type="submit" disabled={loading}>{loading ? 'Loading…' : 'Load graph context'}</button></div><small>Secondary deep-link/troubleshooting path only. Normal operator discovery is provided above.</small></form></details>
