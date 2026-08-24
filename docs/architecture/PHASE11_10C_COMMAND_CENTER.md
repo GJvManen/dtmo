@@ -18,12 +18,13 @@ flowchart LR
     A -->|READ_INTELLIGENCE authorization| R[Canonical read model]
     R --> D[(PostgreSQL canonical intelligence)]
     R --> C[DTMO runtime configuration]
+    C --> Q[Shared governed integration readiness]
     D --> E[Persisted connector execution evidence]
     D --> T[7-day arrivals + severity distribution]
     R --> B
 ```
 
-The browser does not call Taranis, IntelOwl, OpenCTI, MISP, TheHive or Cortex directly and receives no privileged upstream credentials.
+The browser does not call Taranis, AIL, IntelOwl, OpenCTI, MISP, TheHive or Cortex directly and receives no privileged upstream credentials.
 
 ## Delivered read model
 
@@ -38,7 +39,8 @@ The Command Center exposes:
 - the six most recently discovered canonical intelligence objects;
 - a seven-day canonical intelligence-arrival series derived from `discovered_at`;
 - a current canonical severity distribution across informational, low, medium, high and critical objects;
-- governed capability state for Taranis, IntelOwl, OpenCTI, MISP, TheHive and Cortex;
+- governed capability state for MISP, AIL, Taranis, IntelOwl, Cortex, OpenCTI and TheHive;
+- readiness derived from the same server-side activation-blocker contract used by canonical Administration;
 - explicit counts for integrations requiring configuration and integrations with persisted runtime observation;
 - direct pivots from integration readiness to Administration or Collection;
 - role-aware quick navigation derived from the authenticated principal's server-issued permissions.
@@ -51,17 +53,19 @@ Severity composition is derived from canonical persisted intelligence and is ren
 
 ## Integration-state semantics
 
-Phase 11.10c deliberately separates **configuration state** from **runtime observation**.
+Phase 11.10q now removes the previous duplicate/weak readiness interpretation in Command Center. The landing read model reuses `integration_readiness()` from the governed Administration contract and therefore evaluates endpoint, server-side credential and component-specific runtime requirements before an enabled service may appear as enabled/configured.
 
-An integration can be:
+The following component-specific blockers are preserved in the server-derived model where applicable: AIL object scope, IntelOwl/Cortex analyzer allowlists, TheHive organization scope, OpenCTI entity allowlist/checkpoint requirements and Taranis checkpoint requirements. Command Center receives blocker categories only; secret values remain server-side.
+
+For backward-compatible presentation the Command Center keeps a coarse display vocabulary:
 
 - `disabled` — the DTMO capability flag is off;
-- `configuration-required` — the capability is enabled but an API base is absent;
-- `enabled` — the capability is enabled and configured.
+- `configuration-required` — the capability is enabled but one or more governed readiness blockers remain;
+- `enabled` — the capability is enabled and the shared readiness contract reports no remaining configuration blockers.
 
-`enabled` does **not** mean healthy or reachable. For connector-backed integrations such as Taranis and MISP, the latest persisted connector run may be shown as a runtime observation. The read model keeps `runtime_health_claim=false`; upstream service health is not inferred from configuration or a historical run.
+`enabled` still does **not** mean healthy or reachable. For connector-backed integrations Taranis, MISP and AIL, the latest persisted connector run may be shown as a runtime observation. The read model keeps `runtime_health_claim=false`; upstream service health is not inferred from configuration or a historical run.
 
-The Command Center provides an actionable navigation path: configuration-required integrations pivot to Administration and other integration rows can pivot to Collection. Navigation does not grant authority; target workspaces and APIs continue to enforce their own RBAC and governance rules.
+The API also carries `credential_configured`, `can_activate` and `activation_blockers` so later UI slices can present the same actionable detail without re-deriving security-sensitive readiness in the browser.
 
 ## Fail-closed data behavior
 
@@ -71,7 +75,7 @@ If the canonical datastore cannot be queried, the API returns:
 - metric values as `null`, not `0`;
 - no fabricated recent-intelligence records;
 - empty trend series rather than synthetic zeros;
-- integration configuration state only.
+- integration readiness from runtime configuration only, without claiming upstream health.
 
 The frontend renders explicit unavailable states for both trend panels. It must not transform missing evidence into zero threats, a flat trend, zero pending decisions, healthy integrations or a production-ready claim.
 
@@ -109,6 +113,6 @@ Responsive behavior is required down to narrow mobile layouts and inherits the k
 
 ## Phase 11.10q acceptance boundary
 
-The repository implementation now satisfies the Command Center recovery requirement for actionable readiness, real canonical graphs/trends and links into underlying workspaces. This does not retire the owner-functional blocker by itself. Green CI and browser fixtures remain repository evidence only; the accountable owner must still validate the canonical interface against the accepted same-origin environment before the Command Center row in `FUNCTIONAL_RECOVERY_ACCEPTANCE.md` can become PASS.
+The repository implementation now aligns Command Center integration readiness with the canonical Administration control plane and includes all seven supported framework integrations, including AIL. This resolves a repository-level consistency defect but does not retire the owner-functional blocker by itself. Green CI and browser fixtures remain repository evidence only; the accountable owner must still validate the canonical interface against the accepted same-origin environment before the Command Center row in `FUNCTIONAL_RECOVERY_ACCEPTANCE.md` can become PASS.
 
 Repository and browser CI do not prove live upstream service health, production-equivalent continuity, independent assurance or production authorization.

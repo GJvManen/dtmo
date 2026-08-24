@@ -8,18 +8,16 @@ from sqlalchemy import desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from dtmo.config import Settings
+from dtmo.integration_readiness import integration_readiness
 from dtmo.intelligence.model import IntelligenceSeverity
 from dtmo.persistence.models import ConnectorRun, IntelligenceItem
 
 
-_INTEGRATIONS: tuple[dict[str, str], ...] = (
-    {"id": "taranis", "label": "Taranis", "flag": "feature_taranis_connector", "api_base": "taranis_api_base", "run_id": "taranis"},
-    {"id": "intelowl", "label": "IntelOwl", "flag": "feature_intelowl_enrichment", "api_base": "intelowl_api_base", "run_id": ""},
-    {"id": "opencti", "label": "OpenCTI", "flag": "feature_opencti_read", "api_base": "opencti_api_base", "run_id": ""},
-    {"id": "misp", "label": "MISP", "flag": "feature_misp_connector", "api_base": "misp_api_base", "run_id": "misp"},
-    {"id": "thehive", "label": "TheHive", "flag": "feature_thehive_handoff", "api_base": "thehive_api_base", "run_id": ""},
-    {"id": "cortex", "label": "Cortex", "flag": "feature_cortex_analysis", "api_base": "cortex_api_base", "run_id": ""},
-)
+_RUNTIME_RUN_IDS: dict[str, str] = {
+    "taranis": "taranis",
+    "misp": "misp",
+    "ail": "ail",
+}
 
 
 def build_integration_capabilities(
@@ -28,34 +26,38 @@ def build_integration_capabilities(
 ) -> list[dict[str, Any]]:
     """Describe governed integration capability without inventing runtime health.
 
-    Configuration or a feature flag is not proof that an upstream service is
-    reachable or healthy. Only persisted connector execution state is exposed as
-    runtime observation in this Phase 11.10c read model.
+    Command Center reuses the canonical Administration readiness model so an
+    enabled integration with missing credentials, scopes or allowlists cannot be
+    presented as ready. Persisted connector execution is exposed only as a
+    historical runtime observation, never as a health claim.
     """
 
     latest_runs = latest_runs or {}
     capabilities: list[dict[str, Any]] = []
-    for definition in _INTEGRATIONS:
-        enabled = bool(getattr(settings, definition["flag"]))
-        api_base = str(getattr(settings, definition["api_base"])).strip()
-        configured = bool(api_base)
-        run = latest_runs.get(definition["run_id"]) if definition["run_id"] else None
-        if enabled and not configured:
+    for readiness in integration_readiness(settings):
+        run_id = _RUNTIME_RUN_IDS.get(readiness.id, "")
+        run = latest_runs.get(run_id) if run_id else None
+        # Preserve the Command Center's coarse state vocabulary for the existing
+        # UI while deriving it from the stricter shared readiness contract.
+        if readiness.enabled and readiness.activation_blockers:
             state = "configuration-required"
-        elif enabled:
+        elif readiness.enabled:
             state = "enabled"
         else:
             state = "disabled"
         capabilities.append(
             {
-                "id": definition["id"],
-                "label": definition["label"],
+                "id": readiness.id,
+                "label": readiness.name,
                 "state": state,
-                "enabled": enabled,
-                "configured": configured,
+                "enabled": readiness.enabled,
+                "configured": readiness.configured,
+                "credential_configured": readiness.credential_configured,
+                "can_activate": readiness.can_activate,
+                "activation_blockers": list(readiness.activation_blockers),
                 "scheduled_collection": bool(
-                    enabled
-                    and definition["run_id"]
+                    readiness.enabled
+                    and run_id
                     and settings.feature_live_connectors
                 ),
                 "runtime_observation": run.status if run is not None else None,
@@ -229,7 +231,7 @@ async def build_command_center_snapshot(
         connector_runs = (
             await session.scalars(
                 select(ConnectorRun)
-                .where(ConnectorRun.connector_id.in_(["taranis", "misp"]))
+                .where(ConnectorRun.connector_id.in_(["taranis", "misp", "ail"]))
                 .order_by(desc(ConnectorRun.started_at))
             )
         ).all()
@@ -249,8 +251,10 @@ async def build_command_center_snapshot(
         "trends": trends,
         "integrations": build_integration_capabilities(settings, latest_runs),
         "evidence_boundary": (
-            "Command Center values and trends are canonical DTMO read models. Enabled or configured "
-            "integrations are not labelled healthy without runtime observation, and missing "
-            "canonical-store evidence is reported as unavailable rather than synthesized."
+            "Command Center values and trends are canonical DTMO read models. Integration readiness "
+            "reuses the governed Administration contract; enabled integrations with unresolved credentials, "
+            "scopes or allowlists remain configuration-required. Persisted runtime observations are historical "
+            "evidence only and are never labelled healthy. Missing canonical-store evidence is reported as "
+            "unavailable rather than synthesized."
         ),
     }
