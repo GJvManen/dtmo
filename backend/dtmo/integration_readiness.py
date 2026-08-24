@@ -16,6 +16,8 @@ class IntegrationReadiness:
     enabled: bool
     configured: bool
     credential_configured: bool
+    can_activate: bool
+    activation_blockers: tuple[str, ...]
     action: str
     detail: str
 
@@ -27,6 +29,24 @@ def _secret_present(value: object) -> bool:
     getter = getattr(value, "get_secret_value", None)
     raw = getter() if callable(getter) else value
     return bool(str(raw or "").strip())
+
+
+def _component_blockers(settings: Settings, integration_id: str) -> list[str]:
+    blockers: list[str] = []
+    if integration_id == "ail" and not settings.ail_object_global_ids.strip():
+        blockers.append("AIL object scope")
+    elif integration_id == "intelowl" and not settings.intelowl_allowed_analyzers.strip():
+        blockers.append("IntelOwl analyzer allowlist")
+    elif integration_id == "cortex" and not settings.cortex_allowed_analyzers.strip():
+        blockers.append("Cortex analyzer allowlist")
+    elif integration_id == "opencti":
+        if not settings.opencti_allowed_entity_types.strip():
+            blockers.append("OpenCTI entity-type allowlist")
+        if not settings.opencti_checkpoint_path.strip():
+            blockers.append("OpenCTI checkpoint path")
+    elif integration_id == "thehive" and not settings.thehive_organization.strip():
+        blockers.append("TheHive organization scope")
+    return blockers
 
 
 def integration_readiness(settings: Settings) -> tuple[IntegrationReadiness, ...]:
@@ -43,17 +63,42 @@ def integration_readiness(settings: Settings) -> tuple[IntegrationReadiness, ...
     for integration_id, name, enabled, api_base, credential, action in specs:
         configured = bool(api_base.strip())
         credential_configured = _secret_present(credential)
-        if enabled and configured and credential_configured:
+        blockers: list[str] = []
+        if not configured:
+            blockers.append("API endpoint")
+        if not credential_configured:
+            blockers.append("server-side credential")
+        blockers.extend(_component_blockers(settings, integration_id))
+        can_activate = not blockers
+
+        if enabled and can_activate:
             state: ReadinessState = "ready"
-            detail = "Enabled and runtime configuration is present. Runtime health remains a separate signal."
-        elif enabled and configured:
+            detail = "Enabled and required runtime configuration is present. Runtime health remains a separate signal."
+        elif enabled and configured and not credential_configured and len(blockers) == 1:
             state = "credential-required"
             detail = "Enabled and endpoint configured, but runtime credential is missing."
         elif enabled:
             state = "configuration-required"
-            detail = "Enabled, but endpoint configuration is incomplete."
+            detail = "Enabled, but required runtime configuration is incomplete: " + ", ".join(blockers) + "."
         else:
             state = "disabled"
-            detail = "Capability exists but is intentionally disabled until governed runtime configuration is supplied."
-        rows.append(IntegrationReadiness(integration_id, name, state, bool(enabled), configured, credential_configured, action, detail))
+            if can_activate:
+                detail = "Required runtime configuration is present; explicit governed activation is still required."
+            else:
+                detail = "Capability exists but remains disabled until governed runtime configuration is complete: " + ", ".join(blockers) + "."
+
+        rows.append(
+            IntegrationReadiness(
+                integration_id,
+                name,
+                state,
+                bool(enabled),
+                configured,
+                credential_configured,
+                can_activate,
+                tuple(blockers),
+                action,
+                detail,
+            )
+        )
     return tuple(rows)
