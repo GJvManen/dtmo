@@ -41,10 +41,19 @@ def test_canonical_ioc_workspace_filters_and_pivots_without_manual_uuid_primary_
         "All sources",
         "new URLSearchParams({ item: record.item_id, observable_type: record.observable_type, observable_value: record.observable_value })",
         "return `/workbench/analysis?${params.toString()}`",
+        "return `/workbench/intelligence?item=${encodeURIComponent(record.item_id)}`",
+        "Open source intelligence",
         "/workbench/intelligence/graph?item=",
         "/workbench/investigations?item=",
         "IOC inventory without inferred verdicts",
     ):
         assert marker in source
+    for marker in (
+        "new URLSearchParams(window.location.search).get('item')",
+        "`/api/v1/intelligence/${encodeURIComponent(initialItem)}/workspace`",
+        "setSelectedId(item.id); setDetail(item)",
+        "IOC and other canonical object pivots may deep-link by canonical item identifier",
+    ):
+        assert marker in unified
     assert "IocExplorerWorkspace" in unified
     assert "if (isIoc) return <IocExplorerWorkspace />" in unified

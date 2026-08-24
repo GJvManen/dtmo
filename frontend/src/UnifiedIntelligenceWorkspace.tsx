@@ -51,6 +51,7 @@ function displayDate(value?: string | null) {
 }
 
 export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?: Mode }) {
+  const [initialItem] = useState(() => new URLSearchParams(window.location.search).get('item') ?? '');
   const [query, setQuery] = useState('');
   const [severity, setSeverity] = useState('');
   const [minimumRelevance, setMinimumRelevance] = useState(0);
@@ -59,7 +60,7 @@ export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?:
   const [discoveryMode, setDiscoveryMode] = useState<'loading' | 'recent' | 'search' | 'empty' | 'error'>(mode === 'intelligence' ? 'loading' : 'empty');
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(initialItem || null);
   const [detail, setDetail] = useState<IntelligenceWorkspaceDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
@@ -85,6 +86,22 @@ export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?:
     return () => { active = false; };
   }, [isIoc, populationRefresh]);
 
+  useEffect(() => {
+    if (isIoc || !initialItem) return;
+    let active = true;
+    setDetail(null); setDetailError(null); setDetailLoading(true);
+    void getJson<IntelligenceWorkspaceDetail>(`/api/v1/intelligence/${encodeURIComponent(initialItem)}/workspace`).then((item) => {
+      if (!active) return;
+      setSelectedId(item.id); setDetail(item);
+    }).catch((error) => {
+      if (!active) return;
+      setDetailError(error instanceof Error ? error.message : 'Canonical intelligence detail unavailable');
+    }).finally(() => {
+      if (active) setDetailLoading(false);
+    });
+    return () => { active = false; };
+  }, [initialItem, isIoc]);
+
   async function runSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const normalizedQuery = query.trim();
@@ -102,7 +119,12 @@ export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?:
 
   async function selectResult(result: IntelligenceSearchResult) {
     setSelectedId(result.id); setDetail(null); setDetailError(null); setDetailLoading(true);
-    try { setDetail(await getJson<IntelligenceWorkspaceDetail>(`/api/v1/intelligence/${encodeURIComponent(result.id)}/workspace`)); }
+    try {
+      const item = await getJson<IntelligenceWorkspaceDetail>(`/api/v1/intelligence/${encodeURIComponent(result.id)}/workspace`);
+      setDetail(item);
+      const params = new URLSearchParams({ item: item.id });
+      window.history.replaceState(null, '', `/workbench/intelligence?${params.toString()}`);
+    }
     catch (error) { setDetailError(error instanceof Error ? error.message : 'Canonical intelligence detail unavailable'); }
     finally { setDetailLoading(false); }
   }
@@ -161,7 +183,7 @@ export function UnifiedIntelligenceWorkspace({ mode = 'intelligence' }: { mode?:
         </article>
       </div>
 
-      <article className="surface evidence-surface intelligence-evidence"><div><p className="eyebrow">Evidence boundary</p><h2>Canonical recent view without fabricated content</h2></div><p>The default Threat Intelligence view is populated only from objects already present in canonical DTMO persistence. When that persistence is empty, an authorized operator can execute an already-enabled governed source from the same canonical workspace and then explicitly reload recent persistence. Search remains a separate governed projection. Missing content stays visibly missing and is never converted into synthetic intelligence, live-source health, staging acceptance or production authorization.</p></article>
+      <article className="surface evidence-surface intelligence-evidence"><div><p className="eyebrow">Evidence boundary</p><h2>Canonical recent view without fabricated content</h2></div><p>The default Threat Intelligence view is populated only from objects already present in canonical DTMO persistence. When that persistence is empty, an authorized operator can execute an already-enabled governed source from the same canonical workspace and then explicitly reload recent persistence. IOC and other canonical object pivots may deep-link by canonical item identifier, but the detail is still retrieved from the server-authorized canonical workspace API. Search remains a separate governed projection. Missing content stays visibly missing and is never converted into synthetic intelligence, live-source health, staging acceptance or production authorization.</p></article>
     </section>
   );
 }
