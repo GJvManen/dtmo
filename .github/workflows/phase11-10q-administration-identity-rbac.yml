@@ -1,0 +1,36 @@
+name: Phase 11.10q Administration Identity RBAC Recovery Gate
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  administration-identity-rbac:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install backend test dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Run canonical Administration identity/RBAC contract
+        run: python -m pytest -q backend/tests/test_phase11_10q_administration_identity_rbac.py
+      - name: Record evidence boundary
+        shell: bash
+        run: |
+          printf '%s\n' \
+            'Repository-controlled exact-head contract evidence only.' \
+            'This gate does not prove owner acceptance, production-equivalent operation or external assurance.'
