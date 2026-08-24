@@ -36,7 +36,7 @@ def test_default_discovery_preserves_evidence_boundaries():
     assert "populated only from objects already present in canonical DTMO persistence" in text
     assert "never converted into synthetic intelligence" in text
     assert "Neither path grants review, publication, sharing, connector-execution or case-mutation authority" in text
-    assert "Activation, endpoint changes and credentials stay in Sources &amp; Collection" in population
+    assert "Activation, endpoint changes and credentials stay in Sources & Collection" in population
     assert "does not approve intelligence for review, publication or external sharing" in population
 
 
