@@ -8,17 +8,19 @@ def test_phase11_10q_remains_blocked_while_owner_rejected_workspaces_are_unresol
     text = ACCEPTANCE.read_text(encoding="utf-8")
     required = [
         "BLOCKED / OWNER FUNCTIONAL REJECTION",
-        "Administration / Settings | BLOCKED",
+        "Framework integrations | BLOCKED",
         "Threat Intelligence | BLOCKED",
         "IOC Explorer | BLOCKED",
         "Knowledge Graph | BLOCKED",
-        "Exposure | BLOCKED",
+        "Vulnerability & Exposure Center | BLOCKED",
+        "Investigations | BLOCKED",
         "Analysis & Enrichment | BLOCKED",
         "Sharing & Exchange | BLOCKED",
         "Automation & Playbooks | BLOCKED",
         "Sources & Collection | BLOCKED",
-        "Command Center | BLOCKED",
-        "An empty-state-only workspace is not functionally complete.",
+        "Operations | BLOCKED",
+        "Administration | BLOCKED",
+        "An empty-state-only workspace is not functionally complete",
         "Manual UUID entry is not an acceptable primary workflow",
         "owner functional retest explicitly accepts the canonical interface",
     ]
