@@ -76,7 +76,7 @@ export function ThreatIntelligencePopulation({ onPopulated }: { onPopulated: () 
   return (
     <section className="detail-section" aria-labelledby="population-title">
       <h3 id="population-title">Populate canonical intelligence</h3>
-      <p>Only already-enabled governed sources can be executed here. Activation, endpoint changes and credentials stay in Sources &amp; Collection and remain server-authorized.</p>
+      <p>{'Only already-enabled governed sources can be executed here. Activation, endpoint changes and credentials stay in Sources & Collection and remain server-authorized.'}</p>
       {!allowed && <p className="panel-state">This principal cannot execute sources. Open <a href="/workbench/collection">Sources &amp; Collection</a> to inspect available operator actions.</p>}
       {allowed && enabledSources.length === 0 && <p className="panel-state">No governed source is currently enabled. Open <a href="/workbench/collection">Sources &amp; Collection</a> to validate, test and explicitly activate a supported source.</p>}
       {allowed && enabledSources.length > 0 && <div className="quick-grid" aria-label="Enabled intelligence sources">
