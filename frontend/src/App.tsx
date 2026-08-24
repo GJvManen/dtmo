@@ -2,12 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
+import { AdministrationWorkspace } from './AdministrationWorkspace';
 import { AnalysisWorkspace } from './AnalysisWorkspace';
 import { AutomationWorkspace } from './AutomationWorkspace';
 import { CollectionWorkspace } from './CollectionWorkspace';
 import { ExposureWorkspace } from './ExposureWorkspace';
 import { GovernanceWorkspace } from './GovernanceWorkspace';
 import { InvestigationsWorkspace } from './InvestigationsWorkspace';
+import { IocExplorerWorkspace } from './IocExplorerWorkspace';
 import { MispSharingWorkspace } from './MispSharingWorkspace';
 import { OpenCTIGraphWorkspace } from './OpenCTIGraphWorkspace';
 import { UnifiedIntelligenceWorkspace } from './UnifiedIntelligenceWorkspace';
@@ -291,6 +293,7 @@ function CommandCenter({ session, health }: { session?: Session; health?: Health
 }
 
 function WorkspaceFoundation({ workspace }: { workspace: WorkspaceDefinition }) {
+  if (workspace.path === '/administration') return <AdministrationWorkspace />;
   if (workspace.path === '/automation') return <AutomationWorkspace />;
   if (workspace.path === '/collection') return <CollectionWorkspace />;
   if (workspace.path === '/exposure') return <ExposureWorkspace />;
@@ -394,7 +397,7 @@ export function App() {
             <Route path="/" element={<Navigate to="/command-center" replace />} />
             <Route path="/command-center/*" element={<CommandCenter session={session.data} health={health.data} />} />
             <Route path="/intelligence" element={<UnifiedIntelligenceWorkspace />} />
-            <Route path="/intelligence/iocs" element={<UnifiedIntelligenceWorkspace mode="ioc" />} />
+            <Route path="/intelligence/iocs" element={<IocExplorerWorkspace />} />
             <Route path="/intelligence/graph" element={<OpenCTIGraphWorkspace />} />
             <Route path="/analysis/*" element={<AnalysisWorkspace />} />
             {workspaces.filter((workspace) => !['/command-center', '/intelligence', '/intelligence/iocs', '/intelligence/graph', '/analysis'].includes(workspace.path)).map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
