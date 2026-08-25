@@ -87,6 +87,7 @@ export function AdministrationWorkspace() {
   const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [lastMispRun, setLastMispRun] = useState<ConnectorRunResult | null>(null);
   const [lastAilRun, setLastAilRun] = useState<ConnectorRunResult | null>(null);
+  const [lastTaranisRun, setLastTaranisRun] = useState<ConnectorRunResult | null>(null);
   const [lastIdentitySaved, setLastIdentitySaved] = useState<string | null>(null);
   const [newSubject, setNewSubject] = useState('');
   const [newDisplayName, setNewDisplayName] = useState('');
@@ -151,6 +152,13 @@ export function AdministrationWorkspace() {
       void client.invalidateQueries({ queryKey: ['administration', 'integrations'] });
     },
   });
+  const taranisRunMutation = useMutation({
+    mutationFn: () => runJson<ConnectorRunResult>('/connectors/taranis/run'),
+    onSuccess: (result) => {
+      setLastTaranisRun(result);
+      void client.invalidateQueries({ queryKey: ['administration', 'integrations'] });
+    },
+  });
   const createPrincipalMutation = useMutation({
     mutationFn: () => writeJson<PrincipalRow>('/api/v1/admin/rbac/principals', 'POST', {
       subject: newSubject,
@@ -206,7 +214,7 @@ export function AdministrationWorkspace() {
 
       <article className="surface command-panel" aria-labelledby="integration-admin-title">
         <header className="panel-heading"><div><p className="eyebrow">Framework integrations</p><h2 id="integration-admin-title">Runtime configuration</h2></div><span className="evidence-label">manage:connectors</span></header>
-        <p className="boundary-copy">Endpoint, enablement and write-only credential replacement are mutable here. MISP exposes governed read/import execution. AIL additionally requires an explicit non-secret object scope and remains read-only/data-minimized; Administration never starts AIL crawlers. Completed runs are request-specific runtime evidence, not blanket upstream-health or publication claims.</p>
+        <p className="boundary-copy">Endpoint, enablement and write-only credential replacement are mutable here. MISP and Taranis expose governed read/import execution. AIL additionally requires an explicit non-secret object scope and remains read-only/data-minimized; Administration never starts AIL crawlers. Completed runs are request-specific runtime evidence, not blanket upstream-health or publication claims.</p>
       </article>
 
       {!session.isPending && !connectorAllowed && <article className="surface panel-state error-state"><strong>Integration administration unavailable</strong><span>This principal does not have server-authorized <code>manage:connectors</code>.</span></article>}
@@ -220,6 +228,7 @@ export function AdministrationWorkspace() {
           const dirty = draft.enabled !== row.enabled || draft.apiBase !== row.api_base || Boolean(draft.credential.trim()) || scopeDirty;
           const canRunMisp = row.id === 'misp' && row.enabled && row.state === 'ready' && !dirty;
           const canRunAil = row.id === 'ail' && row.enabled && row.state === 'ready' && !dirty;
+          const canRunTaranis = row.id === 'taranis' && row.enabled && row.state === 'ready' && !dirty;
           return <article className="surface command-panel" key={row.id} data-integration={row.id}>
             <header className="panel-heading"><div><p className="eyebrow">{row.id}</p><h2>{row.name}</h2></div><span className={`status-chip ${row.state === 'ready' ? 'success' : 'neutral'}`}>{row.state.replaceAll('-', ' ')}</span></header>
             <label><span>API endpoint</span><input value={draft.apiBase} placeholder="https://platform.example/api" onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, apiBase: event.target.value } }))} /></label>
@@ -229,10 +238,12 @@ export function AdministrationWorkspace() {
             <p className="boundary-copy">Credential: {row.credential_configured ? 'configured server-side' : 'not configured'}. Submitted values are write-only, cleared from this form after save and never returned by the API. {row.credential_boundary}</p>
             {row.activation_blockers.length > 0 && <p className="panel-state">Activation blockers: {row.activation_blockers.join(', ')}.</p>}
             {row.id === 'ail' && <p className="boundary-copy">AIL scope is non-secret persisted runtime configuration. Only explicitly scoped objects are read; crawler creation or activation is outside this workspace.</p>}
+            {row.id === 'taranis' && <p className="boundary-copy">Taranis import uses the existing server-side checkpoint/reconciliation path and bounded detail/CTI enrichment budget. Imported records remain read-only and do not gain external-share authority.</p>}
             <div className="quick-grid">
               <button type="button" className="quick-action" disabled={!dirty || integrationMutation.isPending} onClick={() => integrationMutation.mutate({ id: row.id, enabled: draft.enabled, apiBase: draft.apiBase, credential: draft.credential, ailObjectScope: draft.ailObjectScope })}><span aria-hidden="true">✓</span><div><strong>Save configuration</strong><small>Persist endpoint, enablement, optional credential replacement and governed component scope through DTMO.</small></div></button>
               {row.id === 'misp' && <button type="button" className="quick-action" data-misp-run disabled={!canRunMisp || mispRunMutation.isPending} onClick={() => mispRunMutation.mutate()}><span aria-hidden="true">↻</span><div><strong>Run MISP import now</strong><small>{dirty ? 'Save the current configuration before execution.' : row.state === 'ready' && row.enabled ? 'Execute the existing server-side MISP read connector and ingest returned canonical records.' : 'Enable MISP with endpoint and server-side credential before execution.'}</small></div></button>}
               {row.id === 'ail' && <button type="button" className="quick-action" data-ail-run disabled={!canRunAil || ailRunMutation.isPending} onClick={() => ailRunMutation.mutate()}><span aria-hidden="true">↻</span><div><strong>Run AIL import now</strong><small>{dirty ? 'Save the current AIL configuration before execution.' : row.state === 'ready' && row.enabled ? 'Read only the explicitly scoped AIL objects through the existing server-side connector and canonical ingest path.' : 'Enable AIL with endpoint, server-side credential and explicit object scope before execution.'}</small></div></button>}
+              {row.id === 'taranis' && <button type="button" className="quick-action" data-taranis-run disabled={!canRunTaranis || taranisRunMutation.isPending} onClick={() => taranisRunMutation.mutate()}><span aria-hidden="true">↻</span><div><strong>Run Taranis import now</strong><small>{dirty ? 'Save the current Taranis configuration before execution.' : row.state === 'ready' && row.enabled ? 'Execute the existing server-side checkpointed Taranis read connector and ingest returned canonical records.' : 'Enable Taranis with endpoint and server-side API token before execution.'}</small></div></button>}
             </div>
             {lastSaved === row.id && !integrationMutation.isError && <p className="panel-state">Configuration saved and reloaded. Credential values are not reloaded into the browser.</p>}
             {integrationMutation.isError && <p className="panel-state error-state">{integrationMutation.error.message}</p>}
@@ -240,6 +251,8 @@ export function AdministrationWorkspace() {
             {row.id === 'misp' && lastMispRun && !mispRunMutation.isError && <p className={`panel-state ${lastMispRun.status === 'completed' ? '' : 'error-state'}`}>MISP runtime result: {lastMispRun.status}. Records {lastMispRun.records}; inserted {lastMispRun.inserted}; indexed {lastMispRun.indexed}; attempts {lastMispRun.attempts}. Alert {lastMispRun.alert_state}. Correlation {lastMispRun.correlation_id ?? 'not reported'}.{lastMispRun.error ? ` Error: ${lastMispRun.error}` : ''}</p>}
             {row.id === 'ail' && ailRunMutation.isError && <p className="panel-state error-state">AIL import failed: {ailRunMutation.error.message}</p>}
             {row.id === 'ail' && lastAilRun && !ailRunMutation.isError && <p className={`panel-state ${lastAilRun.status === 'completed' ? '' : 'error-state'}`}>AIL runtime result: {lastAilRun.status}. Records {lastAilRun.records}; inserted {lastAilRun.inserted}; indexed {lastAilRun.indexed}; attempts {lastAilRun.attempts}. Alert {lastAilRun.alert_state}. Correlation {lastAilRun.correlation_id ?? 'not reported'}.{lastAilRun.error ? ` Error: ${lastAilRun.error}` : ''}</p>}
+            {row.id === 'taranis' && taranisRunMutation.isError && <p className="panel-state error-state">Taranis import failed: {taranisRunMutation.error.message}</p>}
+            {row.id === 'taranis' && lastTaranisRun && !taranisRunMutation.isError && <p className={`panel-state ${lastTaranisRun.status === 'completed' ? '' : 'error-state'}`}>Taranis runtime result: {lastTaranisRun.status}. Records {lastTaranisRun.records}; inserted {lastTaranisRun.inserted}; indexed {lastTaranisRun.indexed}; attempts {lastTaranisRun.attempts}. Alert {lastTaranisRun.alert_state}. Correlation {lastTaranisRun.correlation_id ?? 'not reported'}.{lastTaranisRun.error ? ` Error: ${lastTaranisRun.error}` : ''}</p>}
           </article>;
         })}
       </div>}
@@ -290,7 +303,7 @@ export function AdministrationWorkspace() {
         })}
       </div>}
 
-      <article className="surface evidence-surface"><div><p className="eyebrow">Canonical administration boundary</p><h2>No legacy administration dependency</h2></div><p>Integration endpoint, enablement, write-only credential replacement, governed MISP runtime import, explicit scoped AIL read/import and managed identity/RBAC administration are available through same-origin canonical APIs. Continue to <NavLink to="/collection">Sources & Collection</NavLink> for source execution and to <NavLink to="/governance">Governance & Evidence</NavLink> for governance evidence. Administration never grants review, sharing, publication or external-assurance authority by UI presence alone.</p></article>
+      <article className="surface evidence-surface"><div><p className="eyebrow">Canonical administration boundary</p><h2>No legacy administration dependency</h2></div><p>Integration endpoint, enablement, write-only credential replacement, governed MISP and Taranis runtime imports, explicit scoped AIL read/import and managed identity/RBAC administration are available through same-origin canonical APIs. Continue to <NavLink to="/collection">Sources & Collection</NavLink> for source execution and to <NavLink to="/governance">Governance & Evidence</NavLink> for governance evidence. Administration never grants review, sharing, publication or external-assurance authority by UI presence alone.</p></article>
     </section>
   );
 }
