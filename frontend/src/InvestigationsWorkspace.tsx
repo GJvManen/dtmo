@@ -207,7 +207,7 @@ export function InvestigationsWorkspace() {
           <p>Canonical DTMO investigation context with explicit human-authorized TheHive case handoff and durable reconciliation evidence.</p>
         </div>
         <div className="heading-statuses">
-          <span className="phase-badge">11.10q Investigations recovery</span>
+          <span className="phase-badge">11.10h TheHive Investigations · 11.10q discovery recovery</span>
           <span className="phase-badge available">Human case authority required</span>
         </div>
       </header>
