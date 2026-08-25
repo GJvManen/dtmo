@@ -77,7 +77,7 @@ def test_intelowl_analyzer_policy_is_configurable_without_moving_execution_into_
     assert "IntelOwl analyzer allowlist" in workspace
     assert "intelowl_allowed_analyzers" in workspace
     assert "intelowl_allowed_analyzers" in backend
-    assert 'integration_id in {"ail", "intelowl"}' in backend
+    assert 'integration_id in {"ail", "intelowl", "cortex"}' in backend
     assert "IntelOwl analyzer allowlist is only valid for the IntelOwl integration" in backend
     assert "IntelOwl execution itself remains in the governed Analysis &amp; Enrichment workflow" in workspace
     assert "Run IntelOwl" not in workspace
