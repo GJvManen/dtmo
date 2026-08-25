@@ -31,7 +31,14 @@ def test_canonical_workbench_shell_navigation_and_context(page: Page) -> None:
     page.wait_for_url("**/workbench/command-center")
     expect(page.get_by_role("heading", name="Command Center", level=1)).to_be_visible()
     expect(page.get_by_role("navigation", name="Werkruimten")).to_be_visible()
+
+    context_toggle = page.get_by_role("button", name="Objectcontext wisselen")
+    expect(context_toggle).to_have_attribute("aria-expanded", "false")
+    expect(page.get_by_text("Geen object geselecteerd")).to_be_hidden()
+    context_toggle.click()
+    expect(context_toggle).to_have_attribute("aria-expanded", "true")
     expect(page.get_by_text("Geen object geselecteerd")).to_be_visible()
+
     expect(page.get_by_role("heading", name="Operational visibility without synthetic claims", level=2)).to_be_visible()
     expect(page.get_by_role("link", name="Compatibility console", exact=True)).to_have_count(0)
     expect(page.locator('aside.primary-nav a[href^="/ui/"]')).to_have_count(0)
