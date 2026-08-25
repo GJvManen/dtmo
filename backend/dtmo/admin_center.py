@@ -34,6 +34,7 @@ class IntegrationPatch(BaseModel):
     api_base: str | None = None
     credential: SecretStr | None = None
     ail_object_global_ids: str | None = None
+    intelowl_allowed_analyzers: str | None = None
 
 
 def _secret_present(value: object) -> bool:
@@ -50,7 +51,7 @@ def _read_json_object(path: Path) -> dict[str, object]:
     return document if isinstance(document, dict) else {}
 
 
-def _normalize_ail_object_scope(value: str) -> str:
+def _normalize_csv(value: str) -> str:
     return ",".join(item.strip() for item in value.split(",") if item.strip())
 
 
@@ -66,7 +67,9 @@ def _apply_persisted_runtime_configuration() -> None:
         if isinstance(values.get("api_base"), str):
             setattr(settings, api_attr, values["api_base"].strip())
         if integration_id == "ail" and isinstance(values.get("ail_object_global_ids"), str):
-            settings.ail_object_global_ids = _normalize_ail_object_scope(values["ail_object_global_ids"])
+            settings.ail_object_global_ids = _normalize_csv(values["ail_object_global_ids"])
+        if integration_id == "intelowl" and isinstance(values.get("intelowl_allowed_analyzers"), str):
+            settings.intelowl_allowed_analyzers = _normalize_csv(values["intelowl_allowed_analyzers"])
 
     secrets = _read_json_object(_RUNTIME_SECRET_PATH)
     for integration_id, value in secrets.items():
@@ -86,6 +89,8 @@ def _persist_runtime_configuration() -> None:
         }
         if integration_id == "ail":
             values["ail_object_global_ids"] = settings.ail_object_global_ids
+        if integration_id == "intelowl":
+            values["intelowl_allowed_analyzers"] = settings.intelowl_allowed_analyzers
         document[integration_id] = values
     try:
         _RUNTIME_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -125,7 +130,7 @@ def _integration_row(integration_id: str) -> dict[str, object]:
     else:
         state = "disabled"
 
-    if integration_id == "ail":
+    if integration_id in {"ail", "intelowl"}:
         readiness = next(row for row in integration_readiness(settings) if row.id == integration_id)
         state = readiness.state
         activation_blockers = list(readiness.activation_blockers)
@@ -143,6 +148,7 @@ def _integration_row(integration_id: str) -> dict[str, object]:
         "can_activate": can_activate,
         "activation_blockers": activation_blockers,
         "ail_object_global_ids": settings.ail_object_global_ids if integration_id == "ail" else "",
+        "intelowl_allowed_analyzers": settings.intelowl_allowed_analyzers if integration_id == "intelowl" else "",
         "credential_boundary": "Credentials remain server-side and are never returned by this API.",
     }
 
@@ -185,7 +191,11 @@ def update_integration(
     if payload.ail_object_global_ids is not None:
         if integration_id != "ail":
             raise HTTPException(status_code=422, detail="AIL object scope is only valid for the AIL integration")
-        settings.ail_object_global_ids = _normalize_ail_object_scope(payload.ail_object_global_ids)
+        settings.ail_object_global_ids = _normalize_csv(payload.ail_object_global_ids)
+    if payload.intelowl_allowed_analyzers is not None:
+        if integration_id != "intelowl":
+            raise HTTPException(status_code=422, detail="IntelOwl analyzer allowlist is only valid for the IntelOwl integration")
+        settings.intelowl_allowed_analyzers = _normalize_csv(payload.intelowl_allowed_analyzers)
     if payload.enabled is not None:
         setattr(settings, enabled_attr, payload.enabled)
     _persist_runtime_configuration()
