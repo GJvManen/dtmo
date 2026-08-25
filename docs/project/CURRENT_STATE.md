@@ -44,7 +44,7 @@ The current lifecycle priority is now **fresh candidate freeze and production-eq
 | Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.10a–11.10o | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10q Functional Recovery Acceptance | `MERGED / OWNER-AUTHORIZED MERGE` |
-| Post-11.10q framework-integration hardening | `PASS / MERGED THROUGH PR #332` |
+| Post-11.10q framework-integration hardening | `PASS / REPOSITORY_COMPLETE` |
 | Fresh candidate freeze | `NEXT / REQUIRED` |
 | Phase 11.10p fresh production-equivalent validation | `NOT YET EXECUTED FOR NEW CANDIDATE` |
 | Phase 11.11 independent external assurance | `NOT STARTED` |
