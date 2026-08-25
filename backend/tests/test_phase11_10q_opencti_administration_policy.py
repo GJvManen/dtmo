@@ -15,7 +15,7 @@ def test_opencti_runtime_policy_is_configurable_from_canonical_administration() 
     assert "opencti_checkpoint_path" in workspace
     assert "opencti_allowed_entity_types" in backend
     assert "opencti_checkpoint_path" in backend
-    assert 'integration_id in {"ail", "intelowl", "cortex", "opencti"}' in backend
+    assert 'integration_id in {"ail", "intelowl", "cortex", "opencti", "thehive"}' in backend
     assert "OpenCTI entity-type allowlist is only valid for the OpenCTI integration" in backend
     assert "OpenCTI checkpoint path is only valid for the OpenCTI integration" in backend
     assert "Run OpenCTI" not in workspace
