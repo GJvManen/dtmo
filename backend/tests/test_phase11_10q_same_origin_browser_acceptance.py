@@ -74,10 +74,11 @@ async def test_canonical_workbench_uses_real_same_origin_api_and_persistence() -
         if command["data_state"] == "available":
             await expect(page.get_by_role("list", name="Canonical intelligence arrivals over seven days")).to_be_visible()
             assert await page.get_by_role("list", name="Canonical intelligence arrivals over seven days").get_by_role("listitem").count() == 7
-        await expect(page.get_by_role("heading", name="Integration readiness", exact=False)).to_be_visible()
-        integration_rows = page.locator(".integration-panel .integration-row")
+        integration_panel = page.locator(".integration-panel")
+        await expect(integration_panel.get_by_text("Integration readiness", exact=True)).to_be_visible()
+        integration_rows = integration_panel.locator(".integration-row")
         assert await integration_rows.count() >= 7
-        assert await page.locator(".integration-panel .integration-pivot").count() >= 7
+        assert await integration_panel.locator(".integration-pivot").count() >= 7
         assert await page.locator('a[href^="/ui/"]').count() == 0
 
         # Prove a real browser mutation reaches DTMO persistence. The source is created
