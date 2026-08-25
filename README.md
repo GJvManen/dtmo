@@ -92,7 +92,7 @@ Production-equivalent validation and production authorization are separate lifec
 
 ## Current maturity and release position
 
-The detailed lifecycle ledger remains authoritative in [Current State](docs/project/CURRENT_STATE.md). In compact form: earlier accepted engineering and owner baselines remain recorded as `PASS / OWNER_ACCEPTED`; E8 capability work remains `REPOSITORY_COMPLETE`; historical Phase 9 evidence remains `EXTERNAL_ASSURANCE_ACCEPTED` for its historical candidate; Phase 10 remains `NO-GO / BLOCKED`; Phase 11 remains `IN PROGRESS` while fresh candidate-bound validation is completed; and Phase 12 remains `NOT STARTED`. These labels are lifecycle references, not a substitute for the authoritative status documents.
+The detailed lifecycle ledger remains authoritative in [Current State](docs/project/CURRENT_STATE.md). In compact form: earlier accepted engineering and owner baselines remain recorded as `PASS / OWNER_ACCEPTED`; the accepted E8.1–E8.10 capability baseline remains `REPOSITORY_COMPLETE`; historical Phase 9 evidence remains `EXTERNAL_ASSURANCE_ACCEPTED` for its historical candidate; Phase 10 remains `NO-GO / BLOCKED`; Phase 11 remains `IN PROGRESS` while fresh candidate-bound validation is completed; and Phase 12 remains `NOT STARTED`. These labels are lifecycle references, not a substitute for the authoritative status documents.
 
 ## Product roadmap
 
