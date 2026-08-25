@@ -29,4 +29,4 @@ def test_thehive_policy_uses_shared_fail_closed_readiness() -> None:
 def test_thehive_credential_remains_server_side() -> None:
     workspace = WORKSPACE.read_text(encoding="utf-8")
     assert "Credential (write-only)" in workspace
-    assert "Credentials remain server-side" in workspace
+    assert "Credentials and authorization policy remain server-side." in workspace
