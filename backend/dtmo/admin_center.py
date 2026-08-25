@@ -36,6 +36,8 @@ class IntegrationPatch(BaseModel):
     ail_object_global_ids: str | None = None
     intelowl_allowed_analyzers: str | None = None
     cortex_allowed_analyzers: str | None = None
+    opencti_allowed_entity_types: str | None = None
+    opencti_checkpoint_path: str | None = None
 
 
 def _secret_present(value: object) -> bool:
@@ -73,6 +75,11 @@ def _apply_persisted_runtime_configuration() -> None:
             settings.intelowl_allowed_analyzers = _normalize_csv(values["intelowl_allowed_analyzers"])
         if integration_id == "cortex" and isinstance(values.get("cortex_allowed_analyzers"), str):
             settings.cortex_allowed_analyzers = _normalize_csv(values["cortex_allowed_analyzers"])
+        if integration_id == "opencti":
+            if isinstance(values.get("opencti_allowed_entity_types"), str):
+                settings.opencti_allowed_entity_types = _normalize_csv(values["opencti_allowed_entity_types"])
+            if isinstance(values.get("opencti_checkpoint_path"), str):
+                settings.opencti_checkpoint_path = values["opencti_checkpoint_path"].strip()
 
     secrets = _read_json_object(_RUNTIME_SECRET_PATH)
     for integration_id, value in secrets.items():
@@ -96,6 +103,9 @@ def _persist_runtime_configuration() -> None:
             values["intelowl_allowed_analyzers"] = settings.intelowl_allowed_analyzers
         if integration_id == "cortex":
             values["cortex_allowed_analyzers"] = settings.cortex_allowed_analyzers
+        if integration_id == "opencti":
+            values["opencti_allowed_entity_types"] = settings.opencti_allowed_entity_types
+            values["opencti_checkpoint_path"] = settings.opencti_checkpoint_path
         document[integration_id] = values
     try:
         _RUNTIME_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -135,7 +145,7 @@ def _integration_row(integration_id: str) -> dict[str, object]:
     else:
         state = "disabled"
 
-    if integration_id in {"ail", "intelowl", "cortex"}:
+    if integration_id in {"ail", "intelowl", "cortex", "opencti"}:
         readiness = next(row for row in integration_readiness(settings) if row.id == integration_id)
         state = readiness.state
         activation_blockers = list(readiness.activation_blockers)
@@ -155,6 +165,8 @@ def _integration_row(integration_id: str) -> dict[str, object]:
         "ail_object_global_ids": settings.ail_object_global_ids if integration_id == "ail" else "",
         "intelowl_allowed_analyzers": settings.intelowl_allowed_analyzers if integration_id == "intelowl" else "",
         "cortex_allowed_analyzers": settings.cortex_allowed_analyzers if integration_id == "cortex" else "",
+        "opencti_allowed_entity_types": settings.opencti_allowed_entity_types if integration_id == "opencti" else "",
+        "opencti_checkpoint_path": settings.opencti_checkpoint_path if integration_id == "opencti" else "",
         "credential_boundary": "Credentials remain server-side and are never returned by this API.",
     }
 
@@ -206,6 +218,14 @@ def update_integration(
         if integration_id != "cortex":
             raise HTTPException(status_code=422, detail="Cortex analyzer allowlist is only valid for the Cortex integration")
         settings.cortex_allowed_analyzers = _normalize_csv(payload.cortex_allowed_analyzers)
+    if payload.opencti_allowed_entity_types is not None:
+        if integration_id != "opencti":
+            raise HTTPException(status_code=422, detail="OpenCTI entity-type allowlist is only valid for the OpenCTI integration")
+        settings.opencti_allowed_entity_types = _normalize_csv(payload.opencti_allowed_entity_types)
+    if payload.opencti_checkpoint_path is not None:
+        if integration_id != "opencti":
+            raise HTTPException(status_code=422, detail="OpenCTI checkpoint path is only valid for the OpenCTI integration")
+        settings.opencti_checkpoint_path = payload.opencti_checkpoint_path.strip()
     if payload.enabled is not None:
         setattr(settings, enabled_attr, payload.enabled)
     _persist_runtime_configuration()
