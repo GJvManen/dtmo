@@ -31,9 +31,12 @@ def test_investigation_discovery_does_not_expand_case_authority() -> None:
     assert "No fabricated case detail" in source
 
 
-def test_owner_acceptance_keeps_investigations_blocked_until_retest() -> None:
+def test_owner_acceptance_records_investigations_recovery_without_external_evidence_promotion() -> None:
     acceptance = ACCEPTANCE.read_text(encoding="utf-8")
 
-    assert "| Investigations | BLOCKED |" in acceptance
-    assert "Manual UUID entry is not an acceptable primary workflow" in acceptance
-    assert "owner functional retest explicitly accepts" in acceptance
+    assert "MERGED / OWNER-AUTHORIZED MERGE" in acceptance
+    assert "| Investigations | Normal/default workflow did not work. |" in acceptance
+    assert "manual UUID is no longer the primary flow" in acceptance
+    assert "Manual UUID entry is not an acceptable primary path" in acceptance
+    assert "does **not** invent or retroactively create live, staging, production-equivalent" in acceptance
+    assert "freeze a new candidate" in acceptance
