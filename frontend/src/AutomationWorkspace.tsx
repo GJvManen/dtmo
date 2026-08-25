@@ -171,7 +171,7 @@ export function AutomationWorkspace() {
             <div><dt>Consecutive failures</dt><dd>{selectedPersisted.consecutive_failures}</dd></div>
             <div><dt>Isolation until</dt><dd>{displayTime(selectedPersisted.isolated_until)}</dd></div>
           </dl>}
-          <p className="boundary-copy">This panel re-reads persisted Source Center connector state after execution and explicit refresh. It is durable latest-state evidence, not a complete immutable run history and not proof of upstream availability, source truth, production readiness or remediation success.</p>
+          <p className="boundary-copy">This panel re-reads persisted Source Center connector state after execution and explicit refresh. It is durable latest-state evidence, not a complete immutable run history. It does not prove source truth, upstream availability, production readiness or remediation success.</p>
         </article>
       </div>
 
