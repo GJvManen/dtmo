@@ -92,7 +92,7 @@ Production-equivalent validation and production authorization are separate lifec
 
 ## Current maturity and release position
 
-The detailed lifecycle ledger remains authoritative in [Current State](docs/project/CURRENT_STATE.md). In compact form: earlier accepted engineering and owner baselines remain recorded as `PASS / OWNER_ACCEPTED`; the accepted E8.1–E8.10 capability baseline remains `REPOSITORY_COMPLETE`; historical Phase 9 evidence remains `EXTERNAL_ASSURANCE_ACCEPTED` for its historical candidate; Phase 10 remains `NO-GO / BLOCKED`; Phase 11 remains `IN PROGRESS` while fresh candidate-bound validation is completed; and Phase 12 remains `NOT STARTED`. These labels are lifecycle references, not a substitute for the authoritative status documents.
+The detailed lifecycle ledger remains authoritative in [Current State](docs/project/CURRENT_STATE.md). In compact form: the accepted Phase 8 historical baseline remains `PASS / OWNER_ACCEPTED`; historical Phase 9 evidence remains `EXTERNAL_ASSURANCE_ACCEPTED` for its historical candidate; Phase 10 remains `NO-GO / BLOCKED`; the accepted E8.1–E8.10 and completed Phase 11 integration baselines remain `PASS / REPOSITORY_COMPLETE`; Phase 11 remains `IN PROGRESS`, with Phase 11.10 at `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`; Phase 11.11 remains `NOT STARTED`; and Phase 12 remains `NOT STARTED`. These labels are concise lifecycle references, not a substitute for the authoritative status documents.
 
 ## Product roadmap
 
@@ -100,12 +100,12 @@ Product roadmaps and implementation sequencing are maintained in the dedicated [
 
 ## Contributing and responsible disclosure
 
-Contributions are welcome within the project's security, provenance and authority boundaries. Before contributing, read [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) and the relevant architecture and security documentation.
+Contributions are welcome within the project's security, provenance and authority boundaries. Before contributing, read `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` and the relevant architecture and security documentation. The stable open-source governance entry points are `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SUPPORTED_VERSIONS.md`, `docs/legal/LICENSING.md` and `docs/legal/THIRD_PARTY.md`; `LICENSE` and `NOTICE` remain the canonical legal notices.
 
-Report security vulnerabilities according to [SECURITY.md](SECURITY.md). Do not disclose sensitive vulnerability details through public issues.
+Report security vulnerabilities according to `SECURITY.md`. Do not disclose sensitive vulnerability details through public issues.
 
 ## Open source and responsible use
 
-DTMO is released under the **Apache License, Version 2.0**. `LICENSE` and `NOTICE` are the canonical licensing notices; additional licensing and third-party information is maintained in [Licensing](docs/legal/LICENSING.md) and [Third-party Notices](docs/legal/THIRD_PARTY.md).
+DTMO is released under the **Apache License, Version 2.0**. `LICENSE` and `NOTICE` are the canonical licensing notices; additional licensing and third-party information is maintained in `docs/legal/LICENSING.md` and `docs/legal/THIRD_PARTY.md`.
 
 Use DTMO only with authorized data sources, infrastructure and testing scopes. Preserve provenance, handling restrictions, privacy obligations and accountable human decision-making throughout the intelligence lifecycle.
