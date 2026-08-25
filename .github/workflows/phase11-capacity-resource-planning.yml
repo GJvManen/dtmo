@@ -25,4 +25,5 @@ jobs:
       - name: Render Helm capacity policy
         uses: azure/setup-helm@v4
       - run: helm template dtmo deploy/helm/dtmo --set image.digest=sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa > /tmp/rendered.yaml
-      - run: grep -q 'kind: HorizontalPodAutoscaler' /tmp/rendered.yaml
+      - run: |
+          grep -q 'kind: HorizontalPodAutoscaler' /tmp/rendered.yaml
