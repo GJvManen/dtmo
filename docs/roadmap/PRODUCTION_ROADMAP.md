@@ -55,11 +55,9 @@ Repository acceptance of these controls does not establish production-equivalent
 
 ## Phase 11.10 functional recovery closure
 
-PR #316 (`Phase 11.10q: Functional Completeness Remediation`) was merged on 2026-08-25. The final PR head was `a2dff382d7d08d9058db0d0540c9ef1af172090a`; the merge commit is `e0a6019f561eaedade250093225ca22d9c937e8b`. The owner explicitly directed the merge after GitHub reported zero failed pull-request workflow runs for that exact head.
+Phase 11.10q functional completeness remediation is historically `MERGED / OWNER-AUTHORIZED`. Its acceptance records the repository product-lifecycle decision and preserves the recovered canonical Administration, Sources & Collection, Threat Intelligence, IOC Explorer, Knowledge Graph, Vulnerability & Exposure, Analysis, Investigations, Sharing & Exchange, Automation & Playbooks, Command Center and Operations capabilities as accepted repository scope.
 
-The remediation integrated the canonical Administration control plane, Sources & Collection, Threat Intelligence population/default discovery, IOC Explorer inventory and pivots, Knowledge Graph discovery/population, Vulnerability & Exposure population/filtering, object-driven Analysis and Investigations, Sharing & Exchange, executable/observable Automation & Playbooks, Command Center readiness/trends, canonical Operations, and unmocked same-origin repository browser acceptance.
-
-The merge decision is owner product acceptance for this repository lifecycle step. It is **not** new production-equivalent or external-assurance evidence. Historical Phase 8/9 evidence remains historical and cannot be transferred to the current candidate.
+That lifecycle acceptance is **not** new production-equivalent or external-assurance evidence. Historical Phase 8/9 evidence remains historical and cannot be transferred to the current candidate. Run identifiers, pull-request chronology and commit-specific evidence belong in execution/evidence records rather than this stable roadmap.
 
 ## Phase 11.10p — immutable candidate freeze and fresh production-equivalent validation
 
