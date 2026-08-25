@@ -24,7 +24,7 @@ type PrincipalRow = {
 };
 type RbacMatrix = { separation_of_duties: string[]; immutable_policy: boolean };
 type GovernedAssignment = { principal: PrincipalRow; request_id: string; reason: string; authorization_note: string };
-type DraftState = Record<string, { enabled: boolean; apiBase: string }>;
+type DraftState = Record<string, { enabled: boolean; apiBase: string; credential: string }>;
 type PrincipalDraftState = Record<string, { displayName: string; active: boolean; roles: string[]; reason: string }>;
 
 async function readJson<T>(url: string): Promise<T> {
@@ -95,9 +95,14 @@ export function AdministrationWorkspace() {
   const roleRows = useMemo(() => roles.data ?? [], [roles.data]);
   const principalRows = useMemo(() => principals.data ?? [], [principals.data]);
   const integrationMutation = useMutation({
-    mutationFn: ({ id, enabled, apiBase }: { id: string; enabled: boolean; apiBase: string }) => writeJson<IntegrationRow>(`/api/v1/admin/integrations/${encodeURIComponent(id)}`, 'PATCH', { enabled, api_base: apiBase }),
+    mutationFn: ({ id, enabled, apiBase, credential }: { id: string; enabled: boolean; apiBase: string; credential: string }) => writeJson<IntegrationRow>(`/api/v1/admin/integrations/${encodeURIComponent(id)}`, 'PATCH', {
+      enabled,
+      api_base: apiBase,
+      ...(credential.trim() ? { credential: credential.trim() } : {}),
+    }),
     onSuccess: (row) => {
       setLastSaved(row.id);
+      setDrafts((current) => ({ ...current, [row.id]: { enabled: row.enabled, apiBase: row.api_base, credential: '' } }));
       void client.invalidateQueries({ queryKey: ['administration', 'integrations'] });
     },
   });
@@ -156,7 +161,7 @@ export function AdministrationWorkspace() {
 
       <article className="surface command-panel" aria-labelledby="integration-admin-title">
         <header className="panel-heading"><div><p className="eyebrow">Framework integrations</p><h2 id="integration-admin-title">Runtime configuration</h2></div><span className="evidence-label">manage:connectors</span></header>
-        <p className="boundary-copy">Endpoint and enablement are mutable here. Credential values never return to the browser. Enabling an integration does not prove connectivity or healthy upstream operation.</p>
+        <p className="boundary-copy">Endpoint, enablement and write-only credential replacement are mutable here. Credential values never return to the browser after submission. Enabling an integration does not prove connectivity or healthy upstream operation.</p>
       </article>
 
       {!session.isPending && !connectorAllowed && <article className="surface panel-state error-state"><strong>Integration administration unavailable</strong><span>This principal does not have server-authorized <code>manage:connectors</code>.</span></article>}
@@ -165,15 +170,16 @@ export function AdministrationWorkspace() {
 
       {connectorAllowed && rows.length > 0 && <div className="command-grid">
         {rows.map((row) => {
-          const draft = drafts[row.id] ?? { enabled: row.enabled, apiBase: row.api_base };
-          const dirty = draft.enabled !== row.enabled || draft.apiBase !== row.api_base;
+          const draft = drafts[row.id] ?? { enabled: row.enabled, apiBase: row.api_base, credential: '' };
+          const dirty = draft.enabled !== row.enabled || draft.apiBase !== row.api_base || Boolean(draft.credential.trim());
           return <article className="surface command-panel" key={row.id} data-integration={row.id}>
             <header className="panel-heading"><div><p className="eyebrow">{row.id}</p><h2>{row.name}</h2></div><span className={`status-chip ${row.state === 'ready' ? 'success' : 'neutral'}`}>{row.state.replaceAll('-', ' ')}</span></header>
             <label><span>API endpoint</span><input value={draft.apiBase} placeholder="https://platform.example/api" onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, apiBase: event.target.value } }))} /></label>
+            <label><span>Credential (write-only)</span><input type="password" autoComplete="new-password" value={draft.credential} placeholder={row.credential_configured ? 'Leave blank to keep current credential' : 'Enter credential'} onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, credential: event.target.value } }))} /></label>
             <label><input type="checkbox" checked={draft.enabled} onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, enabled: event.target.checked } }))} /> Enabled</label>
-            <p className="boundary-copy">Credential: {row.credential_configured ? 'configured server-side' : 'not configured'}. {row.credential_boundary}</p>
-            <div className="quick-grid"><button type="button" className="quick-action" disabled={!dirty || integrationMutation.isPending} onClick={() => integrationMutation.mutate({ id: row.id, enabled: draft.enabled, apiBase: draft.apiBase })}><span aria-hidden="true">✓</span><div><strong>Save configuration</strong><small>Persist endpoint and enablement through the governed DTMO API.</small></div></button></div>
-            {lastSaved === row.id && !integrationMutation.isError && <p className="panel-state">Configuration saved and reloaded.</p>}
+            <p className="boundary-copy">Credential: {row.credential_configured ? 'configured server-side' : 'not configured'}. Submitted values are write-only, cleared from this form after save and never returned by the API. {row.credential_boundary}</p>
+            <div className="quick-grid"><button type="button" className="quick-action" disabled={!dirty || integrationMutation.isPending} onClick={() => integrationMutation.mutate({ id: row.id, enabled: draft.enabled, apiBase: draft.apiBase, credential: draft.credential })}><span aria-hidden="true">✓</span><div><strong>Save configuration</strong><small>Persist endpoint, enablement and optional credential replacement through the governed DTMO API.</small></div></button></div>
+            {lastSaved === row.id && !integrationMutation.isError && <p className="panel-state">Configuration saved and reloaded. Credential values are not reloaded into the browser.</p>}
             {integrationMutation.isError && <p className="panel-state error-state">{integrationMutation.error.message}</p>}
           </article>;
         })}
@@ -225,7 +231,7 @@ export function AdministrationWorkspace() {
         })}
       </div>}
 
-      <article className="surface evidence-surface"><div><p className="eyebrow">Canonical administration boundary</p><h2>No legacy administration dependency</h2></div><p>Integration configuration and managed identity/RBAC administration are available through same-origin canonical APIs. Continue to <NavLink to="/collection">Sources & Collection</NavLink> for source execution and to <NavLink to="/governance">Governance & Evidence</NavLink> for governance evidence. Administration never grants review, sharing, publication or external-assurance authority by UI presence alone.</p></article>
+      <article className="surface evidence-surface"><div><p className="eyebrow">Canonical administration boundary</p><h2>No legacy administration dependency</h2></div><p>Integration endpoint, enablement and write-only credential replacement plus managed identity/RBAC administration are available through same-origin canonical APIs. Continue to <NavLink to="/collection">Sources & Collection</NavLink> for source execution and to <NavLink to="/governance">Governance & Evidence</NavLink> for governance evidence. Administration never grants review, sharing, publication or external-assurance authority by UI presence alone.</p></article>
     </section>
   );
 }

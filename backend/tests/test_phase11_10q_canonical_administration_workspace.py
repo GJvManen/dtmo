@@ -27,11 +27,15 @@ def test_canonical_administration_uses_same_origin_governed_read_and_patch() -> 
     assert '@router.patch("/api/v1/admin/integrations/{integration_id}")' in backend
 
 
-def test_browser_never_receives_or_edits_integration_secret_values() -> None:
+def test_browser_can_replace_credentials_write_only_without_receiving_secret_values() -> None:
     workspace = WORKSPACE.read_text(encoding="utf-8")
     backend = BACKEND.read_text(encoding="utf-8")
-    assert "credential_configured" in workspace
+    assert "Credential (write-only)" in workspace
+    assert 'type="password"' in workspace
+    assert "Leave blank to keep current credential" in workspace
+    assert "credential: credential.trim()" in workspace
     assert "Credentials remain server-side and are never returned by this API." in backend
-    assert "api_key" not in workspace.lower()
-    assert "api_token" not in workspace.lower()
-    assert "password" not in workspace.lower()
+    assert "_RUNTIME_SECRET_PATH" in backend
+    assert "chmod(0o600)" in backend
+    assert '"credential_configured": credential_configured' in backend
+    assert '"credential":' not in backend.split("return {", 1)[1].split("}", 1)[0]

@@ -6,7 +6,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal
@@ -15,6 +15,7 @@ from dtmo.config import get_settings
 router = APIRouter()
 settings = get_settings()
 _RUNTIME_CONFIG_PATH = Path("/var/lib/dtmo/runtime-integration-settings.json")
+_RUNTIME_SECRET_PATH = Path("/var/lib/dtmo/runtime-integration-secrets.json")
 
 _INTEGRATIONS = {
     "misp": ("MISP", "feature_misp_connector", "misp_api_base", "misp_api_key"),
@@ -30,6 +31,7 @@ _INTEGRATIONS = {
 class IntegrationPatch(BaseModel):
     enabled: bool | None = None
     api_base: str | None = None
+    credential: SecretStr | None = None
 
 
 def _secret_present(value: object) -> bool:
@@ -38,13 +40,16 @@ def _secret_present(value: object) -> bool:
     return bool(str(raw or "").strip())
 
 
-def _apply_persisted_runtime_configuration() -> None:
+def _read_json_object(path: Path) -> dict[str, object]:
     try:
-        document = json.loads(_RUNTIME_CONFIG_PATH.read_text(encoding="utf-8"))
+        document = json.loads(path.read_text(encoding="utf-8"))
     except (FileNotFoundError, OSError, json.JSONDecodeError):
-        return
-    if not isinstance(document, dict):
-        return
+        return {}
+    return document if isinstance(document, dict) else {}
+
+
+def _apply_persisted_runtime_configuration() -> None:
+    document = _read_json_object(_RUNTIME_CONFIG_PATH)
     for integration_id, values in document.items():
         spec = _INTEGRATIONS.get(integration_id)
         if spec is None or not isinstance(values, dict):
@@ -54,6 +59,14 @@ def _apply_persisted_runtime_configuration() -> None:
             setattr(settings, enabled_attr, values["enabled"])
         if isinstance(values.get("api_base"), str):
             setattr(settings, api_attr, values["api_base"].strip())
+
+    secrets = _read_json_object(_RUNTIME_SECRET_PATH)
+    for integration_id, value in secrets.items():
+        spec = _INTEGRATIONS.get(integration_id)
+        if spec is None or not isinstance(value, str) or not value.strip():
+            continue
+        _, _, _, secret_attr = spec
+        setattr(settings, secret_attr, SecretStr(value))
 
 
 def _persist_runtime_configuration() -> None:
@@ -70,6 +83,20 @@ def _persist_runtime_configuration() -> None:
         temporary.replace(_RUNTIME_CONFIG_PATH)
     except OSError as exc:
         raise HTTPException(status_code=503, detail=f"runtime configuration could not be persisted: {exc}") from exc
+
+
+def _persist_runtime_credential(integration_id: str, credential: str) -> None:
+    document = _read_json_object(_RUNTIME_SECRET_PATH)
+    document[integration_id] = credential
+    try:
+        _RUNTIME_SECRET_PATH.parent.mkdir(parents=True, exist_ok=True)
+        temporary = _RUNTIME_SECRET_PATH.with_suffix(".tmp")
+        temporary.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        temporary.chmod(0o600)
+        temporary.replace(_RUNTIME_SECRET_PATH)
+        _RUNTIME_SECRET_PATH.chmod(0o600)
+    except OSError as exc:
+        raise HTTPException(status_code=503, detail="runtime credential could not be persisted") from exc
 
 
 def _integration_row(integration_id: str) -> dict[str, object]:
@@ -117,7 +144,7 @@ def update_integration(
     spec = _INTEGRATIONS.get(integration_id)
     if spec is None:
         raise HTTPException(status_code=404, detail="unknown integration")
-    _, enabled_attr, api_attr, _ = spec
+    _, enabled_attr, api_attr, secret_attr = spec
     if payload.api_base is not None:
         api_base = payload.api_base.strip().rstrip("/")
         if api_base and not api_base.startswith(("http://", "https://")):
@@ -125,6 +152,12 @@ def update_integration(
         if settings.production and api_base and not api_base.startswith("https://"):
             raise HTTPException(status_code=422, detail="production integration endpoints require HTTPS")
         setattr(settings, api_attr, api_base)
+    if payload.credential is not None:
+        credential = payload.credential.get_secret_value().strip()
+        if not credential:
+            raise HTTPException(status_code=422, detail="credential must not be empty")
+        _persist_runtime_credential(integration_id, credential)
+        setattr(settings, secret_attr, SecretStr(credential))
     if payload.enabled is not None:
         setattr(settings, enabled_attr, payload.enabled)
     _persist_runtime_configuration()
