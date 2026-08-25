@@ -78,7 +78,7 @@ Important integration references include:
 - `qa/PHASE11_7_CORTEX_DECISION_GATE.md`
 - `qa/PHASE11_7B_CORTEX_CONNECTOR_GATE.md`
 
-The accepted service boundaries remain `PASS / REPOSITORY_COMPLETE`: **Phase 11.3 IntelOwl**, **Phase 11.4 OpenCTI**, **Phase 11.5 MISP**, **Phase 11.6 TheHive** and the accepted Phase 11.7 Cortex analyzer decision boundary. These are repository lifecycle markers, not claims of external environment readiness.
+Stable repository contract markers remain explicit for compatibility with the integration documentation gates: **Phase 11.3 IntelOwl**, **Phase 11.4 OpenCTI**, **Phase 11.5 MISP**, **Phase 11.6 TheHive Handoff Implementation Gate**, **Phase 11.7 Cortex Decision Gate** and the later Cortex analyzer connector boundary. These accepted service boundaries remain `PASS / REPOSITORY_COMPLETE`; they are repository lifecycle markers, not claims of external environment readiness.
 
 ## Security and governance
 
