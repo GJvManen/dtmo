@@ -3,10 +3,12 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta, timezone
+from functools import partial
 from uuid import uuid4
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from sqlalchemy.orm import Session
 
 from dtmo.alerts import connector_alerts
 from dtmo.audit import AuditDecision
@@ -65,6 +67,63 @@ def _automatic_source_due(
     return last_observed + timedelta(seconds=interval_seconds) <= now.astimezone(UTC)
 
 
+def _load_source_state(
+    sync_session: Session,
+    *,
+    source_id: str,
+    now: datetime,
+) -> tuple[ConnectorRuntimeState | None, bool]:
+    return (
+        sync_session.get(ConnectorRuntimeState, source_id),
+        ConnectorStateStore(sync_session).is_isolated(source_id, now=now),
+    )
+
+
+def _record_automatic_source_run(
+    sync_session: Session,
+    *,
+    source_id: str,
+    run_result: ConnectorResult,
+    succeeded: bool,
+    duration: float,
+    inserted: int,
+    indexed: int,
+) -> None:
+    ConnectorStateStore(sync_session).record_run(
+        connector_id=source_id,
+        run_id=uuid4(),
+        succeeded=succeeded,
+        duration_seconds=duration,
+        record_count=len(run_result.records),
+        quarantined=[],
+        error_code=None if succeeded else "source_execution_failed",
+        details={
+            "trigger": "automatic-interval",
+            "inserted": inserted,
+            "indexed": indexed,
+            "error": run_result.error,
+        },
+    )
+
+
+def _append_automatic_source_audit(
+    sync_session: Session,
+    *,
+    source_id: str,
+    source_url: str,
+) -> None:
+    append_persistent_audit_event(
+        sync_session,
+        principal="service:source-scheduler",
+        principal_type="service_account",
+        action="source.auto-run",
+        resource=f"source:{source_id}",
+        decision=AuditDecision.ALLOW,
+        request_id=f"scheduler:{uuid4()}",
+        provenance_reference=source_url,
+    )
+
+
 async def reconcile_registered_sources() -> dict[str, object]:
     """Execute due enabled source-registry entries through canonical ingestion.
 
@@ -92,10 +151,7 @@ async def reconcile_registered_sources() -> dict[str, object]:
             eligible_count += 1
 
             state, isolated = await session.run_sync(
-                lambda sync_session, source_id=source.id: (
-                    sync_session.get(ConnectorRuntimeState, source_id),
-                    ConnectorStateStore(sync_session).is_isolated(source_id, now=now),
-                )
+                partial(_load_source_state, source_id=source.id, now=now)
             )
             if isolated:
                 skipped["isolated"] = skipped.get("isolated", 0) + 1
@@ -129,39 +185,22 @@ async def reconcile_registered_sources() -> dict[str, object]:
             duration = max((datetime.now(UTC) - started).total_seconds(), 0.0)
             succeeded = result.status == "completed"
             await session.run_sync(
-                lambda sync_session,
-                source_id=source.id,
-                run_result=result,
-                run_succeeded=succeeded,
-                run_duration=duration,
-                run_inserted=inserted,
-                run_indexed=indexed: ConnectorStateStore(sync_session).record_run(
-                    connector_id=source_id,
-                    run_id=uuid4(),
-                    succeeded=run_succeeded,
-                    duration_seconds=run_duration,
-                    record_count=len(run_result.records),
-                    quarantined=[],
-                    error_code=None if run_succeeded else "source_execution_failed",
-                    details={
-                        "trigger": "automatic-interval",
-                        "inserted": run_inserted,
-                        "indexed": run_indexed,
-                        "error": run_result.error,
-                    },
+                partial(
+                    _record_automatic_source_run,
+                    source_id=source.id,
+                    run_result=result,
+                    succeeded=succeeded,
+                    duration=duration,
+                    inserted=inserted,
+                    indexed=indexed,
                 )
             )
             alert = connector_alerts.record(result)
             await session.run_sync(
-                lambda sync_session, source_id=source.id, source_url=source.endpoint_url: append_persistent_audit_event(
-                    sync_session,
-                    principal="service:source-scheduler",
-                    principal_type="service_account",
-                    action="source.auto-run",
-                    resource=f"source:{source_id}",
-                    decision=AuditDecision.ALLOW,
-                    request_id=f"scheduler:{uuid4()}",
-                    provenance_reference=source_url,
+                partial(
+                    _append_automatic_source_audit,
+                    source_id=source.id,
+                    source_url=source.endpoint_url,
                 )
             )
             executed_count += 1
