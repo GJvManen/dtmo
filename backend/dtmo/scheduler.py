@@ -77,14 +77,9 @@ async def reconcile_registered_sources() -> dict[str, object]:
     from dtmo.api.routes import database, ingest_connector_record
 
     now = datetime.now(UTC)
-    summary: dict[str, object] = {
-        "status": "completed",
-        "eligible": 0,
-        "executed": 0,
-        "failed": 0,
-        "skipped": {},
-        "publication_gate": "human-review-and-separate-share-approval-required",
-    }
+    eligible_count = 0
+    executed_count = 0
+    failed_count = 0
     skipped: dict[str, int] = {}
 
     async for session in database.session():
@@ -94,7 +89,7 @@ async def reconcile_registered_sources() -> dict[str, object]:
             if not eligible:
                 skipped[reason] = skipped.get(reason, 0) + 1
                 continue
-            summary["eligible"] = int(summary["eligible"]) + 1
+            eligible_count += 1
 
             state, isolated = await session.run_sync(
                 lambda sync_session, source_id=source.id: (
@@ -163,9 +158,9 @@ async def reconcile_registered_sources() -> dict[str, object]:
                     provenance_reference=source_url,
                 )
             )
-            summary["executed"] = int(summary["executed"]) + 1
+            executed_count += 1
             if not succeeded:
-                summary["failed"] = int(summary["failed"]) + 1
+                failed_count += 1
             get_logger("scheduler").info(
                 "registered_source_auto_run",
                 source_id=source.id,
@@ -177,8 +172,14 @@ async def reconcile_registered_sources() -> dict[str, object]:
                 correlation_id=alert.correlation_id,
             )
 
-    summary["skipped"] = skipped
-    return summary
+    return {
+        "status": "completed",
+        "eligible": eligible_count,
+        "executed": executed_count,
+        "failed": failed_count,
+        "skipped": skipped,
+        "publication_gate": "human-review-and-separate-share-approval-required",
+    }
 
 
 class SchedulerService:
@@ -198,6 +199,9 @@ class SchedulerService:
                 self.log.exception("job_failed", job_id=job.id)
                 raise
 
+        options: dict[str, object] = {}
+        if job.run_immediately:
+            options["next_run_time"] = datetime.now(timezone.utc)
         self.scheduler.add_job(
             guarded_handler,
             trigger=IntervalTrigger(seconds=job.interval_seconds),
@@ -206,7 +210,7 @@ class SchedulerService:
             coalesce=True,
             misfire_grace_time=max(job.interval_seconds, 60),
             replace_existing=True,
-            next_run_time=datetime.now(timezone.utc) if job.run_immediately else None,
+            **options,
         )
 
     def _ensure_registered_source_reconciliation(self) -> None:
