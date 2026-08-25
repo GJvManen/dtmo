@@ -146,7 +146,7 @@ The execution package remains:
 - `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
 - `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`;
 - `tools/phase11_production_equivalent_validation.py`;
-- `backend/tests/test_phase11_10_proDUCTION_EQUIVALENT_VALIDATION.py`;
+- `backend/tests/test_phase11_10_production_equivalent_validation.py`;
 - `.github/workflows/phase11-production-equivalent-validation.yml`.
 
 Historical Phase 8/9 evidence cannot satisfy 11.10p. Missing, ambiguous, inaccessible, historical-only or mixed-candidate evidence must **fail closed**. Repository CI validates repository contracts only and does not prove production-equivalent execution or production authorization.
