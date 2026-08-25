@@ -123,7 +123,7 @@ The Phase 11.10 production-equivalent validation package remains:
 
 Production-equivalent validation requires fresh candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery evidence for the **same immutable candidate** and one production-equivalent environment. Historical evidence cannot be reused to satisfy that gate. Missing, ambiguous, inaccessible, historical-only or mixed-candidate evidence fails closed.
 
-The governed screenshot catalogue now contains UI-01 through UI-10. These visuals are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. Synthetic screenshots are not operational evidence, live-connectivity proof, staging acceptance, production-equivalent evidence, external assurance or production authorization.
+The governed screenshot catalogue now contains UI-01 through UI-10. These visuals are documentation illustrations rather than proof of live-source connectivity, staging acceptance or production readiness. No synthetic screenshot is promoted as operational evidence, live-connectivity proof, staging acceptance, production-equivalent evidence, external assurance or production authorization.
 
 ## Current lifecycle reference
 
