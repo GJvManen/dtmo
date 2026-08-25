@@ -15,7 +15,7 @@ def test_cortex_analyzer_policy_is_configurable_from_canonical_administration() 
     assert "Cortex analyzer allowlist" in workspace
     assert "cortex_allowed_analyzers" in workspace
     assert "cortex_allowed_analyzers" in backend
-    assert 'integration_id in {"ail", "intelowl", "cortex", "opencti"}' in backend
+    assert 'integration_id in {"ail", "intelowl", "cortex", "opencti", "thehive"}' in backend
     assert "Cortex analyzer allowlist is only valid for the Cortex integration" in backend
     assert 'integration_id == "cortex" and not settings.cortex_allowed_analyzers.strip()' in readiness
 
