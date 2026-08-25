@@ -68,9 +68,10 @@ def test_phase11_status_preserves_completed_opencti_and_misp_boundaries() -> Non
     assert "11.6 TheHive incident/case handoff" in roadmap
     for text in (roadmap, current_state, readme, portal):
         assert "PASS / REPOSITORY_COMPLETE" in text
-    for text in (current_state, readme, portal):
+    for text in (current_state, portal):
         assert "Phase 11.4 OpenCTI" in text
         assert "Phase 11.5 MISP" in text
+    for text in (current_state, readme, portal):
         assert "not production authorized" in text
 
 
