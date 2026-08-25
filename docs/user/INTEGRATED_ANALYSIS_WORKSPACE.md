@@ -1,21 +1,28 @@
 # Integrated Analysis Workspace
 
-Status: **Phase 11.10e — IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED**
+Status: **Phase 11.10q functional recovery — object-driven analysis implemented; exact-head validation required**
 
-The **Analysis & Enrichment** workspace at `/workbench/analysis` combines persisted IntelOwl enrichment and Cortex analyzer evidence for one canonical DTMO intelligence object.
+The **Analysis & Enrichment** workspace at `/workbench/analysis` combines persisted IntelOwl enrichment and Cortex analyzer evidence for canonical DTMO intelligence objects without requiring opaque UUID copy/paste as the primary workflow.
 
-## Open an object
+## Select an object
 
-Enter the canonical intelligence UUID and choose **Load analysis history**, or open the route with `?item=<uuid>`. The page retrieves stored analysis history through the DTMO API. If history cannot be retrieved, the page reports it as unavailable and does not display a fabricated empty history.
+The primary target surface discovers **recent canonical intelligence from DTMO persistence**. Select an object to load its persisted IntelOwl/Cortex history. The manual canonical UUID field remains only under **Advanced deep link / troubleshooting**.
+
+A pivot from IOC Explorer carries the canonical item plus the selected `observable_type` and `observable_value` into Analysis & Enrichment. This pre-populates the explicit execution target; it does not execute an analyzer automatically.
+
+Threat Intelligence object detail now also exposes a direct **Analyze & enrich** pivot. It carries only the canonical item identifier into `/workbench/analysis`; Analysis then reloads persisted history through the server-authorized DTMO API. Following this pivot does not execute an analyzer automatically and does not grant `review:intelligence` authority.
+
+If canonical target discovery is unavailable, the page fails closed and does not infer an empty object inventory or platform health.
 
 ## Read-only access
 
 A principal with `read:intelligence` can inspect:
 
+- recent canonical intelligence targets;
 - whether IntelOwl and Cortex capabilities are enabled;
 - the explicit observable/analyzer allowlists exposed by DTMO;
 - persisted IntelOwl history;
-- persisted Cortex analyzer history;
+- persisted Cortex analyzer history and stored Cortex result payloads;
 - job identity, status and applicable analyzer metadata;
 - the evidence boundary attached to the combined history.
 
@@ -23,22 +30,22 @@ Enabled/configured capability does not mean the upstream service is healthy.
 
 ## Run analysis
 
-Execution requires the server-side `review:intelligence` permission. A read-only principal sees the workspace but the **Run IntelOwl** and **Run Cortex** controls remain disabled.
+Execution requires the server-side `review:intelligence` permission. A read-only principal sees target discovery and history but the **Run IntelOwl** and **Run Cortex** controls remain disabled.
 
 For an authorized reviewer:
 
-1. select the canonical item;
-2. enter an approved observable type and value;
+1. select recent canonical intelligence, arrive through an object-driven IOC pivot, or follow the direct Threat Intelligence object pivot;
+2. verify the selected observable type and value;
 3. for IntelOwl, preserve the required handling classification and choose explicit allowlisted analyzers;
 4. for Cortex, choose one explicit allowlisted analyzer and a TLP value from 0 through 3;
 5. start the chosen engine explicitly;
-6. review the persisted result in the corresponding history panel.
+6. review the persisted job/history and result in the corresponding history panel.
 
-There is no automatic IntelOwl-to-Cortex fallback and no automatic analyzer discovery.
+There is no automatic IntelOwl-to-Cortex fallback, no automatic analyzer discovery, and no automatic execution merely because a user follows a pivot.
 
 ## Interpretation
 
-**Enrichment is evidence, not a verdict.** IntelOwl and Cortex results do not prove local compromise by themselves. Both histories are displayed with `External share: no` and `Local compromise proven: no` because analyzer output has no external-share or publication authority.
+**Enrichment is evidence, not a verdict.** IntelOwl and Cortex results do not prove local compromise by themselves. Both histories remain bounded by `External share: no` and `Local compromise proven: no`; analyzer output has no external-share or publication authority.
 
 Cortex is analyzer-only. Responders and other external side-effect actions are not exposed through this workspace.
 
@@ -48,4 +55,4 @@ The workspace must **fail closed**. An upstream, policy, canonical-object or per
 
 ## Production boundary
 
-Repository/browser CI can validate exact-head interaction and authority boundaries, but it does **not prove** live analyzer availability or provider authorization, production-equivalent operation, independent assurance or production authorization. DTMO remains not production authorized while Phase 11.10 is in progress.
+Repository/browser CI can validate exact-head interaction and authority boundaries, but it does **not prove** live analyzer availability or provider authorization, production-equivalent operation, independent assurance or production authorization. Phase 11.10q remains blocked until the owner functional retest accepts the canonical interface.

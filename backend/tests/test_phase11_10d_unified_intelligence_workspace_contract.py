@@ -11,6 +11,7 @@ def test_existing_governed_intelligence_contracts_remain_mounted() -> None:
     paths = app.openapi()["paths"]
     assert "/api/v1/intelligence/search" in paths
     assert "/api/v1/intelligence/{item_id}/workspace" in paths
+    assert "/api/v1/command-center" in paths
 
 
 def test_unified_intelligence_workspace_uses_only_dtmo_api_boundaries() -> None:
@@ -19,15 +20,18 @@ def test_unified_intelligence_workspace_uses_only_dtmo_api_boundaries() -> None:
     styles = (ROOT / "frontend/src/unified-intelligence.css").read_text(encoding="utf-8")
 
     for marker in (
+        "/api/v1/command-center",
         "/api/v1/intelligence/search?",
         "/api/v1/intelligence/${encodeURIComponent(result.id)}/workspace",
-        "11.10d Unified Intelligence",
+        "11.10q Functional recovery",
         "Read-only investigation",
-        "Search service unavailable",
+        "Canonical DTMO persistence is unavailable",
         "Canonical detail unavailable",
-        "Indexed discovery is not canonical truth",
+        "Recent intelligence is read from canonical DTMO persistence",
+        "Search uses the governed search projection",
         "Not approved for sharing",
         "Provenance chain",
+        "Canonical recent view without fabricated content",
     ):
         assert marker in source
 

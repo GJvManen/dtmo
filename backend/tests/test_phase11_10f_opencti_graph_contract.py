@@ -64,7 +64,8 @@ def test_frontend_uses_dtmo_api_only_and_routes_graph_workspace() -> None:
         "/api/v1/opencti/capabilities",
         "/api/v1/opencti/items/",
         "/api/v1/opencti/entities/",
-        "Only persisted mappings are shown",
+        "Roots are discovered from canonical DTMO persistence",
+        "Selecting a root reads only DTMO-persisted graph mappings",
         "Relationship topology",
         "Graph presence is context, not a verdict",
     ):

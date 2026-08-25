@@ -2,14 +2,17 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { NavLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
+import { AdministrationWorkspace } from './AdministrationWorkspace';
 import { AnalysisWorkspace } from './AnalysisWorkspace';
 import { AutomationWorkspace } from './AutomationWorkspace';
 import { CollectionWorkspace } from './CollectionWorkspace';
 import { ExposureWorkspace } from './ExposureWorkspace';
 import { GovernanceWorkspace } from './GovernanceWorkspace';
 import { InvestigationsWorkspace } from './InvestigationsWorkspace';
+import { IocExplorerWorkspace } from './IocExplorerWorkspace';
 import { MispSharingWorkspace } from './MispSharingWorkspace';
 import { OpenCTIGraphWorkspace } from './OpenCTIGraphWorkspace';
+import { OperationsWorkspace } from './OperationsWorkspace';
 import { UnifiedIntelligenceWorkspace } from './UnifiedIntelligenceWorkspace';
 
 type Health = {
@@ -55,11 +58,25 @@ type IntegrationCapability = {
   runtime_health_claim: boolean;
 };
 
+type IntelligenceTrendPoint = {
+  date: string;
+  count: number;
+};
+
+type SeverityDistributionPoint = {
+  severity: string;
+  count: number;
+};
+
 type CommandCenterSnapshot = {
   generated_at: string;
   data_state: 'available' | 'unavailable';
   metrics: CommandMetric[];
   recent_intelligence: RecentIntelligence[];
+  trends?: {
+    intelligence_7d: IntelligenceTrendPoint[];
+    severity_distribution: SeverityDistributionPoint[];
+  };
   integrations: IntegrationCapability[];
   evidence_boundary: string;
 };
@@ -155,6 +172,12 @@ function CommandCenter({ session, health }: { session?: Session; health?: Health
   const data = snapshot.data;
   const canonicalDataAvailable = !snapshot.isError && data?.data_state === 'available';
   const enabledIntegrations = data?.integrations.filter((item) => item.enabled).length ?? 0;
+  const configurationRequired = data?.integrations.filter((item) => item.state === 'configuration-required').length ?? 0;
+  const observedIntegrations = data?.integrations.filter((item) => item.runtime_observation !== null).length ?? 0;
+  const trendPoints = data?.trends?.intelligence_7d ?? [];
+  const severityPoints = data?.trends?.severity_distribution ?? [];
+  const trendMax = Math.max(1, ...trendPoints.map((point) => point.count));
+  const severityMax = Math.max(1, ...severityPoints.map((point) => point.count));
 
   return (
     <section className="command-center" aria-labelledby="workspace-title">
@@ -165,7 +188,7 @@ function CommandCenter({ session, health }: { session?: Session; health?: Health
           <p>Attributable operational overview of canonical DTMO intelligence, governed workload and integration capability.</p>
         </div>
         <div className="heading-statuses">
-          <span className="phase-badge">11.10c Command Center</span>
+          <span className="phase-badge">11.10c Command Center · 11.10q recovery</span>
           <span className={`phase-badge ${canonicalDataAvailable ? 'available' : 'unavailable'}`}>{canonicalDataAvailable ? 'Canonical data available' : 'Canonical data unavailable'}</span>
         </div>
       </header>
@@ -204,8 +227,8 @@ function CommandCenter({ session, health }: { session?: Session; health?: Health
 
         <article className="surface command-panel integration-panel">
           <header className="panel-heading">
-            <div><p className="eyebrow">Framework integrations</p><h2>{enabledIntegrations}/{data?.integrations.length ?? 6} enabled</h2></div>
-            <span className="evidence-label">No inferred health</span>
+            <div><p className="eyebrow">Integration readiness</p><h2>{enabledIntegrations}/{data?.integrations.length ?? 6} enabled</h2><small>{configurationRequired} configuration required · {observedIntegrations} runtime observed</small></div>
+            <NavLink className="text-link" to="/administration">Open administration →</NavLink>
           </header>
           {snapshot.isPending && <p className="panel-state">Loading integration capability…</p>}
           {snapshot.isError && <p className="panel-state error-state">Integration capability could not be loaded.</p>}
@@ -215,11 +238,29 @@ function CommandCenter({ session, health }: { session?: Session; health?: Health
                 <div className="integration-row" key={integration.id}>
                   <span className={`integration-state state-${integration.state}`} aria-hidden="true" />
                   <div><strong>{integration.label}</strong><span>{integration.state.replaceAll('-', ' ')} · {integration.runtime_observation ? `observed ${integration.runtime_observation}` : 'runtime not observed'}</span></div>
-                  <time>{relativeTime(integration.last_observed_at)}</time>
+                  <div className="integration-meta"><time>{relativeTime(integration.last_observed_at)}</time><NavLink className="integration-pivot" to={integration.state === 'configuration-required' ? '/administration' : '/collection'}>{integration.state === 'configuration-required' ? 'Configure' : 'Inspect collection'}</NavLink></div>
                 </div>
               ))}
             </div>
           )}
+          <p className="boundary-copy">Enabled and configured are capability states only. Runtime observation is historical evidence and is never promoted to a health claim.</p>
+        </article>
+
+        <article className="surface command-panel trend-panel">
+          <header className="panel-heading"><div><p className="eyebrow">Canonical trend</p><h2>Intelligence arrivals · 7 days</h2></div><NavLink className="text-link" to="/intelligence">Investigate →</NavLink></header>
+          {!canonicalDataAvailable && <p className="panel-state">Trend unavailable while canonical intelligence cannot be observed.</p>}
+          {canonicalDataAvailable && !trendPoints.length && <p className="panel-state">No attributable trend series is available.</p>}
+          {canonicalDataAvailable && Boolean(trendPoints.length) && <div className="trend-chart" role="list" aria-label="Canonical intelligence arrivals over seven days">
+            {trendPoints.map((point) => <div className="trend-column" role="listitem" key={point.date} aria-label={`${point.date}: ${point.count} intelligence objects`}><strong>{point.count}</strong><div className="trend-track"><span style={{ height: `${Math.max(4, (point.count / trendMax) * 100)}%` }} /></div><time dateTime={point.date}>{new Date(`${point.date}T00:00:00Z`).toLocaleDateString(undefined, { weekday: 'short' })}</time></div>)}
+          </div>}
+        </article>
+
+        <article className="surface command-panel severity-panel">
+          <header className="panel-heading"><div><p className="eyebrow">Canonical distribution</p><h2>Severity composition</h2></div><span className="evidence-label">Current store</span></header>
+          {!canonicalDataAvailable && <p className="panel-state">Severity distribution unavailable.</p>}
+          {canonicalDataAvailable && Boolean(severityPoints.length) && <div className="severity-bars" role="list" aria-label="Canonical intelligence severity distribution">
+            {severityPoints.map((point) => <div className="severity-bar" role="listitem" key={point.severity}><div><span className={`severity-dot severity-${point.severity}`} aria-hidden="true" /><strong>{severityLabel(point.severity)}</strong><span>{point.count}</span></div><div className="severity-track"><span className={`severity-fill severity-${point.severity}`} style={{ width: `${Math.max(2, (point.count / severityMax) * 100)}%` }} /></div></div>)}
+          </div>}
         </article>
 
         <article className="surface command-panel quick-panel">
@@ -253,11 +294,13 @@ function CommandCenter({ session, health }: { session?: Session; health?: Health
 }
 
 function WorkspaceFoundation({ workspace }: { workspace: WorkspaceDefinition }) {
+  if (workspace.path === '/administration') return <AdministrationWorkspace />;
   if (workspace.path === '/automation') return <AutomationWorkspace />;
   if (workspace.path === '/collection') return <CollectionWorkspace />;
   if (workspace.path === '/exposure') return <ExposureWorkspace />;
   if (workspace.path === '/governance') return <GovernanceWorkspace />;
   if (workspace.path === '/investigations') return <InvestigationsWorkspace />;
+  if (workspace.path === '/operations') return <OperationsWorkspace />;
   if (workspace.path === '/sharing') return <MispSharingWorkspace />;
   return (
     <section className="workspace-foundation" aria-labelledby="workspace-title">
@@ -285,7 +328,7 @@ function Navigation({ open, onNavigate }: { open: boolean; onNavigate: () => voi
       <nav aria-label="Werkruimten">
         {groups.map((group) => <div className="nav-group" key={group}><p>{group}</p>{workspaces.filter((workspace) => workspace.group === group).map((workspace) => <NavLink key={workspace.path} to={workspace.path} onClick={onNavigate} className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}><span className="nav-icon" aria-hidden="true">{workspace.icon}</span><span>{workspace.label}</span></NavLink>)}</div>)}
       </nav>
-      <div className="nav-footer"><a href="/docs">API documentation</a><a href="/ui/console">Compatibility console</a></div>
+      <div className="nav-footer"><a href="/docs">API documentation</a></div>
     </aside>
   );
 }
@@ -356,7 +399,7 @@ export function App() {
             <Route path="/" element={<Navigate to="/command-center" replace />} />
             <Route path="/command-center/*" element={<CommandCenter session={session.data} health={health.data} />} />
             <Route path="/intelligence" element={<UnifiedIntelligenceWorkspace />} />
-            <Route path="/intelligence/iocs" element={<UnifiedIntelligenceWorkspace mode="ioc" />} />
+            <Route path="/intelligence/iocs" element={<IocExplorerWorkspace />} />
             <Route path="/intelligence/graph" element={<OpenCTIGraphWorkspace />} />
             <Route path="/analysis/*" element={<AnalysisWorkspace />} />
             {workspaces.filter((workspace) => !['/command-center', '/intelligence', '/intelligence/iocs', '/intelligence/graph', '/analysis'].includes(workspace.path)).map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}

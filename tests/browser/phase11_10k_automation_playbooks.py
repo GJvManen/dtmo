@@ -44,7 +44,8 @@ def main() -> None:
         assert page.get_by_text("cisa-kev", exact=True).first.is_visible()
         page.get_by_role("button", name="cisa-kev").click()
         page.get_by_role("button", name="Run bounded collection playbook").click()
-        page.get_by_text("Last bounded execution").wait_for()
+        page.get_by_text("Observed bounded execution result").wait_for()
+        assert page.get_by_text("Correlation: fixture-correlation").is_visible()
         body = page.locator("body").inner_text().lower()
         assert "source truth" in body
         assert "remediation" in body

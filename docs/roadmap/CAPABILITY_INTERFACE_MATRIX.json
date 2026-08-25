@@ -1,0 +1,22 @@
+{
+  "phase": "11.10q1",
+  "status_model": ["EXPOSED", "PARTIAL", "LEGACY_ONLY", "API_ONLY", "HIDDEN_BY_FLAG", "INTENTIONALLY_NON_USER_FACING"],
+  "capabilities": [
+    {"id":"dashboard.summary","backend":"backend/dtmo/dashboards.py","api":"/api/v1/dashboards/summary","canonical_ui":"command-center","status":"PARTIAL","target_slice":"11.10q3"},
+    {"id":"operations.metrics","backend":"backend/dtmo/operations_metrics.py","api":"/api/v1/operations/summary","canonical_ui":"operations","status":"PARTIAL","target_slice":"11.10q12"},
+    {"id":"sources.catalog-bootstrap-run-health","backend":"backend/dtmo/source_center.py","api":"/api/v1/source-center/status","canonical_ui":"sources-collection","status":"PARTIAL","target_slice":"11.10q9"},
+    {"id":"intelligence.workspace-detail","backend":"backend/dtmo/threat_workspace.py","api":"/api/v1/intelligence/{item_id}/workspace","canonical_ui":"threat-intelligence","status":"PARTIAL","target_slice":"11.10q4"},
+    {"id":"intelligence.ail-correlation","backend":"backend/dtmo/ail_correlation_workspace.py","api":"/api/v1/intelligence/{item_id}/ail-correlations","canonical_ui":"threat-intelligence","status":"LEGACY_ONLY","target_slice":"11.10q4"},
+    {"id":"ioc.inventory","backend":"backend/dtmo/api/routes.py","api":"/api/v1/intelligence/search","canonical_ui":"ioc-explorer","status":"PARTIAL","target_slice":"11.10q5"},
+    {"id":"analysis.intelowl","backend":"backend/dtmo/intelowl_execution.py","api":"/api/v1/intelowl/items/{item_id}/enrich","canonical_ui":"analysis-enrichment","status":"PARTIAL","target_slice":"11.10q6"},
+    {"id":"analysis.cortex","backend":"backend/dtmo/analysis_workspace.py","api":"/api/v1/analysis/items/{item_id}/cortex","canonical_ui":"analysis-enrichment","status":"PARTIAL","target_slice":"11.10q6"},
+    {"id":"opencti.graph-mappings-revisions","backend":"backend/dtmo/opencti_workspace.py","api":"/api/v1/opencti/items/{item_id}/graph","canonical_ui":"knowledge-graph","status":"PARTIAL","target_slice":"11.10q7"},
+    {"id":"vulnerability.analytics","backend":"backend/dtmo/vulnerability_console.py","api":"/api/v1/console/vulnerability-analytics","canonical_ui":"vulnerability-exposure","status":"PARTIAL","target_slice":"11.10q8"},
+    {"id":"misp.read-export","backend":"backend/dtmo/misp_workspace.py","api":"/api/v1/intelligence/{item_id}/misp-export","canonical_ui":"misp-sharing","status":"PARTIAL","target_slice":"11.10q10"},
+    {"id":"thehive.handoff","backend":"backend/dtmo/thehive_handoff.py","api":"/api/v1/thehive","canonical_ui":"investigations","status":"PARTIAL","target_slice":"11.10q10"},
+    {"id":"governance.frameworks-crosswalks","backend":"backend/dtmo/framework_experience.py","api":"/api/v1/governance/frameworks","canonical_ui":"governance","status":"PARTIAL","target_slice":"11.10q11"},
+    {"id":"administration.rbac","backend":"backend/dtmo/rc13_administration.py","api":"/api/v1/admin/rbac","canonical_ui":"administration","status":"PARTIAL","target_slice":"11.10q11"},
+    {"id":"ux.preferences","backend":"backend/dtmo/ux_preferences.py","api":"/ui/preferences","canonical_ui":"profile-preferences","status":"LEGACY_ONLY","target_slice":"11.10q13"},
+    {"id":"metrics.prometheus","backend":"backend/dtmo/main.py","api":"/metrics","canonical_ui":null,"status":"INTENTIONALLY_NON_USER_FACING","target_slice":null}
+  ]
+}

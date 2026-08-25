@@ -79,6 +79,24 @@ def test_command_center_renders_canonical_operational_snapshot(page: Page) -> No
                         "discovered_at": "2026-08-20T11:55:00+00:00",
                     }
                 ],
+                "trends": {
+                    "intelligence_7d": [
+                        {"date": "2026-08-14", "count": 8},
+                        {"date": "2026-08-15", "count": 12},
+                        {"date": "2026-08-16", "count": 7},
+                        {"date": "2026-08-17", "count": 19},
+                        {"date": "2026-08-18", "count": 16},
+                        {"date": "2026-08-19", "count": 23},
+                        {"date": "2026-08-20", "count": 31},
+                    ],
+                    "severity_distribution": [
+                        {"severity": "critical", "count": 4},
+                        {"severity": "high", "count": 14},
+                        {"severity": "medium", "count": 63},
+                        {"severity": "low", "count": 91},
+                        {"severity": "informational", "count": 75},
+                    ],
+                },
                 "integrations": [
                     {"id": "taranis", "label": "Taranis", "state": "enabled", "enabled": True, "configured": True, "scheduled_collection": True, "runtime_observation": "completed", "last_observed_at": "2026-08-20T11:58:00+00:00", "runtime_health_claim": False},
                     {"id": "intelowl", "label": "IntelOwl", "state": "enabled", "enabled": True, "configured": True, "scheduled_collection": False, "runtime_observation": None, "last_observed_at": None, "runtime_health_claim": False},
@@ -87,7 +105,7 @@ def test_command_center_renders_canonical_operational_snapshot(page: Page) -> No
                     {"id": "thehive", "label": "TheHive", "state": "disabled", "enabled": False, "configured": False, "scheduled_collection": False, "runtime_observation": None, "last_observed_at": None, "runtime_health_claim": False},
                     {"id": "cortex", "label": "Cortex", "state": "configuration-required", "enabled": True, "configured": False, "scheduled_collection": False, "runtime_observation": None, "last_observed_at": None, "runtime_health_claim": False},
                 ],
-                "evidence_boundary": "Command Center values are canonical DTMO read models; no runtime health is inferred.",
+                "evidence_boundary": "Command Center values and trends are canonical DTMO read models; no runtime health is inferred.",
             },
         ),
     )
@@ -95,11 +113,14 @@ def test_command_center_renders_canonical_operational_snapshot(page: Page) -> No
     page.goto(f"{BASE_URL}/workbench/command-center")
     expect(page.get_by_role("heading", name="Command Center", level=1)).to_be_visible()
     expect(page.get_by_text("247", exact=True)).to_be_visible()
-    expect(page.get_by_text("18", exact=True)).to_be_visible()
+    expect(page.get_by_text("18", exact=True).first).to_be_visible()
     expect(page.get_by_text("High-impact vulnerability activity")).to_be_visible()
     expect(page.get_by_text("Taranis", exact=True)).to_be_visible()
-    expect(page.get_by_text("No inferred health")).to_be_visible()
-    expect(page.get_by_text("Visibility ≠ authority")).to_be_visible()
+    expect(page.get_by_role("heading", name="Intelligence arrivals · 7 days")).to_be_visible()
+    expect(page.get_by_role("heading", name="Severity composition")).to_be_visible()
+    expect(page.get_by_text("31", exact=True).last).to_be_visible()
+    expect(page.get_by_text("1 configuration required · 2 runtime observed", exact=True)).to_be_visible()
+    expect(page.get_by_role("link", name="Configure")).to_be_visible()
     expect(page.get_by_role("link", name="Collection control")).to_be_visible()
     expect(page.get_by_role("link", name="Sharing approvals")).to_be_visible()
 
@@ -129,6 +150,7 @@ def test_command_center_fails_closed_when_canonical_data_is_unavailable(page: Pa
                     ]
                 ],
                 "recent_intelligence": [],
+                "trends": {"intelligence_7d": [], "severity_distribution": []},
                 "integrations": [],
                 "evidence_boundary": "Missing evidence is unavailable rather than synthesized.",
             },
@@ -138,5 +160,7 @@ def test_command_center_fails_closed_when_canonical_data_is_unavailable(page: Pa
     page.goto(f"{BASE_URL}/workbench/command-center")
     expect(page.get_by_text("Canonical data unavailable", exact=True)).to_be_visible()
     expect(page.get_by_text("Canonical store unavailable", exact=True)).to_be_visible()
+    expect(page.get_by_text("Trend unavailable while canonical intelligence cannot be observed.", exact=True)).to_be_visible()
+    expect(page.get_by_text("Severity distribution unavailable.", exact=True)).to_be_visible()
     expect(page.get_by_text("No attributable value").first).to_be_visible()
     expect(page.get_by_text("0", exact=True)).to_have_count(0)

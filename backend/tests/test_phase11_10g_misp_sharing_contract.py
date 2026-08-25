@@ -78,7 +78,7 @@ def test_canonical_workbench_uses_dtmo_apis_only_and_has_no_publish_control() ->
         "/misp-export",
         "11.10g MISP Sharing",
         "reviewed_by === session.subject",
-        "There is no publish or synchronize control in Phase 11.10g",
+        "There is no publish or synchronize control.",
     ):
         assert marker in workspace
     for forbidden in (

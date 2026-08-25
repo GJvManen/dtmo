@@ -116,7 +116,8 @@ def test_unified_intelligence_search_selects_canonical_detail_and_provenance(pag
 
     page.goto(f"{BASE_URL}/workbench/intelligence")
     expect(page.get_by_role("heading", name="Threat Intelligence", level=1)).to_be_visible()
-    expect(page.get_by_text("Search is explicit", exact=True)).to_be_visible()
+    expect(page.get_by_text("Canonical data · no synthetic results", exact=True)).to_be_visible()
+    expect(page.get_by_text("Recent intelligence is read from canonical DTMO persistence.", exact=False)).to_be_visible()
     page.get_by_label("Search canonical intelligence").fill("ransomware")
     page.get_by_label("Severity").select_option("high")
     page.get_by_label("Minimum education relevance").fill("80")
@@ -130,7 +131,8 @@ def test_unified_intelligence_search_selects_canonical_detail_and_provenance(pag
     expect(page.get_by_text("CVE-2026-4242", exact=True)).to_be_visible()
     expect(page.get_by_role("heading", name="Provenance chain", level=4)).to_be_visible()
     expect(page.get_by_text("Primary advisory", exact=True)).to_be_visible()
-    expect(page.get_by_text("Indexed discovery is not canonical truth", exact=True)).to_be_visible()
+    expect(page.get_by_role("heading", name="Canonical recent view without fabricated content", level=2)).to_be_visible()
+    expect(page.get_by_text("Search remains a separate governed projection.", exact=False)).to_be_visible()
 
 
 @pytest.mark.browser
@@ -144,14 +146,54 @@ def test_unified_intelligence_fails_closed_when_search_dependency_is_unavailable
     page.goto(f"{BASE_URL}/workbench/intelligence")
     page.get_by_label("Search canonical intelligence").fill("malware")
     page.get_by_role("button", name="Search intelligence").click()
-    expect(page.get_by_text("Search service unavailable", exact=True)).to_be_visible()
+    expect(page.get_by_text("Intelligence discovery unavailable", exact=True)).to_be_visible()
+    expect(page.get_by_text("search backend unavailable: RuntimeError", exact=False)).to_be_visible()
     expect(page.get_by_text("No intelligence matched this query", exact=True)).to_have_count(0)
 
 
 @pytest.mark.browser
-def test_ioc_explorer_uses_same_governed_unified_workspace(page: Page) -> None:
+def test_ioc_explorer_lists_persisted_observables_filters_and_pivots(page: Page) -> None:
     page.route("**/api/v1/ui/session", _session)
+    page.route(
+        "**/api/v1/iocs?**",
+        lambda route: _json(
+            route,
+            {
+                "records": [
+                    {
+                        "record_id": "00000000-0000-0000-0000-000000000099",
+                        "item_id": ITEM_ID,
+                        "item_title": "Education ransomware campaign activity",
+                        "source_id": "trusted-feed",
+                        "severity": "high",
+                        "confidence_score": 87,
+                        "observable_type": "domain",
+                        "observable_value": "malicious.example",
+                        "handling": "tlp:amber",
+                        "status": "reported_without_inference",
+                        "analyzers": ["dns"],
+                        "created_at": "2026-08-20T12:10:00+00:00",
+                        "external_share_authorized": False,
+                        "local_compromise_proven": False,
+                    }
+                ],
+                "evidence_boundary": "Persisted governed observables only; no maliciousness or compromise verdict.",
+            },
+        ),
+    )
+
     page.goto(f"{BASE_URL}/workbench/intelligence/iocs")
     expect(page.get_by_role("heading", name="IOC Explorer", level=1)).to_be_visible()
-    expect(page.get_by_text("11.10d Unified Intelligence", exact=True)).to_be_visible()
-    expect(page.get_by_label("Search canonical intelligence")).to_have_attribute("placeholder", "Domain, IP, hash, CVE or indicator context…")
+    expect(page.get_by_text("Canonical IOC inventory", exact=True)).to_be_visible()
+    expect(page.get_by_text("No text-derived or synthetic IOCs", exact=True)).to_be_visible()
+    expect(page.get_by_text("malicious.example", exact=True)).to_be_visible()
+    page.get_by_label("Type").select_option("domain")
+    page.get_by_label("Severity").select_option("high")
+    page.get_by_label("Minimum confidence").fill("80")
+    expect(page.get_by_text("malicious.example", exact=True)).to_be_visible()
+    expect(page.get_by_role("link", name="Enrich / analyze selected IOC", exact=True)).to_have_attribute(
+        "href",
+        f"/workbench/analysis?item={ITEM_ID}&observable_type=domain&observable_value=malicious.example",
+    )
+    expect(page.get_by_role("link", name="Graph", exact=True)).to_have_attribute("href", f"/workbench/intelligence/graph?item={ITEM_ID}")
+    expect(page.get_by_role("link", name="Investigate", exact=True)).to_have_attribute("href", f"/workbench/investigations?item={ITEM_ID}")

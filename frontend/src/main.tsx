@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import { AdministrationSecurityAudit } from './AdministrationSecurityAudit';
+import { AdministrationWorkspace } from './AdministrationWorkspace';
 import { App } from './App';
 import './styles.css';
 import './command-center.css';
@@ -22,7 +24,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter basename="/workbench">
-        <App />
+        <Routes>
+          <Route path="/administration" element={<><AdministrationWorkspace /><AdministrationSecurityAudit /></>} />
+          <Route path="*" element={<App />} />
+        </Routes>
       </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>,

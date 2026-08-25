@@ -221,6 +221,10 @@ async def create_source(
         request_id=request_id,
         provenance_reference=source.endpoint_url,
     )
+    # The 201 response is an operator-visible persistence claim. Commit the source
+    # and its audit event atomically before returning so an immediate same-origin
+    # GET cannot race dependency cleanup and temporarily lose the new source.
+    await session.commit()
     return _response(source)
 
 

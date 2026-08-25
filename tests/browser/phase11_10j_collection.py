@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 
 from playwright.sync_api import sync_playwright
 
@@ -65,8 +66,9 @@ def main() -> None:
         page.get_by_role("link", name="Collection", exact=True).click()
         page.get_by_role("heading", name="Sources & Collection").wait_for()
         assert page.get_by_text("Collection ≠ publication").is_visible()
-        assert page.get_by_text("Fixture source").is_visible()
-        page.get_by_role("button", name="Fixture source").click()
+        catalog_source = page.get_by_role("button", name=re.compile(r"^Fixture source supported"))
+        assert catalog_source.is_visible()
+        catalog_source.click()
         page.get_by_role("button", name="validate").click()
         page.get_by_text("Last bounded action").wait_for()
         assert page.get_by_text("Attributable collection without inferred trust").is_visible()

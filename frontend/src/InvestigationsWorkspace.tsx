@@ -1,7 +1,21 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { FormEvent } from 'react';
 
 import './investigations.css';
+
+type RecentIntelligence = {
+  id: string;
+  title: string;
+  source_id: string;
+  severity: string;
+  education_relevance: number;
+  review_status: string;
+  discovered_at: string;
+};
+
+type CommandCenterSnapshot = {
+  data_state: 'available' | 'unavailable';
+  recent_intelligence: RecentIntelligence[];
+};
 
 type InvestigationHandoff = {
   handoff_id: string;
@@ -58,17 +72,10 @@ async function requestJson<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, {
     ...init,
     credentials: 'same-origin',
-    headers: {
-      Accept: 'application/json',
-      ...(init?.headers ?? {}),
-    },
+    headers: { Accept: 'application/json', ...(init?.headers ?? {}) },
   });
   let body: unknown = null;
-  try {
-    body = await response.json();
-  } catch {
-    body = null;
-  }
+  try { body = await response.json(); } catch { body = null; }
   if (!response.ok) {
     const detail = typeof body === 'object' && body !== null && 'detail' in body
       ? String((body as { detail: unknown }).detail)
@@ -85,14 +92,16 @@ function displayTime(value: string) {
 
 function statusTone(status: string) {
   if (status === 'delivered') return 'success';
-  if (status === 'ambiguous') return 'error';
-  if (status === 'failed') return 'error';
+  if (status === 'ambiguous' || status === 'failed') return 'error';
   return 'neutral';
 }
 
 export function InvestigationsWorkspace() {
   const initialItem = useMemo(() => new URLSearchParams(window.location.search).get('item') ?? '', []);
   const [itemId, setItemId] = useState(initialItem);
+  const [recent, setRecent] = useState<RecentIntelligence[]>([]);
+  const [discoveryLoading, setDiscoveryLoading] = useState(true);
+  const [discoveryError, setDiscoveryError] = useState<string | null>(null);
   const [state, setState] = useState<InvestigationState | null>(null);
   const [summary, setSummary] = useState('');
   const [tlp, setTlp] = useState('amber');
@@ -103,12 +112,34 @@ export function InvestigationsWorkspace() {
   const [actionResult, setActionResult] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
+    setDiscoveryLoading(true);
+    setDiscoveryError(null);
+    void requestJson<CommandCenterSnapshot>('/api/v1/command-center').then((snapshot) => {
+      if (!active) return;
+      if (snapshot.data_state !== 'available') {
+        setRecent([]);
+        setDiscoveryError('Canonical DTMO persistence is unavailable');
+        return;
+      }
+      setRecent(snapshot.recent_intelligence);
+    }).catch((loadError) => {
+      if (!active) return;
+      setRecent([]);
+      setDiscoveryError(loadError instanceof Error ? loadError.message : 'Canonical investigation discovery unavailable');
+    }).finally(() => {
+      if (active) setDiscoveryLoading(false);
+    });
+    return () => { active = false; };
+  }, []);
+
+  useEffect(() => {
     if (initialItem) void loadState(initialItem);
     // initial deep-link load must run once only
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialItem]);
 
-  async function loadState(id = itemId.trim()) {
+  async function loadState(id: string) {
     if (!id) return;
     setLoading(true);
     setError(null);
@@ -138,19 +169,12 @@ export function InvestigationsWorkspace() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            request_id: crypto.randomUUID(),
-            summary: summary.trim(),
-            tlp,
-            pap,
-          }),
+          body: JSON.stringify({ request_id: crypto.randomUUID(), summary: summary.trim(), tlp, pap }),
         },
       );
-      setActionResult(
-        result.status === 'delivered'
-          ? `TheHive case handoff delivered${result.thehive_case_number ? ` as case #${result.thehive_case_number}` : ''}.`
-          : `TheHive handoff recorded with status ${result.status}.`,
-      );
+      setActionResult(result.status === 'delivered'
+        ? `TheHive case handoff delivered${result.thehive_case_number ? ` as case #${result.thehive_case_number}` : ''}.`
+        : `TheHive handoff recorded with status ${result.status}.`);
       setSummary('');
     } catch (actionError) {
       setActionResult(`Case handoff blocked: ${actionError instanceof Error ? actionError.message : 'unknown error'}`);
@@ -158,11 +182,6 @@ export function InvestigationsWorkspace() {
       setCreating(false);
       await loadState(state.item_id);
     }
-  }
-
-  function submitItem(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    void loadState();
   }
 
   const reconciliationRequired = Boolean(
@@ -189,23 +208,42 @@ export function InvestigationsWorkspace() {
         </div>
         <div className="heading-statuses">
           <span className="phase-badge">11.10h TheHive Investigations</span>
+          <span className="phase-badge">11.10q discovery recovery</span>
           <span className="phase-badge available">Human case authority required</span>
         </div>
       </header>
 
       <article className="surface investigation-loader">
         <header className="panel-heading">
-          <div><p className="eyebrow">Canonical object</p><h2>Open investigation context</h2></div>
+          <div><p className="eyebrow">Canonical object discovery</p><h2>Open investigation context</h2></div>
           <span className="evidence-label">read:intelligence</span>
         </header>
-        <form className="investigation-item-form" onSubmit={submitItem}>
-          <label>
-            <span>Canonical intelligence item UUID</span>
-            <input value={itemId} onChange={(event) => setItemId(event.target.value)} placeholder="00000000-0000-0000-0000-000000000000" required />
-          </label>
-          <button className="button primary" type="submit" disabled={loading || !itemId.trim()}>{loading ? 'Loading…' : 'Load investigation'}</button>
-        </form>
-        <p className="boundary-copy">Opening an investigation grants no case-creation, responder, sharing or compromise authority. Mutation remains server-authorized by <code>handoff:case</code>.</p>
+        <p className="boundary-copy">Select a recent canonical intelligence object. Discovery is read-only and grants no case-creation, responder, sharing or compromise authority. Mutation remains server-authorized by <code>handoff:case</code>.</p>
+        {discoveryLoading && <p className="panel-state">Loading recent canonical intelligence…</p>}
+        {discoveryError && <div className="panel-state error-state"><strong>Investigation discovery unavailable</strong><span>{discoveryError}. No absence, TheHive-health or compromise conclusion is inferred.</span></div>}
+        {!discoveryLoading && !discoveryError && recent.length === 0 && <p className="panel-state">No recent canonical intelligence is currently available for investigation. Populate canonical intelligence through the governed source workflow first.</p>}
+        {!discoveryLoading && !discoveryError && recent.length > 0 && (
+          <div className="quick-grid" aria-label="Recent canonical intelligence for investigation">
+            {recent.map((item) => (
+              <button
+                type="button"
+                className="quick-action"
+                key={item.id}
+                aria-pressed={itemId === item.id}
+                disabled={loading}
+                onClick={() => void loadState(item.id)}
+              >
+                <span aria-hidden="true">◇</span>
+                <div>
+                  <strong>{item.title}</strong>
+                  <small>{item.source_id} · {item.severity} · relevance {item.education_relevance}</small>
+                  <small>{item.review_status} · {displayTime(item.discovered_at)}</small>
+                </div>
+                <span>{loading && itemId === item.id ? 'Loading…' : 'Open investigation'}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </article>
 
       {error && <div className="surface panel-state error-state"><strong>Investigation state unavailable</strong><span>{error}. No case, TheHive-health or compromise conclusion is inferred.</span></div>}
@@ -285,7 +323,7 @@ export function InvestigationsWorkspace() {
                 <li><strong>Alerts:</strong> not persisted/read back by the accepted TheHive boundary.</li>
                 <li><strong>Tasks:</strong> not persisted/read back by the accepted TheHive boundary.</li>
                 <li><strong>Case timeline:</strong> not persisted/read back by the accepted TheHive boundary.</li>
-                <li><strong>Responders:</strong> no execution authority is exposed in Phase 11.10h.</li>
+                <li><strong>Responders:</strong> no execution authority is exposed in Phase 11.10q.</li>
               </ul>
               <p className="boundary-copy">A delivered handoff proves only the persisted DTMO handoff result and confirmed case identity returned at creation time. It does not prove subsequent upstream case state or action.</p>
             </article>
