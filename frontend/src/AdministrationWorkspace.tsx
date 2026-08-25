@@ -13,6 +13,7 @@ type IntegrationRow = {
   can_activate: boolean;
   activation_blockers: string[];
   ail_object_global_ids: string;
+  intelowl_allowed_analyzers: string;
   credential_boundary: string;
 };
 type ConnectorRunResult = {
@@ -38,7 +39,7 @@ type PrincipalRow = {
 };
 type RbacMatrix = { separation_of_duties: string[]; immutable_policy: boolean };
 type GovernedAssignment = { principal: PrincipalRow; request_id: string; reason: string; authorization_note: string };
-type DraftState = Record<string, { enabled: boolean; apiBase: string; credential: string; ailObjectScope: string }>;
+type DraftState = Record<string, { enabled: boolean; apiBase: string; credential: string; ailObjectScope: string; intelowlAnalyzers: string }>;
 type PrincipalDraftState = Record<string, { displayName: string; active: boolean; roles: string[]; reason: string }>;
 
 async function readJson<T>(url: string): Promise<T> {
@@ -126,15 +127,16 @@ export function AdministrationWorkspace() {
   const roleRows = useMemo(() => roles.data ?? [], [roles.data]);
   const principalRows = useMemo(() => principals.data ?? [], [principals.data]);
   const integrationMutation = useMutation({
-    mutationFn: ({ id, enabled, apiBase, credential, ailObjectScope }: { id: string; enabled: boolean; apiBase: string; credential: string; ailObjectScope: string }) => writeJson<IntegrationRow>(`/api/v1/admin/integrations/${encodeURIComponent(id)}`, 'PATCH', {
+    mutationFn: ({ id, enabled, apiBase, credential, ailObjectScope, intelowlAnalyzers }: { id: string; enabled: boolean; apiBase: string; credential: string; ailObjectScope: string; intelowlAnalyzers: string }) => writeJson<IntegrationRow>(`/api/v1/admin/integrations/${encodeURIComponent(id)}`, 'PATCH', {
       enabled,
       api_base: apiBase,
       ...(credential.trim() ? { credential: credential.trim() } : {}),
       ...(id === 'ail' ? { ail_object_global_ids: ailObjectScope } : {}),
+      ...(id === 'intelowl' ? { intelowl_allowed_analyzers: intelowlAnalyzers } : {}),
     }),
     onSuccess: (row) => {
       setLastSaved(row.id);
-      setDrafts((current) => ({ ...current, [row.id]: { enabled: row.enabled, apiBase: row.api_base, credential: '', ailObjectScope: row.ail_object_global_ids ?? '' } }));
+      setDrafts((current) => ({ ...current, [row.id]: { enabled: row.enabled, apiBase: row.api_base, credential: '', ailObjectScope: row.ail_object_global_ids ?? '', intelowlAnalyzers: row.intelowl_allowed_analyzers ?? '' } }));
       void client.invalidateQueries({ queryKey: ['administration', 'integrations'] });
     },
   });
@@ -214,7 +216,7 @@ export function AdministrationWorkspace() {
 
       <article className="surface command-panel" aria-labelledby="integration-admin-title">
         <header className="panel-heading"><div><p className="eyebrow">Framework integrations</p><h2 id="integration-admin-title">Runtime configuration</h2></div><span className="evidence-label">manage:connectors</span></header>
-        <p className="boundary-copy">Endpoint, enablement and write-only credential replacement are mutable here. MISP and Taranis expose governed read/import execution. AIL additionally requires an explicit non-secret object scope and remains read-only/data-minimized; Administration never starts AIL crawlers. Completed runs are request-specific runtime evidence, not blanket upstream-health or publication claims.</p>
+        <p className="boundary-copy">Endpoint, enablement and write-only credential replacement are mutable here. MISP and Taranis expose governed read/import execution. AIL additionally requires an explicit non-secret object scope. IntelOwl requires a persisted analyzer allowlist before its analyst enrichment actions can become ready. Completed runs are request-specific runtime evidence, not blanket upstream-health or publication claims.</p>
       </article>
 
       {!session.isPending && !connectorAllowed && <article className="surface panel-state error-state"><strong>Integration administration unavailable</strong><span>This principal does not have server-authorized <code>manage:connectors</code>.</span></article>}
@@ -223,9 +225,10 @@ export function AdministrationWorkspace() {
 
       {connectorAllowed && rows.length > 0 && <div className="command-grid">
         {rows.map((row) => {
-          const draft = drafts[row.id] ?? { enabled: row.enabled, apiBase: row.api_base, credential: '', ailObjectScope: row.ail_object_global_ids ?? '' };
+          const draft = drafts[row.id] ?? { enabled: row.enabled, apiBase: row.api_base, credential: '', ailObjectScope: row.ail_object_global_ids ?? '', intelowlAnalyzers: row.intelowl_allowed_analyzers ?? '' };
           const scopeDirty = row.id === 'ail' && draft.ailObjectScope !== (row.ail_object_global_ids ?? '');
-          const dirty = draft.enabled !== row.enabled || draft.apiBase !== row.api_base || Boolean(draft.credential.trim()) || scopeDirty;
+          const intelowlDirty = row.id === 'intelowl' && draft.intelowlAnalyzers !== (row.intelowl_allowed_analyzers ?? '');
+          const dirty = draft.enabled !== row.enabled || draft.apiBase !== row.api_base || Boolean(draft.credential.trim()) || scopeDirty || intelowlDirty;
           const canRunMisp = row.id === 'misp' && row.enabled && row.state === 'ready' && !dirty;
           const canRunAil = row.id === 'ail' && row.enabled && row.state === 'ready' && !dirty;
           const canRunTaranis = row.id === 'taranis' && row.enabled && row.state === 'ready' && !dirty;
@@ -234,13 +237,15 @@ export function AdministrationWorkspace() {
             <label><span>API endpoint</span><input value={draft.apiBase} placeholder="https://platform.example/api" onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, apiBase: event.target.value } }))} /></label>
             <label><span>Credential (write-only)</span><input type="password" autoComplete="new-password" value={draft.credential} placeholder={row.credential_configured ? 'Leave blank to keep current credential' : 'Enter credential'} onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, credential: event.target.value } }))} /></label>
             {row.id === 'ail' && <label><span>AIL object scope</span><input value={draft.ailObjectScope} placeholder="domain:None:example.org,ip:None:203.0.113.10" onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, ailObjectScope: event.target.value } }))} /></label>}
+            {row.id === 'intelowl' && <label><span>IntelOwl analyzer allowlist</span><input value={draft.intelowlAnalyzers} placeholder="VirusTotal,MalwareBazaar" onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, intelowlAnalyzers: event.target.value } }))} /></label>}
             <label><input type="checkbox" checked={draft.enabled} onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, enabled: event.target.checked } }))} /> Enabled</label>
             <p className="boundary-copy">Credential: {row.credential_configured ? 'configured server-side' : 'not configured'}. Submitted values are write-only, cleared from this form after save and never returned by the API. {row.credential_boundary}</p>
             {row.activation_blockers.length > 0 && <p className="panel-state">Activation blockers: {row.activation_blockers.join(', ')}.</p>}
             {row.id === 'ail' && <p className="boundary-copy">AIL scope is non-secret persisted runtime configuration. Only explicitly scoped objects are read; crawler creation or activation is outside this workspace.</p>}
+            {row.id === 'intelowl' && <p className="boundary-copy">The IntelOwl analyzer allowlist is non-secret server-side runtime policy. Analyzer execution still occurs only from governed analyst workflows and requires the existing review/intelligence authorization boundary.</p>}
             {row.id === 'taranis' && <p className="boundary-copy">Taranis import uses the existing server-side checkpoint/reconciliation path and bounded detail/CTI enrichment budget. Imported records remain read-only and do not gain external-share authority.</p>}
             <div className="quick-grid">
-              <button type="button" className="quick-action" disabled={!dirty || integrationMutation.isPending} onClick={() => integrationMutation.mutate({ id: row.id, enabled: draft.enabled, apiBase: draft.apiBase, credential: draft.credential, ailObjectScope: draft.ailObjectScope })}><span aria-hidden="true">✓</span><div><strong>Save configuration</strong><small>Persist endpoint, enablement, optional credential replacement and governed component scope through DTMO.</small></div></button>
+              <button type="button" className="quick-action" disabled={!dirty || integrationMutation.isPending} onClick={() => integrationMutation.mutate({ id: row.id, enabled: draft.enabled, apiBase: draft.apiBase, credential: draft.credential, ailObjectScope: draft.ailObjectScope, intelowlAnalyzers: draft.intelowlAnalyzers })}><span aria-hidden="true">✓</span><div><strong>Save configuration</strong><small>Persist endpoint, enablement, optional credential replacement and governed component policy through DTMO.</small></div></button>
               {row.id === 'misp' && <button type="button" className="quick-action" data-misp-run disabled={!canRunMisp || mispRunMutation.isPending} onClick={() => mispRunMutation.mutate()}><span aria-hidden="true">↻</span><div><strong>Run MISP import now</strong><small>{dirty ? 'Save the current configuration before execution.' : row.state === 'ready' && row.enabled ? 'Execute the existing server-side MISP read connector and ingest returned canonical records.' : 'Enable MISP with endpoint and server-side credential before execution.'}</small></div></button>}
               {row.id === 'ail' && <button type="button" className="quick-action" data-ail-run disabled={!canRunAil || ailRunMutation.isPending} onClick={() => ailRunMutation.mutate()}><span aria-hidden="true">↻</span><div><strong>Run AIL import now</strong><small>{dirty ? 'Save the current AIL configuration before execution.' : row.state === 'ready' && row.enabled ? 'Read only the explicitly scoped AIL objects through the existing server-side connector and canonical ingest path.' : 'Enable AIL with endpoint, server-side credential and explicit object scope before execution.'}</small></div></button>}
               {row.id === 'taranis' && <button type="button" className="quick-action" data-taranis-run disabled={!canRunTaranis || taranisRunMutation.isPending} onClick={() => taranisRunMutation.mutate()}><span aria-hidden="true">↻</span><div><strong>Run Taranis import now</strong><small>{dirty ? 'Save the current Taranis configuration before execution.' : row.state === 'ready' && row.enabled ? 'Execute the existing server-side checkpointed Taranis read connector and ingest returned canonical records.' : 'Enable Taranis with endpoint and server-side API token before execution.'}</small></div></button>}
@@ -303,7 +308,7 @@ export function AdministrationWorkspace() {
         })}
       </div>}
 
-      <article className="surface evidence-surface"><div><p className="eyebrow">Canonical administration boundary</p><h2>No legacy administration dependency</h2></div><p>Integration endpoint, enablement, write-only credential replacement, governed MISP and Taranis runtime imports, explicit scoped AIL read/import and managed identity/RBAC administration are available through same-origin canonical APIs. Continue to <NavLink to="/collection">Sources & Collection</NavLink> for source execution and to <NavLink to="/governance">Governance & Evidence</NavLink> for governance evidence. Administration never grants review, sharing, publication or external-assurance authority by UI presence alone.</p></article>
+      <article className="surface evidence-surface"><div><p className="eyebrow">Canonical administration boundary</p><h2>No legacy administration dependency</h2></div><p>Integration endpoint, enablement, write-only credential replacement, governed MISP and Taranis runtime imports, explicit scoped AIL read/import, IntelOwl analyzer policy and managed identity/RBAC administration are available through same-origin canonical APIs. IntelOwl execution itself remains in the governed Analysis &amp; Enrichment workflow. Continue to <NavLink to="/collection">Sources & Collection</NavLink> for source execution and to <NavLink to="/governance">Governance & Evidence</NavLink> for governance evidence. Administration never grants review, sharing, publication or external-assurance authority by UI presence alone.</p></article>
     </section>
   );
 }
