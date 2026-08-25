@@ -10,6 +10,8 @@ The primary target surface discovers **recent canonical intelligence from DTMO p
 
 A pivot from IOC Explorer carries the canonical item plus the selected `observable_type` and `observable_value` into Analysis & Enrichment. This pre-populates the explicit execution target; it does not execute an analyzer automatically.
 
+Threat Intelligence object detail now also exposes a direct **Analyze & enrich** pivot. It carries only the canonical item identifier into `/workbench/analysis`; Analysis then reloads persisted history through the server-authorized DTMO API. Following this pivot does not execute an analyzer automatically and does not grant `review:intelligence` authority.
+
 If canonical target discovery is unavailable, the page fails closed and does not infer an empty object inventory or platform health.
 
 ## Read-only access
@@ -32,7 +34,7 @@ Execution requires the server-side `review:intelligence` permission. A read-only
 
 For an authorized reviewer:
 
-1. select recent canonical intelligence, or arrive through an object-driven IOC pivot;
+1. select recent canonical intelligence, arrive through an object-driven IOC pivot, or follow the direct Threat Intelligence object pivot;
 2. verify the selected observable type and value;
 3. for IntelOwl, preserve the required handling classification and choose explicit allowlisted analyzers;
 4. for Cortex, choose one explicit allowlisted analyzer and a TLP value from 0 through 3;

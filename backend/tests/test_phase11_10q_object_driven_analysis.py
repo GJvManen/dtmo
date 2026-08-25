@@ -35,6 +35,18 @@ def test_ioc_pivot_carries_selected_observable_without_auto_execution() -> None:
     assert "No responder authority" in analysis
 
 
+def test_threat_intelligence_detail_has_direct_analysis_pivot_without_auto_execution() -> None:
+    intelligence = read("frontend/src/UnifiedIntelligenceWorkspace.tsx")
+    analysis = read("frontend/src/AnalysisWorkspace.tsx")
+    assert "Continue investigation" in intelligence
+    assert "Analyze &amp; enrich" in intelligence
+    assert "/workbench/analysis?item=${encodeURIComponent(detail.id)}" in intelligence
+    assert "never executes an analyzer automatically" in intelligence
+    assert "execution still requires <code>review:intelligence</code>" in intelligence
+    assert "initial.get('item')" in analysis
+    assert "/api/v1/analysis/items/${encodeURIComponent(normalized)}/history" in analysis
+
+
 def test_analysis_exposes_persisted_history_and_cortex_result_without_inferred_authority() -> None:
     workspace = read("frontend/src/AnalysisWorkspace.tsx")
     api = read("backend/dtmo/intelowl_execution.py")
@@ -51,6 +63,7 @@ def test_analysis_exposes_persisted_history_and_cortex_result_without_inferred_a
 def test_analysis_recovery_documentation_matches_functional_boundary() -> None:
     guide = read("docs/user/INTEGRATED_ANALYSIS_WORKSPACE.md")
     assert "without requiring opaque UUID copy/paste as the primary workflow" in guide
+    assert "Threat Intelligence object detail" in guide
     assert "does not execute an analyzer automatically" in guide
     assert "stored Cortex result payloads" in guide
     assert "Phase 11.10q remains blocked until the owner functional retest" in guide
