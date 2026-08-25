@@ -48,7 +48,7 @@ def test_command_center_maps_disabled_capabilities_to_actionable_administration_
         opencti_api_base="https://opencti.example.invalid/graphql",
         opencti_api_token="runtime-token",
         opencti_allowed_entity_types="Indicator,Malware",
-        opencti_checkpoint_path="/tmp/opencti-checkpoint.json",
+        opencti_checkpoint_path="state/opencti-checkpoint.json",
     )
     opencti = next(
         item for item in build_integration_capabilities(settings) if item["id"] == "opencti"
