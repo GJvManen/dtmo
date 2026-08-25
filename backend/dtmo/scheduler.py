@@ -129,18 +129,24 @@ async def reconcile_registered_sources() -> dict[str, object]:
             duration = max((datetime.now(UTC) - started).total_seconds(), 0.0)
             succeeded = result.status == "completed"
             await session.run_sync(
-                lambda sync_session, source_id=source.id, run_result=result: ConnectorStateStore(sync_session).record_run(
+                lambda sync_session,
+                source_id=source.id,
+                run_result=result,
+                run_succeeded=succeeded,
+                run_duration=duration,
+                run_inserted=inserted,
+                run_indexed=indexed: ConnectorStateStore(sync_session).record_run(
                     connector_id=source_id,
                     run_id=uuid4(),
-                    succeeded=succeeded,
-                    duration_seconds=duration,
+                    succeeded=run_succeeded,
+                    duration_seconds=run_duration,
                     record_count=len(run_result.records),
                     quarantined=[],
-                    error_code=None if succeeded else "source_execution_failed",
+                    error_code=None if run_succeeded else "source_execution_failed",
                     details={
                         "trigger": "automatic-interval",
-                        "inserted": inserted,
-                        "indexed": indexed,
+                        "inserted": run_inserted,
+                        "indexed": run_indexed,
                         "error": run_result.error,
                     },
                 )
