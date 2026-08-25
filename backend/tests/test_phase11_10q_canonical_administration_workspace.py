@@ -69,3 +69,15 @@ def test_ail_can_be_scoped_and_executed_end_to_end_from_canonical_administration
     assert '@app.post("/connectors/ail/run")' in app
     assert "return await run_ail()" in app
     assert "ingest_connector_record(result.connector_id, record)" in app
+
+
+def test_intelowl_analyzer_policy_is_configurable_without_moving_execution_into_administration() -> None:
+    workspace = WORKSPACE.read_text(encoding="utf-8")
+    backend = BACKEND.read_text(encoding="utf-8")
+    assert "IntelOwl analyzer allowlist" in workspace
+    assert "intelowl_allowed_analyzers" in workspace
+    assert "intelowl_allowed_analyzers" in backend
+    assert 'integration_id in {"ail", "intelowl"}' in backend
+    assert "IntelOwl analyzer allowlist is only valid for the IntelOwl integration" in backend
+    assert "IntelOwl execution itself remains in the governed Analysis &amp; Enrichment workflow" in workspace
+    assert "Run IntelOwl" not in workspace
