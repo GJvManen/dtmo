@@ -17,6 +17,7 @@ type IntegrationRow = {
   cortex_allowed_analyzers: string;
   opencti_allowed_entity_types: string;
   opencti_checkpoint_path: string;
+  thehive_organization: string;
   credential_boundary: string;
 };
 type ConnectorRunResult = {
@@ -51,6 +52,7 @@ type DraftState = Record<string, {
   cortexAnalyzers: string;
   openctiEntityTypes: string;
   openctiCheckpointPath: string;
+  thehiveOrganization: string;
 }>;
 type PrincipalDraftState = Record<string, { displayName: string; active: boolean; roles: string[]; reason: string }>;
 
@@ -139,7 +141,7 @@ export function AdministrationWorkspace() {
   const roleRows = useMemo(() => roles.data ?? [], [roles.data]);
   const principalRows = useMemo(() => principals.data ?? [], [principals.data]);
   const integrationMutation = useMutation({
-    mutationFn: ({ id, enabled, apiBase, credential, ailObjectScope, intelowlAnalyzers, cortexAnalyzers, openctiEntityTypes, openctiCheckpointPath }: { id: string; enabled: boolean; apiBase: string; credential: string; ailObjectScope: string; intelowlAnalyzers: string; cortexAnalyzers: string; openctiEntityTypes: string; openctiCheckpointPath: string }) => writeJson<IntegrationRow>(`/api/v1/admin/integrations/${encodeURIComponent(id)}`, 'PATCH', {
+    mutationFn: ({ id, enabled, apiBase, credential, ailObjectScope, intelowlAnalyzers, cortexAnalyzers, openctiEntityTypes, openctiCheckpointPath, thehiveOrganization }: { id: string; enabled: boolean; apiBase: string; credential: string; ailObjectScope: string; intelowlAnalyzers: string; cortexAnalyzers: string; openctiEntityTypes: string; openctiCheckpointPath: string; thehiveOrganization: string }) => writeJson<IntegrationRow>(`/api/v1/admin/integrations/${encodeURIComponent(id)}`, 'PATCH', {
       enabled,
       api_base: apiBase,
       ...(credential.trim() ? { credential: credential.trim() } : {}),
@@ -147,6 +149,7 @@ export function AdministrationWorkspace() {
       ...(id === 'intelowl' ? { intelowl_allowed_analyzers: intelowlAnalyzers } : {}),
       ...(id === 'cortex' ? { cortex_allowed_analyzers: cortexAnalyzers } : {}),
       ...(id === 'opencti' ? { opencti_allowed_entity_types: openctiEntityTypes, opencti_checkpoint_path: openctiCheckpointPath } : {}),
+      ...(id === 'thehive' ? { thehive_organization: thehiveOrganization } : {}),
     }),
     onSuccess: (row) => {
       setLastSaved(row.id);
@@ -159,6 +162,7 @@ export function AdministrationWorkspace() {
         cortexAnalyzers: row.cortex_allowed_analyzers ?? '',
         openctiEntityTypes: row.opencti_allowed_entity_types ?? '',
         openctiCheckpointPath: row.opencti_checkpoint_path ?? '',
+        thehiveOrganization: row.thehive_organization ?? '',
       } }));
       void client.invalidateQueries({ queryKey: ['administration', 'integrations'] });
     },
@@ -239,7 +243,7 @@ export function AdministrationWorkspace() {
 
       <article className="surface command-panel" aria-labelledby="integration-admin-title">
         <header className="panel-heading"><div><p className="eyebrow">Framework integrations</p><h2 id="integration-admin-title">Runtime configuration</h2></div><span className="evidence-label">manage:connectors</span></header>
-        <p className="boundary-copy">Endpoint, enablement and write-only credential replacement are mutable here. MISP and Taranis expose governed read/import execution. AIL additionally requires an explicit non-secret object scope. IntelOwl and Cortex require persisted analyzer allowlists. OpenCTI requires a persisted entity-type allowlist and checkpoint path before governed graph discovery can become ready. Completed runs are request-specific runtime evidence, not blanket upstream-health or publication claims.</p>
+        <p className="boundary-copy">Endpoint, enablement and write-only credential replacement are mutable here. MISP and Taranis expose governed read/import execution. AIL additionally requires an explicit non-secret object scope. IntelOwl and Cortex require persisted analyzer allowlists. OpenCTI requires a persisted entity-type allowlist and checkpoint path before governed graph discovery can become ready. TheHive requires an explicit persisted organization scope before governed handoff can become ready. Completed runs are request-specific runtime evidence, not blanket upstream-health or publication claims.</p>
       </article>
 
       {!session.isPending && !connectorAllowed && <article className="surface panel-state error-state"><strong>Integration administration unavailable</strong><span>This principal does not have server-authorized <code>manage:connectors</code>.</span></article>}
@@ -257,13 +261,15 @@ export function AdministrationWorkspace() {
             cortexAnalyzers: row.cortex_allowed_analyzers ?? '',
             openctiEntityTypes: row.opencti_allowed_entity_types ?? '',
             openctiCheckpointPath: row.opencti_checkpoint_path ?? '',
+            thehiveOrganization: row.thehive_organization ?? '',
           };
           const scopeDirty = row.id === 'ail' && draft.ailObjectScope !== (row.ail_object_global_ids ?? '');
           const intelowlDirty = row.id === 'intelowl' && draft.intelowlAnalyzers !== (row.intelowl_allowed_analyzers ?? '');
           const cortexDirty = row.id === 'cortex' && draft.cortexAnalyzers !== (row.cortex_allowed_analyzers ?? '');
           const openctiEntityTypesDirty = row.id === 'opencti' && draft.openctiEntityTypes !== (row.opencti_allowed_entity_types ?? '');
           const openctiCheckpointDirty = row.id === 'opencti' && draft.openctiCheckpointPath !== (row.opencti_checkpoint_path ?? '');
-          const dirty = draft.enabled !== row.enabled || draft.apiBase !== row.api_base || Boolean(draft.credential.trim()) || scopeDirty || intelowlDirty || cortexDirty || openctiEntityTypesDirty || openctiCheckpointDirty;
+          const thehiveDirty = row.id === 'thehive' && draft.thehiveOrganization !== (row.thehive_organization ?? '');
+          const dirty = draft.enabled !== row.enabled || draft.apiBase !== row.api_base || Boolean(draft.credential.trim()) || scopeDirty || intelowlDirty || cortexDirty || openctiEntityTypesDirty || openctiCheckpointDirty || thehiveDirty;
           const canRunMisp = row.id === 'misp' && row.enabled && row.state === 'ready' && !dirty;
           const canRunAil = row.id === 'ail' && row.enabled && row.state === 'ready' && !dirty;
           const canRunTaranis = row.id === 'taranis' && row.enabled && row.state === 'ready' && !dirty;
@@ -276,6 +282,7 @@ export function AdministrationWorkspace() {
             {row.id === 'cortex' && <label><span>Cortex analyzer allowlist</span><input value={draft.cortexAnalyzers} placeholder="FileInfo,Urlscan" onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, cortexAnalyzers: event.target.value } }))} /></label>}
             {row.id === 'opencti' && <label><span>OpenCTI entity-type allowlist</span><input value={draft.openctiEntityTypes} placeholder="Indicator,Malware,Threat-Actor" onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, openctiEntityTypes: event.target.value } }))} /></label>}
             {row.id === 'opencti' && <label><span>OpenCTI checkpoint path</span><input value={draft.openctiCheckpointPath} placeholder="/var/lib/dtmo/opencti-checkpoint.json" onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, openctiCheckpointPath: event.target.value } }))} /></label>}
+            {row.id === 'thehive' && <label><span>TheHive organization scope</span><input value={draft.thehiveOrganization} placeholder="SOC" onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, thehiveOrganization: event.target.value } }))} /></label>}
             <label><input type="checkbox" checked={draft.enabled} onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, enabled: event.target.checked } }))} /> Enabled</label>
             <p className="boundary-copy">Credential: {row.credential_configured ? 'configured server-side' : 'not configured'}. Submitted values are write-only, cleared from this form after save and never returned by the API. {row.credential_boundary}</p>
             {row.activation_blockers.length > 0 && <p className="panel-state">Activation blockers: {row.activation_blockers.join(', ')}.</p>}
@@ -283,9 +290,10 @@ export function AdministrationWorkspace() {
             {row.id === 'intelowl' && <p className="boundary-copy">The IntelOwl analyzer allowlist is non-secret server-side runtime policy. Analyzer execution still occurs only from governed analyst workflows and requires the existing review/intelligence authorization boundary.</p>}
             {row.id === 'cortex' && <p className="boundary-copy">The Cortex analyzer allowlist is non-secret server-side runtime policy. Cortex execution itself remains in the governed Analysis &amp; Enrichment workflow; Administration does not execute analyzers or grant responder authority.</p>}
             {row.id === 'opencti' && <p className="boundary-copy">OpenCTI entity-type allowlist and checkpoint path are non-secret server-side runtime policy. Graph discovery and population remain in Knowledge Graph; Administration does not execute OpenCTI graph reads or claim graph freshness.</p>}
+            {row.id === 'thehive' && <p className="boundary-copy">TheHive organization scope is non-secret server-side runtime policy. Case handoff remains in the governed Investigations workflow; configuring an organization does not create a case, approve a handoff or grant responder authority.</p>}
             {row.id === 'taranis' && <p className="boundary-copy">Taranis import uses the existing server-side checkpoint/reconciliation path and bounded detail/CTI enrichment budget. Imported records remain read-only and do not gain external-share authority.</p>}
             <div className="quick-grid">
-              <button type="button" className="quick-action" disabled={!dirty || integrationMutation.isPending} onClick={() => integrationMutation.mutate({ id: row.id, enabled: draft.enabled, apiBase: draft.apiBase, credential: draft.credential, ailObjectScope: draft.ailObjectScope, intelowlAnalyzers: draft.intelowlAnalyzers, cortexAnalyzers: draft.cortexAnalyzers, openctiEntityTypes: draft.openctiEntityTypes, openctiCheckpointPath: draft.openctiCheckpointPath })}><span aria-hidden="true">✓</span><div><strong>Save configuration</strong><small>Persist endpoint, enablement, optional credential replacement and governed component policy through DTMO.</small></div></button>
+              <button type="button" className="quick-action" disabled={!dirty || integrationMutation.isPending} onClick={() => integrationMutation.mutate({ id: row.id, enabled: draft.enabled, apiBase: draft.apiBase, credential: draft.credential, ailObjectScope: draft.ailObjectScope, intelowlAnalyzers: draft.intelowlAnalyzers, cortexAnalyzers: draft.cortexAnalyzers, openctiEntityTypes: draft.openctiEntityTypes, openctiCheckpointPath: draft.openctiCheckpointPath, thehiveOrganization: draft.thehiveOrganization })}><span aria-hidden="true">✓</span><div><strong>Save configuration</strong><small>Persist endpoint, enablement, optional credential replacement and governed component policy through DTMO.</small></div></button>
               {row.id === 'misp' && <button type="button" className="quick-action" data-misp-run disabled={!canRunMisp || mispRunMutation.isPending} onClick={() => mispRunMutation.mutate()}><span aria-hidden="true">↻</span><div><strong>Run MISP import now</strong><small>{dirty ? 'Save the current configuration before execution.' : row.state === 'ready' && row.enabled ? 'Execute the existing server-side MISP read connector and ingest returned canonical records.' : 'Enable MISP with endpoint and server-side credential before execution.'}</small></div></button>}
               {row.id === 'ail' && <button type="button" className="quick-action" data-ail-run disabled={!canRunAil || ailRunMutation.isPending} onClick={() => ailRunMutation.mutate()}><span aria-hidden="true">↻</span><div><strong>Run AIL import now</strong><small>{dirty ? 'Save the current AIL configuration before execution.' : row.state === 'ready' && row.enabled ? 'Read only the explicitly scoped AIL objects through the existing server-side connector and canonical ingest path.' : 'Enable AIL with endpoint, server-side credential and explicit object scope before execution.'}</small></div></button>}
               {row.id === 'taranis' && <button type="button" className="quick-action" data-taranis-run disabled={!canRunTaranis || taranisRunMutation.isPending} onClick={() => taranisRunMutation.mutate()}><span aria-hidden="true">↻</span><div><strong>Run Taranis import now</strong><small>{dirty ? 'Save the current Taranis configuration before execution.' : row.state === 'ready' && row.enabled ? 'Execute the existing server-side checkpointed Taranis read connector and ingest returned canonical records.' : 'Enable Taranis with endpoint and server-side API token before execution.'}</small></div></button>}
@@ -348,7 +356,7 @@ export function AdministrationWorkspace() {
         })}
       </div>}
 
-      <article className="surface evidence-surface"><div><p className="eyebrow">Canonical administration boundary</p><h2>No legacy administration dependency</h2></div><p>Integration endpoint, enablement, write-only credential replacement, governed MISP and Taranis runtime imports, explicit scoped AIL read/import, IntelOwl and Cortex analyzer policy, OpenCTI entity-type/checkpoint policy, and managed identity/RBAC administration are available through same-origin canonical APIs. IntelOwl and Cortex execution remains in the governed Analysis &amp; Enrichment workflow; OpenCTI graph execution remains in Knowledge Graph. Continue to <NavLink to="/collection">Sources & Collection</NavLink> for source execution and to <NavLink to="/governance">Governance & Evidence</NavLink> for governance evidence. Administration never grants review, sharing, publication or external-assurance authority by UI presence alone.</p></article>
+      <article className="surface evidence-surface"><div><p className="eyebrow">Canonical administration boundary</p><h2>No legacy administration dependency</h2></div><p>Integration endpoint, enablement, write-only credential replacement, governed MISP and Taranis runtime imports, explicit scoped AIL read/import, IntelOwl and Cortex analyzer policy, OpenCTI entity-type/checkpoint policy, TheHive organization policy, and managed identity/RBAC administration are available through same-origin canonical APIs. IntelOwl and Cortex execution remains in the governed Analysis &amp; Enrichment workflow; OpenCTI graph execution remains in Knowledge Graph; TheHive case handoff remains in Investigations. Continue to <NavLink to="/collection">Sources & Collection</NavLink> for source execution and to <NavLink to="/governance">Governance & Evidence</NavLink> for governance evidence. Administration never grants review, sharing, publication or external-assurance authority by UI presence alone.</p></article>
     </section>
   );
 }
