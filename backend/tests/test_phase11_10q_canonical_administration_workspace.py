@@ -4,6 +4,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE = ROOT / "frontend/src/AdministrationWorkspace.tsx"
 MAIN = ROOT / "frontend/src/main.tsx"
 BACKEND = ROOT / "backend/dtmo/admin_center.py"
+APP = ROOT / "backend/dtmo/main.py"
 
 
 def test_canonical_administration_route_is_not_a_generic_empty_foundation() -> None:
@@ -39,3 +40,17 @@ def test_browser_can_replace_credentials_write_only_without_receiving_secret_val
     assert "chmod(0o600)" in backend
     assert '"credential_configured": credential_configured' in backend
     assert '"credential":' not in backend.split("return {", 1)[1].split("}", 1)[0]
+
+
+def test_ready_misp_can_execute_existing_server_side_import_from_canonical_administration() -> None:
+    workspace = WORKSPACE.read_text(encoding="utf-8")
+    app = APP.read_text(encoding="utf-8")
+    assert "Run MISP import now" in workspace
+    assert "runJson<ConnectorRunResult>('/connectors/misp/run')" in workspace
+    assert "row.id === 'misp' && row.enabled && row.state === 'ready' && !dirty" in workspace
+    assert "Records {lastMispRun.records}; inserted {lastMispRun.inserted}; indexed {lastMispRun.indexed}" in workspace
+    assert "lastMispRun.correlation_id" in workspace
+    assert '@app.post("/connectors/misp/run")' in app
+    assert 'require_permission(Permission.MANAGE_CONNECTORS)' in app
+    assert "return await run_misp()" in app
+    assert "ingest_connector_record(result.connector_id, record)" in app
