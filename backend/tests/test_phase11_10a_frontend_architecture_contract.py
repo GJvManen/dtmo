@@ -126,12 +126,21 @@ def test_workbench_defines_candidate_completion_sequence() -> None:
 
 
 def test_authoritative_surfaces_preserve_accepted_architecture_and_current_slice() -> None:
-    for path in (ROADMAP, CURRENT_STATE, PORTAL, EVIDENCE):
+    # Detailed slice chronology belongs in lifecycle/evidence surfaces, not in the
+    # professional documentation portal. The portal must expose the current Phase
+    # 11.10 lifecycle and production-authorization boundary without becoming a
+    # delivery ledger.
+    for path in (ROADMAP, CURRENT_STATE, EVIDENCE):
         text = _read(path)
         assert "Phase 11.10" in text
         for phase in ("11.10a", "11.10b", "11.10c", "11.10d", "11.10e", "11.10f", "11.10g", "11.10h", "11.10i", "11.10j", "11.10k", "11.10l"):
             assert phase in text, f"{phase} is not exposed in {path.relative_to(ROOT)}"
         assert "not production authorized" in text.lower() or "does not authorize production" in text.lower() or "production authorization" in text.lower()
+
+    portal = _read(PORTAL)
+    assert "Phase 11.10" in portal
+    assert "not production authorized" in portal.lower()
+    assert "roadmap directory" in portal.lower()
 
     current = _read(CURRENT_STATE)
     assert "Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE`" in current
