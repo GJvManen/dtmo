@@ -62,7 +62,15 @@ def test_phase11_10e_documentation_status_remains_accepted_during_later_slice() 
     assert "Phase 11.10j Sources & Collection Control Center | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10k Automation & Playbooks | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10l Governance & Evidence Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
-    for text in (roadmap, portal, evidence):
+
+    # Detailed slice chronology stays authoritative in roadmap/evidence surfaces.
+    # The documentation portal remains audience-oriented and only exposes the
+    # current Phase 11.10 lifecycle and release boundary.
+    for text in (roadmap, evidence):
         for phase in ("11.10e", "11.10f", "11.10g", "11.10h", "11.10i", "11.10j", "11.10k", "11.10l"):
             assert phase in text
+
+    assert "Phase 11.10" in portal
+    assert "not production authorized" in portal.lower()
+    assert "roadmap directory" in portal.lower()
     assert "not production authorized" in current.lower()
