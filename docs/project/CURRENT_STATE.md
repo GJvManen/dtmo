@@ -24,21 +24,31 @@ The current lifecycle priority is now **fresh candidate freeze and production-eq
 | Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE` |
 | Phase 10 | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
 | Phase 11 | `IN PROGRESS` |
-| Phase 11.1–11.3 | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.1–11.2 Taranis | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 IntelOwl | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
 | Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.8–11.9 | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8f backup / restore / recovery hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8g software supply-chain hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8h capacity / resource planning | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8i exercised upgrade / rollback | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.10a–11.10o | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10q Functional Recovery Acceptance | `MERGED / OWNER-AUTHORIZED MERGE` |
 | Post-11.10q framework-integration hardening | `PASS / MERGED THROUGH PR #332` |
 | Fresh candidate freeze | `NEXT / REQUIRED` |
 | Phase 11.10p fresh production-equivalent validation | `NOT YET EXECUTED FOR NEW CANDIDATE` |
-| Phase 11.11 independent external assurance | `NOT STARTED FOR NEW CANDIDATE` |
-| Phase 12 production decision | `NOT STARTED` |
+| Phase 11.11 independent external assurance | `NOT STARTED` |
+| Phase 12 | `NOT STARTED` |
 
 The Phase 9 `EXTERNAL_ASSURANCE_ACCEPTED` status is historical and candidate-bound only. It is retained as audit history and is not evidence for the new candidate.
 
