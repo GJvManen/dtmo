@@ -11,6 +11,7 @@ from pydantic import BaseModel, SecretStr
 from dtmo.auth.dependencies import require_permission
 from dtmo.auth.policy import Permission, Principal
 from dtmo.config import get_settings
+from dtmo.integration_readiness import integration_readiness
 
 router = APIRouter()
 settings = get_settings()
@@ -32,6 +33,7 @@ class IntegrationPatch(BaseModel):
     enabled: bool | None = None
     api_base: str | None = None
     credential: SecretStr | None = None
+    ail_object_global_ids: str | None = None
 
 
 def _secret_present(value: object) -> bool:
@@ -48,6 +50,10 @@ def _read_json_object(path: Path) -> dict[str, object]:
     return document if isinstance(document, dict) else {}
 
 
+def _normalize_ail_object_scope(value: str) -> str:
+    return ",".join(item.strip() for item in value.split(",") if item.strip())
+
+
 def _apply_persisted_runtime_configuration() -> None:
     document = _read_json_object(_RUNTIME_CONFIG_PATH)
     for integration_id, values in document.items():
@@ -59,6 +65,8 @@ def _apply_persisted_runtime_configuration() -> None:
             setattr(settings, enabled_attr, values["enabled"])
         if isinstance(values.get("api_base"), str):
             setattr(settings, api_attr, values["api_base"].strip())
+        if integration_id == "ail" and isinstance(values.get("ail_object_global_ids"), str):
+            settings.ail_object_global_ids = _normalize_ail_object_scope(values["ail_object_global_ids"])
 
     secrets = _read_json_object(_RUNTIME_SECRET_PATH)
     for integration_id, value in secrets.items():
@@ -72,10 +80,13 @@ def _apply_persisted_runtime_configuration() -> None:
 def _persist_runtime_configuration() -> None:
     document: dict[str, dict[str, object]] = {}
     for integration_id, (_, enabled_attr, api_attr, _) in _INTEGRATIONS.items():
-        document[integration_id] = {
+        values: dict[str, object] = {
             "enabled": bool(getattr(settings, enabled_attr)),
             "api_base": str(getattr(settings, api_attr)),
         }
+        if integration_id == "ail":
+            values["ail_object_global_ids"] = settings.ail_object_global_ids
+        document[integration_id] = values
     try:
         _RUNTIME_CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
         temporary = _RUNTIME_CONFIG_PATH.with_suffix(".tmp")
@@ -104,6 +115,7 @@ def _integration_row(integration_id: str) -> dict[str, object]:
     enabled = bool(getattr(settings, enabled_attr))
     api_base = str(getattr(settings, api_attr)).strip()
     credential_configured = _secret_present(getattr(settings, secret_attr))
+    activation_blockers: list[str] = []
     if enabled and api_base and credential_configured:
         state = "ready"
     elif enabled and api_base:
@@ -112,6 +124,15 @@ def _integration_row(integration_id: str) -> dict[str, object]:
         state = "configuration-required"
     else:
         state = "disabled"
+
+    if integration_id == "ail":
+        readiness = next(row for row in integration_readiness(settings) if row.id == integration_id)
+        state = readiness.state
+        activation_blockers = list(readiness.activation_blockers)
+        can_activate = readiness.can_activate
+    else:
+        can_activate = bool(api_base and credential_configured)
+
     return {
         "id": integration_id,
         "name": name,
@@ -119,6 +140,9 @@ def _integration_row(integration_id: str) -> dict[str, object]:
         "api_base": api_base,
         "credential_configured": credential_configured,
         "state": state,
+        "can_activate": can_activate,
+        "activation_blockers": activation_blockers,
+        "ail_object_global_ids": settings.ail_object_global_ids if integration_id == "ail" else "",
         "credential_boundary": "Credentials remain server-side and are never returned by this API.",
     }
 
@@ -158,6 +182,10 @@ def update_integration(
             raise HTTPException(status_code=422, detail="credential must not be empty")
         _persist_runtime_credential(integration_id, credential)
         setattr(settings, secret_attr, SecretStr(credential))
+    if payload.ail_object_global_ids is not None:
+        if integration_id != "ail":
+            raise HTTPException(status_code=422, detail="AIL object scope is only valid for the AIL integration")
+        settings.ail_object_global_ids = _normalize_ail_object_scope(payload.ail_object_global_ids)
     if payload.enabled is not None:
         setattr(settings, enabled_attr, payload.enabled)
     _persist_runtime_configuration()
