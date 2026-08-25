@@ -132,11 +132,9 @@ The explicit 11.10a–11.10l identifiers above remain part of authoritative arch
 
 The canonical path is **browser → DTMO API → governed integration adapter/data contract → governed service/evidence source**. The browser never becomes a privileged upstream integration client. **Server-side RBAC**, provenance, human review/share/publication authority, separate case authority, replay protection and fail-closed behavior remain authoritative.
 
-PR #316 (`Phase 11.10q: Functional Completeness Remediation`) was merged on 2026-08-25 from exact head `a2dff382d7d08d9058db0d0540c9ef1af172090a` as merge commit `e0a6019f561eaedade250093225ca22d9c937e8b` after the owner explicitly directed merge and GitHub reported zero failed pull-request workflow runs for that exact head.
+The Phase 11.10q functional-completeness remediation was merged after explicit owner authorization and a green exact-head pull-request workflow set. That repository lifecycle decision closed the remediation slice without converting repository evidence into production-equivalent, staging or independent-assurance evidence.
 
 The recovery work includes canonical framework readiness/configuration, source bootstrap/control, Threat Intelligence population/default discovery, IOC inventory/pivots, Knowledge Graph discovery/population, Exposure population/filtering, object-driven Analysis/Investigations/Sharing, executable and observable Automation/Playbooks, Command Center readiness/trends, canonical operational telemetry, and unmocked same-origin repository browser acceptance.
-
-The merge is an owner-authorized repository lifecycle decision. It does not create fresh production-equivalent, staging or independent-assurance evidence.
 
 #### 11.10p Fresh production-equivalent validation
 
@@ -148,7 +146,7 @@ The execution package remains:
 - `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
 - `docs/evidence/PHASE11_10_PRODUCTION_EQUIVALENT_EVIDENCE.template.json`;
 - `tools/phase11_production_equivalent_validation.py`;
-- `backend/tests/test_phase11_10_production_equivalent_validation.py`;
+- `backend/tests/test_phase11_10_proDUCTION_EQUIVALENT_VALIDATION.py`;
 - `.github/workflows/phase11-production-equivalent-validation.yml`.
 
 Historical Phase 8/9 evidence cannot satisfy 11.10p. Missing, ambiguous, inaccessible, historical-only or mixed-candidate evidence must **fail closed**. Repository CI validates repository contracts only and does not prove production-equivalent execution or production authorization.
