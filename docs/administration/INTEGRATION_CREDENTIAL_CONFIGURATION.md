@@ -1,47 +1,39 @@
-# Canonical Administration — Write-only integration credentials
+# Canonical Administration — Governed framework runtime
 
 ## Purpose
 
-The canonical Administration workspace can set or replace framework integration credentials without requiring the legacy interface. This closes the functional gap where endpoint and enablement were editable but an integration in `credential-required` could not be completed from the canonical control plane.
+The canonical Administration workspace configures framework integrations without requiring the legacy interface. Endpoint, enablement and write-only credentials remain governed by the DTMO server-side control plane.
 
-For MISP, Administration now also exposes the existing governed server-side read/import execution path once the persisted integration state is enabled and ready. This provides an operator-visible end-to-end runtime action rather than stopping at configuration readiness.
+MISP already exposes its governed read/import execution path from Administration. The next bounded recovery target is AIL: Administration must be able to configure the explicit object scope required by the existing read-only AIL connector and then execute that connector from the same canonical card.
 
-## Interaction contract
+## Shared interaction contract
 
-An authorized principal with `manage:connectors` can configure an integration endpoint, optionally replace its credential and change enablement through the same-origin `/api/v1/admin/integrations/{integration_id}` endpoint.
+An authorized principal with `manage:connectors` can configure an integration through the same-origin `/api/v1/admin/integrations/{integration_id}` endpoint. Credential fields are write-only. Existing credential values are never loaded into the browser or returned by the read model; the API exposes only `credential_configured`.
 
-Credential fields are **write-only**. Existing credential values are never loaded into the browser, never returned by the integration read model and are cleared from the form after a successful save. Leaving the field empty preserves the existing credential.
+A runtime action is enabled only for persisted, enabled and server-derived `ready` configuration with no unsaved browser changes. Runtime execution uses existing DTMO server-side adapters and never turns the browser into an upstream client.
 
-The read model exposes only `credential_configured: true|false`; it never exposes the credential value.
+## MISP runtime
 
-### Governed MISP runtime action
+**Run MISP import now** calls the existing same-origin `POST /connectors/misp/run` route. Returned records continue through canonical normalization, persistence and indexing. The UI reports request-specific status, record/insert/index counts, attempts, alert state and correlation ID.
 
-When the MISP integration is enabled, has a configured API endpoint and has a server-side credential, the canonical Administration card enables **Run MISP import now**. Unsaved configuration disables the action so the runtime call cannot silently use settings that differ from what the operator sees.
+## AIL recovery contract
 
-The browser calls the existing same-origin `POST /connectors/misp/run` endpoint. DTMO then performs the upstream MISP request server-side through `MispReadConnector`, applies the existing normalization contract and ingests returned records through the canonical persistence/indexing path.
+AIL is intentionally narrower than a crawler integration. `AilReadConnector` only reads explicitly scoped object global IDs and refuses to run without `ail_object_global_ids`. The canonical AIL card therefore must expose **AIL object scope** as non-secret runtime configuration and persist it server-side before AIL can become ready.
 
-The UI reports the returned runtime result: status, records received, inserted count, indexed count, attempts, alert state and correlation identifier. A failed run remains visibly failed; the UI does not reinterpret it as success.
+Once endpoint, write-only credential, explicit object scope and enablement are persisted, **Run AIL import now** uses the existing same-origin `POST /connectors/ail/run` route. DTMO performs all AIL API requests server-side, imports only the configured explicit objects, applies the existing data-minimized normalization and canonical ingest path, and reports the request-specific runtime result.
 
-No MISP credential is sent back to or read by the browser beyond the explicit write-only credential submission flow.
+The Administration read model must use the same server-derived readiness requirements as the governed integration-readiness contract. Endpoint plus credential alone must never label AIL ready when its explicit object scope is absent. `activation_blockers` remains the authoritative explanation for incomplete runtime configuration.
 
-## Server-side persistence boundary
+## Persistence and secret boundary
 
-Non-secret runtime settings remain in `/var/lib/dtmo/runtime-integration-settings.json`.
-
-Write-only integration credentials are persisted separately in `/var/lib/dtmo/runtime-integration-secrets.json`. The server creates/replaces this file with mode `0600`. Secret values are never written into the non-secret runtime settings document.
-
-This server-side runtime secret store does not turn the browser into an upstream integration client. Upstream calls continue to use DTMO server-side adapters and server-side credentials.
+Non-secret runtime settings remain in `/var/lib/dtmo/runtime-integration-settings.json`. AIL object scope is non-secret configuration and belongs there. Integration credentials remain separately persisted in `/var/lib/dtmo/runtime-integration-secrets.json` with mode `0600`; secret values are never written into the non-secret document or returned to the browser.
 
 ## Authorization and evidence boundary
 
-Credential mutation and the MISP runtime action require the existing server-authorized `manage:connectors` permission. UI visibility is not authorization.
+Configuration and runtime execution require server-authorized `manage:connectors`; UI visibility is not authorization. A completed MISP or AIL run is evidence only for that specific request and returned ingest result. It is not a blanket provider-health, completeness or source-truth claim.
 
-Saving an endpoint, credential or enablement value does not prove provider connectivity, health, data freshness or successful collection. A completed MISP run is evidence for that specific governed request and its returned ingest counts; it is not a blanket provider-health claim and it does not prove that all relevant MISP content has been collected.
-
-MISP read/import remains separate from governed MISP export. Running an import does not grant intelligence review, case, sharing, publication, remediation, external-assurance or production authority.
+AIL execution never creates or starts crawlers. Imported AIL objects remain read-only, data-minimized and without external-share authority. Neither MISP nor AIL import grants intelligence review, case, sharing, publication, remediation, external-assurance or production authority.
 
 ## Fail-closed behavior
 
-Unknown integrations are rejected. Empty credential replacement requests are rejected. Production integration endpoints continue to require HTTPS. Persistence failure returns an error rather than reporting success.
-
-The MISP runtime action is unavailable while the card is disabled, not ready or contains unsaved changes. Upstream/runtime failures are returned as failed runtime results and remain observable to the operator.
+Unknown integrations, empty credential replacements and invalid production endpoints are rejected. AIL without explicit object scope remains `configuration-required` and cannot execute from canonical Administration. Unsaved configuration disables runtime actions, and upstream/runtime failures remain visibly failed rather than being promoted to healthy state.
