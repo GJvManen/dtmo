@@ -57,6 +57,35 @@ def test_persisted_configuration_and_write_only_credential_are_reapplied(tmp_pat
     assert "server-secret" not in str(row)
 
 
+def test_ail_scope_is_nonsecret_persisted_configuration_and_required_for_ready_state(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr(admin, "settings", Settings())
+    monkeypatch.setattr(admin, "_RUNTIME_CONFIG_PATH", tmp_path / "runtime-integration-settings.json")
+    monkeypatch.setattr(admin, "_RUNTIME_SECRET_PATH", tmp_path / "runtime-integration-secrets.json")
+
+    incomplete = admin.update_integration(
+        "ail",
+        admin.IntegrationPatch(enabled=True, api_base="https://ail.example", credential="ail-secret"),
+        None,
+    )
+    assert incomplete["state"] == "configuration-required"
+    assert "AIL object scope" in incomplete["activation_blockers"]
+    assert incomplete["can_activate"] is False
+
+    ready = admin.update_integration(
+        "ail",
+        admin.IntegrationPatch(ail_object_global_ids=" domain:None:example.org , ip:None:203.0.113.10 "),
+        None,
+    )
+    assert ready["state"] == "ready"
+    assert ready["activation_blockers"] == []
+    assert ready["ail_object_global_ids"] == "domain:None:example.org,ip:None:203.0.113.10"
+
+    nonsecret_document = admin._RUNTIME_CONFIG_PATH.read_text(encoding="utf-8")
+    assert "domain:None:example.org" in nonsecret_document
+    assert "ail-secret" not in nonsecret_document
+    assert "ail-secret" in admin._RUNTIME_SECRET_PATH.read_text(encoding="utf-8")
+
+
 def test_empty_credential_and_unknown_integration_fail_closed(monkeypatch, tmp_path: Path):
     monkeypatch.setattr(admin, "settings", Settings())
     monkeypatch.setattr(admin, "_RUNTIME_CONFIG_PATH", tmp_path / "runtime.json")
@@ -74,3 +103,15 @@ def test_empty_credential_and_unknown_integration_fail_closed(monkeypatch, tmp_p
         assert getattr(exc, "status_code", None) == 404
     else:
         raise AssertionError("unknown integration must fail closed")
+
+
+def test_ail_scope_is_rejected_for_other_integrations(monkeypatch, tmp_path: Path):
+    monkeypatch.setattr(admin, "settings", Settings())
+    monkeypatch.setattr(admin, "_RUNTIME_CONFIG_PATH", tmp_path / "runtime.json")
+    monkeypatch.setattr(admin, "_RUNTIME_SECRET_PATH", tmp_path / "secrets.json")
+    try:
+        admin.update_integration("misp", admin.IntegrationPatch(ail_object_global_ids="domain:None:example.org"), None)
+    except Exception as exc:
+        assert getattr(exc, "status_code", None) == 422
+    else:
+        raise AssertionError("AIL object scope must fail closed for non-AIL integrations")
