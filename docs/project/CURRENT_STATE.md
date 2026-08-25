@@ -9,6 +9,8 @@ DTMO remains **not production authorized**. Repository-controlled CI, local or s
 
 Phase 11.10q Functional Recovery Acceptance was owner-authorized and merged to `main` on 2026-08-25. The historical owner rejection findings that triggered the recovery remain regression requirements. After that merge, additional bounded framework-integration hardening was completed for MISP, AIL, Taranis, IntelOwl, Cortex, OpenCTI and TheHive through canonical Administration and the existing governed runtime paths.
 
+Phase 11 remains `IN PROGRESS`. Phase 11.10 remains `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`: the repository recovery baseline is complete, but fresh production-equivalent evidence has not yet been executed for a newly frozen immutable candidate.
+
 The current lifecycle priority is now **fresh candidate freeze and production-equivalent validation**. No prior Phase 8, Phase 9, staging, emulator or repository-CI evidence may be reused as proof for the new candidate. Validation and any later independent external assurance must identify the exact immutable candidate they evaluate.
 
 ## Lifecycle position
@@ -19,10 +21,17 @@ The current lifecycle priority is now **fresh candidate freeze and production-eq
 | RC13 + owner retest | `PASS / OWNER_ACCEPTED` |
 | E8.1–E8.10 | `PASS / REPOSITORY_COMPLETE` |
 | Phase 8 | `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE` |
-| Phase 9 | `PASS / EXTERNAL ASSURANCE ACCEPTED — HISTORICAL CANDIDATE` |
-| Phase 10 | `NO-GO / PLATFORM INDUSTRIALISATION REQUIRED` |
+| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE` |
+| Phase 10 | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
 | Phase 11 | `IN PROGRESS` |
-| Phase 11.1–11.9 | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.1–11.3 | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
+| Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8–11.9 | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.10a–11.10o | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10q Functional Recovery Acceptance | `MERGED / OWNER-AUTHORIZED MERGE` |
 | Post-11.10q framework-integration hardening | `PASS / MERGED THROUGH PR #332` |
@@ -30,6 +39,8 @@ The current lifecycle priority is now **fresh candidate freeze and production-eq
 | Phase 11.10p fresh production-equivalent validation | `NOT YET EXECUTED FOR NEW CANDIDATE` |
 | Phase 11.11 independent external assurance | `NOT STARTED FOR NEW CANDIDATE` |
 | Phase 12 production decision | `NOT STARTED` |
+
+The Phase 9 `EXTERNAL_ASSURANCE_ACCEPTED` status is historical and candidate-bound only. It is retained as audit history and is not evidence for the new candidate.
 
 ## Functional recovery baseline
 
