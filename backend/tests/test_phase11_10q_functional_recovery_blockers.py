@@ -4,32 +4,39 @@ ROOT = Path(__file__).resolve().parents[2]
 ACCEPTANCE = ROOT / "docs/roadmap/FUNCTIONAL_RECOVERY_ACCEPTANCE.md"
 
 
-def test_phase11_10q_remains_blocked_while_owner_rejected_workspaces_are_unresolved():
+def test_phase11_10q_records_owner_authorized_closure_before_candidate_validation():
     text = ACCEPTANCE.read_text(encoding="utf-8")
     required = [
-        "BLOCKED / OWNER FUNCTIONAL REJECTION",
-        "Framework integrations | BLOCKED",
-        "Threat Intelligence | BLOCKED",
-        "IOC Explorer | BLOCKED",
-        "Knowledge Graph | BLOCKED",
-        "Vulnerability & Exposure Center | BLOCKED",
-        "Investigations | BLOCKED",
-        "Analysis & Enrichment | BLOCKED",
-        "Sharing & Exchange | BLOCKED",
-        "Automation & Playbooks | BLOCKED",
-        "Sources & Collection | BLOCKED",
-        "Operations | BLOCKED",
-        "Administration | BLOCKED",
-        "An empty-state-only workspace is not functionally complete",
-        "Manual UUID entry is not an acceptable primary workflow",
-        "owner functional retest explicitly accepts the canonical interface",
+        "MERGED / OWNER-AUTHORIZED MERGE",
+        "Historical owner rejection — 2026-08-24",
+        "Framework integrations",
+        "Threat Intelligence",
+        "IOC Explorer",
+        "Knowledge Graph",
+        "Vulnerability & Exposure Center",
+        "Investigations",
+        "Analysis & Enrichment",
+        "Sharing & Exchange",
+        "Automation & Playbooks",
+        "Sources & Collection",
+        "Operations",
+        "Administration",
+        "Manual UUID entry is not an acceptable primary path",
+        "Empty-state-only screens",
+        "owner explicitly directed the merge",
+        "zero failed pull-request workflow runs",
+        "freeze a new candidate",
+        "production-equivalent validation",
+        "independent external assurance",
     ]
     for marker in required:
         assert marker in text
 
 
-def test_phase11_10q_cannot_claim_pass_while_any_hard_blocker_is_blocked():
+def test_phase11_10q_closure_does_not_promote_repository_acceptance_to_external_evidence():
     text = ACCEPTANCE.read_text(encoding="utf-8")
-    blocker_rows = [line for line in text.splitlines() if "| BLOCKED |" in line]
-    assert len(blocker_rows) >= 10
+    assert "BLOCKED / OWNER FUNCTIONAL REJECTION" not in text
     assert "PASS / FUNCTIONALLY_ACCEPTED" not in text
+    assert "does **not** invent or retroactively create live, staging, production-equivalent" in text
+    assert "Repository-controlled CI and browser gates remain repository evidence only" in text
+    assert "must not reuse prior production-equivalent or external-assurance evidence" in text
