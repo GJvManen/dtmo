@@ -3,6 +3,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE = ROOT / "frontend" / "src" / "MispSharingWorkspace.tsx"
+INTELLIGENCE = ROOT / "frontend" / "src" / "UnifiedIntelligenceWorkspace.tsx"
 
 
 def test_sharing_discovers_canonical_targets_without_uuid_primary_flow():
@@ -22,6 +23,14 @@ def test_object_selection_loads_governed_sharing_state():
     assert "Record review" in source
     assert "Approve sharing" in source
     assert "Export approved intelligence" in source
+
+
+def test_threat_intelligence_exposes_direct_governed_sharing_pivot():
+    source = INTELLIGENCE.read_text(encoding="utf-8")
+    assert "/workbench/sharing?item=${encodeURIComponent(detail.id)}" in source
+    assert "Review &amp; share" in source
+    assert "Sharing reloads server-authorized governance state" in source
+    assert "grants no review, share approval, export, publication or synchronization authority" in source
 
 
 def test_sharing_recovery_preserves_authority_and_fail_closed_boundaries():
