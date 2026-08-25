@@ -259,15 +259,16 @@ class SchedulerService:
         )
 
     def _ensure_registered_source_reconciliation(self) -> None:
-        if self.scheduler.get_job("registered-source-reconciliation") is None:
-            self.register(
-                ScheduledJob(
-                    id="registered-source-reconciliation",
-                    interval_seconds=_REGISTERED_SOURCE_RECONCILIATION_SECONDS,
-                    handler=reconcile_registered_sources,
-                    run_immediately=True,
-                )
+        if any(job.id == "registered-source-reconciliation" for job in self.scheduler.get_jobs()):
+            return
+        self.register(
+            ScheduledJob(
+                id="registered-source-reconciliation",
+                interval_seconds=_REGISTERED_SOURCE_RECONCILIATION_SECONDS,
+                handler=reconcile_registered_sources,
+                run_immediately=True,
             )
+        )
 
     def start(self) -> None:
         if not self.scheduler.running:
