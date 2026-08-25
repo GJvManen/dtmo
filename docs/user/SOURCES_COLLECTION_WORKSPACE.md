@@ -41,4 +41,4 @@ The browser never receives upstream secret values. Credentialed source adapters 
 
 Automatic scheduling proves only that DTMO attempted or completed the recorded collection action according to persisted configuration. It is not a provider-health claim and does not establish source truth, local compromise, review completion, remediation, external-share approval, publication authority, production-equivalent operation or production authorization.
 
-Human review, case, sharing and publication authorities remain separate. Repository CI validates the implementation contract but is not evidence that a particular external source or environment was successfully contacted.
+Human review/share/case authorities remain separate. Publication authority remains separate as well. Repository CI validates the implementation contract but is not evidence that a particular external source or environment was successfully contacted.
