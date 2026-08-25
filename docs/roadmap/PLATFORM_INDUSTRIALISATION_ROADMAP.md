@@ -27,10 +27,40 @@ Historical lifecycle evidence is preserved explicitly: E8 is `PASS / REPOSITORY_
 
 ## Phase 11 — Platform industrialisation
 
-### 11.1–11.7b governed service integrations
+### 11.1–11.2 Taranis AI
 **Status:** `PASS / REPOSITORY_COMPLETE`
 
-Taranis AI, IntelOwl, OpenCTI, MISP, TheHive and Cortex are integrated through DTMO-owned server-side contracts. Browser access does not become privileged upstream access. Credentials remain server-side. Enrichment output is evidence rather than a compromise verdict. MISP transport is separate from human review/share/publication authority. TheHive case handoff remains separately authorized. Graph topology is not inferred beyond persisted evidence.
+The accepted Taranis programme preserves Taranis as a separate service and licensing boundary. DTMO uses governed server-side integration contracts; privileged upstream credentials never become browser authority.
+
+### 11.3 IntelOwl enrichment integration
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+IntelOwl enrichment remains server-side and governed. Analyzer output is evidence and does not itself establish compromise, remediation, publication authority or production readiness.
+
+### 11.4 OpenCTI knowledge-graph integration
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+The OpenCTI STIX knowledge-graph integration preserves canonical DTMO provenance and does not infer relationship topology beyond persisted mapping evidence.
+
+### 11.5 MISP consolidation
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+MISP consolidation preserves the authoritative governed sharing model: technical transfer is separate from human review, external-share approval and publication authority.
+
+### 11.6 TheHive incident/case handoff
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+TheHive handoff preserves explicit human case-creation/handoff authority. Connectivity, intelligence presence or an upstream case identifier does not prove compromise, containment or remediation.
+
+### 11.7 Cortex decision gate
+**Status:** `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE`
+
+The Cortex decision gate remains preserved as historical decision evidence and must not be rewritten as a current production claim.
+
+### 11.7b Cortex analyzer connector
+**Status:** `PASS / REPOSITORY_COMPLETE`
+
+The owner-required Cortex analyzer connector remains bounded by server-side credentials, RBAC, provenance and non-inference rules.
 
 ### 11.8 Integrated runtime industrialisation
 **Status:** `PASS / REPOSITORY_COMPLETE`
@@ -71,7 +101,7 @@ Accepted runtime evidence requires immutable image identities, safe rollout cont
 
 The accepted contract requires one connected single-root/single-head Alembic chain, forward-first migration, backward-compatible rolling overlap and expand/migrate/contract for destructive changes. Ambiguity must **fail closed**.
 
-### 11.10 Integrated candidate completion and validation
+### 11.10 Integrated production-equivalent validation
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`
 
 The Unified Operations Workbench materially changes the candidate. Repository candidate completion and functional recovery are merged; Phase 11 remains in progress until a new immutable candidate completes fresh production-equivalent validation and the subsequent lifecycle gates.
@@ -96,7 +126,7 @@ The Unified Operations Workbench materially changes the candidate. Repository ca
 - **11.10q Functional completeness remediation** — `MERGED / OWNER-AUTHORIZED`;
 - **11.10p Fresh production-equivalent validation** — `IN PROGRESS / CANDIDATE FREEZE REQUIRED`.
 
-The explicit 11.10a–11.10l identifiers above remain part of the authoritative architecture history and must not be collapsed away by lifecycle summaries.
+The explicit 11.10a–11.10l identifiers above remain part of authoritative architecture history and must not be collapsed away by lifecycle summaries.
 
 #### Accepted workbench foundation and functional recovery
 
