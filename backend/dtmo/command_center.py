@@ -27,9 +27,10 @@ def build_integration_capabilities(
     """Describe governed integration capability without inventing runtime health.
 
     Command Center reuses the canonical Administration readiness model so an
-    enabled integration with missing credentials, scopes or allowlists cannot be
-    presented as ready. Persisted connector execution is exposed only as a
-    historical runtime observation, never as a health claim.
+    integration that still needs configuration or explicit activation is always
+    presented with an actionable Administration path. Persisted connector
+    execution is exposed only as a historical runtime observation, never as a
+    health claim.
     """
 
     latest_runs = latest_runs or {}
@@ -37,14 +38,15 @@ def build_integration_capabilities(
     for readiness in integration_readiness(settings):
         run_id = _RUNTIME_RUN_IDS.get(readiness.id, "")
         run = latest_runs.get(run_id) if run_id else None
-        # Preserve the Command Center's coarse state vocabulary for the existing
-        # UI while deriving it from the stricter shared readiness contract.
+        # Command Center intentionally uses an action-oriented coarse vocabulary.
+        # A capability that is disabled still needs governed operator action in
+        # Administration, so it must not appear as an unexplained dead-end state.
         if readiness.enabled and readiness.activation_blockers:
             state = "configuration-required"
         elif readiness.enabled:
             state = "enabled"
         else:
-            state = "disabled"
+            state = "configuration-required"
         capabilities.append(
             {
                 "id": readiness.id,
@@ -55,6 +57,9 @@ def build_integration_capabilities(
                 "credential_configured": readiness.credential_configured,
                 "can_activate": readiness.can_activate,
                 "activation_blockers": list(readiness.activation_blockers),
+                "readiness_state": readiness.state,
+                "action": readiness.action,
+                "detail": readiness.detail,
                 "scheduled_collection": bool(
                     readiness.enabled
                     and run_id
@@ -252,9 +257,10 @@ async def build_command_center_snapshot(
         "integrations": build_integration_capabilities(settings, latest_runs),
         "evidence_boundary": (
             "Command Center values and trends are canonical DTMO read models. Integration readiness "
-            "reuses the governed Administration contract; enabled integrations with unresolved credentials, "
-            "scopes or allowlists remain configuration-required. Persisted runtime observations are historical "
-            "evidence only and are never labelled healthy. Missing canonical-store evidence is reported as "
-            "unavailable rather than synthesized."
+            "reuses the governed Administration contract; capabilities requiring configuration or explicit "
+            "activation remain configuration-required in the Command Center so the operator receives an "
+            "actionable Administration path. Persisted runtime observations are historical evidence only and "
+            "are never labelled healthy. Missing canonical-store evidence is reported as unavailable rather "
+            "than synthesized."
         ),
     }

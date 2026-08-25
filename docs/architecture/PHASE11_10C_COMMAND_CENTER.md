@@ -53,19 +53,20 @@ Severity composition is derived from canonical persisted intelligence and is ren
 
 ## Integration-state semantics
 
-Phase 11.10q now removes the previous duplicate/weak readiness interpretation in Command Center. The landing read model reuses `integration_readiness()` from the governed Administration contract and therefore evaluates endpoint, server-side credential and component-specific runtime requirements before an enabled service may appear as enabled/configured.
+Phase 11.10q removes the previous duplicate/weak readiness interpretation in Command Center. The landing read model reuses `integration_readiness()` from the governed Administration contract and therefore evaluates endpoint, server-side credential and component-specific runtime requirements before an enabled service may appear as enabled/configured.
 
 The following component-specific blockers are preserved in the server-derived model where applicable: AIL object scope, IntelOwl/Cortex analyzer allowlists, TheHive organization scope, OpenCTI entity allowlist/checkpoint requirements and Taranis checkpoint requirements. Command Center receives blocker categories only; secret values remain server-side.
 
-For backward-compatible presentation the Command Center keeps a coarse display vocabulary:
+For presentation the Command Center uses an action-oriented coarse vocabulary:
 
-- `disabled` — the DTMO capability flag is off;
-- `configuration-required` — the capability is enabled but one or more governed readiness blockers remain;
-- `enabled` — the capability is enabled and the shared readiness contract reports no remaining configuration blockers.
+- `configuration-required` — the operator still has governed Administration work to perform. This includes an enabled capability with unresolved runtime blockers **and** a disabled capability that requires explicit governed activation;
+- `enabled` — the capability flag is enabled and the shared readiness contract reports no remaining configuration blockers.
+
+The detailed underlying readiness state remains available separately as `readiness_state`. A disabled capability is therefore never disguised as enabled: `enabled=false` and `readiness_state=disabled` remain authoritative, while the coarse `state=configuration-required` ensures the landing page provides a governed Administration pivot instead of an unexplained disabled dead end.
 
 `enabled` still does **not** mean healthy or reachable. For connector-backed integrations Taranis, MISP and AIL, the latest persisted connector run may be shown as a runtime observation. The read model keeps `runtime_health_claim=false`; upstream service health is not inferred from configuration or a historical run.
 
-The API also carries `credential_configured`, `can_activate` and `activation_blockers` so later UI slices can present the same actionable detail without re-deriving security-sensitive readiness in the browser.
+The API also carries `credential_configured`, `can_activate`, `activation_blockers`, `action` and `detail` so later UI slices can present the same actionable detail without re-deriving security-sensitive readiness in the browser.
 
 ## Fail-closed data behavior
 
@@ -113,6 +114,6 @@ Responsive behavior is required down to narrow mobile layouts and inherits the k
 
 ## Phase 11.10q acceptance boundary
 
-The repository implementation now aligns Command Center integration readiness with the canonical Administration control plane and includes all seven supported framework integrations, including AIL. This resolves a repository-level consistency defect but does not retire the owner-functional blocker by itself. Green CI and browser fixtures remain repository evidence only; the accountable owner must still validate the canonical interface against the accepted same-origin environment before the Command Center row in `FUNCTIONAL_RECOVERY_ACCEPTANCE.md` can become PASS.
+The repository implementation now aligns Command Center integration readiness with the canonical Administration control plane and includes all seven supported framework integrations, including AIL. Disabled capabilities are also mapped to an actionable Administration state instead of remaining unexplained dead ends in the landing read model. This resolves a repository-level consistency defect but does not retire the owner-functional blocker by itself. Green CI and browser fixtures remain repository evidence only; the accountable owner must still validate the canonical interface against the accepted same-origin environment before the Command Center row in `FUNCTIONAL_RECOVERY_ACCEPTANCE.md` can become PASS.
 
 Repository and browser CI do not prove live upstream service health, production-equivalent continuity, independent assurance or production authorization.

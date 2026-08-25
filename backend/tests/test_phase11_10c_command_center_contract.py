@@ -41,6 +41,27 @@ def test_integration_capabilities_reuse_governed_readiness_and_never_infer_runti
     assert intelowl["runtime_health_claim"] is False
 
 
+def test_command_center_maps_disabled_capabilities_to_actionable_administration_state() -> None:
+    settings = Settings(
+        _env_file=None,
+        feature_opencti_read=False,
+        opencti_api_base="https://opencti.example.invalid/graphql",
+        opencti_api_token="runtime-token",
+        opencti_allowed_entity_types="Indicator,Malware",
+        opencti_checkpoint_path="/tmp/opencti-checkpoint.json",
+    )
+    opencti = next(
+        item for item in build_integration_capabilities(settings) if item["id"] == "opencti"
+    )
+    assert opencti["enabled"] is False
+    assert opencti["readiness_state"] == "disabled"
+    assert opencti["can_activate"] is True
+    assert opencti["activation_blockers"] == []
+    assert opencti["state"] == "configuration-required"
+    assert "explicit governed activation" in opencti["detail"]
+    assert opencti["runtime_health_claim"] is False
+
+
 def test_command_center_includes_ail_and_fails_closed_on_component_specific_readiness() -> None:
     settings = Settings(
         _env_file=None,
@@ -114,6 +135,9 @@ def test_frontend_command_center_uses_governed_api_graphs_pivots_and_explicit_bo
     assert "integration_readiness" in model_source
     assert '"ail": "ail"' in model_source
     assert '"activation_blockers"' in model_source
+    assert '"readiness_state"' in model_source
+    assert '"action"' in model_source
+    assert '"detail"' in model_source
     assert '"intelligence_7d"' in model_source
     assert '"severity_distribution"' in model_source
     assert ".kpi-grid" in styles
