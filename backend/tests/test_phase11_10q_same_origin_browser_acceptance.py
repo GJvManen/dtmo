@@ -68,6 +68,18 @@ async def test_canonical_workbench_uses_real_same_origin_api_and_persistence() -
         assert command["data_state"] in {"available", "unavailable"}
         assert "evidence_boundary" in command
 
+        # Command Center graphs/readiness must be rendered from the same-origin read model,
+        # not from browser fixtures. The clean repository-controlled database still yields
+        # a seven-day zero-valued series when canonical persistence is observable.
+        if command["data_state"] == "available":
+            await expect(page.get_by_role("list", name="Canonical intelligence arrivals over seven days")).to_be_visible()
+            assert await page.get_by_role("list", name="Canonical intelligence arrivals over seven days").get_by_role("listitem").count() == 7
+        await expect(page.get_by_role("heading", name="Integration readiness", exact=False)).to_be_visible()
+        integration_rows = page.locator(".integration-panel .integration-row")
+        assert await integration_rows.count() >= 7
+        assert await page.locator(".integration-panel .integration-pivot").count() >= 7
+        assert await page.locator('a[href^="/ui/"]').count() == 0
+
         # Prove a real browser mutation reaches DTMO persistence. The source is created
         # disabled and points at .invalid, so this journey never performs an external fetch.
         await page.goto(f"{BASE_URL}/workbench/collection")
@@ -119,6 +131,7 @@ async def test_canonical_workbench_uses_real_same_origin_api_and_persistence() -
         for path, heading in journeys:
             await page.goto(f"{BASE_URL}{path}")
             await expect(page.get_by_role("heading", name=heading, exact=True)).to_be_visible()
+            assert await page.locator('a[href^="/ui/"]').count() == 0
 
         # Critical proof: no route interception was installed; calls above are actual HTTP
         # responses from the exact-head DTMO process. Require a meaningful API sample and
