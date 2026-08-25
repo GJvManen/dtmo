@@ -4,13 +4,13 @@
 
 The canonical Administration workspace configures framework integrations without requiring the legacy interface. Endpoint, enablement and write-only credentials remain governed by the DTMO server-side control plane.
 
-MISP exposes its governed read/import execution path from Administration. AIL now also exposes the explicit object scope required by the existing read-only connector and can execute that scoped connector from the same canonical card.
+MISP and Taranis expose governed read/import execution from Administration. AIL exposes the explicit object scope required by its existing read-only connector. IntelOwl exposes its required analyzer allowlist as non-secret runtime policy, while actual enrichment execution remains in the governed Analysis & Enrichment workflow.
 
 ## Shared interaction contract
 
 An authorized principal with `manage:connectors` can configure an integration through the same-origin `/api/v1/admin/integrations/{integration_id}` endpoint. Credential fields are write-only. Existing credential values are never loaded into the browser or returned by the read model; the API exposes only `credential_configured`.
 
-A runtime action is enabled only for persisted, enabled and server-derived `ready` configuration with no unsaved browser changes. Runtime execution uses existing DTMO server-side adapters and never turns the browser into an upstream client.
+Component-specific non-secret runtime policy is persisted through the same control plane. A runtime action is enabled only for persisted, enabled and server-derived `ready` configuration with no unsaved browser changes. Runtime execution uses existing DTMO server-side adapters and never turns the browser into an upstream client.
 
 ## MISP runtime
 
@@ -24,16 +24,24 @@ Once endpoint, write-only credential, explicit object scope and enablement are p
 
 For AIL, the Administration read model consumes the server-derived governed integration-readiness contract. Endpoint plus credential alone therefore never labels AIL ready when its explicit object scope is absent. `activation_blockers` explains incomplete AIL runtime configuration.
 
+## IntelOwl analyzer policy
+
+IntelOwl requires `intelowl_allowed_analyzers` in addition to endpoint and server-side API token. The canonical IntelOwl card now exposes **IntelOwl analyzer allowlist** as non-secret runtime policy. Comma-separated analyzer names are normalized and persisted in `/var/lib/dtmo/runtime-integration-settings.json`.
+
+Administration uses the shared server-derived readiness contract for IntelOwl. An enabled IntelOwl integration without an analyzer allowlist therefore remains `configuration-required`, with **IntelOwl analyzer allowlist** reported as an activation blocker. Endpoint plus credential alone is not promoted to `ready`.
+
+The allowlist does not itself execute analyzers. IntelOwl execution remains in the canonical Analysis & Enrichment workflow, where existing `review:intelligence` authorization, persisted history and evidence-not-verdict boundaries continue to apply. Administration cannot turn analyzer configuration into review, sharing, publication, remediation or responder authority.
+
 ## Persistence and secret boundary
 
-Non-secret runtime settings remain in `/var/lib/dtmo/runtime-integration-settings.json`. AIL object scope is non-secret configuration and is persisted there. Integration credentials remain separately persisted in `/var/lib/dtmo/runtime-integration-secrets.json` with mode `0600`; secret values are never written into the non-secret document or returned to the browser.
+Non-secret runtime settings remain in `/var/lib/dtmo/runtime-integration-settings.json`. AIL object scope and the IntelOwl analyzer allowlist are non-secret configuration and are persisted there. Integration credentials remain separately persisted in `/var/lib/dtmo/runtime-integration-secrets.json` with mode `0600`; secret values are never written into the non-secret document or returned to the browser.
 
 ## Authorization and evidence boundary
 
-Configuration and runtime execution require server-authorized `manage:connectors`; UI visibility is not authorization. A completed MISP or AIL run is evidence only for that specific request and returned ingest result. It is not a blanket provider-health, completeness or source-truth claim.
+Configuration and runtime execution require server-authorized `manage:connectors`; UI visibility is not authorization. A completed MISP, AIL or Taranis run is evidence only for that specific request and returned ingest result. It is not a blanket provider-health, completeness or source-truth claim.
 
-AIL execution never creates or starts crawlers. Imported AIL objects remain read-only, data-minimized and without external-share authority. Neither MISP nor AIL import grants intelligence review, case, sharing, publication, remediation, external-assurance or production authority.
+AIL execution never creates or starts crawlers. Imported AIL objects remain read-only, data-minimized and without external-share authority. IntelOwl allowlist configuration only constrains which analyzers may later be requested by authorized analyst workflows. None of these Administration actions grants intelligence review, case, sharing, publication, remediation, external-assurance or production authority.
 
 ## Fail-closed behavior
 
-Unknown integrations, empty credential replacements and invalid production endpoints are rejected. AIL without explicit object scope remains `configuration-required` and cannot execute from canonical Administration. AIL scope submitted against a non-AIL integration is rejected. Unsaved configuration disables runtime actions, and upstream/runtime failures remain visibly failed rather than being promoted to healthy state.
+Unknown integrations, empty credential replacements and invalid production endpoints are rejected. AIL without explicit object scope remains `configuration-required`; IntelOwl without an analyzer allowlist remains `configuration-required`. AIL scope submitted against a non-AIL integration and IntelOwl analyzer policy submitted against a non-IntelOwl integration are rejected. Unsaved configuration disables runtime actions, and upstream/runtime failures remain visibly failed rather than being promoted to healthy state.
