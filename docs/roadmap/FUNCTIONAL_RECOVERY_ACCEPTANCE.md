@@ -46,6 +46,28 @@ Administration now exposes integration configuration and governed identity/RBAC 
 7. **Migrate Operations.** Bring runtime health, telemetry, connector state and alerts into `/operations` in the canonical React application.
 8. **Run a real owner retest.** Acceptance requires the owner to complete normal operator journeys without opening a legacy `/ui/*` route.
 
+## Owner functional retest protocol
+
+The next acceptance step after a fully green exact-head CI cycle is a manual owner retest against the exact candidate being evaluated. Repository-controlled browser gates — including any workflow whose historical name contains `Owner Retest` — remain regression evidence only when they use fixtures, request interception or synthetic data. They cannot change any row in this document from `BLOCKED` to accepted.
+
+Before the retest, record the exact candidate SHA and verify that the running DTMO instance was built from that SHA. Do not reuse evidence from an earlier SHA. The owner must use the canonical workbench routes and normal operator credentials/roles; no primary step may require a `/ui/*` compatibility page, direct database manipulation, hidden bootstrap command or manual canonical UUID entry when the object is discoverable in the interface.
+
+The owner retest must exercise these normal operator journeys end-to-end:
+
+1. **Administration and framework readiness:** inspect MISP, AIL, Taranis, IntelOwl, Cortex, OpenCTI and TheHive readiness; verify missing configuration is actionable from canonical Administration and a configured integration is not silently disabled. Verify identity/RBAC, security administration and audit evidence remain role-authorized and that credentials are never rendered back to the browser.
+2. **Sources & Collection:** discover or register a governed source, validate/test it where supported, activate it with the required authority, execute collection and observe the resulting persisted source state without opening a legacy view.
+3. **Threat Intelligence population and discovery:** use the governed source path to populate or refresh canonical intelligence, confirm attributable recent/default discovery, and select a persisted intelligence object from the canonical interface.
+4. **IOC Explorer and graph/exposure pivots:** derive/select persisted IOC inventory from canonical intelligence, use real object pivots, open Knowledge Graph discovery/population and Vulnerability & Exposure filtering/population without free-text UUID as the primary path.
+5. **Analysis and Investigations:** pivot from a selected canonical object into Analysis & Enrichment and Investigations; confirm persisted history/results/state are visible, mutations remain separately authorized, and no analyzer or case handoff is performed merely by navigation.
+6. **Sharing & Exchange:** pivot from the selected object into review/share state, exercise the human review/share approval path appropriate to the test role, and verify navigation alone does not grant MISP export, publication or synchronization authority.
+7. **Automation & Playbooks:** select an executable playbook/job, perform a bounded authorized run where appropriate, refresh runtime observation, and verify durable latest-state evidence is distinguishable from a complete immutable run history or provider-health claim.
+8. **Command Center and Operations:** verify canonical metrics/trends, integration readiness, runtime health, telemetry, connector state, alerts and actionable navigation contain real same-origin DTMO state and do not require a legacy Operations page.
+9. **Legacy escape-hatch check:** complete the whole retest with no primary workflow opening or requiring `/ui/*`. Compatibility routes may exist but cannot be needed for completion.
+
+For every journey, record `PASS` or `FAIL` plus the exact observed blocker. A `PASS` requires the server-authorized action and resulting state/evidence to be observable; button presence, an empty-state explanation, a mocked journey or green CI alone is insufficient. Any failed journey keeps the corresponding row above `BLOCKED` and #316 draft.
+
+Only an explicit owner acceptance statement after this retest may clear the owner functional rejection. After that acceptance — and not before — freeze a new candidate, repeat production-equivalent validation against that frozen SHA, and only then restart independent external assurance. Do not reuse prior staging, production-equivalent or external-assurance evidence as proof for the new candidate.
+
 ## Non-negotiable acceptance rules
 
 - A primary workflow that requires the legacy interface is a release blocker.
