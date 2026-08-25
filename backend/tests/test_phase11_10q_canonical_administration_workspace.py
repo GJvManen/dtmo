@@ -54,3 +54,18 @@ def test_ready_misp_can_execute_existing_server_side_import_from_canonical_admin
     assert 'require_permission(Permission.MANAGE_CONNECTORS)' in app
     assert "return await run_misp()" in app
     assert "ingest_connector_record(result.connector_id, record)" in app
+
+
+def test_ail_can_be_scoped_and_executed_end_to_end_from_canonical_administration() -> None:
+    workspace = WORKSPACE.read_text(encoding="utf-8")
+    backend = BACKEND.read_text(encoding="utf-8")
+    app = APP.read_text(encoding="utf-8")
+    assert "AIL object scope" in workspace
+    assert "ail_object_global_ids" in backend
+    assert "activation_blockers" in backend
+    assert "Run AIL import now" in workspace
+    assert "runJson<ConnectorRunResult>('/connectors/ail/run')" in workspace
+    assert "row.id === 'ail' && row.enabled && row.state === 'ready' && !dirty" in workspace
+    assert '@app.post("/connectors/ail/run")' in app
+    assert "return await run_ail()" in app
+    assert "ingest_connector_record(result.connector_id, record)" in app
