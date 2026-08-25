@@ -365,7 +365,7 @@ export function App() {
   const location = useLocation();
   const { health, session } = useShellStatus();
   const [navOpen, setNavOpen] = useState(false);
-  const [contextOpen, setContextOpen] = useState(true);
+  const [contextOpen, setContextOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>(() => (localStorage.getItem('dtmo-workbench-theme') === 'light' ? 'light' : 'dark'));
 
