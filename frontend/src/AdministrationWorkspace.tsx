@@ -12,6 +12,17 @@ type IntegrationRow = {
   state: 'ready' | 'credential-required' | 'configuration-required' | 'disabled';
   credential_boundary: string;
 };
+type ConnectorRunResult = {
+  connector_id: string;
+  status: string;
+  records: number;
+  inserted: number;
+  indexed: number;
+  attempts: number;
+  error: string | null;
+  alert_state: string;
+  correlation_id: string | null;
+};
 type RoleRow = { role: string; permissions: string[]; eligible_principal_types: string[]; immutable: boolean };
 type PrincipalRow = {
   subject: string;
@@ -52,11 +63,26 @@ async function writeJson<T>(url: string, method: 'POST' | 'PATCH', body: object)
   return payload as T;
 }
 
+async function runJson<T>(url: string): Promise<T> {
+  const response = await fetch(url, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { Accept: 'application/json', 'X-Request-ID': crypto.randomUUID() },
+  });
+  const payload = await response.json().catch(() => null);
+  if (!response.ok) {
+    const detail = typeof payload === 'object' && payload && 'detail' in payload ? String((payload as { detail: unknown }).detail) : `HTTP ${response.status}`;
+    throw new Error(detail);
+  }
+  return payload as T;
+}
+
 export function AdministrationWorkspace() {
   const client = useQueryClient();
   const [drafts, setDrafts] = useState<DraftState>({});
   const [principalDrafts, setPrincipalDrafts] = useState<PrincipalDraftState>({});
   const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const [lastMispRun, setLastMispRun] = useState<ConnectorRunResult | null>(null);
   const [lastIdentitySaved, setLastIdentitySaved] = useState<string | null>(null);
   const [newSubject, setNewSubject] = useState('');
   const [newDisplayName, setNewDisplayName] = useState('');
@@ -103,6 +129,13 @@ export function AdministrationWorkspace() {
     onSuccess: (row) => {
       setLastSaved(row.id);
       setDrafts((current) => ({ ...current, [row.id]: { enabled: row.enabled, apiBase: row.api_base, credential: '' } }));
+      void client.invalidateQueries({ queryKey: ['administration', 'integrations'] });
+    },
+  });
+  const mispRunMutation = useMutation({
+    mutationFn: () => runJson<ConnectorRunResult>('/connectors/misp/run'),
+    onSuccess: (result) => {
+      setLastMispRun(result);
       void client.invalidateQueries({ queryKey: ['administration', 'integrations'] });
     },
   });
@@ -161,7 +194,7 @@ export function AdministrationWorkspace() {
 
       <article className="surface command-panel" aria-labelledby="integration-admin-title">
         <header className="panel-heading"><div><p className="eyebrow">Framework integrations</p><h2 id="integration-admin-title">Runtime configuration</h2></div><span className="evidence-label">manage:connectors</span></header>
-        <p className="boundary-copy">Endpoint, enablement and write-only credential replacement are mutable here. Credential values never return to the browser after submission. Enabling an integration does not prove connectivity or healthy upstream operation.</p>
+        <p className="boundary-copy">Endpoint, enablement and write-only credential replacement are mutable here. Credential values never return to the browser after submission. MISP additionally exposes its governed read/import execution path when the persisted configuration is ready. A completed run is runtime evidence for that request, not a blanket upstream-health or publication claim.</p>
       </article>
 
       {!session.isPending && !connectorAllowed && <article className="surface panel-state error-state"><strong>Integration administration unavailable</strong><span>This principal does not have server-authorized <code>manage:connectors</code>.</span></article>}
@@ -172,15 +205,21 @@ export function AdministrationWorkspace() {
         {rows.map((row) => {
           const draft = drafts[row.id] ?? { enabled: row.enabled, apiBase: row.api_base, credential: '' };
           const dirty = draft.enabled !== row.enabled || draft.apiBase !== row.api_base || Boolean(draft.credential.trim());
+          const canRunMisp = row.id === 'misp' && row.enabled && row.state === 'ready' && !dirty;
           return <article className="surface command-panel" key={row.id} data-integration={row.id}>
             <header className="panel-heading"><div><p className="eyebrow">{row.id}</p><h2>{row.name}</h2></div><span className={`status-chip ${row.state === 'ready' ? 'success' : 'neutral'}`}>{row.state.replaceAll('-', ' ')}</span></header>
             <label><span>API endpoint</span><input value={draft.apiBase} placeholder="https://platform.example/api" onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, apiBase: event.target.value } }))} /></label>
             <label><span>Credential (write-only)</span><input type="password" autoComplete="new-password" value={draft.credential} placeholder={row.credential_configured ? 'Leave blank to keep current credential' : 'Enter credential'} onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, credential: event.target.value } }))} /></label>
             <label><input type="checkbox" checked={draft.enabled} onChange={(event) => setDrafts((current) => ({ ...current, [row.id]: { ...draft, enabled: event.target.checked } }))} /> Enabled</label>
             <p className="boundary-copy">Credential: {row.credential_configured ? 'configured server-side' : 'not configured'}. Submitted values are write-only, cleared from this form after save and never returned by the API. {row.credential_boundary}</p>
-            <div className="quick-grid"><button type="button" className="quick-action" disabled={!dirty || integrationMutation.isPending} onClick={() => integrationMutation.mutate({ id: row.id, enabled: draft.enabled, apiBase: draft.apiBase, credential: draft.credential })}><span aria-hidden="true">✓</span><div><strong>Save configuration</strong><small>Persist endpoint, enablement and optional credential replacement through the governed DTMO API.</small></div></button></div>
+            <div className="quick-grid">
+              <button type="button" className="quick-action" disabled={!dirty || integrationMutation.isPending} onClick={() => integrationMutation.mutate({ id: row.id, enabled: draft.enabled, apiBase: draft.apiBase, credential: draft.credential })}><span aria-hidden="true">✓</span><div><strong>Save configuration</strong><small>Persist endpoint, enablement and optional credential replacement through the governed DTMO API.</small></div></button>
+              {row.id === 'misp' && <button type="button" className="quick-action" data-misp-run disabled={!canRunMisp || mispRunMutation.isPending} onClick={() => mispRunMutation.mutate()}><span aria-hidden="true">↻</span><div><strong>Run MISP import now</strong><small>{dirty ? 'Save the current configuration before execution.' : row.state === 'ready' && row.enabled ? 'Execute the existing server-side MISP read connector and ingest returned canonical records.' : 'Enable MISP with endpoint and server-side credential before execution.'}</small></div></button>}
+            </div>
             {lastSaved === row.id && !integrationMutation.isError && <p className="panel-state">Configuration saved and reloaded. Credential values are not reloaded into the browser.</p>}
             {integrationMutation.isError && <p className="panel-state error-state">{integrationMutation.error.message}</p>}
+            {row.id === 'misp' && mispRunMutation.isError && <p className="panel-state error-state">MISP import failed: {mispRunMutation.error.message}</p>}
+            {row.id === 'misp' && lastMispRun && !mispRunMutation.isError && <p className={`panel-state ${lastMispRun.status === 'completed' ? '' : 'error-state'}`}>MISP runtime result: {lastMispRun.status}. Records {lastMispRun.records}; inserted {lastMispRun.inserted}; indexed {lastMispRun.indexed}; attempts {lastMispRun.attempts}. Alert {lastMispRun.alert_state}. Correlation {lastMispRun.correlation_id ?? 'not reported'}.{lastMispRun.error ? ` Error: ${lastMispRun.error}` : ''}</p>}
           </article>;
         })}
       </div>}
@@ -231,7 +270,7 @@ export function AdministrationWorkspace() {
         })}
       </div>}
 
-      <article className="surface evidence-surface"><div><p className="eyebrow">Canonical administration boundary</p><h2>No legacy administration dependency</h2></div><p>Integration endpoint, enablement and write-only credential replacement plus managed identity/RBAC administration are available through same-origin canonical APIs. Continue to <NavLink to="/collection">Sources & Collection</NavLink> for source execution and to <NavLink to="/governance">Governance & Evidence</NavLink> for governance evidence. Administration never grants review, sharing, publication or external-assurance authority by UI presence alone.</p></article>
+      <article className="surface evidence-surface"><div><p className="eyebrow">Canonical administration boundary</p><h2>No legacy administration dependency</h2></div><p>Integration endpoint, enablement and write-only credential replacement plus governed MISP runtime import and managed identity/RBAC administration are available through same-origin canonical APIs. Continue to <NavLink to="/collection">Sources & Collection</NavLink> for source execution and to <NavLink to="/governance">Governance & Evidence</NavLink> for governance evidence. Administration never grants review, sharing, publication or external-assurance authority by UI presence alone.</p></article>
     </section>
   );
 }
