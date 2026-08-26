@@ -2,36 +2,39 @@
 
 ## Status
 
-`EXACT-HEAD CI REQUIRED`
+`SEARCH/FILTER SLICE — EXACT-HEAD CI REQUIRED`
 
-This slice continues the owner-driven post-recovery functional retest after the canonical route/Administration matrix merged in PR #337.
+This matrix continues the owner-driven functional retest after PR #338 proved the canonical recent-intelligence, object-detail and downstream pivot journey against real temporary PostgreSQL persistence.
 
-## Acceptance contract
+## Accepted repository-controlled journey
 
-The canonical `/workbench/intelligence` journey must be proven against the real built workbench, same-origin DTMO APIs and temporary PostgreSQL persistence without Playwright route interception or fabricated API responses.
+The canonical `/workbench/intelligence` recent/detail journey is exercised against the real built workbench and same-origin DTMO APIs without Playwright route interception. A visibly repository-controlled fixture is written to temporary PostgreSQL, rendered in **Recent canonical intelligence**, opened through `/api/v1/intelligence/{id}/workspace`, and removed after the run.
 
-The exact-head browser journey seeds one visibly repository-controlled intelligence fixture directly into temporary DTMO persistence and verifies that the canonical Threat Intelligence page:
+That journey verifies server-derived source, severity, confidence, education relevance, review/sharing state, Analysis & Enrichment and Sharing & Exchange pivots, and the absence of `/ui/*` compatibility links in the exercised path.
 
-- renders the persisted record in **Recent canonical intelligence**;
-- opens the real `/api/v1/intelligence/{id}/workspace` detail path;
-- displays server-derived source, severity, confidence, education relevance, review and sharing state;
-- exposes canonical Analysis & Enrichment and Sharing & Exchange pivots carrying only the persisted object identifier;
-- contains no `/ui/*` compatibility link in the exercised canonical journey.
+## Current bounded priority — real governed search/filter projection
 
-The fixture is removed after the browser journey. It is repository-controlled acceptance data, not live threat intelligence and not source-health evidence.
+The next acceptance contract exercises the user-visible search form without browser/API mocks. The test creates one unique repository-controlled intelligence object and a matching document in the configured DTMO search projection, then uses the real canonical UI to:
 
-## Exact-head blocker handling
+- submit a unique text query;
+- apply the **high** severity filter;
+- apply a minimum education relevance threshold;
+- apply the maximum-result control;
+- observe the matching result returned through `/api/v1/intelligence/search`;
+- open the selected result through the real canonical object-detail endpoint;
+- confirm the canonical object remains attributable to its persisted DTMO source;
+- confirm no `/ui/*` compatibility path is required.
 
-The first PR #338 exact-head run exposed a timing race in the pre-existing Administration matrix: the canonical Administration shell and `Runtime configuration` heading were visible before the asynchronous same-origin `/api/v1/admin/integrations` response had rendered the integration cards. Server evidence recorded HTTP 200 for that request, so this was not a backend, RBAC or persistence failure. The regression now waits for the first real integration card to become visible before counting the expected integration set. This changes only the test synchronization boundary and does not weaken the functional assertion.
+The search route is intentionally not replaced with a PostgreSQL-only browser mock. DTMO currently implements governed search through `OpenSearchService`; therefore the functional gate must either provide that repository-controlled dependency or fail with concrete evidence. A missing search dependency must not be misreported as an empty result set.
 
 ## Evidence boundary
 
-This is repository-controlled exact-head functional evidence only. It does not execute external connectors and does not constitute owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, production authorization or independent external assurance.
+All records and search documents used by this matrix are repository-controlled acceptance fixtures. They are not live threat intelligence, upstream-source evidence, source-health evidence, owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, production authorization or independent external assurance.
 
 ## Security and authority boundaries
 
-The journey is read-only from the browser perspective. It does not grant review, share approval, publication, analyzer execution, connector execution, case creation, remediation or external-assurance authority. Server-side RBAC, provenance, fail-closed behavior and credential boundaries remain authoritative.
+The browser journeys are read-only investigation flows. They do not grant review, share approval, publication, analyzer execution, connector execution, case creation, remediation or external-assurance authority. Server-side RBAC, provenance, fail-closed behavior and credential boundaries remain authoritative. Search failure remains explicit and must not be converted into a false absence conclusion.
 
 ## Next after green
 
-Continue Threat Intelligence with the next bounded real journey: governed search/filter behavior against a real search projection, or fix the first exact-head blocker exposed by this slice before proceeding to IOC Explorer.
+After real search/query/filter behavior is green on exact-head CI, continue the page-by-page matrix with IOC Explorer. If exact-head CI fails, fix only the verified search-projection/runtime root cause before adding another workspace.
