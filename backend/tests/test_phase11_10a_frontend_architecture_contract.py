@@ -154,7 +154,7 @@ def test_authoritative_surfaces_preserve_accepted_architecture_and_current_slice
     assert "Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10j Sources & Collection Control Center | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10k Automation & Playbooks | `PASS / REPOSITORY_COMPLETE`" in current
-    assert "Phase 11.10l Governance & Evidence Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
+    assert "Phase 11.10l Governance & Evidence Center | `PASS / REPOSITORY_COMPLETE`" in current
 
     roadmap = _read(ROADMAP)
     assert "11.10a Frontend architecture and design contract" in roadmap

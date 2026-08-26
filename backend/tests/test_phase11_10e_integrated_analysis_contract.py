@@ -61,7 +61,7 @@ def test_phase11_10e_documentation_status_remains_accepted_during_later_slice() 
     assert "Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10j Sources & Collection Control Center | `PASS / REPOSITORY_COMPLETE`" in current
     assert "Phase 11.10k Automation & Playbooks | `PASS / REPOSITORY_COMPLETE`" in current
-    assert "Phase 11.10l Governance & Evidence Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`" in current
+    assert "Phase 11.10l Governance & Evidence Center | `PASS / REPOSITORY_COMPLETE`" in current
 
     # Detailed slice chronology stays authoritative in roadmap/evidence surfaces.
     # The documentation portal remains audience-oriented and only exposes the

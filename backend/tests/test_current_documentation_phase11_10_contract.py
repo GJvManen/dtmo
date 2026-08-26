@@ -45,22 +45,17 @@ def test_all_current_surfaces_preserve_phase11_release_truth() -> None:
         assert "REPOSITORY_COMPLETE" in text, path
 
 
-def test_phase11_10l_current_state_is_exact_and_fail_closed() -> None:
+def test_phase11_10_current_state_is_recovered_and_fail_closed() -> None:
     current = _read("docs/project/CURRENT_STATE.md")
     for marker in (
-        "Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10h TheHive Investigations & Cases | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10j Sources & Collection Control Center | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10k Automation & Playbooks | `PASS / REPOSITORY_COMPLETE`",
-        "Phase 11.10l Governance & Evidence Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
-        "Phase 11.10p fresh production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED`",
+        "Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`",
+        "Phase 11.10a–11.10o | `PASS / REPOSITORY_COMPLETE`",
+        "Phase 11.10q Functional Recovery Acceptance | `MERGED / OWNER-AUTHORIZED MERGE`",
+        "Post-11.10q framework-integration hardening | `PASS / REPOSITORY_COMPLETE`",
+        "Fresh candidate freeze | `NEXT / REQUIRED`",
+        "Phase 11.10p fresh production-equivalent validation | `NOT YET EXECUTED FOR NEW CANDIDATE`",
+        "Phase 11.11 independent external assurance | `NOT STARTED`",
+        "Phase 12 | `NOT STARTED`",
     ):
         assert marker in current, marker
 
@@ -69,19 +64,20 @@ def test_phase11_10l_current_state_is_exact_and_fail_closed() -> None:
         "Phase 11.10j Sources & Collection Control Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
         "Phase 11.10k Automation & Playbooks | `NOT STARTED`",
         "Phase 11.10l Governance & Evidence Center | `NOT STARTED`",
+        "Phase 11.10l Governance & Evidence Center | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`",
     ):
         assert stale not in current, stale
 
     for marker in (
-        "repository-backed",
-        "normenkader ibp",
-        "mitre att&ck",
-        "cvss",
         "provenance",
-        "fails closed",
+        "fail-closed",
         "repository CI",
         "not production authorized",
         "same immutable",
+        "exact deployed Git commit",
+        "immutable application image digest",
+        "migration head",
+        "deployment revision",
     ):
         assert marker.lower() in current.lower(), marker
 
