@@ -38,6 +38,12 @@ The canonical IOC Explorer must read a real persisted `IntelOwlEnrichmentRecord`
 
 This slice must not execute IntelOwl or any other external connector. Its fixture is repository-controlled persistence only. `external_share_authorized` and `local_compromise_proven` remain false; the test must not infer maliciousness, local compromise, upstream truth or share authority from IOC presence.
 
+## Slice 4 — Knowledge Graph persisted mapping/entity journey
+
+The canonical Knowledge Graph must prove a deep-link from one real temporary PostgreSQL intelligence item to DTMO-persisted OpenCTI/STIX mapping context. The browser journey must load the graph through `/api/v1/opencti/items/{item_id}/graph`, render the persisted mapping node, open its entity detail through `/api/v1/opencti/entities/{mapping_id}`, and expose its persisted revision, markings, confidence and authority boundaries.
+
+This slice deliberately runs with the live OpenCTI connector feature disabled. It must not query OpenCTI upstream, infer missing upstream relationship topology, or promote graph presence into evidence of compromise, attribution or external-share authority. `external_share_authorized` and `local_compromise_proven` remain false.
+
 ## Evidence boundary
 
 Passing these slices is repository-controlled browser evidence only. It is **not** owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, production authorization, or independent external assurance.
@@ -46,4 +52,4 @@ The following controls remain authoritative and must not be weakened by recovery
 
 ## Remaining recovery
 
-These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After IOC Explorer, the next deep functional slice is Knowledge Graph unless exact-head CI exposes an earlier blocker.
+These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After Knowledge Graph, the next deep functional slice is Vulnerability & Exposure Center unless exact-head CI exposes an earlier blocker.
