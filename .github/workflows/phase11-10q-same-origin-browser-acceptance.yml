@@ -8,6 +8,7 @@ on:
       - 'backend/dtmo/**'
       - 'backend/tests/test_phase11_10q_same_origin_browser_acceptance.py'
       - 'backend/tests/test_owner_functional_recovery_browser_matrix.py'
+      - 'backend/tests/test_owner_functional_recovery_threat_intelligence.py'
       - 'database/migrations/**'
       - '.github/workflows/phase11-10q-same-origin-browser-acceptance.yml'
       - 'docs/roadmap/FUNCTIONAL_RECOVERY_ACCEPTANCE.md'
@@ -110,6 +111,7 @@ jobs:
           python -m pytest -q \
             backend/tests/test_phase11_10q_same_origin_browser_acceptance.py \
             backend/tests/test_owner_functional_recovery_browser_matrix.py \
+            backend/tests/test_owner_functional_recovery_threat_intelligence.py \
             --junitxml=artifacts/phase11-10q-same-origin-browser.xml
 
       - name: Record bounded evidence claim
