@@ -7,14 +7,17 @@ Make bundled Grafana discoverable and diagnosable from canonical Administration 
 ## Scope
 
 - mount a bundled platform-readiness surface in `/workbench/administration`;
-- check Grafana through the supported same-origin `/grafana/api/health` gateway path;
-- distinguish reachable, authentication-required and unavailable states;
+- expose Grafana as part of the supported bundled Compose topology without issuing an unsolicited health request when Administration loads;
+- let an authorized operator explicitly run `Check Grafana` through the supported same-origin `/grafana/api/health` gateway path;
+- distinguish reachable, authentication-required and unavailable states after that explicit observation;
 - expose direct same-origin pivots to the provisioned `DTMO Operations` and `DTMO Intelligence` dashboards;
 - preserve Grafana anonymous-access disablement and separate authenticated-session requirements.
 
+The default `not-checked` state is intentional. A DTMO process running without the bundled gateway/Grafana topology must still render Administration cleanly instead of manufacturing browser 404 errors or claiming that Grafana was observed. An explicit operator check is the boundary that converts configured topology into a runtime reachability observation.
+
 ## Evidence boundary
 
-This slice proves repository product wiring and exact-head contracts only. A successful health response is component reachability evidence, not proof that telemetry is complete, dashboards contain current operational data, production-equivalent behavior is validated, or production is authorized.
+This slice proves repository product wiring and exact-head contracts only. A successful explicit health response is component reachability evidence, not proof that telemetry is complete, dashboards contain current operational data, production-equivalent behavior is validated, or production is authorized. A `not-checked` or unavailable state is never promoted to health evidence.
 
 ## Security boundary
 
