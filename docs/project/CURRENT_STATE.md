@@ -51,7 +51,7 @@ The current lifecycle priority is now **fresh candidate freeze and production-eq
 | Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10h TheHive Investigations & Cases | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10i automation & playbooks | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10j role-aware UX / accessibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10k consolidation acceptance | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10l governance & evidence center | `PASS / REPOSITORY_COMPLETE` |
