@@ -108,15 +108,11 @@ Phase 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and
 
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The synchronized source selected for the next candidate is immutable Git commit:
-
-`71bd9d08c0005d30c3db632cd2b938b042b64b9a`
-
-This SHA is a **source-candidate identity only**. The convenience branch `phase11-10p-candidate-freeze` currently points to the same source commit, but a mutable branch name is not itself an immutable deployment identity. No claim is made here that this source commit has already been built into the application image or deployed to an approved production-equivalent environment.
+The synchronized source candidate must be recorded as an immutable Git commit in the candidate-bound execution evidence. This stable index intentionally does not embed the exact operational candidate SHA. A mutable convenience branch is not itself an immutable deployment identity, and no claim is made here that the selected source has already been built into the application image or deployed to an approved production-equivalent environment.
 
 Fresh production-equivalent evidence must cover candidate identity, migration/compatibility, upgrade, rollback to the exact prior immutable digest plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity for the **same immutable candidate** and production-equivalent environment.
 
-Before execution can be accepted, the accountable exercise must record and verify the production-equivalent environment identifier, accountable owner/operator/reviewer, exact deployed Git commit, immutable application and supporting `sha256:` image digests, expected migration head, deployment/GitOps revision, exact approved prior immutable application digest for rollback and candidate fingerprint. If the deployed Git commit differs from the source SHA above, the candidate must be refrozen and any prior candidate-bound evidence cannot be transferred.
+Before execution can be accepted, the accountable exercise must record and verify the production-equivalent environment identifier, accountable owner/operator/reviewer, exact deployed Git commit, immutable application and supporting `sha256:` image digests, expected migration head, deployment/GitOps revision, exact approved prior immutable application digest for rollback and candidate fingerprint. If the deployed Git commit differs from the recorded frozen source commit, the candidate must be refrozen and any prior candidate-bound evidence cannot be transferred.
 
 The authoritative repository execution chain remains explicit:
 
