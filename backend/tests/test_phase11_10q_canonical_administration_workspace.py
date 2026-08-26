@@ -4,6 +4,7 @@ ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE = ROOT / "frontend/src/AdministrationWorkspace.tsx"
 MAIN = ROOT / "frontend/src/main.tsx"
 BACKEND = ROOT / "backend/dtmo/admin_center.py"
+AUTH = ROOT / "backend/dtmo/auth/dependencies.py"
 APP = ROOT / "backend/dtmo/main.py"
 
 
@@ -26,6 +27,20 @@ def test_canonical_administration_uses_same_origin_governed_read_and_patch() -> 
     assert "/api/v1/admin/integrations/${encodeURIComponent(id)}" in workspace
     assert 'require_permission(Permission.MANAGE_CONNECTORS)' in backend
     assert '@router.patch("/api/v1/admin/integrations/{integration_id}")' in backend
+
+
+def test_canonical_administration_preserves_local_development_auth_context_without_weakening_production_auth() -> None:
+    workspace = WORKSPACE.read_text(encoding="utf-8")
+    auth = AUTH.read_text(encoding="utf-8")
+    assert "sessionStorage.getItem('dtmo.subject') || 'admin-tester'" in workspace
+    assert "sessionStorage.getItem('dtmo.roles') || 'admin'" in workspace
+    assert "sessionStorage.getItem('dtmo.apiKey') || ''" in workspace
+    assert "'X-DTMO-Subject': subject" in workspace
+    assert "'X-DTMO-Roles': roles" in workspace
+    assert "'X-DTMO-API-Key': apiKey" in workspace
+    assert "headers: requestHeaders({ Accept: 'application/json' })" in workspace
+    assert "if settings.production:" in auth
+    assert 'detail="bearer token required"' in auth
 
 
 def test_browser_can_replace_credentials_write_only_without_receiving_secret_values() -> None:
