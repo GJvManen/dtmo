@@ -52,6 +52,14 @@ The journey must prove CVSS/EPSS/KEV plus vendor, product, CWE and minimum-EPSS 
 
 The object store in this gate is repository-controlled and ephemeral. No OpenCVE, Vulnerability-Lookup or other external connector is executed. Passing this slice is not proof of upstream truth or production object-store readiness.
 
+## Slice 6 — Investigations governed case-handoff journey
+
+The canonical Investigations workspace must prove more than discovery. A repository-controlled canonical intelligence fixture with immutable raw evidence and provenance is opened through the normal deep-link path. A human-authorized `admin` browser principal must see the source, review state, provenance count and authoritative TLP restriction, provide a minimized reviewed summary and submit a case handoff through `/api/v1/thehive/items/{item_id}/cases`.
+
+The CI job provides a repository-controlled TheHive API emulator on loopback only so the real DTMO server-side `TheHiveCaseAdapter` can exercise authorization headers, organization scoping, payload minimization, confirmed case identity and durable handoff persistence. The browser must then display the delivered case identity in handoff history while `external_share_authorized` and `local_compromise_proven` remain false. No responder execution, publication authority, upstream alerts/tasks/timeline state or subsequent live case state may be inferred.
+
+The emulator is not a live TheHive deployment and its success is not staging, production-equivalent, penetration-test, production or independent-assurance evidence. Live TheHive health and real deployment credentials remain separate external validation requirements.
+
 ## Evidence boundary
 
 Passing these slices is repository-controlled browser evidence only. It is **not** owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, production authorization, or independent external assurance.
@@ -60,4 +68,4 @@ The following controls remain authoritative and must not be weakened by recovery
 
 ## Remaining recovery
 
-These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After Vulnerability & Exposure Center, the next deep functional slice is Investigations unless exact-head CI exposes an earlier blocker.
+These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After Investigations, the next deep functional slice is Analysis & Enrichment unless exact-head CI exposes an earlier blocker.
