@@ -11,6 +11,7 @@ on:
       - 'backend/tests/test_owner_functional_recovery_threat_intelligence.py'
       - 'backend/tests/test_owner_functional_recovery_ioc_explorer.py'
       - 'backend/tests/test_owner_functional_recovery_knowledge_graph.py'
+      - 'backend/tests/test_owner_functional_recovery_exposure.py'
       - 'database/migrations/**'
       - '.github/workflows/phase11-10q-same-origin-browser-acceptance.yml'
       - 'docs/roadmap/FUNCTIONAL_RECOVERY_ACCEPTANCE.md'
@@ -54,6 +55,10 @@ jobs:
       DTMO_ENVIRONMENT: development
       DTMO_DATABASE_URL: postgresql+psycopg://dtmo:dtmo-acceptance@127.0.0.1:5432/dtmo
       DTMO_OPENSEARCH_URL: http://127.0.0.1:9200
+      DTMO_MINIO_ENDPOINT: 127.0.0.1:9000
+      DTMO_MINIO_ACCESS_KEY: dtmo-acceptance
+      DTMO_MINIO_SECRET_KEY: dtmo-acceptance-secret-value
+      DTMO_MINIO_SECURE: 'false'
       DTMO_FEATURE_LIVE_CONNECTORS: 'false'
       DTMO_FEATURE_OPENCVE_CONNECTOR: 'false'
       DTMO_FEATURE_VULNERABILITY_LOOKUP_CONNECTOR: 'false'
@@ -108,6 +113,23 @@ jobs:
       - name: Install Chromium
         run: python -m playwright install chromium
 
+      - name: Start repository-controlled MinIO
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run -d --name dtmo-functional-minio -p 9000:9000 \
+            -e MINIO_ROOT_USER="$DTMO_MINIO_ACCESS_KEY" \
+            -e MINIO_ROOT_PASSWORD="$DTMO_MINIO_SECRET_KEY" \
+            minio/minio:RELEASE.2025-07-23T15-54-02Z server /data
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:9000/minio/health/live >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs dtmo-functional-minio
+          exit 1
+
       - name: Start exact-head DTMO with built workbench
         shell: bash
         run: |
@@ -131,6 +153,7 @@ jobs:
             backend/tests/test_owner_functional_recovery_threat_intelligence.py \
             backend/tests/test_owner_functional_recovery_ioc_explorer.py \
             backend/tests/test_owner_functional_recovery_knowledge_graph.py \
+            backend/tests/test_owner_functional_recovery_exposure.py \
             --junitxml=artifacts/phase11-10q-same-origin-browser.xml
 
       - name: Record bounded evidence claim
@@ -149,6 +172,7 @@ jobs:
               "route_interception": False,
               "same_origin_http": True,
               "real_dtmo_persistence": True,
+              "real_object_store": True,
               "external_connector_execution": False,
               "repository_controlled_environment": True,
               "owner_functional_acceptance": False,
@@ -157,9 +181,9 @@ jobs:
               "external_assurance_evidence": False,
               "claim_boundary": (
                   "Exact-head repository-controlled browser acceptance against the real built DTMO workbench, "
-                  "same-origin DTMO APIs and temporary PostgreSQL persistence. The journeys perform no external "
-                  "connector execution and do not constitute owner acceptance, staging evidence, production-equivalent "
-                  "validation, production authorization or independent external assurance."
+                  "same-origin DTMO APIs, temporary PostgreSQL persistence and repository-controlled object storage. "
+                  "The journeys perform no external connector execution and do not constitute owner acceptance, "
+                  "staging evidence, production-equivalent validation, production authorization or independent external assurance."
               ),
           }
           Path("artifacts/phase11-10q-same-origin-evidence.json").write_text(
@@ -174,6 +198,7 @@ jobs:
           if test -f artifacts/phase11-10q-same-origin-server.pid; then
             kill "$(cat artifacts/phase11-10q-same-origin-server.pid)" || true
           fi
+          docker rm -f dtmo-functional-minio || true
 
       - name: Upload same-origin acceptance evidence
         if: always()
