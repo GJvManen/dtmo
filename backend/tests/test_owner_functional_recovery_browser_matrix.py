@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 
 import pytest
 from playwright.async_api import async_playwright, expect
@@ -63,7 +64,7 @@ async def test_all_canonical_routes_render_and_administration_persists_changes()
         misp = page.locator('[data-integration="misp"]')
         endpoint = misp.get_by_label("API endpoint")
         enabled = misp.get_by_label("Enabled")
-        save = misp.get_by_role("button", name="Save configuration", exact=True)
+        save = misp.get_by_role("button", name=re.compile(r"^Save configuration\b"))
 
         original_endpoint = await endpoint.input_value()
         original_enabled = await enabled.is_checked()
@@ -87,7 +88,7 @@ async def test_all_canonical_routes_render_and_administration_persists_changes()
         misp = page.locator('[data-integration="misp"]')
         endpoint = misp.get_by_label("API endpoint")
         enabled = misp.get_by_label("Enabled")
-        save = misp.get_by_role("button", name="Save configuration", exact=True)
+        save = misp.get_by_role("button", name=re.compile(r"^Save configuration\b"))
         await expect(endpoint).to_have_value(acceptance_endpoint)
         assert await enabled.is_checked() is False
 
