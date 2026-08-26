@@ -9,9 +9,11 @@ on:
       - 'backend/tests/test_phase11_10q_same_origin_browser_acceptance.py'
       - 'backend/tests/test_owner_functional_recovery_browser_matrix.py'
       - 'backend/tests/test_owner_functional_recovery_threat_intelligence.py'
+      - 'backend/tests/test_owner_functional_recovery_ioc_explorer.py'
       - 'database/migrations/**'
       - '.github/workflows/phase11-10q-same-origin-browser-acceptance.yml'
       - 'docs/roadmap/FUNCTIONAL_RECOVERY_ACCEPTANCE.md'
+      - 'docs/qa/CANONICAL_FUNCTIONAL_BROWSER_MATRIX.md'
   workflow_dispatch:
 
 permissions:
@@ -126,6 +128,7 @@ jobs:
             backend/tests/test_phase11_10q_same_origin_browser_acceptance.py \
             backend/tests/test_owner_functional_recovery_browser_matrix.py \
             backend/tests/test_owner_functional_recovery_threat_intelligence.py \
+            backend/tests/test_owner_functional_recovery_ioc_explorer.py \
             --junitxml=artifacts/phase11-10q-same-origin-browser.xml
 
       - name: Record bounded evidence claim
