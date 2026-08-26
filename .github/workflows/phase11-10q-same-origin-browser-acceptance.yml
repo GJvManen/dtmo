@@ -7,6 +7,7 @@ on:
       - 'frontend/**'
       - 'backend/dtmo/**'
       - 'backend/tests/test_phase11_10q_same_origin_browser_acceptance.py'
+      - 'backend/tests/test_owner_functional_recovery_browser_matrix.py'
       - 'database/migrations/**'
       - '.github/workflows/phase11-10q-same-origin-browser-acceptance.yml'
       - 'docs/roadmap/FUNCTIONAL_RECOVERY_ACCEPTANCE.md'
@@ -104,9 +105,11 @@ jobs:
           cat artifacts/phase11-10q-same-origin-server.log
           exit 1
 
-      - name: Execute unmocked same-origin browser journey
+      - name: Execute unmocked same-origin browser journeys
         run: |
-          python -m pytest -q backend/tests/test_phase11_10q_same_origin_browser_acceptance.py \
+          python -m pytest -q \
+            backend/tests/test_phase11_10q_same_origin_browser_acceptance.py \
+            backend/tests/test_owner_functional_recovery_browser_matrix.py \
             --junitxml=artifacts/phase11-10q-same-origin-browser.xml
 
       - name: Record bounded evidence claim
@@ -133,8 +136,8 @@ jobs:
               "external_assurance_evidence": False,
               "claim_boundary": (
                   "Exact-head repository-controlled browser acceptance against the real built DTMO workbench, "
-                  "same-origin DTMO APIs and temporary PostgreSQL persistence. The journey performs no external "
-                  "connector execution and does not constitute owner acceptance, staging evidence, production-equivalent "
+                  "same-origin DTMO APIs and temporary PostgreSQL persistence. The journeys perform no external "
+                  "connector execution and do not constitute owner acceptance, staging evidence, production-equivalent "
                   "validation, production authorization or independent external assurance."
               ),
           }
