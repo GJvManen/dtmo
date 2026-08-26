@@ -1,6 +1,6 @@
 # DTMO Evidence Index
 
-Last updated: **2026-08-21**
+Last updated: **2026-08-26**
 
 ## Purpose
 
@@ -10,7 +10,7 @@ This index maps current lifecycle stages to authoritative evidence classes and r
 
 Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**.
 
-Phase 11.1–11.9 and Phase 11.10a–11.10k are `PASS / REPOSITORY_COMPLETE`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with **Phase 11.10l Governance & Evidence** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. Phase 11.10m–11.10o, Phase 11.11 and Phase 12 are `NOT STARTED`; Phase 11.10p is `NOT STARTED / CANDIDATE FREEZE REQUIRED`. DTMO is **not production authorized**.
+Phase 11.1–11.9 and Phase 11.10a–11.10o are `PASS / REPOSITORY_COMPLETE`. Phase 11.10q Functional Recovery Acceptance is `MERGED / OWNER-AUTHORIZED`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with Phase 11.10p **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**. Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
 
 ## Evidence hierarchy
 
@@ -44,7 +44,7 @@ Application rollback does not authorize automatic database down migration. Confi
 
 ## Phase 11.10 candidate-completion evidence
 
-For lifecycle discoverability, every bounded slice is explicitly indexed: **11.10a** Frontend Architecture & Design, **11.10b** Application Shell, **11.10c** Command Center, **11.10d** Unified Intelligence, **11.10e** IntelOwl/Cortex Integrated Analysis, **11.10f** OpenCTI Graph & Entity, **11.10g** MISP Sharing & Exchange, **11.10h** TheHive Investigations & Cases, **11.10i** Vulnerability & Exposure, **11.10j** Sources & Collection, **11.10k** Automation & Playbooks and **11.10l** Governance & Evidence. Slices 11.10a–11.10k are `PASS / REPOSITORY_COMPLETE`; 11.10l remains `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`. This index records repository evidence state only and does not establish production-equivalent behavior, independent assurance or production authorization.
+For lifecycle discoverability, every bounded slice remains explicitly indexed: **11.10a** Frontend Architecture & Design, **11.10b** Application Shell, **11.10c** Command Center, **11.10d** Unified Intelligence, **11.10e** IntelOwl/Cortex Integrated Analysis, **11.10f** OpenCTI Graph & Entity, **11.10g** MISP Sharing & Exchange, **11.10h** TheHive Investigations & Cases, **11.10i** Vulnerability & Exposure, **11.10j** Sources & Collection, **11.10k** Automation & Playbooks, **11.10l** Governance & Evidence, **11.10m** Operations & Administration, **11.10n** role-aware UX/accessibility and **11.10o** consolidation/full functional acceptance. Slices 11.10a–11.10o are `PASS / REPOSITORY_COMPLETE`; **11.10q** Functional Recovery Acceptance is `MERGED / OWNER-AUTHORIZED`. This index records repository evidence state only and does not establish production-equivalent behavior, independent assurance or production authorization.
 
 ### 11.10a–11.10g
 
@@ -78,9 +78,9 @@ Authoritative evidence includes `frontend/src/AutomationWorkspace.tsx`, governed
 
 ### 11.10l Governance & Evidence
 
-**Status:** `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED`.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-Authoritative active evidence chain:
+Authoritative accepted evidence chain:
 
 - `backend/dtmo/governance_knowledge.py`;
 - `backend/dtmo/governance_crosswalk.py`;
@@ -102,13 +102,17 @@ Governance visibility is read-oriented and grants no review, case, remediation, 
 
 ### Candidate-completion order
 
-After acceptance of 11.10l, the next bounded priorities remain 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance. No later slice may start while the active bounded PR is unaccepted.
+Phase 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance are accepted repository scope, and 11.10q Functional Recovery Acceptance is merged/owner-authorized. The active lifecycle priority is now 11.10p fresh candidate-bound production-equivalent validation. No repository status is promoted to real-environment evidence without accountable external observations for the same immutable deployment identity.
 
 ## Phase 11.10p production-equivalent evidence
 
-**Status:** `NOT STARTED / CANDIDATE FREEZE REQUIRED`.
+**Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-After 11.10o, one immutable integrated candidate must be frozen. Fresh evidence must cover candidate identity, migration/compatibility, upgrade, rollback to the exact prior immutable digest plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity for the **same immutable candidate** and production-equivalent environment.
+The synchronized source candidate must be recorded as an immutable Git commit in the candidate-bound execution evidence. This stable index intentionally does not embed the exact operational candidate SHA. A mutable convenience branch is not itself an immutable deployment identity, and no claim is made here that the selected source has already been built into the application image or deployed to an approved production-equivalent environment.
+
+Fresh production-equivalent evidence must cover candidate identity, migration/compatibility, upgrade, rollback to the exact prior immutable digest plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity for the **same immutable candidate** and production-equivalent environment.
+
+Before execution can be accepted, the accountable exercise must record and verify the production-equivalent environment identifier, accountable owner/operator/reviewer, exact deployed Git commit, immutable application and supporting `sha256:` image digests, expected migration head, deployment/GitOps revision, exact approved prior immutable application digest for rollback and candidate fingerprint. If the deployed Git commit differs from the recorded frozen source commit, the candidate must be refrozen and any prior candidate-bound evidence cannot be transferred.
 
 The authoritative repository execution chain remains explicit:
 
@@ -119,10 +123,10 @@ The authoritative repository execution chain remains explicit:
 - `backend/tests/test_phase11_10_production_equivalent_validation.py`;
 - `.github/workflows/phase11-production-equivalent-validation.yml`.
 
-That later gate requires fresh evidence for candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery for one immutable candidate. Missing, inaccessible, placeholder, historical-only or mixed-candidate evidence must **fail closed**. Repository workflow success alone is not production-equivalent evidence and does not authorize production.
+That gate requires fresh evidence for candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery for one immutable candidate. Missing, inaccessible, placeholder, historical-only, synthetic-only or mixed-candidate evidence must **fail closed**. Repository workflow success alone is not production-equivalent evidence and does not authorize production.
 
 Historical Phase 8/9 evidence is audit history only and cannot be reused as proof for the materially changed candidate.
 
 ## Phase 11.11 and Phase 12
 
-Phase 11.11 independent external assurance is `NOT STARTED` and remains blocked until Phase 11.10 is explicitly `PASS / OWNER_ACCEPTED`. Phase 12 is `NOT STARTED`; only a formal accountable decision can authorize production.
+Phase 11.11 independent external assurance is `NOT STARTED` and remains blocked until fresh Phase 11.10p production-equivalent evidence is explicitly accepted for one immutable candidate. Historical Phase 9 evidence cannot satisfy that new gate. Phase 12 is `NOT STARTED`; only a formal accountable decision after fresh production-equivalent and independent-assurance acceptance can authorize production.
