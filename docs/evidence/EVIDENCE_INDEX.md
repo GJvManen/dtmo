@@ -4,45 +4,32 @@ Last updated: **2026-08-26**
 
 ## Purpose
 
-This index maps the current DTMO lifecycle to authoritative evidence classes and repository evidence chains. It is not a CI chronology. Repository-controlled engineering evidence, owner functional acceptance, production-equivalent evidence, independent external assurance and formal production authorization remain separate evidence classes and are never interchangeable.
+This index maps current lifecycle stages to authoritative evidence classes and repository evidence chains. It is not a CI chronology. Historical workflow artifacts and external assurance remain bound to their original candidate.
 
 ## Current lifecycle
 
-| Stage | Evidence status |
-|---|---|
-| Phases 1–7 | `PASS / REPOSITORY_COMPLETE` |
-| RC13 historical owner retest | `PASS / OWNER_ACCEPTED` |
-| E8.1–E8.10 | `PASS / REPOSITORY_COMPLETE` |
-| Phase 8 | `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE ONLY` |
-| Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE ONLY` |
-| Phase 10 | `NO-GO / BLOCKED — HISTORICAL PLATFORM INDUSTRIALISATION DECISION` |
-| Phase 11.1–11.9 | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10a–11.10o | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10q Functional Recovery Acceptance | `MERGED / OWNER-AUTHORIZED` |
-| Phase 11.10p | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
-| Phase 11.11 | `NOT STARTED / BLOCKED UNTIL FRESH PRODUCTION-EQUIVALENT PASS` |
-| Phase 12 | `NOT STARTED / BLOCKED UNTIL 11.10p AND 11.11 ACCEPTED` |
+Phases 1–7 remain `PASS`; RC13 remains `PASS / OWNER_ACCEPTED`; E8.1–E8.10 remain `PASS / REPOSITORY_COMPLETE`. Phase 8 remains `PASS / OWNER_ACCEPTED — HISTORICAL CANDIDATE`; Phase 9 remains `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE`; Phase 10 remains **`NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED`**.
 
-DTMO remains **not production authorized**. Phase 11 remains **IN PROGRESS**. Historical Phase 8 and Phase 9 evidence remains attributable only to the historical candidate and cannot be reused for the materially changed current candidate.
+Phase 11.1–11.9 and Phase 11.10a–11.10o are `PASS / REPOSITORY_COMPLETE`. Phase 11.10q Functional Recovery Acceptance is `MERGED / OWNER-AUTHORIZED`. Phase 11.10 remains **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`** with Phase 11.10p **`IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`**. Phase 11.11 and Phase 12 are `NOT STARTED`. DTMO is **not production authorized**.
 
 ## Evidence hierarchy
 
-1. **Repository-controlled engineering evidence** — exact-head CI, deterministic contracts, builds, browser tests, migrations, runtime contracts and bounded repository-controlled integration emulators.
-2. **Supply-chain evidence** — immutable artifact hashes, SBOM, provenance and signing for the exact release subject.
+1. **Repository-controlled engineering evidence** — exact-head CI, contracts, builds, browser tests, migrations and runtime contracts.
+2. **Supply-chain evidence** — artifact hashes, SBOM, provenance and signing for the exact release subject.
 3. **Accountable functional evidence** — explicit owner acceptance of product behavior.
-4. **Production-equivalent evidence** — accountable observations from an approved production-equivalent environment bound to one immutable deployment identity.
-5. **Independent external assurance** — assessment independent from repository CI and bound to the same accepted immutable candidate.
-6. **Formal production authorization** — accountable GO/NO-GO for a specific candidate after all prerequisite evidence is accepted.
+4. **Real-environment evidence** — production-equivalent exercise bound to one immutable deployment identity.
+5. **Independent assurance** — assessment independent from repository CI.
+6. **Formal production authorization** — accountable GO/NO-GO for a specific candidate.
 
-Repository CI does **not** establish production-equivalent operation, penetration-test success, independent external assurance or production authorization.
+These classes are not interchangeable. Repository CI **does not prove** production-equivalent operation, independent assurance or production authorization.
 
-## Phase 11 integration and industrialisation baseline
+## Accepted Phase 11 integration and industrialisation baseline
 
-Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed service/licensing boundaries. Accepted Phase 11.1–11.9 repository evidence covers integration contracts plus runtime, workload identity/external secrets, ingress/TLS/network segmentation, HA/disruption, observability, backup/restore/recovery, supply-chain hardening, capacity, upgrade/rollback and forward-first migration compatibility.
+Taranis AI, IntelOwl, Cortex, OpenCTI, MISP and TheHive remain separate governed service/licensing boundaries. Accepted Phase 11.1–11.9 evidence covers integration contracts plus runtime, workload identity/external secrets, ingress/TLS/network segmentation, HA/disruption, observability, backup/restore/recovery, supply-chain hardening, capacity, exercised upgrade/rollback and forward-first migration compatibility.
 
-Application rollback does not authorize automatic database down migration. Connector execution, repository-controlled emulation or CI success does not prove upstream source truth, compromise, remediation success, production-equivalent behavior or production authorization.
+Accepted service implementation evidence includes `.github/workflows/phase11-thehive-handoff-implementation.yml`. That workflow is repository-controlled implementation evidence only: it does not establish live TheHive health, case-state truth beyond recorded handoff evidence, production-equivalent operation, external assurance or production authorization.
 
-Representative repository evidence remains indexed through:
+Accepted runtime and supply-chain workflow evidence remains explicitly indexed through:
 
 - `.github/workflows/phase11-runtime-foundation.yml`;
 - `.github/workflows/phase11-workload-identity-secrets.yml`;
@@ -53,51 +40,85 @@ Representative repository evidence remains indexed through:
 - `.github/workflows/phase11-upgrade-rollback.yml`;
 - `.github/workflows/phase11-migration-compatibility.yml`.
 
-## Phase 11.10 candidate-completion and functional-recovery evidence
+Application rollback does not authorize automatic database down migration. Configuration or CI success does not establish live service health, production-equivalent behavior or production authorization.
 
-Phase 11.10a–11.10o are `PASS / REPOSITORY_COMPLETE`. They cover the canonical frontend architecture and application shell, Command Center, Unified Intelligence, IntelOwl/Cortex integrated analysis, OpenCTI graph/entity workspace, MISP Sharing & Exchange, TheHive Investigations & Cases, Vulnerability & Exposure, Sources & Collection, Automation & Playbooks, Governance & Evidence, Operations & Administration, role-aware UX/accessibility and consolidation/full functional acceptance contracts.
+## Phase 11.10 candidate-completion evidence
 
-Phase 11.10q is `MERGED / OWNER-AUTHORIZED`. The later repository-controlled functional recovery slices additionally proved real same-origin journeys for Administration, Threat Intelligence, IOC Explorer, Knowledge Graph, Vulnerability & Exposure, Investigations and Analysis & Enrichment without promoting repository-controlled emulators or fixtures to live-source evidence.
+For lifecycle discoverability, every bounded slice remains explicitly indexed: **11.10a** Frontend Architecture & Design, **11.10b** Application Shell, **11.10c** Command Center, **11.10d** Unified Intelligence, **11.10e** IntelOwl/Cortex Integrated Analysis, **11.10f** OpenCTI Graph & Entity, **11.10g** MISP Sharing & Exchange, **11.10h** TheHive Investigations & Cases, **11.10i** Vulnerability & Exposure, **11.10j** Sources & Collection, **11.10k** Automation & Playbooks, **11.10l** Governance & Evidence, **11.10m** Operations & Administration, **11.10n** role-aware UX/accessibility and **11.10o** consolidation/full functional acceptance. Slices 11.10a–11.10o are `PASS / REPOSITORY_COMPLETE`; **11.10q** Functional Recovery Acceptance is `MERGED / OWNER-AUTHORIZED`. This index records repository evidence state only and does not establish production-equivalent behavior, independent assurance or production authorization.
 
-The accepted functional boundaries remain mandatory:
+### 11.10a–11.10g
 
-- no primary recovered workflow requires `/ui/*` legacy compatibility paths;
-- RBAC and separation of duties remain enforced server-side;
-- provenance and immutable raw-evidence binding remain visible where applicable;
-- external review/share/publication authority remains explicit human authority and is not inferred from enrichment or case state;
-- local compromise is never inferred solely from IOC, enrichment, graph, vulnerability or upstream-case evidence;
-- credentials remain server-side and are not exposed to the browser;
-- missing, ambiguous or unauthorized state fails closed.
+**Status:** `PASS / REPOSITORY_COMPLETE`.
 
-The authoritative functional-recovery record is `docs/roadmap/FUNCTIONAL_RECOVERY_ACCEPTANCE.md`. Repository browser evidence remains repository evidence only and does not establish production-equivalent behavior or external assurance.
+Accepted packages cover frontend architecture/design, canonical application shell, Command Center, Unified Intelligence, IntelOwl/Cortex integrated analysis, OpenCTI graph/entity and MISP Sharing & Exchange. Human review/share/publication authority remains separate; enrichment, topology and transfer evidence do not prove compromise or publication.
 
-## Phase 11.10p — source candidate freeze and production-equivalent evidence
+### 11.10h TheHive Investigations & Cases
+
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Authoritative evidence includes `backend/dtmo/thehive_handoff.py`, TheHive integration/persistence, `frontend/src/InvestigationsWorkspace.tsx`, architecture/user/QA material, deterministic tests and `.github/workflows/phase11-thehive-investigations.yml`. Case mutation remains explicit human `handoff:case` authority. Ambiguous handoff state fails closed; case identity does not prove compromise, remediation or later upstream case state.
+
+### 11.10i Vulnerability & Exposure
+
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Authoritative evidence includes `frontend/src/ExposureWorkspace.tsx`, the canonical vulnerability analytics API projection, `docs/architecture/PHASE11_10I_VULNERABILITY_EXPOSURE.md`, `docs/user/VULNERABILITY_EXPOSURE_WORKSPACE.md`, `docs/qa/PHASE11_10I_VULNERABILITY_EXPOSURE_GATE.md`, deterministic tests and `.github/workflows/phase11-vulnerability-exposure.yml`. CVSS/EPSS/KEV are prioritization inputs, not proof of local exposure or compromise.
+
+### 11.10j Sources & Collection
+
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Authoritative evidence includes `backend/dtmo/admin_sources.py`, `frontend/src/CollectionWorkspace.tsx`, architecture/user/QA material, deterministic contract/browser tests and `.github/workflows/phase11-sources-collection.yml`. Source credentials remain server-side references; validation/test/run evidence does not prove source truth, compromise or production health.
+
+### 11.10k Automation & Playbooks
+
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Authoritative evidence includes `frontend/src/AutomationWorkspace.tsx`, governed connector execution contracts, architecture/user/QA material, deterministic tests and `.github/workflows/phase11-automation-playbooks.yml`. Automation never acquires human review/share/publication, case, remediation or production authority and does not prove source truth or compromise.
+
+### 11.10l Governance & Evidence
+
+**Status:** `PASS / REPOSITORY_COMPLETE`.
+
+Authoritative accepted evidence chain:
+
+- `backend/dtmo/governance_knowledge.py`;
+- `backend/dtmo/governance_crosswalk.py`;
+- `docs/governance/GOVERNANCE_MAPPING_REGISTRY.md`;
+- `frontend/src/GovernanceWorkspace.tsx`;
+- `frontend/src/App.tsx` canonical `/governance` routing;
+- `docs/architecture/PHASE11_10L_GOVERNANCE_EVIDENCE.md`;
+- `docs/user/GOVERNANCE_EVIDENCE_WORKSPACE.md`;
+- `docs/qa/PHASE11_10L_GOVERNANCE_EVIDENCE_GATE.md`;
+- `backend/tests/test_phase11_10l_governance_evidence_contract.py`;
+- `tests/browser/phase11_10l_governance.py`;
+- `.github/workflows/phase11-governance-evidence.yml`.
+
+The Governance surface uses the explicit typed partial crosswalk already present in the repository. Normenkader IBP relationships include explicitly recorded control identifiers such as `ID.02`, `ID.05`, `SM.02`, `SM.04`, `SM.07`, `SM.11`, `OP.02`, `BC.03` and `GO.03` where implementation evidence exists. MITRE ATT&CK relationships are explicit threat/detection/classification context and are not inferred from free text. NIST CSF relationships are partial outcomes/categories. CVSS is `context-only` scoring semantics.
+
+These mappings are **not** certification, complete compliance, semantic equivalence, proof of control effectiveness in an environment, local compromise, audit acceptance, independent assurance or production authorization. Unrecorded framework objects remain unmapped. Missing or inaccessible evidence must **fail closed**.
+
+Governance visibility is read-oriented and grants no review, case, remediation, connector, external-share, publication, administration or production authority. Repository CI remains exact-head engineering evidence only.
+
+### Candidate-completion order
+
+Phase 11.10m Operations & Administration, 11.10n role-aware UX/accessibility and 11.10o consolidation/full functional acceptance are accepted repository scope, and 11.10q Functional Recovery Acceptance is merged/owner-authorized. The active lifecycle priority is now 11.10p fresh candidate-bound production-equivalent validation. No repository status is promoted to real-environment evidence without accountable external observations for the same immutable deployment identity.
+
+## Phase 11.10p production-equivalent evidence
 
 **Status:** `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED`.
 
-The synchronized repository source selected for the next candidate is the immutable Git commit:
+The synchronized source selected for the next candidate is immutable Git commit:
 
 `71bd9d08c0005d30c3db632cd2b938b042b64b9a`
 
-That SHA is a **source-candidate identity only**. The convenience branch `phase11-10p-candidate-freeze` currently points to the same commit, but the branch name is mutable and is not itself accepted as an immutable deployment identity.
+This SHA is a **source-candidate identity only**. The convenience branch `phase11-10p-candidate-freeze` currently points to the same source commit, but a mutable branch name is not itself an immutable deployment identity. No claim is made here that this source commit has already been built into the application image or deployed to an approved production-equivalent environment.
 
-At the time this index was synchronized, no claim is made that this source commit has already been built into the production-equivalent application image or deployed to an approved production-equivalent environment. Phase 11.10p therefore remains open.
+Fresh production-equivalent evidence must cover candidate identity, migration/compatibility, upgrade, rollback to the exact prior immutable digest plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity for the **same immutable candidate** and production-equivalent environment.
 
-Before execution can begin, the accountable production-equivalent exercise must record and verify all of the following for the exact deployed candidate:
+Before execution can be accepted, the accountable exercise must record and verify the production-equivalent environment identifier, accountable owner/operator/reviewer, exact deployed Git commit, immutable application and supporting `sha256:` image digests, expected migration head, deployment/GitOps revision, exact approved prior immutable application digest for rollback and candidate fingerprint. If the deployed Git commit differs from the source SHA above, the candidate must be refrozen and any prior candidate-bound evidence cannot be transferred.
 
-- production-equivalent environment identifier;
-- accountable owner, validation operator and security/release reviewer;
-- exact deployed Git commit, which must reconcile to the selected source candidate or trigger a refreeze;
-- immutable application image digest (`sha256:`);
-- immutable supporting image digests;
-- expected migration head;
-- deployment/GitOps revision;
-- exact approved prior immutable application image digest for rollback;
-- candidate fingerprint derived from the immutable identity material.
-
-Fresh evidence must then cover immutable candidate identity, migration/compatibility, upgrade, rollback to the exact prior immutable digest plus post-rollback health, health/readiness, representative saturation/capacity and recovery/continuity for the **same candidate fingerprint and production-equivalent environment**.
-
-The authoritative execution package remains:
+The authoritative repository execution chain remains explicit:
 
 - `docs/qa/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_GATE.md`;
 - `docs/operations/PHASE11_10_PRODUCTION_EQUIVALENT_VALIDATION_RUNBOOK.md`;
@@ -106,14 +127,10 @@ The authoritative execution package remains:
 - `backend/tests/test_phase11_10_production_equivalent_validation.py`;
 - `.github/workflows/phase11-production-equivalent-validation.yml`.
 
-The evidence template intentionally remains fail closed while identity fields, observations or accountable review data are `REQUIRED`/`PENDING`. Missing, inaccessible, placeholder, historical-only, synthetic-only or mixed-candidate evidence must not be accepted.
+That gate requires fresh evidence for candidate identity, migration/compatibility, upgrade, rollback, health, saturation and recovery for one immutable candidate. Missing, inaccessible, placeholder, historical-only, synthetic-only or mixed-candidate evidence must **fail closed**. Repository workflow success alone is not production-equivalent evidence and does not authorize production.
+
+Historical Phase 8/9 evidence is audit history only and cannot be reused as proof for the materially changed candidate.
 
 ## Phase 11.11 and Phase 12
 
-Phase 11.11 independent external assurance is `NOT STARTED` and remains blocked until fresh Phase 11.10p production-equivalent evidence for one immutable candidate is explicitly accepted. Independent assurance must target that same immutable candidate; historical Phase 9 evidence cannot satisfy the new gate.
-
-Phase 12 is `NOT STARTED`. A production GO requires fresh accepted production-equivalent evidence and fresh accepted independent external assurance for the same release identity, together with accountable production ownership, residual-risk acceptance and explicit rollback authority.
-
-## Claim boundary
-
-This index records repository lifecycle and evidence attribution. It does not manufacture environment observations. The frozen source SHA above is not by itself a deployed image digest, deployment revision, production-equivalent validation result, penetration-test result, external-assurance result or production authorization.
+Phase 11.11 independent external assurance is `NOT STARTED` and remains blocked until fresh Phase 11.10p production-equivalent evidence is explicitly accepted for one immutable candidate. Historical Phase 9 evidence cannot satisfy that new gate. Phase 12 is `NOT STARTED`; only a formal accountable decision after fresh production-equivalent and independent-assurance acceptance can authorize production.
