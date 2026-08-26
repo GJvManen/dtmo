@@ -40,6 +40,9 @@ def test_bundled_grafana_readiness_is_visible_without_auth_bypass() -> None:
     assert 'data-admin-section="bundled-platform-readiness"' in platform
     assert "fetch('/grafana/api/health'" in platform
     assert "credentials: 'same-origin'" in platform
+    assert "'not-checked'" in platform
+    assert "useEffect" not in platform
+    assert "Check Grafana" in platform
     assert "authentication-required" in platform
     assert "/grafana/d/dtmo-operations/dtmo-operations" in platform
     assert "/grafana/d/dtmo-intelligence/dtmo-intelligence" in platform
