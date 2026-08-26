@@ -44,6 +44,14 @@ The canonical Knowledge Graph must prove a deep-link from one real temporary Pos
 
 This slice deliberately runs with the live OpenCTI connector feature disabled. It must not query OpenCTI upstream, infer missing upstream relationship topology, or promote graph presence into evidence of compromise, attribution or external-share authority. `external_share_authorized` and `local_compromise_proven` remain false.
 
+## Slice 5 — Vulnerability & Exposure verified raw-evidence journey
+
+The canonical Vulnerability & Exposure Center must prove its real three-store read path rather than a UI-only projection. Repository-controlled vulnerability fixtures are ingested through the same-origin DTMO API so PostgreSQL receives canonical intelligence, the configured object store receives immutable raw evidence and OpenSearch receives the normal indexing attempt. The browser must then read `/api/v1/console/vulnerability-analytics?window=30d`, which verifies the raw-object SHA before projecting vulnerability attributes.
+
+The journey must prove CVSS/EPSS/KEV plus vendor, product, CWE and minimum-EPSS filtering, and it must render the backend's canonical nested provenance fields (`source_id`, `canonical_url`, `raw_sha256`) as attributable source identity, source pivot and raw-evidence binding. The workspace must not infer local asset exposure, reachability, exploitability, compromise or remediation from vulnerability-intelligence presence.
+
+The object store in this gate is repository-controlled and ephemeral. No OpenCVE, Vulnerability-Lookup or other external connector is executed. Passing this slice is not proof of upstream truth or production object-store readiness.
+
 ## Evidence boundary
 
 Passing these slices is repository-controlled browser evidence only. It is **not** owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, production authorization, or independent external assurance.
@@ -52,4 +60,4 @@ The following controls remain authoritative and must not be weakened by recovery
 
 ## Remaining recovery
 
-These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After Knowledge Graph, the next deep functional slice is Vulnerability & Exposure Center unless exact-head CI exposes an earlier blocker.
+These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After Vulnerability & Exposure Center, the next deep functional slice is Investigations unless exact-head CI exposes an earlier blocker.
