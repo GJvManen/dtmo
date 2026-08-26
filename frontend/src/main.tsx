@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AdministrationSecurityAudit } from './AdministrationSecurityAudit';
 import { AdministrationWorkspace } from './AdministrationWorkspace';
+import { BundledPlatformReadiness } from './BundledPlatformReadiness';
 import { FrameworkIntegrationReadiness } from './FrameworkIntegrationReadiness';
 import { App } from './App';
 import './styles.css';
@@ -54,7 +55,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter basename="/workbench">
         <Routes>
-          <Route path="/administration" element={<><AdministrationWorkspace /><FrameworkIntegrationReadiness /><AdministrationSecurityAudit /></>} />
+          <Route path="/administration" element={<><AdministrationWorkspace /><BundledPlatformReadiness /><FrameworkIntegrationReadiness /><AdministrationSecurityAudit /></>} />
           <Route path="*" element={<App />} />
         </Routes>
       </BrowserRouter>
