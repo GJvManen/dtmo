@@ -23,6 +23,19 @@ type CatalogEntry = {
   reliability: string;
   recommended_interval_seconds: number;
 };
+type SourceCenterStatus = {
+  id: string;
+  name: string;
+  execution_status: string;
+  registered: boolean;
+  enabled: boolean;
+  manual_run_available: boolean;
+  health_status: string;
+  last_success_at: string | null;
+  last_failure_at: string | null;
+  consecutive_failures: number;
+  provenance: { endpoint: string; configured_reliability: string; note: string };
+};
 type ActionResult = {
   id?: string;
   valid?: boolean;
@@ -83,12 +96,21 @@ export function CollectionWorkspace() {
   const allowed = session.data?.permissions.includes('manage:connectors') ?? false;
   const catalog = useQuery({ queryKey: ['collection', 'catalog'], queryFn: () => readJson<CatalogEntry[]>('/api/v1/admin/sources/catalog'), enabled: allowed, retry: false });
   const sources = useQuery({ queryKey: ['collection', 'sources'], queryFn: () => readJson<Source[]>('/api/v1/admin/sources'), enabled: allowed, retry: false });
+  const sourceCenter = useQuery({ queryKey: ['collection', 'source-center-status'], queryFn: () => readJson<SourceCenterStatus[]>('/api/v1/source-center/status'), enabled: allowed, retry: false });
 
   const action = useMutation({
     mutationFn: async ({ sourceId, verb }: { sourceId: string; verb: 'validate' | 'test' | 'run' }) => writeJson<ActionResult>(`/api/v1/admin/sources/${encodeURIComponent(sourceId)}/${verb}`, 'POST'),
     onSuccess: (data) => {
       setResult(data);
       void client.invalidateQueries({ queryKey: ['collection', 'sources'] });
+      void client.invalidateQueries({ queryKey: ['collection', 'source-center-status'] });
+    },
+  });
+  const builtInRun = useMutation({
+    mutationFn: (sourceId: string) => writeJson<ActionResult>(`/connectors/${encodeURIComponent(sourceId)}/run`, 'POST'),
+    onSuccess: (data) => {
+      setResult(data);
+      void client.invalidateQueries({ queryKey: ['collection', 'source-center-status'] });
     },
   });
   const bootstrap = useMutation({
@@ -96,6 +118,7 @@ export function CollectionWorkspace() {
     onSuccess: (data) => {
       setResult({ status: 'bootstrap-completed', records: data.length, ingested: false, publication_gate: 'human-review-and-separate-share-approval-required' });
       void client.invalidateQueries({ queryKey: ['collection', 'sources'] });
+      void client.invalidateQueries({ queryKey: ['collection', 'source-center-status'] });
     },
   });
   const activation = useMutation({
@@ -103,6 +126,7 @@ export function CollectionWorkspace() {
     onSuccess: (source) => {
       setResult({ id: source.id, status: source.enabled ? 'enabled' : 'disabled', note: 'Source registry state updated and audited.' });
       void client.invalidateQueries({ queryKey: ['collection', 'sources'] });
+      void client.invalidateQueries({ queryKey: ['collection', 'source-center-status'] });
     },
   });
   const createSource = useMutation({
@@ -113,11 +137,17 @@ export function CollectionWorkspace() {
       setDraft({ id: '', name: '', endpoint_url: '', interval_seconds: '3600', reliability: 'medium', secret_ref: '' });
       setResult({ id: source.id, status: 'registered-disabled', note: 'Manual source registered disabled. Validate and test it before activation.' });
       void client.invalidateQueries({ queryKey: ['collection', 'sources'] });
+      void client.invalidateQueries({ queryKey: ['collection', 'source-center-status'] });
     },
   });
 
   const registered = useMemo(() => new Map((sources.data ?? []).map((source) => [source.id, source])), [sources.data]);
+  const statuses = useMemo(() => new Map((sourceCenter.data ?? []).map((source) => [source.id, source])), [sourceCenter.data]);
+  const catalogById = useMemo(() => new Map((catalog.data ?? []).map((entry) => [entry.id, entry])), [catalog.data]);
   const activeSource = selected ? registered.get(selected) : undefined;
+  const activeCatalog = selected ? catalogById.get(selected) : undefined;
+  const activeStatus = selected ? statuses.get(selected) : undefined;
+  const activeBuiltIn = activeCatalog?.execution_status === 'supported-built-in' ? activeStatus : undefined;
 
   function submitSource(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -150,8 +180,8 @@ export function CollectionWorkspace() {
         <>
           <article className="surface command-panel">
             <header className="panel-heading"><div><p className="eyebrow">Control plane</p><h2>Registered sources</h2></div><div className="heading-statuses"><button type="button" onClick={() => setShowCreate((value) => !value)}>{showCreate ? 'Cancel registration' : 'Register source'}</button><button type="button" onClick={() => bootstrap.mutate()} disabled={bootstrap.isPending}>Bootstrap supported catalog</button></div></header>
-            <p className="boundary-copy">Bootstrap is idempotent and registers supported adapters disabled by default. Manual sources are also created disabled. An administrator explicitly validates, tests and activates a source before attributable collection execution.</p>
-            {(sources.isError || catalog.isError) && <p className="panel-state error-state">Canonical source state is unavailable. No healthy or zero-source state is inferred.</p>}
+            <p className="boundary-copy">Bootstrap is idempotent and registers supported registry adapters disabled by default. Built-in sources are already part of DTMO and are shown separately with their actual runtime readiness. Manual sources are created disabled. Nothing is auto-enabled.</p>
+            {(sources.isError || catalog.isError || sourceCenter.isError) && <p className="panel-state error-state">Canonical source state is unavailable. No healthy or zero-source state is inferred.</p>}
             {showCreate && (
               <form className="quick-grid" aria-label="Register source" onSubmit={submitSource}>
                 <label>Source ID<input required minLength={2} maxLength={128} value={draft.id} onChange={(event) => setDraft({ ...draft, id: event.target.value })} placeholder="vendor-feed" /></label>
@@ -172,9 +202,14 @@ export function CollectionWorkspace() {
               <div className="integration-list">
                 {(catalog.data ?? []).map((entry) => {
                   const source = registered.get(entry.id);
+                  const runtime = statuses.get(entry.id);
+                  const builtIn = entry.execution_status === 'supported-built-in';
+                  const state = builtIn
+                    ? `built-in · ${runtime?.manual_run_available ? 'manual load available' : 'manual load blocked'} · ${runtime?.health_status ?? 'unknown'}`
+                    : source ? (source.enabled ? 'enabled' : 'registered disabled') : 'not registered';
                   return <button className="integration-row" type="button" key={entry.id} onClick={() => { setSelected(entry.id); setResult(null); }} aria-pressed={selected === entry.id}>
-                    <span className={`integration-state state-${source?.enabled ? 'enabled' : 'disabled'}`} aria-hidden="true" />
-                    <div><strong>{entry.name}</strong><span>{entry.execution_status} · {source ? (source.enabled ? 'enabled' : 'registered disabled') : 'not registered'}</span></div>
+                    <span className={`integration-state state-${builtIn ? (runtime?.manual_run_available ? 'enabled' : 'disabled') : source?.enabled ? 'enabled' : 'disabled'}`} aria-hidden="true" />
+                    <div><strong>{entry.name}</strong><span>{entry.execution_status} · {state}</span></div>
                     <time>{entry.reliability}</time>
                   </button>;
                 })}
@@ -190,9 +225,16 @@ export function CollectionWorkspace() {
             </article>
 
             <article className="surface command-panel">
-              <header className="panel-heading"><div><p className="eyebrow">Execution</p><h2>{selected ? activeSource?.name ?? selected : 'Select a source'}</h2></div><span className="evidence-label">Human admin only</span></header>
+              <header className="panel-heading"><div><p className="eyebrow">Execution</p><h2>{selected ? activeSource?.name ?? activeBuiltIn?.name ?? activeCatalog?.name ?? selected : 'Select a source'}</h2></div><span className="evidence-label">Human admin only</span></header>
               {!selected && <p className="panel-state">Select a catalog or registered source to inspect its state and bounded actions.</p>}
-              {selected && !activeSource && <p className="panel-state">This catalog entry is not registered. Bootstrap supported catalog sources first.</p>}
+              {selected && activeBuiltIn && <>
+                <p className="boundary-copy">{activeBuiltIn.provenance.endpoint}<br />Built-in DTMO adapter · health {activeBuiltIn.health_status} · last success {activeBuiltIn.last_success_at ?? '—'}.</p>
+                <div className="quick-grid">
+                  <button type="button" className="quick-action" disabled={!activeBuiltIn.manual_run_available || builtInRun.isPending} onClick={() => builtInRun.mutate(activeBuiltIn.id)}><span aria-hidden="true">▶</span><div><strong>Load CISA KEV now</strong><small>Explicitly fetch and ingest attributable records through the existing governed server-side connector.</small></div></button>
+                </div>
+                {!activeBuiltIn.manual_run_available && <p className="panel-state">Manual loading is blocked in this environment. Production requires the governed live-connector deployment switch; DTMO does not bypass that boundary from the browser.</p>}
+              </>}
+              {selected && !activeSource && !activeBuiltIn && <p className="panel-state">This catalog entry is not registered. Bootstrap supported catalog sources first.</p>}
               {selected && activeSource && <>
                 <p className="boundary-copy">{activeSource.endpoint_url}<br />Auth mode: {activeSource.authentication_mode}; credential values remain server-side.</p>
                 <div className="quick-grid">
@@ -201,6 +243,7 @@ export function CollectionWorkspace() {
                 </div>
               </>}
               {action.isError && <p className="panel-state error-state">{action.error.message}</p>}
+              {builtInRun.isError && <p className="panel-state error-state">{builtInRun.error.message}</p>}
               {activation.isError && <p className="panel-state error-state">{activation.error.message}</p>}
               {bootstrap.isError && <p className="panel-state error-state">{bootstrap.error.message}</p>}
               {result && <div className="panel-state"><strong>Last bounded action</strong><span>Status: {result.status ?? (result.valid === true ? 'valid' : result.valid === false ? 'invalid' : 'completed')} · records: {result.records ?? '—'} · inserted: {result.inserted ?? '—'} · indexed: {result.indexed ?? '—'}</span><span>{result.error ? `Error: ${result.error}` : result.publication_gate ?? result.note ?? 'No publication authority granted.'}</span></div>}
