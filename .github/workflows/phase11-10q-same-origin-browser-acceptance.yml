@@ -12,6 +12,7 @@ on:
       - 'backend/tests/test_owner_functional_recovery_ioc_explorer.py'
       - 'backend/tests/test_owner_functional_recovery_knowledge_graph.py'
       - 'backend/tests/test_owner_functional_recovery_exposure.py'
+      - 'backend/tests/test_owner_functional_recovery_investigations.py'
       - 'database/migrations/**'
       - '.github/workflows/phase11-10q-same-origin-browser-acceptance.yml'
       - 'docs/roadmap/FUNCTIONAL_RECOVERY_ACCEPTANCE.md'
@@ -69,7 +70,10 @@ jobs:
       DTMO_FEATURE_INTELOWL_ENRICHMENT: 'false'
       DTMO_FEATURE_CORTEX_ANALYSIS: 'false'
       DTMO_FEATURE_OPENCTI_READ: 'false'
-      DTMO_FEATURE_THEHIVE_HANDOFF: 'false'
+      DTMO_FEATURE_THEHIVE_HANDOFF: 'true'
+      DTMO_THEHIVE_API_BASE: http://127.0.0.1:8771
+      DTMO_THEHIVE_API_TOKEN: repository-controlled-test-token
+      DTMO_THEHIVE_ORGANIZATION: functional-recovery-org
       DTMO_E2E_BASE_URL: http://127.0.0.1:8765
     steps:
       - name: Check out exact PR head
@@ -130,6 +134,66 @@ jobs:
           docker logs dtmo-functional-minio
           exit 1
 
+      - name: Start repository-controlled TheHive API emulator
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          python - <<'PY' > artifacts/phase11-10q-thehive-emulator.log 2>&1 &
+          import json
+          from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+          class Handler(BaseHTTPRequestHandler):
+              def do_GET(self):
+                  if self.path == "/health":
+                      self.send_response(200)
+                      self.end_headers()
+                      self.wfile.write(b"ok")
+                      return
+                  self.send_response(404)
+                  self.end_headers()
+
+              def do_POST(self):
+                  if self.path != "/api/v1/case":
+                      self.send_response(404)
+                      self.end_headers()
+                      return
+                  if self.headers.get("Authorization") != "Bearer repository-controlled-test-token":
+                      self.send_response(403)
+                      self.end_headers()
+                      return
+                  if self.headers.get("X-Organisation") != "functional-recovery-org":
+                      self.send_response(403)
+                      self.end_headers()
+                      return
+                  length = int(self.headers.get("Content-Length", "0"))
+                  payload = json.loads(self.rfile.read(length) or b"{}")
+                  required = {"title", "description", "severity", "tlp", "pap", "tags"}
+                  if not required.issubset(payload):
+                      self.send_response(422)
+                      self.end_headers()
+                      return
+                  body = json.dumps({"_id": "repo-case-4242", "number": 4242}).encode()
+                  self.send_response(201)
+                  self.send_header("Content-Type", "application/json")
+                  self.send_header("Content-Length", str(len(body)))
+                  self.end_headers()
+                  self.wfile.write(body)
+
+              def log_message(self, format, *args):
+                  print(format % args, flush=True)
+
+          ThreadingHTTPServer(("127.0.0.1", 8771), Handler).serve_forever()
+          PY
+          echo $! > artifacts/phase11-10q-thehive-emulator.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8771/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat artifacts/phase11-10q-thehive-emulator.log
+          exit 1
+
       - name: Start exact-head DTMO with built workbench
         shell: bash
         run: |
@@ -154,6 +218,7 @@ jobs:
             backend/tests/test_owner_functional_recovery_ioc_explorer.py \
             backend/tests/test_owner_functional_recovery_knowledge_graph.py \
             backend/tests/test_owner_functional_recovery_exposure.py \
+            backend/tests/test_owner_functional_recovery_investigations.py \
             --junitxml=artifacts/phase11-10q-same-origin-browser.xml
 
       - name: Record bounded evidence claim
@@ -173,6 +238,7 @@ jobs:
               "same_origin_http": True,
               "real_dtmo_persistence": True,
               "real_object_store": True,
+              "repository_controlled_thehive_emulator": True,
               "external_connector_execution": False,
               "repository_controlled_environment": True,
               "owner_functional_acceptance": False,
@@ -181,9 +247,11 @@ jobs:
               "external_assurance_evidence": False,
               "claim_boundary": (
                   "Exact-head repository-controlled browser acceptance against the real built DTMO workbench, "
-                  "same-origin DTMO APIs, temporary PostgreSQL persistence and repository-controlled object storage. "
-                  "The journeys perform no external connector execution and do not constitute owner acceptance, "
-                  "staging evidence, production-equivalent validation, production authorization or independent external assurance."
+                  "same-origin DTMO APIs, temporary PostgreSQL persistence, repository-controlled object storage and "
+                  "a repository-controlled TheHive API emulator used only to exercise the DTMO handoff adapter. "
+                  "The journeys perform no external connector execution and do not constitute owner acceptance, live "
+                  "TheHive evidence, staging evidence, production-equivalent validation, production authorization or "
+                  "independent external assurance."
               ),
           }
           Path("artifacts/phase11-10q-same-origin-evidence.json").write_text(
@@ -197,6 +265,9 @@ jobs:
         run: |
           if test -f artifacts/phase11-10q-same-origin-server.pid; then
             kill "$(cat artifacts/phase11-10q-same-origin-server.pid)" || true
+          fi
+          if test -f artifacts/phase11-10q-thehive-emulator.pid; then
+            kill "$(cat artifacts/phase11-10q-thehive-emulator.pid)" || true
           fi
           docker rm -f dtmo-functional-minio || true
 
