@@ -3,6 +3,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE = ROOT / "frontend/src/AdministrationWorkspace.tsx"
 READINESS = ROOT / "frontend/src/FrameworkIntegrationReadiness.tsx"
+PLATFORM = ROOT / "frontend/src/BundledPlatformReadiness.tsx"
 MAIN = ROOT / "frontend/src/main.tsx"
 BACKEND = ROOT / "backend/dtmo/admin_center.py"
 APP = ROOT / "backend/dtmo/main.py"
@@ -29,6 +30,23 @@ def test_framework_activation_readiness_is_mounted_in_canonical_administration()
     assert "enableIntegration" in readiness
     assert "credentials: 'same-origin'" in readiness
     assert "X-Request-ID" in readiness
+
+
+def test_bundled_grafana_readiness_is_visible_without_auth_bypass() -> None:
+    main = MAIN.read_text(encoding="utf-8")
+    platform = PLATFORM.read_text(encoding="utf-8")
+    assert "import { BundledPlatformReadiness } from './BundledPlatformReadiness';" in main
+    assert "<BundledPlatformReadiness />" in main
+    assert 'data-admin-section="bundled-platform-readiness"' in platform
+    assert "fetch('/grafana/api/health'" in platform
+    assert "credentials: 'same-origin'" in platform
+    assert "'not-checked'" in platform
+    assert "useEffect" not in platform
+    assert "Check Grafana" in platform
+    assert "authentication-required" in platform
+    assert "/grafana/d/dtmo-operations/dtmo-operations" in platform
+    assert "/grafana/d/dtmo-intelligence/dtmo-intelligence" in platform
+    assert "Grafana anonymous access remains disabled" in platform
 
 
 def test_canonical_administration_uses_same_origin_governed_read_and_patch() -> None:
