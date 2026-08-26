@@ -47,7 +47,7 @@ The current lifecycle priority is now **fresh candidate freeze and production-eq
 | Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10d Unified Intelligence Workspace | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10e graph workspace | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10f sharing & exchange | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10g investigations | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10h command center | `PASS / REPOSITORY_COMPLETE` |
