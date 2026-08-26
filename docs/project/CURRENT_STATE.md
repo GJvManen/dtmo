@@ -44,6 +44,7 @@ The historical repository-complete entries below remain bounded engineering fact
 | Phase 11.8i exercised upgrade / rollback | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
+| Phase 11.10a–11.10o | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` |
@@ -67,6 +68,17 @@ The historical repository-complete entries below remain bounded engineering fact
 | Phase 12 | `NOT STARTED` |
 
 The Phase 8 and Phase 9 accepted states remain historical, candidate-bound audit facts. They are not evidence for the current candidate. The Phase 11.10 validation requirement remains open and requires **FRESH CANDIDATE-BOUND EVIDENCE REQUIRED** after functional recovery; the current functional NO-GO prevents that production-equivalent execution from starting now.
+
+### Historical Phase 11.10 contract-preservation markers
+
+The following exact markers preserve the previously accepted repository lifecycle contract for regression and audit purposes only. They describe the pre-rejection repository baseline and are **operationally superseded** by the current external-owner functional NO-GO above; they do not authorize candidate freeze or production-equivalent execution now.
+
+| Stage | Historical repository status |
+|---|---|
+| Phase 11.10q Functional Recovery Acceptance | `MERGED / OWNER-AUTHORIZED MERGE` |
+| Post-11.10q framework-integration hardening | `PASS / REPOSITORY_COMPLETE` |
+| Fresh candidate freeze | `NEXT / REQUIRED` |
+| Phase 11.10p fresh production-equivalent validation | `NOT YET EXECUTED FOR NEW CANDIDATE` |
 
 ## 2026-08-26 external owner findings
 
