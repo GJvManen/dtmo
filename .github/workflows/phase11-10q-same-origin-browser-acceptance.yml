@@ -13,6 +13,7 @@ on:
       - 'backend/tests/test_owner_functional_recovery_knowledge_graph.py'
       - 'backend/tests/test_owner_functional_recovery_exposure.py'
       - 'backend/tests/test_owner_functional_recovery_investigations.py'
+      - 'backend/tests/test_owner_functional_recovery_analysis.py'
       - 'database/migrations/**'
       - '.github/workflows/phase11-10q-same-origin-browser-acceptance.yml'
       - 'docs/roadmap/FUNCTIONAL_RECOVERY_ACCEPTANCE.md'
@@ -67,7 +68,11 @@ jobs:
       DTMO_FEATURE_MISP_EXPORT: 'false'
       DTMO_FEATURE_AIL_CONNECTOR: 'false'
       DTMO_FEATURE_TARANIS_CONNECTOR: 'false'
-      DTMO_FEATURE_INTELOWL_ENRICHMENT: 'false'
+      DTMO_FEATURE_INTELOWL_ENRICHMENT: 'true'
+      DTMO_INTELOWL_API_BASE: http://127.0.0.1:8772
+      DTMO_INTELOWL_API_TOKEN: repository-controlled-intelowl-token
+      DTMO_INTELOWL_ALLOWED_ANALYZERS: functional_domain
+      DTMO_INTELOWL_POLL_INTERVAL_SECONDS: '0.01'
       DTMO_FEATURE_CORTEX_ANALYSIS: 'false'
       DTMO_FEATURE_OPENCTI_READ: 'false'
       DTMO_FEATURE_THEHIVE_HANDOFF: 'true'
@@ -145,53 +150,82 @@ jobs:
           class Handler(BaseHTTPRequestHandler):
               def do_GET(self):
                   if self.path == "/health":
-                      self.send_response(200)
-                      self.end_headers()
-                      self.wfile.write(b"ok")
-                      return
-                  self.send_response(404)
-                  self.end_headers()
+                      self.send_response(200); self.end_headers(); self.wfile.write(b"ok"); return
+                  self.send_response(404); self.end_headers()
 
               def do_POST(self):
                   if self.path != "/api/v1/case":
-                      self.send_response(404)
-                      self.end_headers()
-                      return
+                      self.send_response(404); self.end_headers(); return
                   if self.headers.get("Authorization") != "Bearer repository-controlled-test-token":
-                      self.send_response(403)
-                      self.end_headers()
-                      return
+                      self.send_response(403); self.end_headers(); return
                   if self.headers.get("X-Organisation") != "functional-recovery-org":
-                      self.send_response(403)
-                      self.end_headers()
-                      return
+                      self.send_response(403); self.end_headers(); return
                   length = int(self.headers.get("Content-Length", "0"))
                   payload = json.loads(self.rfile.read(length) or b"{}")
                   required = {"title", "description", "severity", "tlp", "pap", "tags"}
                   if not required.issubset(payload):
-                      self.send_response(422)
-                      self.end_headers()
-                      return
+                      self.send_response(422); self.end_headers(); return
                   body = json.dumps({"_id": "repo-case-4242", "number": 4242}).encode()
-                  self.send_response(201)
-                  self.send_header("Content-Type", "application/json")
-                  self.send_header("Content-Length", str(len(body)))
-                  self.end_headers()
-                  self.wfile.write(body)
+                  self.send_response(201); self.send_header("Content-Type", "application/json"); self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
 
-              def log_message(self, format, *args):
-                  print(format % args, flush=True)
+              def log_message(self, format, *args): print(format % args, flush=True)
 
           ThreadingHTTPServer(("127.0.0.1", 8771), Handler).serve_forever()
           PY
           echo $! > artifacts/phase11-10q-thehive-emulator.pid
           for attempt in $(seq 1 30); do
-            if curl --fail --silent http://127.0.0.1:8771/health >/dev/null; then
-              exit 0
-            fi
+            if curl --fail --silent http://127.0.0.1:8771/health >/dev/null; then exit 0; fi
             sleep 1
           done
           cat artifacts/phase11-10q-thehive-emulator.log
+          exit 1
+
+      - name: Start repository-controlled IntelOwl API emulator
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          python - <<'PY' > artifacts/phase11-10q-intelowl-emulator.log 2>&1 &
+          import json
+          from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+          TOKEN = "Bearer repository-controlled-intelowl-token"
+          JOB = "repo-intelowl-4242"
+
+          class Handler(BaseHTTPRequestHandler):
+              def _json(self, status, payload):
+                  body = json.dumps(payload).encode()
+                  self.send_response(status); self.send_header("Content-Type", "application/json"); self.send_header("Content-Length", str(len(body))); self.end_headers(); self.wfile.write(body)
+
+              def do_GET(self):
+                  if self.path == "/health":
+                      self.send_response(200); self.end_headers(); self.wfile.write(b"ok"); return
+                  if self.path != f"/api/jobs/{JOB}":
+                      self.send_response(404); self.end_headers(); return
+                  if self.headers.get("Authorization") != TOKEN:
+                      self.send_response(403); self.end_headers(); return
+                  self._json(200, {"id": JOB, "status": "analyzed", "analyzer_reports": [{"name": "functional_domain", "status": "success", "report": {"classification": "repository-controlled"}}]})
+
+              def do_POST(self):
+                  if self.path != "/api/analyze_observable":
+                      self.send_response(404); self.end_headers(); return
+                  if self.headers.get("Authorization") != TOKEN:
+                      self.send_response(403); self.end_headers(); return
+                  length = int(self.headers.get("Content-Length", "0"))
+                  payload = json.loads(self.rfile.read(length) or b"{}")
+                  if payload.get("observable_classification") != "domain" or payload.get("analyzers_requested") != ["functional_domain"] or payload.get("connectors_requested") != []:
+                      self._json(422, {"detail": "unexpected governed request"}); return
+                  self._json(201, {"job_id": JOB})
+
+              def log_message(self, format, *args): print(format % args, flush=True)
+
+          ThreadingHTTPServer(("127.0.0.1", 8772), Handler).serve_forever()
+          PY
+          echo $! > artifacts/phase11-10q-intelowl-emulator.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8772/health >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat artifacts/phase11-10q-intelowl-emulator.log
           exit 1
 
       - name: Start exact-head DTMO with built workbench
@@ -201,9 +235,7 @@ jobs:
           DTMO_FRONTEND_DIST="$PWD/frontend/dist" uvicorn dtmo.main:app --app-dir backend --host 127.0.0.1 --port 8765 > artifacts/phase11-10q-same-origin-server.log 2>&1 &
           echo $! > artifacts/phase11-10q-same-origin-server.pid
           for attempt in $(seq 1 40); do
-            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/phase11-10q-same-origin-health.json; then
-              exit 0
-            fi
+            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/phase11-10q-same-origin-health.json; then exit 0; fi
             sleep 1
           done
           cat artifacts/phase11-10q-same-origin-server.log
@@ -219,6 +251,7 @@ jobs:
             backend/tests/test_owner_functional_recovery_knowledge_graph.py \
             backend/tests/test_owner_functional_recovery_exposure.py \
             backend/tests/test_owner_functional_recovery_investigations.py \
+            backend/tests/test_owner_functional_recovery_analysis.py \
             --junitxml=artifacts/phase11-10q-same-origin-browser.xml
 
       - name: Record bounded evidence claim
@@ -227,10 +260,8 @@ jobs:
           EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           python - <<'PY'
-          import json
-          import os
+          import json, os
           from pathlib import Path
-
           evidence = {
               "workflow": "Phase 11.10q Same-origin Browser Acceptance Gate",
               "exact_head": os.environ["EXACT_HEAD"],
@@ -239,36 +270,24 @@ jobs:
               "real_dtmo_persistence": True,
               "real_object_store": True,
               "repository_controlled_thehive_emulator": True,
-              "external_connector_execution": False,
+              "repository_controlled_intelowl_emulator": True,
+              "live_external_connector_execution": False,
               "repository_controlled_environment": True,
               "owner_functional_acceptance": False,
               "staging_evidence": False,
               "production_equivalent_evidence": False,
               "external_assurance_evidence": False,
-              "claim_boundary": (
-                  "Exact-head repository-controlled browser acceptance against the real built DTMO workbench, "
-                  "same-origin DTMO APIs, temporary PostgreSQL persistence, repository-controlled object storage and "
-                  "a repository-controlled TheHive API emulator used only to exercise the DTMO handoff adapter. "
-                  "The journeys perform no external connector execution and do not constitute owner acceptance, live "
-                  "TheHive evidence, staging evidence, production-equivalent validation, production authorization or "
-                  "independent external assurance."
-              ),
+              "claim_boundary": "Exact-head repository-controlled browser acceptance against the real built DTMO workbench, same-origin APIs, temporary PostgreSQL/object storage and loopback TheHive/IntelOwl emulators. Emulator-backed adapter execution is repository integration evidence only; it is not live upstream, owner acceptance, staging, production-equivalent, production authorization or independent external assurance."
           }
-          Path("artifacts/phase11-10q-same-origin-evidence.json").write_text(
-              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
+          Path("artifacts/phase11-10q-same-origin-evidence.json").write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
           PY
 
       - name: Stop exact-head DTMO
         if: always()
         run: |
-          if test -f artifacts/phase11-10q-same-origin-server.pid; then
-            kill "$(cat artifacts/phase11-10q-same-origin-server.pid)" || true
-          fi
-          if test -f artifacts/phase11-10q-thehive-emulator.pid; then
-            kill "$(cat artifacts/phase11-10q-thehive-emulator.pid)" || true
-          fi
+          if test -f artifacts/phase11-10q-same-origin-server.pid; then kill "$(cat artifacts/phase11-10q-same-origin-server.pid)" || true; fi
+          if test -f artifacts/phase11-10q-thehive-emulator.pid; then kill "$(cat artifacts/phase11-10q-thehive-emulator.pid)" || true; fi
+          if test -f artifacts/phase11-10q-intelowl-emulator.pid; then kill "$(cat artifacts/phase11-10q-intelowl-emulator.pid)" || true; fi
           docker rm -f dtmo-functional-minio || true
 
       - name: Upload same-origin acceptance evidence
