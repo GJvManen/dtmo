@@ -60,6 +60,14 @@ The CI job provides a repository-controlled TheHive API emulator on loopback onl
 
 The emulator is not a live TheHive deployment and its success is not staging, production-equivalent, penetration-test, production or independent-assurance evidence. Live TheHive health and real deployment credentials remain separate external validation requirements.
 
+## Slice 7 — Analysis & Enrichment governed IntelOwl execution
+
+The canonical Analysis & Enrichment workspace must prove an actual allowlisted enrichment execution rather than only rendering controls or reading pre-seeded history. A repository-controlled canonical intelligence fixture is opened through `/workbench/analysis?item=...` with a bounded domain observable. A human-authorized `admin` principal must see IntelOwl enabled with exactly the configured analyzer allowlist and invoke `Run IntelOwl` through the same-origin DTMO API.
+
+The exact-head CI job provides a loopback IntelOwl API emulator solely to exercise the real DTMO server-side `IntelOwlAdapter`. The emulator validates the server-side bearer token, observable classification, explicit analyzer allowlist and empty connector list, returns a stable job identity, and exposes a deterministic terminal analyzer report. DTMO must persist that result as an `IntelOwlEnrichmentRecord`; the canonical browser must show the job/analyzer history both immediately and after page reload.
+
+This slice must keep `external_share_authorized=false` and `local_compromise_proven=false`. IntelOwl enrichment is evidence, not a local-compromise verdict and not share authority. The emulator is repository-controlled integration evidence only and is not a live IntelOwl deployment, staging evidence, production-equivalent validation, penetration-test evidence or independent assurance. Cortex remains disabled in this slice and will require its own bounded analyzer-only execution proof.
+
 ## Evidence boundary
 
 Passing these slices is repository-controlled browser evidence only. It is **not** owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, production authorization, or independent external assurance.
@@ -68,4 +76,4 @@ The following controls remain authoritative and must not be weakened by recovery
 
 ## Remaining recovery
 
-These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After Investigations, the next deep functional slice is Analysis & Enrichment unless exact-head CI exposes an earlier blocker.
+These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After the IntelOwl Analysis & Enrichment slice, the next bounded Analysis recovery is Cortex analyzer-only execution unless exact-head CI exposes an earlier blocker.
