@@ -5,7 +5,7 @@ Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 reposit
 
 ## Executive summary
 
-DTMO remains **not production authorized**. Repository-controlled CI, local/staging emulators and browser acceptance gates are repository evidence only; they do not establish production-equivalent behavior, independent external assurance or real operator usability.
+DTMO remains **not production authorized**. Repository CI (repository-controlled CI), local/staging emulators and browser acceptance gates are repository evidence only; they do not establish production-equivalent behavior, independent external assurance or real operator usability.
 
 On **2026-08-26**, an external owner functional test of the current integrated version produced a new **functional rejection / NO-GO**. That finding supersedes the earlier assumption that fresh candidate freeze and Phase 11.10p production-equivalent validation were the next executable lifecycle step. Phase 11.10p is therefore **BLOCKED** until a new owner functional acceptance is recorded against a materially repaired candidate.
 
