@@ -13,10 +13,12 @@ type VulnerabilityRow = {
   vendors?: string[];
   products?: string[];
   cwes?: string[];
-  source_id?: string;
-  canonical_url?: string | null;
   discovered_at?: string | null;
-  raw_sha256?: string | null;
+  provenance?: {
+    source_id?: string;
+    canonical_url?: string | null;
+    raw_sha256?: string | null;
+  };
 };
 
 type Analytics = {
@@ -109,8 +111,8 @@ export function ExposureWorkspace() {
       {!query.isPending && !query.isError && inventory.length > 0 && visible.length === 0 && <div className="panel-state"><strong>No attributable vulnerability evidence matches these filters</strong><span>Adjust the filters. A filtered empty view does not prove absence of vulnerabilities or exposure.</span></div>}
       {visible.length > 0 && <div className="intel-list" role="list">{visible.map((row, index) => <article className="intel-row" role="listitem" key={`${row.cve_id ?? row.title ?? 'vulnerability'}-${index}`}>
         <span className={`severity-dot ${(score(row) ?? 0) >= 9 ? 'severity-critical' : (score(row) ?? 0) >= 7 ? 'severity-high' : 'severity-medium'}`} />
-        <div className="intel-copy"><strong>{row.cve_id ?? row.title ?? 'Unidentified vulnerability'}</strong><span>{row.source_id ?? 'canonical source'} · CVSS {score(row) ?? '—'} · EPSS {row.epss ?? '—'} · {row.kev ? 'CISA KEV evidence present' : 'no KEV evidence'}</span><span>{[...(row.vendors ?? []), ...(row.products ?? []), ...(row.cwes ?? [])].slice(0,6).join(' · ') || 'No attributable vendor/product/CWE mapping'}</span><span>Discovered {displayDate(row.discovered_at)}</span></div>
-        <div className="result-meta"><span className="evidence-label">{row.raw_sha256 ? 'raw evidence bound' : 'evidence reference unavailable'}</span>{row.canonical_url ? <a className="button secondary" href={row.canonical_url} target="_blank" rel="noreferrer">Open evidence source</a> : <span className="evidence-label">No canonical source link</span>}</div>
+        <div className="intel-copy"><strong>{row.cve_id ?? row.title ?? 'Unidentified vulnerability'}</strong><span>{row.provenance?.source_id ?? 'canonical source'} · CVSS {score(row) ?? '—'} · EPSS {row.epss ?? '—'} · {row.kev ? 'CISA KEV evidence present' : 'no KEV evidence'}</span><span>{[...(row.vendors ?? []), ...(row.products ?? []), ...(row.cwes ?? [])].slice(0,6).join(' · ') || 'No attributable vendor/product/CWE mapping'}</span><span>Discovered {displayDate(row.discovered_at)}</span></div>
+        <div className="result-meta"><span className="evidence-label">{row.provenance?.raw_sha256 ? 'raw evidence bound' : 'evidence reference unavailable'}</span>{row.provenance?.canonical_url ? <a className="button secondary" href={row.provenance.canonical_url} target="_blank" rel="noreferrer">Open evidence source</a> : <span className="evidence-label">No canonical source link</span>}</div>
       </article>)}</div>}
     </div>
 
