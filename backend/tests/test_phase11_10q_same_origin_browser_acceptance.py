@@ -116,6 +116,55 @@ async def test_canonical_workbench_uses_real_same_origin_api_and_persistence() -
         await expect(page.get_by_role("heading", name="Sources & Collection", exact=True)).to_be_visible()
         await expect(page.get_by_text("Repository-controlled same-origin acceptance source", exact=True)).to_be_visible()
 
+        # Prove the canonical Administration route exposes the already-implemented governed
+        # activation readiness instead of leaving that component disconnected from the product.
+        # Configuration uses a .invalid endpoint and no connector run is triggered, so this
+        # journey cannot make an external MISP request. Credentials remain write-only server-side.
+        configured_misp = await context.request.patch(
+            f"{BASE_URL}/api/v1/admin/integrations/misp",
+            headers={"X-Request-ID": str(uuid4())},
+            data={
+                "enabled": False,
+                "api_base": "https://misp.example.invalid/api",
+                "credential": "repository-controlled-misp-secret",
+            },
+        )
+        assert configured_misp.status == 200
+        configured_misp_body = await configured_misp.json()
+        assert configured_misp_body["enabled"] is False
+        assert configured_misp_body["credential_configured"] is True
+        assert "credential" not in configured_misp_body
+
+        await page.goto(f"{BASE_URL}/workbench/administration")
+        await expect(page.get_by_role("heading", name="Administration", exact=True)).to_be_visible()
+        readiness = page.locator('[data-admin-section="framework-activation-readiness"]')
+        await expect(readiness.get_by_role("heading", name="Activation readiness", exact=True)).to_be_visible()
+        misp_readiness = readiness.locator('[data-framework-readiness="misp"]')
+        await expect(misp_readiness.get_by_text("configured · activation required", exact=True)).to_be_visible()
+        enable_misp = misp_readiness.get_by_role("button", name="Enable MISP", exact=True)
+        await expect(enable_misp).to_be_enabled()
+        async with page.expect_response(
+            lambda response: response.url == f"{BASE_URL}/api/v1/admin/integrations/misp"
+            and response.request.method == "PATCH"
+        ) as activation_response_info:
+            await enable_misp.click()
+        activation_response = await activation_response_info.value
+        assert activation_response.status == 200
+
+        integrations_response = await context.request.get(f"{BASE_URL}/api/v1/admin/integrations")
+        assert integrations_response.status == 200
+        integrations = await integrations_response.json()
+        persisted_misp = next(row for row in integrations if row["id"] == "misp")
+        assert persisted_misp["enabled"] is True
+        assert persisted_misp["credential_configured"] is True
+        assert persisted_misp["api_base"] == "https://misp.example.invalid/api"
+        assert "credential" not in persisted_misp
+
+        await page.reload()
+        await expect(readiness.get_by_role("heading", name="Activation readiness", exact=True)).to_be_visible()
+        await expect(misp_readiness.get_by_text("ready", exact=True)).to_be_visible()
+        assert await misp_readiness.get_by_role("button", name="Enable MISP", exact=True).count() == 0
+
         # Exercise every recovered canonical surface against the actual DTMO process.
         journeys = (
             ("/workbench/intelligence", "Threat Intelligence"),
