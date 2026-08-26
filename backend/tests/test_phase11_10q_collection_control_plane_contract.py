@@ -7,6 +7,7 @@ from dtmo.scheduler import _automatic_source_due, _automatic_source_eligibility
 ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE = ROOT / "frontend/src/CollectionWorkspace.tsx"
 API = ROOT / "backend/dtmo/admin_sources.py"
+SOURCE_CENTER = ROOT / "backend/dtmo/source_center.py"
 SCHEDULER = ROOT / "backend/dtmo/scheduler.py"
 
 
@@ -16,6 +17,7 @@ def test_collection_workspace_exposes_complete_same_origin_operator_journey() ->
         "'/api/v1/admin/sources'",
         "'/api/v1/admin/sources/catalog'",
         "'/api/v1/admin/sources/catalog/bootstrap'",
+        "'/api/v1/source-center/status'",
         "Register source",
         "Register disabled source",
         "'PATCH'",
@@ -28,6 +30,27 @@ def test_collection_workspace_exposes_complete_same_origin_operator_journey() ->
         "All registered sources",
     ):
         assert marker in text
+
+
+def test_collection_workspace_exposes_supported_builtin_clean_install_path() -> None:
+    workspace = WORKSPACE.read_text(encoding="utf-8")
+    source_center = SOURCE_CENTER.read_text(encoding="utf-8")
+
+    for marker in (
+        "supported-built-in",
+        "manual load available",
+        "Load CISA KEV now",
+        "builtInRun",
+        "`/connectors/${encodeURIComponent(sourceId)}/run`",
+        "Manual loading is blocked in this environment",
+        "DTMO does not bypass that boundary from the browser",
+    ):
+        assert marker in workspace
+
+    assert 'entry.execution_status == "supported-built-in"' in source_center
+    assert '"manual_run_available"' in source_center
+    assert "(not settings.production or settings.feature_live_connectors)" in source_center
+    assert "feature_live_connectors = True" not in workspace
 
 
 def test_collection_api_supports_registration_activation_validation_test_and_run() -> None:
