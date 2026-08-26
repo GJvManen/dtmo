@@ -111,10 +111,9 @@ async def test_investigations_creates_governed_case_and_reads_durable_history() 
             await expect(history).to_contain_text("requested by functional-recovery-investigations-human")
             await expect(history).to_contain_text("TLP amber · PAP amber")
 
-            await expect(page.get_by_text("External sharing", exact=True)).to_be_visible()
-            await expect(page.get_by_text("not authorized", exact=True)).to_be_visible()
-            await expect(page.get_by_text("Local compromise", exact=True)).to_be_visible()
-            await expect(page.get_by_text("not proven", exact=True)).to_be_visible()
+            evidence = page.locator(".investigations-evidence")
+            await expect(evidence).to_contain_text("External share authority: no")
+            await expect(evidence).to_contain_text("Local compromise proof: no")
             assert await page.locator('a[href^="/ui/"]').count() == 0
 
             await context.close()
