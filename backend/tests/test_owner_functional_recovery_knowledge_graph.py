@@ -13,7 +13,10 @@ from dtmo.persistence.opencti import OpenCTIMappingRevision, OpenCTIObjectMappin
 from dtmo.persistence.session import Database
 
 BASE_URL = os.environ.get("DTMO_E2E_BASE_URL", "")
-pytestmark = pytest.mark.skipif(not BASE_URL, reason="Knowledge Graph recovery runs only in the same-origin browser workflow")
+pytestmark = pytest.mark.skipif(
+    not BASE_URL,
+    reason="Knowledge Graph functional recovery executes only in the dedicated same-origin browser workflow",
+)
 
 
 async def _seed_graph() -> tuple[str, str, str]:
@@ -51,14 +54,20 @@ async def _seed_graph() -> tuple[str, str, str]:
             upstream_created_at="2026-08-26T00:00:00Z",
             upstream_updated_at="2026-08-26T00:00:00Z",
             external_references=[{"source_name": "functional-recovery", "external_id": "GRAPH-1"}],
-            provenance={"fixture": "repository-controlled"},
+            provenance={"fixture": "repository-controlled", "read_only": True},
             snapshot_hash="a" * 64,
             external_share_authorized=False,
             local_compromise_proven=False,
         )
         session.add(mapping)
         await session.flush()
-        session.add(OpenCTIMappingRevision(mapping_id=mapping.id, snapshot_hash="a" * 64, snapshot={"stix_id": stix_id, "entity_type": "Indicator"}))
+        session.add(
+            OpenCTIMappingRevision(
+                mapping_id=mapping.id,
+                snapshot_hash="a" * 64,
+                snapshot={"stix_id": stix_id, "entity_type": "Indicator"},
+            )
+        )
         await session.commit()
         item_id = str(item.id)
         break
@@ -77,24 +86,34 @@ async def _cleanup(item_id: str) -> None:
 
 @pytest.mark.asyncio
 async def test_knowledge_graph_reads_persisted_mapping_and_entity_detail_without_upstream_call() -> None:
+    """Prove persisted graph and entity-detail reads without browser mocks or OpenCTI execution."""
     item_id, stix_id, opencti_id = await _seed_graph()
     try:
         async with async_playwright() as playwright:
             browser = await playwright.chromium.launch()
-            context = await browser.new_context(extra_http_headers={"X-DTMO-Subject": "functional-recovery-graph-analyst", "X-DTMO-Roles": "admin"})
+            context = await browser.new_context(
+                extra_http_headers={
+                    "X-DTMO-Subject": "functional-recovery-graph-analyst",
+                    "X-DTMO-Roles": "admin",
+                }
+            )
             page = await context.new_page()
             await page.goto(f"{BASE_URL}/workbench/intelligence/graph?item={item_id}")
+
             await expect(page.get_by_role("heading", name="Knowledge Graph", exact=True)).to_be_visible()
             await expect(page.get_by_role("heading", name="Functional recovery graph advisory", exact=True)).to_be_visible()
             await expect(page.get_by_text("1 OpenCTI mappings", exact=True)).to_be_visible()
             await expect(page.get_by_text(stix_id, exact=True)).to_be_visible()
-            await page.get_by_role("button", name="Indicator", exact=True).click()
+
+            await page.get_by_role("button", name=f"Open Indicator {stix_id}", exact=True).click()
             await expect(page.get_by_role("heading", name="Indicator", exact=True)).to_be_visible()
             await expect(page.get_by_text(opencti_id, exact=True)).to_be_visible()
             await expect(page.get_by_text("not authorized", exact=True)).to_be_visible()
             await expect(page.get_by_text("not proven", exact=True)).to_be_visible()
             await expect(page.get_by_text("1 revisions", exact=True)).to_be_visible()
+            await expect(page.get_by_text("TLP:CLEAR", exact=True)).to_be_visible()
             assert await page.locator('a[href^="/ui/"]').count() == 0
+
             await context.close()
             await browser.close()
     finally:
