@@ -2,6 +2,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 WORKSPACE = ROOT / "frontend/src/AdministrationWorkspace.tsx"
+READINESS = ROOT / "frontend/src/FrameworkIntegrationReadiness.tsx"
 MAIN = ROOT / "frontend/src/main.tsx"
 BACKEND = ROOT / "backend/dtmo/admin_center.py"
 APP = ROOT / "backend/dtmo/main.py"
@@ -15,6 +16,19 @@ def test_canonical_administration_route_is_not_a_generic_empty_foundation() -> N
     assert "<AdministrationWorkspace />" in main
     assert "Framework integrations" in workspace
     assert "Runtime configuration" in workspace
+
+
+def test_framework_activation_readiness_is_mounted_in_canonical_administration() -> None:
+    main = MAIN.read_text(encoding="utf-8")
+    readiness = READINESS.read_text(encoding="utf-8")
+    assert "import { FrameworkIntegrationReadiness } from './FrameworkIntegrationReadiness';" in main
+    assert "<FrameworkIntegrationReadiness />" in main
+    assert 'data-admin-section="framework-activation-readiness"' in readiness
+    assert "configured · activation required" in readiness
+    assert "Explicit activation · no auto-enable" in readiness
+    assert "enableIntegration" in readiness
+    assert "credentials: 'same-origin'" in readiness
+    assert "X-Request-ID" in readiness
 
 
 def test_canonical_administration_uses_same_origin_governed_read_and_patch() -> None:
