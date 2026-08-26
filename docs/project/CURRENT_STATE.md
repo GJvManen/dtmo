@@ -45,7 +45,7 @@ The current lifecycle priority is now **fresh candidate freeze and production-eq
 | Phase 11.10a–11.10o | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10c unified intelligence | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10d integrated analysis | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10e graph workspace | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10f sharing & exchange | `PASS / REPOSITORY_COMPLETE` |
