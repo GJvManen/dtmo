@@ -15,6 +15,8 @@ The active lifecycle priority is now **Phase 11 functional recovery — external
 
 ## Lifecycle position
 
+The historical repository-complete entries below remain bounded engineering facts. They do not override the current external-owner functional rejection and they do not establish production-equivalent or production acceptance.
+
 | Stage | Status |
 |---|---|
 | Phases 1–7 | `PASS` |
@@ -24,8 +26,24 @@ The active lifecycle priority is now **Phase 11 functional recovery — external
 | Phase 9 | `PASS / EXTERNAL_ASSURANCE_ACCEPTED — HISTORICAL CANDIDATE` |
 | Phase 10 | `NO-GO / BLOCKED — PLATFORM INDUSTRIALISATION REQUIRED` |
 | Phase 11 | `IN PROGRESS / FUNCTIONAL RECOVERY ACTIVE` |
-| Phase 11.1–11.9 | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10a–11.10o | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.1–11.2 Taranis | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.3 IntelOwl | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.4 OpenCTI | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.5 MISP | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.6 TheHive | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.7 Cortex decision gate | `PASS / REPOSITORY_COMPLETE — HISTORICAL DECISION BASELINE` |
+| Phase 11.7b Cortex analyzer connector | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8a runtime foundation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8b workload identity / external secrets | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8c ingress/TLS + network segmentation | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8d HA / disruption hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8e observability hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8f backup / restore / recovery hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8g software supply-chain hardening | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8h capacity / resource planning | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.8i exercised upgrade / rollback | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
 | Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10b canonical application shell | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10c Command Center | `PASS / REPOSITORY_COMPLETE` |
@@ -44,11 +62,11 @@ The active lifecycle priority is now **Phase 11 functional recovery — external
 | Phase 11.10q Functional Recovery Acceptance | `HISTORICAL OWNER-AUTHORIZED MERGE; SUPERSEDED BY 2026-08-26 FUNCTIONAL REJECTION` |
 | Current external-owner functional acceptance | `NO-GO / REJECTED` |
 | Fresh candidate freeze | `BLOCKED` |
-| Phase 11.10p fresh production-equivalent validation | `BLOCKED BY FUNCTIONAL REJECTION` |
-| Phase 11.11 independent external assurance | `NOT STARTED / BLOCKED` |
-| Phase 12 | `NOT STARTED / BLOCKED` |
+| Phase 11.10p fresh production-equivalent execution | `BLOCKED BY FUNCTIONAL REJECTION` |
+| Phase 11.11 independent external assurance | `NOT STARTED` |
+| Phase 12 | `NOT STARTED` |
 
-The Phase 8 and Phase 9 accepted states remain historical, candidate-bound audit facts. They are not evidence for the current candidate.
+The Phase 8 and Phase 9 accepted states remain historical, candidate-bound audit facts. They are not evidence for the current candidate. The Phase 11.10 validation requirement remains open and requires **FRESH CANDIDATE-BOUND EVIDENCE REQUIRED** after functional recovery; the current functional NO-GO prevents that production-equivalent execution from starting now.
 
 ## 2026-08-26 external owner findings
 
