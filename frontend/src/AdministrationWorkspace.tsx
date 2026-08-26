@@ -56,8 +56,23 @@ type DraftState = Record<string, {
 }>;
 type PrincipalDraftState = Record<string, { displayName: string; active: boolean; roles: string[]; reason: string }>;
 
+function localDevelopmentAuthHeaders(): Record<string, string> {
+  const subject = sessionStorage.getItem('dtmo.subject') || 'admin-tester';
+  const roles = sessionStorage.getItem('dtmo.roles') || 'admin';
+  const apiKey = sessionStorage.getItem('dtmo.apiKey') || '';
+  return {
+    'X-DTMO-Subject': subject,
+    'X-DTMO-Roles': roles,
+    ...(apiKey ? { 'X-DTMO-API-Key': apiKey } : {}),
+  };
+}
+
+function requestHeaders(additional: Record<string, string> = {}): Record<string, string> {
+  return { ...localDevelopmentAuthHeaders(), ...additional };
+}
+
 async function readJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
+  const response = await fetch(url, { credentials: 'same-origin', headers: requestHeaders({ Accept: 'application/json' }) });
   const body = await response.json().catch(() => null);
   if (!response.ok) {
     const detail = typeof body === 'object' && body && 'detail' in body ? String((body as { detail: unknown }).detail) : `HTTP ${response.status}`;
@@ -70,7 +85,7 @@ async function writeJson<T>(url: string, method: 'POST' | 'PATCH', body: object)
   const response = await fetch(url, {
     method,
     credentials: 'same-origin',
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-Request-ID': crypto.randomUUID() },
+    headers: requestHeaders({ Accept: 'application/json', 'Content-Type': 'application/json', 'X-Request-ID': crypto.randomUUID() }),
     body: JSON.stringify(body),
   });
   const payload = await response.json().catch(() => null);
@@ -85,7 +100,7 @@ async function runJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
     method: 'POST',
     credentials: 'same-origin',
-    headers: { Accept: 'application/json', 'X-Request-ID': crypto.randomUUID() },
+    headers: requestHeaders({ Accept: 'application/json', 'X-Request-ID': crypto.randomUUID() }),
   });
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
