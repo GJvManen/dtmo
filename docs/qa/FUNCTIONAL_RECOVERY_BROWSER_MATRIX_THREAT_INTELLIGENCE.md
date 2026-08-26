@@ -20,6 +20,10 @@ The exact-head browser journey seeds one visibly repository-controlled intellige
 
 The fixture is removed after the browser journey. It is repository-controlled acceptance data, not live threat intelligence and not source-health evidence.
 
+## Exact-head blocker handling
+
+The first PR #338 exact-head run exposed a timing race in the pre-existing Administration matrix: the canonical Administration shell and `Runtime configuration` heading were visible before the asynchronous same-origin `/api/v1/admin/integrations` response had rendered the integration cards. Server evidence recorded HTTP 200 for that request, so this was not a backend, RBAC or persistence failure. The regression now waits for the first real integration card to become visible before counting the expected integration set. This changes only the test synchronization boundary and does not weaken the functional assertion.
+
 ## Evidence boundary
 
 This is repository-controlled exact-head functional evidence only. It does not execute external connectors and does not constitute owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, production authorization or independent external assurance.
