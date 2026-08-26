@@ -42,7 +42,7 @@ The current lifecycle priority is now **fresh candidate freeze and production-eq
 | Phase 11.8i exercised upgrade / rollback | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.9 migration/compatibility | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10 production-equivalent validation | `IN PROGRESS / FRESH CANDIDATE-BOUND EVIDENCE REQUIRED` |
-| Phase 11.10a frontend architecture | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10a frontend architecture/design contract | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10b application shell | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10c unified intelligence | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10d integrated analysis | `PASS / REPOSITORY_COMPLETE` |
