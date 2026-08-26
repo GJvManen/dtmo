@@ -188,7 +188,7 @@ jobs:
           import json
           from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-          TOKEN = "Bearer repository-controlled-intelowl-token"
+          TOKEN = "Token repository-controlled-intelowl-token"
           JOB = "repo-intelowl-4242"
 
           class Handler(BaseHTTPRequestHandler):
@@ -203,7 +203,7 @@ jobs:
                       self.send_response(404); self.end_headers(); return
                   if self.headers.get("Authorization") != TOKEN:
                       self.send_response(403); self.end_headers(); return
-                  self._json(200, {"id": JOB, "status": "analyzed", "analyzer_reports": [{"name": "functional_domain", "status": "success", "report": {"classification": "repository-controlled"}}]})
+                  self._json(200, {"id": JOB, "status": "finished", "analyzer_reports": [{"name": "functional_domain", "status": "success", "report": {"classification": "repository-controlled"}}]})
 
               def do_POST(self):
                   if self.path != "/api/analyze_observable":
