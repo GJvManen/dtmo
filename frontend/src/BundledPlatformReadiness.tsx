@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-type GrafanaState = 'checking' | 'available' | 'authentication-required' | 'unavailable';
+type GrafanaState = 'not-checked' | 'checking' | 'available' | 'authentication-required' | 'unavailable';
 
 export function BundledPlatformReadiness() {
-  const [grafanaState, setGrafanaState] = useState<GrafanaState>('checking');
+  const [grafanaState, setGrafanaState] = useState<GrafanaState>('not-checked');
 
   const checkGrafana = async () => {
     setGrafanaState('checking');
@@ -24,15 +24,15 @@ export function BundledPlatformReadiness() {
     }
   };
 
-  useEffect(() => { void checkGrafana(); }, []);
-
   const statusCopy = grafanaState === 'available'
     ? 'Grafana is reachable through the supported same-origin gateway.'
     : grafanaState === 'authentication-required'
       ? 'Grafana is reachable but requires its configured authenticated session.'
       : grafanaState === 'unavailable'
         ? 'Grafana is not reachable through /grafana/. Verify the bundled Compose service and gateway.'
-        : 'Checking same-origin Grafana readiness…';
+        : grafanaState === 'checking'
+          ? 'Checking same-origin Grafana readiness…'
+          : 'Bundled in the supported Compose topology. Run an explicit readiness check to observe this deployment.';
 
   return (
     <section className="workspace-foundation" aria-labelledby="bundled-platform-title" data-admin-section="bundled-platform-readiness">
