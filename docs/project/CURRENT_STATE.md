@@ -53,7 +53,7 @@ The current lifecycle priority is now **fresh candidate freeze and production-eq
 | Phase 11.10h TheHive Investigations & Cases | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10j Sources & Collection Control Center | `PASS / REPOSITORY_COMPLETE` |
-| Phase 11.10k consolidation acceptance | `PASS / REPOSITORY_COMPLETE` |
+| Phase 11.10k Automation & Playbooks | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10l governance & evidence center | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10m–11.10o recovery continuation | `PASS / REPOSITORY_COMPLETE` |
 | Phase 11.10q Functional Recovery Acceptance | `MERGED / OWNER-AUTHORIZED MERGE` |
