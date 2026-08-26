@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Annotated
 
@@ -15,8 +16,10 @@ from dtmo.integration_readiness import integration_readiness
 
 router = APIRouter()
 settings = get_settings()
-_RUNTIME_CONFIG_PATH = Path("/var/lib/dtmo/runtime-integration-settings.json")
-_RUNTIME_SECRET_PATH = Path("/var/lib/dtmo/runtime-integration-secrets.json")
+_DEFAULT_RUNTIME_DIRECTORY = Path("/var/lib/dtmo") if settings.environment in {"staging", "production"} else Path(".dtmo/runtime")
+_RUNTIME_DIRECTORY = Path(os.environ.get("DTMO_RUNTIME_INTEGRATION_DIR", str(_DEFAULT_RUNTIME_DIRECTORY)))
+_RUNTIME_CONFIG_PATH = _RUNTIME_DIRECTORY / "runtime-integration-settings.json"
+_RUNTIME_SECRET_PATH = _RUNTIME_DIRECTORY / "runtime-integration-secrets.json"
 
 _INTEGRATIONS = {
     "misp": ("MISP", "feature_misp_connector", "misp_api_base", "misp_api_key"),
@@ -266,35 +269,44 @@ _PAGE = """<!doctype html>
   const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   async function api(url, options = {}) {
     const headers = {'X-DTMO-Subject': storage.subject(), 'X-DTMO-Roles': storage.roles(), 'X-DTMO-API-Key': storage.apiKey(), 'Accept':'application/json', ...(options.headers || {})};
-    if (options.body) headers['Content-Type'] = 'application/json';
-    if (options.method && options.method !== 'GET') headers['X-Request-ID'] = globalThis.crypto?.randomUUID?.() || `dtmo-admin-${Date.now()}`;
     const response = await fetch(url, {...options, headers});
-    const body = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(body.detail || `HTTP ${response.status}`);
-    return body;
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.detail || `HTTP ${response.status}`);
+    return payload;
   }
-  function render(rows) {
-    document.getElementById('integration-list').innerHTML = rows.map((row) => `<article class="card" data-integration="${esc(row.id)}"><div class="page-heading"><div><strong>${esc(row.name)}</strong><p>${esc(row.state)}</p></div><label><input data-enabled type="checkbox" ${row.enabled ? 'checked' : ''}> Enabled</label></div><label>API base<input data-api-base value="${esc(row.api_base)}" placeholder="https://platform.example/api"></label><p class="muted">Credential: ${row.credential_configured ? 'configured server-side' : 'not configured'}.</p><button class="button secondary" data-save type="button">Opslaan</button><div data-result class="diagnostic" role="status"></div></article>`).join('');
+  function card(row) {
+    return `<article class="surface" data-integration="${esc(row.id)}"><div class="page-heading"><div><p class="eyebrow">${esc(row.id)}</p><h2>${esc(row.name)}</h2></div><span class="status ${row.enabled ? 'ready' : 'muted'}">${row.enabled ? 'enabled' : 'disabled'} · ${esc(row.state)}</span></div><label>API endpoint<input type="url" data-field="api_base" value="${esc(row.api_base)}" placeholder="https://platform.example/api"></label><label>Credential (write-only)<input type="password" data-field="credential" value="" placeholder="Enter credential" autocomplete="new-password"></label><label><input type="checkbox" data-field="enabled" ${row.enabled ? 'checked' : ''}> Enabled</label><p class="muted">Credential: ${row.credential_configured ? 'configured' : 'not configured'}. Submitted values are write-only, cleared from this form after save and never returned by the API. ${esc(row.credential_boundary)}</p><button class="button primary" type="button" data-save="${esc(row.id)}">Opslaan</button></article>`;
   }
   async function load() {
-    const status = document.getElementById('integration-status'); status.textContent = 'Integraties laden…';
-    try { const rows = await api('/api/v1/admin/integrations'); render(rows); status.textContent = `${rows.length} integraties geladen.`; }
-    catch (error) { status.textContent = `Integraties niet beschikbaar: ${error.message}`; }
+    const status = document.getElementById('integration-status');
+    const list = document.getElementById('integration-list');
+    status.textContent = 'Integraties laden…';
+    try {
+      const rows = await api('/api/v1/admin/integrations');
+      list.innerHTML = rows.map(card).join('');
+      status.textContent = `${rows.length} integraties geladen. Configuratiewijzigingen zijn server-authorized.`;
+    } catch (error) {
+      list.innerHTML = '';
+      status.textContent = `Integraties konden niet worden geladen: ${error.message}`;
+    }
   }
-  document.getElementById('integration-refresh').addEventListener('click', () => void load());
+  document.getElementById('integration-refresh').addEventListener('click', load);
   document.getElementById('integration-list').addEventListener('click', async (event) => {
     const button = event.target.closest('[data-save]'); if (!button) return;
-    const card = button.closest('[data-integration]'); const result = card.querySelector('[data-result]');
-    result.textContent = 'Opslaan…';
-    try { const row = await api(`/api/v1/admin/integrations/${encodeURIComponent(card.dataset.integration)}`, {method:'PATCH', body:JSON.stringify({enabled:card.querySelector('[data-enabled]').checked, api_base:card.querySelector('[data-api-base]').value})}); result.textContent = `Opgeslagen: ${row.state}.`; await load(); }
-    catch (error) { result.textContent = `Opslaan mislukt: ${error.message}`; }
+    const id = button.dataset.save; const cardNode = button.closest('[data-integration]');
+    const apiBase = cardNode.querySelector('[data-field="api_base"]').value;
+    const credential = cardNode.querySelector('[data-field="credential"]').value;
+    const enabled = cardNode.querySelector('[data-field="enabled"]').checked;
+    const payload = {api_base: apiBase, enabled}; if (credential) payload.credential = credential;
+    button.disabled = true;
+    try { await api(`/api/v1/admin/integrations/${encodeURIComponent(id)}`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)}); await load(); }
+    catch (error) { alert(`Opslaan mislukt: ${error.message}`); button.disabled = false; }
   });
-  void load();
+  load();
 })();
-</script>
-</body></html>"""
+</script></body></html>"""
 
 
 @router.get("/ui/administration", response_class=HTMLResponse)
-def administration_center() -> HTMLResponse:
-    return HTMLResponse(_PAGE, headers={"Cache-Control": "no-store"})
+def administration_page() -> HTMLResponse:
+    return HTMLResponse(_PAGE)

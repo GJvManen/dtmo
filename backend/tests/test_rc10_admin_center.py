@@ -18,6 +18,18 @@ def test_administration_center_is_wired_with_governed_runtime_configuration() ->
     assert "@router.delete" not in text
 
 
+def test_administration_runtime_persistence_is_writable_locally_and_durable_by_default_elsewhere() -> None:
+    text = ADMIN_CENTER.read_text(encoding="utf-8")
+    assert 'settings.environment in {"staging", "production"}' in text
+    assert 'Path("/var/lib/dtmo")' in text
+    assert 'Path(".dtmo/runtime")' in text
+    assert 'os.environ.get("DTMO_RUNTIME_INTEGRATION_DIR"' in text
+    assert '_RUNTIME_CONFIG_PATH = _RUNTIME_DIRECTORY / "runtime-integration-settings.json"' in text
+    assert '_RUNTIME_SECRET_PATH = _RUNTIME_DIRECTORY / "runtime-integration-secrets.json"' in text
+    assert "temporary.chmod(0o600)" in text
+    assert "_RUNTIME_SECRET_PATH.chmod(0o600)" in text
+
+
 def test_administration_center_preserves_existing_authority_boundaries() -> None:
     text = ADMIN_CENTER.read_text(encoding="utf-8")
     for path in ("/ui/admin-sources", "/ui/source-center", "/ui/ciso-security", "/ui/auditor"):
