@@ -1,6 +1,6 @@
 # DTMO Production Readiness Checklist
 
-Last reconciled: **2026-08-20**  
+Last reconciled: **2026-08-26**  
 Software baseline: **16.0.0rc12 plus accepted post-RC13/E8/Phase-11 repository enhancements**
 
 This checklist controls the post-Phase-10 industrialisation programme and future Phase 12 production authorization decision. DTMO is **not production authorized**.
@@ -23,9 +23,16 @@ This checklist controls the post-Phase-10 industrialisation programme and future
 | Phase 11.10e IntelOwl/Cortex integrated analysis | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser analysis evidence |
 | Phase 11.10f OpenCTI graph/entity workspace | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser graph evidence |
 | Phase 11.10g MISP Sharing & Exchange | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser governed exchange evidence |
-| Phase 11.10h TheHive Investigations & Cases | `IN PROGRESS / EXACT-HEAD VALIDATION REQUIRED` | Active repository/browser governed case evidence |
-| Phase 11.10i Vulnerability & Exposure Center | `NOT STARTED` | Future product evidence |
-| Phase 11.10p production-equivalent validation | `NOT STARTED / CANDIDATE FREEZE REQUIRED` | Future real-environment evidence |
+| Phase 11.10h TheHive Investigations & Cases | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser governed case evidence |
+| Phase 11.10i Vulnerability & Exposure Center | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser vulnerability evidence |
+| Phase 11.10j Sources & Collection Control Center | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser collection-control evidence |
+| Phase 11.10k Automation & Playbooks | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser automation evidence |
+| Phase 11.10l Governance & Evidence Center | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser governance evidence |
+| Phase 11.10m–11.10o recovery continuation | `PASS / REPOSITORY_COMPLETE` | Accepted repository/browser recovery continuation evidence |
+| Phase 11.10q Functional Recovery Acceptance | `MERGED / OWNER-AUTHORIZED MERGE` | Accountable functional recovery acceptance |
+| Post-11.10q framework-integration hardening | `PASS / REPOSITORY_COMPLETE` | Repository integration hardening evidence |
+| Fresh candidate freeze | `NEXT / REQUIRED` | Candidate identity boundary |
+| Phase 11.10p production-equivalent validation | `NOT YET EXECUTED FOR NEW CANDIDATE` | Future real-environment evidence |
 | Phase 11.11 independent external assurance | `NOT STARTED` | Independent assurance |
 | Phase 12 | `NOT STARTED` | Future production authorization |
 
@@ -65,47 +72,44 @@ Historical Phase 8/9 evidence remains candidate-bound and cannot be reused for t
 - [x] Phase 11.10e IntelOwl/Cortex integrated analysis accepted and merged with expected-head protection.
 - [x] Phase 11.10f OpenCTI graph/entity workspace accepted and merged with expected-head protection.
 - [x] Phase 11.10g MISP Sharing & Exchange accepted and merged with expected-head protection.
+- [x] Phase 11.10h TheHive Investigations & Cases accepted as repository-complete.
+- [x] Phase 11.10i Vulnerability & Exposure Center accepted as repository-complete.
+- [x] Phase 11.10j Sources & Collection Control Center accepted as repository-complete.
+- [x] Phase 11.10k Automation & Playbooks accepted as repository-complete.
+- [x] Phase 11.10l Governance & Evidence Center accepted as repository-complete.
+- [x] Phase 11.10m–11.10o recovery continuation accepted as repository-complete.
+- [x] Phase 11.10q Functional Recovery Acceptance owner-authorized and merged.
+- [x] Post-11.10q framework-integration hardening accepted as repository-complete.
 
-## 3. Active Phase 11.10h — TheHive Investigations & Cases
+## 3. Candidate-completion status
 
-Implementation criteria:
+The repository-controlled functional recovery and hardening sequence is complete. This status is repository evidence only and does not authorize production-equivalent, external-assurance or production claims.
 
-- [x] Functional `/workbench/investigations` route added inside the accepted canonical shell.
-- [x] `GET /api/v1/thehive/items/{item_id}/investigation` added as a sanitized canonical investigation/handoff projection.
-- [x] Investigation-state reads protected by server-side `read:intelligence`.
-- [x] Existing case creation remains protected by `handoff:case`.
-- [x] Service accounts remain excluded from human case-handoff authority.
-- [x] Canonical provenance remains mandatory before TheHive mutation.
-- [x] Browser contains no TheHive token/organization authorization and calls only same-origin DTMO APIs.
-- [x] TLP/PAP and authoritative source-handling restrictions remain fail closed.
-- [x] Durable `reserved`, `delivered`, `ambiguous` and `failed` handoff evidence is exposed without synthetic upstream state.
-- [x] `reserved`/`ambiguous` handoff evidence is treated as manual-reconciliation state and blocks blind new UI case requests.
-- [x] Alerts, tasks, case timeline, later upstream case state and responders are not fabricated from missing persistence/readback evidence.
-- [x] Configuration is not promoted to live TheHive health.
-- [x] Handoff/case identity is not promoted to external-share authority, responder execution or local-compromise proof.
-- [x] Dependency failure is unavailable rather than synthetic case/health state.
-- [x] Dedicated repository/API/browser contracts added.
-- [x] Dedicated `Phase 11 TheHive Investigations Workspace Gate` added.
-- [ ] Final exact-head frontend `npm ci`, typecheck and production build are green.
-- [ ] Final exact-head Phase 11.10h repository/API contracts are green.
-- [ ] Final exact-head browser acceptance is green.
-- [ ] Accepted Phase 11.6 TheHive adapter/state/contract regressions are green on the same head.
-- [ ] Existing security, accessibility, migration, runtime and supply-chain regressions are all green for the same exact head.
-- [ ] Professional current-state, evidence, QA and roadmap documentation is synchronized for the same head.
-- [ ] Phase 11.10h merged with expected-head protection only after every registered exact-head workflow is `completed/success`.
+- [x] 11.10i Vulnerability & Exposure Center.
+- [x] 11.10j Sources & Collection Control Center.
+- [x] 11.10k Automation & Playbooks.
+- [x] 11.10l Governance & Evidence Center.
+- [x] 11.10m Operations & Administration recovery continuation.
+- [x] 11.10n role-aware UX/accessibility recovery continuation.
+- [x] 11.10o consolidation/full functional acceptance recovery continuation.
+- [x] 11.10q Functional Recovery Acceptance merged with owner authorization.
+- [x] Post-11.10q framework-integration hardening repository-complete.
+- [ ] One immutable integrated candidate frozen after the accepted recovery/hardening baseline.
 
-Only after these items are complete may **Phase 11.10i Vulnerability & Exposure Center** start.
+## 4. Fresh candidate freeze boundary
 
-## 4. Remaining candidate-completion sequence
+Before any new production-equivalent evidence is accepted, one immutable integrated candidate must be identified consistently. At minimum the candidate record must bind:
 
-- [ ] 11.10i Vulnerability & Exposure Center.
-- [ ] 11.10j Sources & Collection Control Center.
-- [ ] 11.10k Automation & Playbooks.
-- [ ] 11.10l Governance & Evidence Center.
-- [ ] 11.10m Operations & Administration.
-- [ ] 11.10n role-aware UX/accessibility.
-- [ ] 11.10o consolidation/full functional acceptance and obsolete UI retirement.
-- [ ] One immutable integrated candidate frozen after 11.10o acceptance.
+- [ ] exact deployed Git commit;
+- [ ] immutable application image digest;
+- [ ] expected migration head;
+- [ ] deployment/GitOps revision;
+- [ ] approved production-equivalent environment identifier;
+- [ ] exact prior immutable application digest used for rollback;
+- [ ] accountable owner/operator/reviewer;
+- [ ] one consistent candidate fingerprint across all evidence.
+
+Do not fill these fields from repository assumptions. Missing, placeholder, mutable-tag-only or mixed-candidate identity fails closed. Repository CI, staging-emulator evidence and historical Phase 8/9 evidence cannot substitute for a fresh candidate-bound production-equivalent run.
 
 ## 5. Phase 11.10p — fresh production-equivalent validation
 
@@ -135,7 +139,7 @@ Repository-green status cannot satisfy these items.
 
 ## 6. Phase 11.11 — independent external assurance
 
-- [ ] Start only after Phase 11.10 is `PASS / OWNER_ACCEPTED`.
+- [ ] Start only after Phase 11.10 is `PASS / OWNER_ACCEPTED` for the fresh immutable candidate.
 - [ ] Assess the **same immutable** integrated candidate.
 - [ ] Preserve independent assessor evidence and residual findings.
 - [ ] Material candidate changes invalidate the assurance binding and require renewed validation/assurance as applicable.
