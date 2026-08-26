@@ -59,6 +59,9 @@ async def test_all_canonical_routes_render_and_administration_persists_changes()
         await expect(page.get_by_text("Runtime configuration", exact=True)).to_be_visible()
 
         integration_cards = page.locator("[data-integration]")
+        # The Administration shell renders before its same-origin integration request completes.
+        # Wait on a real card before counting so this gate measures functionality, not network timing.
+        await expect(integration_cards.first).to_be_visible()
         assert await integration_cards.count() >= 7
 
         misp = page.locator('[data-integration="misp"]')
