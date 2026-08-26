@@ -158,6 +158,6 @@ A successful connector or enrichment run proves only the recorded DTMO action an
 
 Phase 11.10p production-equivalent validation and Phase 11.11 independent external assurance remain required later, but they are **not the active priority while functional acceptance is NO-GO**.
 
-When functional recovery is explicitly owner-accepted, a new candidate must be frozen and bound to one exact immutable application identity. Production-equivalent evidence must then cover the exact deployed Git commit, immutable image digests, migration head, deployment revision, approved environment identity, upgrade, health/readiness, saturation/capacity, recovery and exact-prior-digest rollback. Any later independent assurance must evaluate the same immutable candidate.
+When functional recovery is explicitly owner-accepted, a new candidate must be frozen and bound to one exact immutable application identity. Production-equivalent evidence must then cover the exact deployed Git commit, immutable application image digest, migration head, deployment revision, approved environment identity, upgrade, health/readiness, saturation/capacity, recovery and exact-prior-digest rollback. Any later independent assurance must evaluate the same immutable candidate.
 
 No current repository state is described here as fresh production-equivalent, penetration-tested, independently assured or production authorized unless separately supported by candidate-bound evidence and an explicit accountable acceptance decision.
