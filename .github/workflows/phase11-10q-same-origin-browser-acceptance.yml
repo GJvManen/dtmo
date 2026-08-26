@@ -34,9 +34,23 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+      opensearch:
+        image: opensearchproject/opensearch:2.19.6
+        env:
+          discovery.type: single-node
+          DISABLE_SECURITY_PLUGIN: "true"
+          OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
+        ports:
+          - 9200:9200
+        options: >-
+          --health-cmd "curl -fsS http://localhost:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 30
     env:
       DTMO_ENVIRONMENT: development
       DTMO_DATABASE_URL: postgresql+psycopg://dtmo:dtmo-acceptance@127.0.0.1:5432/dtmo
+      DTMO_OPENSEARCH_URL: http://127.0.0.1:9200
       DTMO_FEATURE_LIVE_CONNECTORS: 'false'
       DTMO_FEATURE_OPENCVE_CONNECTOR: 'false'
       DTMO_FEATURE_VULNERABILITY_LOOKUP_CONNECTOR: 'false'
