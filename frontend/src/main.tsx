@@ -10,6 +10,34 @@ import './styles.css';
 import './command-center.css';
 import './unified-intelligence.css';
 
+function installCanonicalLocalDevelopmentAuthContext() {
+  const nativeFetch = window.fetch.bind(window);
+  window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    const requestUrl = input instanceof Request ? input.url : input.toString();
+    const resolvedUrl = new URL(requestUrl, window.location.origin);
+    if (resolvedUrl.origin !== window.location.origin) {
+      return nativeFetch(input, init);
+    }
+
+    const headers = new Headers(input instanceof Request ? input.headers : undefined);
+    new Headers(init?.headers).forEach((value, key) => headers.set(key, value));
+
+    if (!headers.has('X-DTMO-Subject')) {
+      headers.set('X-DTMO-Subject', sessionStorage.getItem('dtmo.subject') || 'admin-tester');
+    }
+    if (!headers.has('X-DTMO-Roles')) {
+      headers.set('X-DTMO-Roles', sessionStorage.getItem('dtmo.roles') || 'admin');
+    }
+    if (!headers.has('X-DTMO-API-Key')) {
+      headers.set('X-DTMO-API-Key', sessionStorage.getItem('dtmo.apiKey') || '');
+    }
+
+    return nativeFetch(input, { ...init, headers });
+  };
+}
+
+installCanonicalLocalDevelopmentAuthContext();
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
