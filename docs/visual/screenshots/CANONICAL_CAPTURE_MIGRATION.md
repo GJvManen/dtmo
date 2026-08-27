@@ -99,7 +99,7 @@ The capture renders the governed decision and evidence chain without performing 
 
 `independent review -> separate share approval -> unpublished MISP export evidence -> authority boundary`
 
-It uses the real Sharing & Exchange workspace with sanitized deterministic canonical-intelligence, restriction and persisted export-history fixtures. The fixture shows that independent review and separate share approval are distinct human authority steps and that any MISP export evidence remains unpublished. No review, approval or export action is executed by the capture itself. Publication authority and synchronization authority remain absent. The metadata preserves these boundaries:
+It uses the real Sharing & Exchange workspace with sanitized deterministic canonical-intelligence, restriction and persisted export-history fixtures. The fixture shows that independent review and separate share approval are distinct human authority steps and that any MISP export evidence remains unpublished. No review, approval or export action is executed by the capture itself. **publication authority** and synchronization authority remain absent. The metadata preserves these boundaries:
 
 - `canonical_route = /workbench/sharing`;
 - `capture_mode = actual-runtime-ui-with-synthetic-fixture-data`;
