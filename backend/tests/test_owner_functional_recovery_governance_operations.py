@@ -31,7 +31,7 @@ async def test_governance_and_operations_deep_same_origin_journeys() -> None:
             await expect(page.get_by_text(framework, exact=True)).to_be_visible()
         await expect(page.get_by_text("Explicit coverage state", exact=True)).to_be_visible()
         await expect(page.get_by_text("Traceable controls", exact=True)).to_be_visible()
-        await expect(page.get_by_text("Separation of duties", exact=True)).to_be_visible()
+        await expect(page.get_by_role("heading", name="Separation of duties", exact=True)).to_be_visible()
         await expect(page.get_by_text("Evidence without synthetic assurance", exact=True)).to_be_visible()
         await expect(page.get_by_text("Mapping visibility ≠ compliance approval", exact=True)).to_be_visible()
         assert await page.locator('a[href^="/ui/"]').count() == 0
