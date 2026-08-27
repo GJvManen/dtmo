@@ -68,10 +68,10 @@ jobs:
           done
           cat artifacts/documentation-screenshots/server.log
           exit 1
-      - name: Capture deterministic product documentation screenshots
+      - name: Capture deterministic legacy product documentation screenshots
         run: |
           python tools/capture_documentation_screenshots.py \
-            --base-url http://127.0.0.1:8765 \
+            --base-url http://127.0.0.1:8765/ui/console \
             --output artifacts/documentation-screenshots/generated
       - name: Capture deterministic investigation documentation screenshots
         run: |
