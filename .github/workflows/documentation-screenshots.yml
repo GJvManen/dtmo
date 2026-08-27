@@ -10,6 +10,7 @@ on:
       - "docs/architecture/SYSTEM_WORKFLOWS.md"
       - "tools/capture_documentation_screenshots.py"
       - "tools/capture_documentation_investigation_screenshots.py"
+      - "tools/capture_canonical_workbench_screenshots.py"
       - ".github/workflows/documentation-screenshots.yml"
   workflow_dispatch:
 
@@ -27,8 +28,25 @@ jobs:
       DTMO_MINIO_ENDPOINT: 127.0.0.1:9000
       DTMO_FEATURE_LIVE_CONNECTORS: "false"
       DTMO_E2E_BASE_URL: http://127.0.0.1:8765
+      DTMO_FRONTEND_DIST: ${{ github.workspace }}/frontend/dist
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact-head checkout
+        run: |
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          test "$(git rev-parse HEAD)" = "$expected"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build canonical workbench
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -37,27 +55,50 @@ jobs:
         run: python -m pip install -e '.[test]'
       - name: Install Chromium for Playwright
         run: python -m playwright install --with-deps chromium
-      - name: Start bounded DTMO documentation target
+      - name: Start bounded canonical DTMO documentation target
         run: |
           mkdir -p artifacts/documentation-screenshots
-          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/documentation-screenshots/server.log 2>&1 &
-          echo $! > artifacts/documentation-screenshots/server.pid
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/documentation-screenshots/canonical-server.log 2>&1 &
+          echo $! > artifacts/documentation-screenshots/canonical-server.pid
           for attempt in $(seq 1 30); do
-            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/documentation-screenshots/health.json; then
-              exit 0
+            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/documentation-screenshots/canonical-health.json; then
+              break
             fi
             sleep 1
           done
-          cat artifacts/documentation-screenshots/server.log
-          exit 1
-      - name: Capture deterministic product documentation screenshots
+          curl --fail --silent http://127.0.0.1:8765/health > /dev/null || {
+            cat artifacts/documentation-screenshots/canonical-server.log
+            exit 1
+          }
+      - name: Start bounded legacy DTMO documentation target
+        env:
+          DTMO_FRONTEND_DIST: ${{ github.workspace }}/artifacts/no-frontend-dist
+        run: |
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8766 > artifacts/documentation-screenshots/legacy-server.log 2>&1 &
+          echo $! > artifacts/documentation-screenshots/legacy-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8766/health > artifacts/documentation-screenshots/legacy-health.json; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8766/health > /dev/null || {
+            cat artifacts/documentation-screenshots/legacy-server.log
+            exit 1
+          }
+      - name: Capture deterministic legacy product documentation screenshots
         run: |
           python tools/capture_documentation_screenshots.py \
-            --base-url http://127.0.0.1:8765 \
+            --base-url http://127.0.0.1:8766 \
             --output artifacts/documentation-screenshots/generated
       - name: Capture deterministic investigation documentation screenshots
         run: |
           python tools/capture_documentation_investigation_screenshots.py \
+            --base-url http://127.0.0.1:8766 \
+            --output artifacts/documentation-screenshots/generated
+      - name: Capture canonical Command Center candidate
+        run: |
+          python tools/capture_canonical_workbench_screenshots.py \
             --base-url http://127.0.0.1:8765 \
             --output artifacts/documentation-screenshots/generated
       - name: Validate screenshot artifact contract
@@ -68,16 +109,10 @@ jobs:
 
           root = Path("artifacts/documentation-screenshots/generated")
           required = {
-              "overview-dashboard.png",
-              "intelligence-workspace.png",
-              "sources-catalogue.png",
-              "vulnerability-analytics.png",
-              "misp-governed-workflow.png",
-              "ail-correlation-workspace.png",
-              "audit-correlation.png",
-              "visual-analytics.png",
-              "governance-frameworks.png",
-              "administration-rbac.png",
+              "overview-dashboard.png", "intelligence-workspace.png", "sources-catalogue.png",
+              "vulnerability-analytics.png", "misp-governed-workflow.png", "ail-correlation-workspace.png",
+              "audit-correlation.png", "visual-analytics.png", "governance-frameworks.png",
+              "administration-rbac.png", "command-center-workbench.png",
           }
           present = {path.name for path in root.glob("*.png")}
           missing = sorted(required - present)
@@ -90,7 +125,8 @@ jobs:
 
           base_metadata = json.loads((root / "capture-metadata.json").read_text(encoding="utf-8"))
           investigation_metadata = json.loads((root / "investigation-capture-metadata.json").read_text(encoding="utf-8"))
-          for metadata in (base_metadata, investigation_metadata):
+          canonical_metadata = json.loads((root / "canonical-capture-metadata.json").read_text(encoding="utf-8"))
+          for metadata in (base_metadata, investigation_metadata, canonical_metadata):
               if metadata.get("capture_mode") != "actual-runtime-ui-with-synthetic-fixture-data":
                   raise SystemExit("unexpected screenshot capture mode")
               if metadata.get("evidence_classification") != "documentation-illustration-only":
@@ -103,14 +139,21 @@ jobs:
               raise SystemExit("MISP documentation capture must not execute outbound export")
           if investigation_metadata.get("misp_live_connectivity_proven") is not False:
               raise SystemExit("fixture-backed MISP capture must not claim live connectivity")
+          if canonical_metadata.get("canonical_route") != "/workbench/command-center":
+              raise SystemExit("canonical Command Center capture must use /workbench/command-center")
+          for claim in ("live_connectivity_proven", "owner_acceptance_proven", "production_equivalent_proven"):
+              if canonical_metadata.get(claim) is not False:
+                  raise SystemExit(f"canonical fixture capture must not assert {claim}")
           print("PASS: documentation screenshot artifacts are complete and correctly classified")
           PY
-      - name: Stop documentation target
+      - name: Stop documentation targets
         if: always()
         run: |
-          if test -f artifacts/documentation-screenshots/server.pid; then
-            kill "$(cat artifacts/documentation-screenshots/server.pid)" || true
-          fi
+          for pidfile in artifacts/documentation-screenshots/canonical-server.pid artifacts/documentation-screenshots/legacy-server.pid; do
+            if test -f "$pidfile"; then
+              kill "$(cat "$pidfile")" || true
+            fi
+          done
       - uses: actions/upload-artifact@v7
         if: always()
         with:
