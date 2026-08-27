@@ -44,7 +44,10 @@ async def test_governance_exposes_repository_backed_framework_control_and_proven
         await expect(tvm).to_contain_text("context-only")
 
         await expect(page.get_by_text("Mapping visibility ≠ compliance approval", exact=True)).to_be_visible()
-        await expect(page.get_by_text("Visibility does not grant review, case, connector, share, publication, administration or production authority.", exact=True)).to_be_visible()
+        claim_boundary = page.get_by_role("heading", name="Evidence without synthetic assurance", exact=True).locator("..")
+        await expect(claim_boundary).to_contain_text(
+            "Visibility does not grant review, case, connector, share, publication, administration or production authority."
+        )
         assert await page.locator('a[href^="/ui/"]').count() == 0
 
         await context.close()
