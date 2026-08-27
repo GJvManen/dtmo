@@ -1,0 +1,214 @@
+name: Phase 11.10q MISP Sharing Functional Recovery Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'backend/dtmo/**'
+      - 'backend/tests/test_owner_functional_recovery_misp_sharing.py'
+      - '.github/workflows/phase11-10q-misp-sharing-functional-recovery.yml'
+      - 'docs/qa/CANONICAL_FUNCTIONAL_BROWSER_MATRIX.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  misp-sharing-functional-recovery:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: dtmo
+          POSTGRES_USER: dtmo
+          POSTGRES_PASSWORD: dtmo-misp-sharing-recovery
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dtmo -d dtmo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:dtmo-misp-sharing-recovery@127.0.0.1:5432/dtmo
+      DTMO_FEATURE_LIVE_CONNECTORS: 'false'
+      DTMO_FEATURE_INTELOWL_ENRICHMENT: 'false'
+      DTMO_FEATURE_CORTEX_ANALYSIS: 'false'
+      DTMO_FEATURE_OPENCTI_READ: 'false'
+      DTMO_FEATURE_THEHIVE_HANDOFF: 'false'
+      DTMO_FEATURE_MISP_CONNECTOR: 'false'
+      DTMO_FEATURE_MISP_EXPORT: 'true'
+      DTMO_MISP_API_BASE: http://127.0.0.1:8774
+      DTMO_MISP_API_KEY: repository-controlled-misp-token
+      DTMO_E2E_BASE_URL: http://127.0.0.1:8766
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build exact-head canonical workbench
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install backend test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Create exact-head database schema
+        run: alembic upgrade head
+
+      - name: Install Chromium
+        run: python -m playwright install chromium
+
+      - name: Start repository-controlled MISP API emulator
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          python - <<'PY' > artifacts/phase11-10q-misp-sharing-emulator.log 2>&1 &
+          import json
+          from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+          TOKEN = "repository-controlled-misp-token"
+
+          class Handler(BaseHTTPRequestHandler):
+              def _json(self, status, payload):
+                  body = json.dumps(payload).encode()
+                  self.send_response(status)
+                  self.send_header("Content-Type", "application/json")
+                  self.send_header("Content-Length", str(len(body)))
+                  self.end_headers()
+                  self.wfile.write(body)
+
+              def do_GET(self):
+                  if self.path == "/health":
+                      self.send_response(200); self.end_headers(); self.wfile.write(b"ok"); return
+                  self.send_response(404); self.end_headers()
+
+              def do_POST(self):
+                  if self.path != "/events/add":
+                      self.send_response(404); self.end_headers(); return
+                  if self.headers.get("Authorization") != TOKEN:
+                      self.send_response(403); self.end_headers(); return
+                  length = int(self.headers.get("Content-Length", "0"))
+                  payload = json.loads(self.rfile.read(length) or b"{}")
+                  event = payload.get("Event") if isinstance(payload, dict) else None
+                  valid = (
+                      isinstance(event, dict)
+                      and event.get("published") is False
+                      and event.get("distribution") == "0"
+                      and event.get("analysis") == "2"
+                      and event.get("threat_level_id") == "4"
+                      and event.get("Tag") == [{"name": "tlp:amber"}]
+                      and isinstance(event.get("uuid"), str)
+                      and event.get("uuid")
+                      and isinstance(event.get("Attribute"), list)
+                      and len(event.get("Attribute")) == 1
+                      and event["Attribute"][0].get("type") == "link"
+                      and event["Attribute"][0].get("to_ids") is False
+                  )
+                  if not valid:
+                      self._json(422, {"detail": "unexpected governed MISP export payload"}); return
+                  self._json(200, {"Event": {"id": "repo-misp-4242", "uuid": event["uuid"]}})
+
+              def log_message(self, format, *args):
+                  print(format % args, flush=True)
+
+          ThreadingHTTPServer(("127.0.0.1", 8774), Handler).serve_forever()
+          PY
+          echo $! > artifacts/phase11-10q-misp-sharing-emulator.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8774/health >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat artifacts/phase11-10q-misp-sharing-emulator.log
+          exit 1
+
+      - name: Start exact-head DTMO with built workbench
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          DTMO_FRONTEND_DIST="$PWD/frontend/dist" uvicorn dtmo.main:app --app-dir backend --host 127.0.0.1 --port 8766 > artifacts/phase11-10q-misp-sharing-server.log 2>&1 &
+          echo $! > artifacts/phase11-10q-misp-sharing-server.pid
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:8766/health > artifacts/phase11-10q-misp-sharing-health.json; then exit 0; fi
+            sleep 1
+          done
+          cat artifacts/phase11-10q-misp-sharing-server.log
+          exit 1
+
+      - name: Execute governed MISP sharing browser journey
+        run: |
+          python -m pytest -q backend/tests/test_owner_functional_recovery_misp_sharing.py \
+            --junitxml=artifacts/phase11-10q-misp-sharing-browser.xml
+
+      - name: Record bounded evidence claim
+        if: always()
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+              "workflow": "Phase 11.10q MISP Sharing Functional Recovery Gate",
+              "exact_head": os.environ["EXACT_HEAD"],
+              "same_origin_http": True,
+              "real_dtmo_persistence": True,
+              "repository_controlled_misp_emulator": True,
+              "separate_human_review_and_share_approval": True,
+              "misp_event_created_unpublished": True,
+              "replay_protection_exercised": True,
+              "publication_authority": False,
+              "synchronization_authority": False,
+              "live_misp_deployment": False,
+              "owner_functional_acceptance": False,
+              "staging_evidence": False,
+              "production_equivalent_evidence": False,
+              "external_assurance_evidence": False,
+              "claim_boundary": "Exact-head repository-controlled browser proof of separate human review/share approval, real server-side MISP export delivery, durable export history and unpublished-event boundary against a loopback emulator. This does not prove live MISP health, publication or synchronization authority, owner acceptance, staging, production-equivalent validation or independent assurance."
+          }
+          Path("artifacts/phase11-10q-misp-sharing-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Stop exact-head services
+        if: always()
+        run: |
+          if test -f artifacts/phase11-10q-misp-sharing-server.pid; then kill "$(cat artifacts/phase11-10q-misp-sharing-server.pid)" || true; fi
+          if test -f artifacts/phase11-10q-misp-sharing-emulator.pid; then kill "$(cat artifacts/phase11-10q-misp-sharing-emulator.pid)" || true; fi
+
+      - name: Upload MISP sharing recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phase11-10q-misp-sharing-functional-recovery-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error

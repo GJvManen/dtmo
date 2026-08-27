@@ -46,8 +46,8 @@ export function MispSharingWorkspace() {
   }, []);
   useEffect(() => { if (initialItem) void loadState(initialItem); }, []);
 
-  async function loadState(id = itemId.trim()) {
-    if (!id) return; setLoading(true); setError(null); setActionResult(null);
+  async function loadState(id = itemId.trim(), preserveActionResult = false) {
+    if (!id) return; setLoading(true); setError(null); if (!preserveActionResult) setActionResult(null);
     try {
       const next = await requestJson<SharingState>(`/api/v1/sharing/items/${encodeURIComponent(id)}`); setState(next); setItemId(id);
       const url = new URL(window.location.href); url.searchParams.set('item', id); window.history.replaceState({}, '', url);
@@ -56,7 +56,7 @@ export function MispSharingWorkspace() {
   }
   async function runAction(label: string, url: string) {
     if (!state) return; setAction(label); setActionResult(null); setError(null);
-    try { await requestJson(url, { method: 'POST', headers: { 'X-Request-ID': newRequestId() } }); setActionResult(`${label} recorded in canonical DTMO governance state.`); await loadState(state.item_id); }
+    try { await requestJson(url, { method: 'POST', headers: { 'X-Request-ID': newRequestId() } }); setActionResult(`${label} recorded in canonical DTMO governance state.`); await loadState(state.item_id, true); }
     catch (actionError) { setActionResult(`${label} blocked: ${actionError instanceof Error ? actionError.message : 'unknown error'}`); }
     finally { setAction(null); }
   }
