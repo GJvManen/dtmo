@@ -39,7 +39,7 @@ def test_installation_guide_is_discoverable_from_primary_documentation_entrypoin
 
 def test_current_state_tracks_installation_guide_as_completed_repository_preparation():
     text = CURRENT_STATE.read_text(encoding="utf-8")
-    assert "single authoritative installation guide" in text.lower()
+    assert "single authoritative local/reference installation procedure" in text.lower()
     assert "docs/installation/INSTALLATION_GUIDE.md" in text
     assert "clean-install owner retest" in text.lower()
     assert "candidate freeze" in text.lower()
