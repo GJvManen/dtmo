@@ -66,7 +66,15 @@ The canonical Analysis & Enrichment workspace must prove an actual allowlisted e
 
 The exact-head CI job provides a loopback IntelOwl API emulator solely to exercise the real DTMO server-side `IntelOwlAdapter`. The emulator validates the server-side bearer token, observable classification, explicit analyzer allowlist and empty connector list, returns a stable job identity, and exposes a deterministic terminal analyzer report. DTMO must persist that result as an `IntelOwlEnrichmentRecord`; the canonical browser must show the job/analyzer history both immediately and after page reload.
 
-This slice must keep `external_share_authorized=false` and `local_compromise_proven=false`. IntelOwl enrichment is evidence, not a local-compromise verdict and not share authority. The emulator is repository-controlled integration evidence only and is not a live IntelOwl deployment, staging evidence, production-equivalent validation, penetration-test evidence or independent assurance. Cortex remains disabled in this slice and will require its own bounded analyzer-only execution proof.
+This slice must keep `external_share_authorized=false` and `local_compromise_proven=false`. IntelOwl enrichment is evidence, not a local-compromise verdict and not share authority. The emulator is repository-controlled integration evidence only and is not a live IntelOwl deployment, staging evidence, production-equivalent validation, penetration-test evidence or independent assurance.
+
+## Slice 8 — Analysis & Enrichment governed Cortex analyzer-only execution
+
+The canonical Analysis & Enrichment workspace must also prove an actual Cortex analyzer execution through the existing server-side adapter. A repository-controlled canonical intelligence item is opened by deep link with a bounded domain observable. A human-authorized `admin` principal must see Cortex enabled with exactly one configured analyzer and invoke `Run Cortex` through `/api/v1/analysis/items/{item_id}/cortex`.
+
+The dedicated exact-head gate provides a loopback Cortex API emulator solely to exercise the real `CortexAdapter`. The emulator validates the server-side bearer token, approved observable type, explicit analyzer allowlist, TLP value and analyzer-only request shape, returns a stable job identity and exposes a deterministic terminal report. DTMO must persist the result as a `CortexAnalysisRecord`; the browser must show the job, analyzer, TLP and persisted report immediately and again after a full page reload.
+
+Cortex responders, analyzer discovery and other side-effect actions remain outside this approved boundary. `external_share_authorized=false` and `local_compromise_proven=false` remain authoritative. Passing the emulator-backed journey does not prove live Cortex deployment health, upstream truth, compromise, owner acceptance, staging, production-equivalent validation or independent assurance.
 
 ## Evidence boundary
 
@@ -76,4 +84,4 @@ The following controls remain authoritative and must not be weakened by recovery
 
 ## Remaining recovery
 
-These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After the IntelOwl Analysis & Enrichment slice, the next bounded Analysis recovery is Cortex analyzer-only execution unless exact-head CI exposes an earlier blocker.
+These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After the Cortex analyzer-only slice, the next functional recovery priority returns to **Sharing & Exchange + Automation & Playbooks**, unless exact-head CI exposes an earlier blocker.
