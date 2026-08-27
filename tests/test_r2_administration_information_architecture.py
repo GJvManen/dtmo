@@ -22,8 +22,8 @@ def test_administration_console_exposes_stable_section_navigation():
 
     assert "#integration-admin-title" in text
     assert "#identity-admin-title" in text
-    assert 'data-admin-section=\\"role-catalog\\"' in text
-    assert 'data-admin-section=\\"security-audit\\"' in text
+    assert '[data-admin-section="role-catalog"]' in text
+    assert '[data-admin-section="security-audit"]' in text
     assert "route: '/collection'" in text
 
 
