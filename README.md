@@ -60,6 +60,14 @@ The platform uses provenance-aware records, server-side authorization, controlle
 
 For a new installation, start with the [Authoritative Installation Guide](docs/installation/INSTALLATION_GUIDE.md). It covers prerequisites, `tools/bootstrap_local.py`, generated local credentials, required AIStor image/license inputs, supported Compose startup, service entry points, first administration checks, first-data collection and troubleshooting.
 
+Run the supported local/reference preflight before starting the stack:
+
+```bash
+python3 tools/bootstrap_local.py
+```
+
+If the helper reports `ACTION REQUIRED`, resolve the named external prerequisite rather than replacing it with placeholder or invented evidence.
+
 Then use the documentation portal for operation and product guidance:
 
 1. Read the [Documentation Portal](docs/README.md) for audience-oriented navigation.
