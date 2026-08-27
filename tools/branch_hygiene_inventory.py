@@ -11,11 +11,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+import shutil
 import subprocess
 from dataclasses import asdict, dataclass
 
 
 RETAIN_PREFIXES = ("audit/", "candidate-", "release/", "releases/", "evidence/")
+SAFE_REF_COMPONENT = re.compile(r"^[A-Za-z0-9._/-]+$")
+GIT = shutil.which("git")
+if GIT is None:
+    raise RuntimeError("git executable is required for branch inventory")
 
 
 @dataclass(frozen=True)
@@ -27,9 +33,15 @@ class BranchRecord:
     reason: str
 
 
+def validate_ref_component(value: str, label: str) -> str:
+    if not value or value.startswith("-") or not SAFE_REF_COMPONENT.fullmatch(value):
+        raise ValueError(f"invalid {label}: {value!r}")
+    return value
+
+
 def git(*args: str) -> str:
-    result = subprocess.run(
-        ["git", *args],
+    result = subprocess.run(  # noqa: S603 - absolute git executable, shell disabled, validated ref inputs
+        [GIT, *args],
         check=True,
         text=True,
         stdout=subprocess.PIPE,
@@ -39,8 +51,11 @@ def git(*args: str) -> str:
 
 
 def is_ancestor(tip: str, base: str) -> bool:
-    result = subprocess.run(
-        ["git", "merge-base", "--is-ancestor", tip, base],
+    if not re.fullmatch(r"[0-9a-fA-F]{40,64}", tip):
+        raise ValueError(f"invalid commit id: {tip!r}")
+    validate_ref_component(base, "base ref")
+    result = subprocess.run(  # noqa: S603 - absolute git executable, shell disabled, validated arguments
+        [GIT, "merge-base", "--is-ancestor", tip, base],
         text=True,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
@@ -49,6 +64,8 @@ def is_ancestor(tip: str, base: str) -> bool:
 
 
 def inventory(base: str, remote: str) -> list[BranchRecord]:
+    base = validate_ref_component(base, "base")
+    remote = validate_ref_component(remote, "remote")
     git("fetch", "--prune", remote)
     refs = git(
         "for-each-ref",
