@@ -9,6 +9,7 @@ RUN_RECORD = ROOT / "docs/development/runs/RUN-20260827-374.md"
 def test_visual_analytics_capture_uses_canonical_route_and_accessible_journey():
     text = CAPTURE.read_text(encoding="utf-8")
     assert 'ANALYTICS_ROUTE = "/workbench/analytics"' in text
+    assert 'page.goto(base_url.rstrip("/") + ANALYTICS_ROUTE' in text
     assert 'name="Visual Analytics"' in text
     assert 'name="Intelligence arrivals · 7 days"' in text
     assert 'name="Severity distribution"' in text
@@ -23,7 +24,9 @@ def test_visual_analytics_capture_uses_canonical_route_and_accessible_journey():
     assert '"review_authority_proven": False' in text
     assert '"share_authority_proven": False' in text
     assert '"publication_authority_proven": False' in text
-    assert "/ui/" not in text
+    assert "LEGACY_ROUTE" not in text
+    assert '"/ui/console"' not in text
+    assert '"/ui/intelligence-workspace"' not in text
 
 
 def test_ui07_gate_is_exact_head_and_fail_closed():
