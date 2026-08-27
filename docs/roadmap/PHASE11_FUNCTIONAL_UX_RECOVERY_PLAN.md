@@ -1,6 +1,6 @@
 # Phase 11 Functional UX Recovery Plan
 
-Status: **ACTIVE — R2 Administration information architecture**
+Status: **ACTIVE — R3 Unified intelligence object context and workplace**
 
 ## Purpose
 
@@ -39,7 +39,7 @@ Acceptance: a clean repository-controlled local/reference bootstrap exposes usef
 
 ### R2 — Administration information architecture
 
-Repository status: **ACTIVE / CURRENT BOUNDED RECOVERY SLICE**.
+Repository status: **MERGED / REPOSITORY-COMPLETE — #380**.
 
 Goal: make Administration behave as one coherent console rather than a long mixed control page.
 
@@ -51,6 +51,8 @@ Goal: make Administration behave as one coherent console rather than a long mixe
 Acceptance: an administrator can find and complete an authorized task without navigating to legacy UI or losing context.
 
 ### R3 — Unified intelligence object context and workplace
+
+Repository status: **ACTIVE / CURRENT BOUNDED RECOVERY SLICE**.
 
 Goal: make the canonical workbench an analyst workplace rather than a collection of pages.
 
