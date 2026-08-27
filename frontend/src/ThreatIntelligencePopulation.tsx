@@ -31,8 +31,22 @@ async function readJson<T>(url: string): Promise<T> {
   return body as T;
 }
 
-async function postSource(url: string): Promise<RunResult> {
-  const response = await fetch(url, {
+async function runRegisteredSource(sourceId: string): Promise<RunResult> {
+  const response = await fetch(`/api/v1/admin/sources/${encodeURIComponent(sourceId)}/run`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-Request-ID': crypto.randomUUID() },
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    const detail = typeof body === 'object' && body && 'detail' in body ? String((body as { detail: unknown }).detail) : `HTTP ${response.status}`;
+    throw new Error(detail);
+  }
+  return body as RunResult;
+}
+
+async function runBuiltInSource(sourceId: string): Promise<RunResult> {
+  const response = await fetch(`/connectors/${encodeURIComponent(sourceId)}/run`, {
     method: 'POST',
     credentials: 'same-origin',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-Request-ID': crypto.randomUUID() },
@@ -90,18 +104,18 @@ export function ThreatIntelligencePopulation({
 
   async function executeRegistered(source: Source) {
     if (!source.enabled) return;
-    await execute(source.id, source.name, `/api/v1/admin/sources/${encodeURIComponent(source.id)}/run`);
+    await execute(source.id, source.name, () => runRegisteredSource(source.id));
   }
 
   async function executeBuiltIn(source: SourceCenterStatus) {
     if (!source.manual_run_available) return;
-    await execute(source.id, source.name, `/connectors/${encodeURIComponent(source.id)}/run`);
+    await execute(source.id, source.name, () => runBuiltInSource(source.id));
   }
 
-  async function execute(sourceId: string, sourceName: string, url: string) {
+  async function execute(sourceId: string, sourceName: string, runner: () => Promise<RunResult>) {
     setRunningId(sourceId); setMessage(null); setError(null);
     try {
-      const result = await postSource(url);
+      const result = await runner();
       if (result.status !== 'completed') {
         setError(result.error || `Source ${sourceName} did not complete`);
         return;
