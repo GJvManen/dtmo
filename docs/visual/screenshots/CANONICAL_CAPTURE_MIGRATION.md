@@ -44,7 +44,7 @@ The candidate **must not replace `intelligence-workspace.png` until** its exact-
 
 ## Canonical Sources & Collection replacement candidate
 
-This slice adds the independent UI-03 candidate `sources-collection-workbench.png` from the actual canonical route `/workbench/collection`.
+The UI-03 migration adds the independent candidate `sources-collection-workbench.png` from the actual canonical route `/workbench/collection`.
 
 The capture exercises a bounded inspection journey without triggering connector execution or source activation:
 
@@ -64,6 +64,32 @@ It uses the real Collection workspace with sanitized deterministic catalog, sour
 - `credential_value_exposed = false`.
 
 The candidate **must not replace `sources-catalogue.png` until** its exact-head screenshot artifact has been visually reviewed for canonical navigation, source/readiness rendering, provenance context, absence of transient/error state, safe disclosure and representative operator context. Review and promotion are separate bounded changes.
+
+## Canonical Vulnerability & Exposure replacement candidate
+
+This slice adds the independent UI-04 candidate `vulnerability-exposure-workbench.png` from the actual canonical route `/workbench/exposure`.
+
+The capture exercises a bounded read-only prioritization journey:
+
+`vulnerability evidence -> prioritization attributes -> provenance boundary`
+
+It uses the real Vulnerability & Exposure Center with sanitized deterministic CVSS, EPSS, KEV, vendor, product, CWE and provenance fixtures. These attributes are prioritization evidence only. They do not establish local exposure and do not establish that a local asset is affected, reachable, exploitable, compromised or remediated. The capture grants no scanner, publication or sharing authority. The metadata preserves these boundaries:
+
+- `canonical_route = /workbench/exposure`;
+- `capture_mode = actual-runtime-ui-with-synthetic-fixture-data`;
+- `evidence_classification = documentation-illustration-only`;
+- `live_connectivity_proven = false`;
+- `owner_acceptance_proven = false`;
+- `production_equivalent_proven = false`;
+- `local_exposure_proven = false`;
+- `exploitability_proven = false`;
+- `compromise_proven = false`;
+- `remediation_proven = false`;
+- `scanner_authority_proven = false`;
+- `publication_authority_proven = false`;
+- `share_authority_proven = false`.
+
+The candidate **must not replace `vulnerability-analytics.png` until** its exact-head screenshot artifact has been visually reviewed for canonical navigation, complete CVSS/EPSS/KEV and provenance rendering, absence of transient/error state, safe disclosure and representative operator context. Review and promotion are separate bounded changes.
 
 ## Migration rule
 
