@@ -5,6 +5,7 @@ WORKSPACE = ROOT / "frontend/src/AdministrationWorkspace.tsx"
 READINESS = ROOT / "frontend/src/FrameworkIntegrationReadiness.tsx"
 PLATFORM = ROOT / "frontend/src/BundledPlatformReadiness.tsx"
 MAIN = ROOT / "frontend/src/main.tsx"
+CONSOLE = ROOT / "frontend/src/AdministrationConsole.tsx"
 BACKEND = ROOT / "backend/dtmo/admin_center.py"
 APP = ROOT / "backend/dtmo/main.py"
 
@@ -12,18 +13,19 @@ APP = ROOT / "backend/dtmo/main.py"
 def test_canonical_administration_route_is_not_a_generic_empty_foundation() -> None:
     workspace = WORKSPACE.read_text(encoding="utf-8")
     main = MAIN.read_text(encoding="utf-8")
-    assert "AdministrationWorkspace" in main
+    console = CONSOLE.read_text(encoding="utf-8")
+    assert "AdministrationConsole" in main
     assert 'path="/administration"' in main
-    assert "<AdministrationWorkspace />" in main
+    assert "<AdministrationWorkspace />" in console
     assert "Framework integrations" in workspace
     assert "Runtime configuration" in workspace
 
 
 def test_framework_activation_readiness_is_mounted_in_canonical_administration() -> None:
-    main = MAIN.read_text(encoding="utf-8")
+    console = CONSOLE.read_text(encoding="utf-8")
     readiness = READINESS.read_text(encoding="utf-8")
-    assert "import { FrameworkIntegrationReadiness } from './FrameworkIntegrationReadiness';" in main
-    assert "<FrameworkIntegrationReadiness />" in main
+    assert "import { FrameworkIntegrationReadiness } from './FrameworkIntegrationReadiness';" in console
+    assert "<FrameworkIntegrationReadiness />" in console
     assert 'data-admin-section="framework-activation-readiness"' in readiness
     assert "configured · activation required" in readiness
     assert "Explicit activation · no auto-enable" in readiness
@@ -33,10 +35,10 @@ def test_framework_activation_readiness_is_mounted_in_canonical_administration()
 
 
 def test_bundled_grafana_readiness_is_visible_without_auth_bypass() -> None:
-    main = MAIN.read_text(encoding="utf-8")
+    console = CONSOLE.read_text(encoding="utf-8")
     platform = PLATFORM.read_text(encoding="utf-8")
-    assert "import { BundledPlatformReadiness } from './BundledPlatformReadiness';" in main
-    assert "<BundledPlatformReadiness />" in main
+    assert "import { BundledPlatformReadiness } from './BundledPlatformReadiness';" in console
+    assert "<BundledPlatformReadiness />" in console
     assert 'data-admin-section="bundled-platform-readiness"' in platform
     assert "fetch('/grafana/api/health'" in platform
     assert "credentials: 'same-origin'" in platform
