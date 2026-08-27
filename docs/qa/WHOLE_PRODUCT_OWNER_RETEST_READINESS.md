@@ -16,7 +16,7 @@ A green repository run **does not constitute owner acceptance**. It is preparati
 
 The composed same-origin gate must cover the canonical Command Center, Threat Intelligence, IOC Explorer, Knowledge Graph, Vulnerability & Exposure Center, Investigations, Analysis & Enrichment, Sharing & Exchange, Automation & Playbooks, Sources & Collection, Governance & Evidence, Operations and Administration surfaces.
 
-The browser must use the built exact-head DTMO workbench and same-origin DTMO APIs. No required journey may depend on a `/ui/*` compatibility route. Browser route interception is prohibited for the composed gate.
+The browser must use the built exact-head DTMO workbench and same-origin DTMO APIs. No `/ui/*` compatibility route may be required by a canonical journey. Browser route interception is prohibited for the composed gate.
 
 Deep journeys remain required where the historical owner rejection identified empty, inert or disconnected behavior. The composed gate therefore includes persistence-backed discovery, filters, pivots and durable state; governed TheHive and IntelOwl adapter execution through bounded loopback emulators; explicit Governance framework/control/provenance drill-down; and persisted Operations connector runtime/run evidence.
 
