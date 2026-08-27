@@ -1,0 +1,141 @@
+name: Canonical UI-10 Audit Screenshot Gate
+
+on:
+  pull_request:
+    paths:
+      - "frontend/src/AdministrationSecurityAudit.tsx"
+      - "frontend/src/main.tsx"
+      - "tools/capture_canonical_audit_screenshot.py"
+      - "backend/tests/test_canonical_audit_screenshot_contract.py"
+      - "docs/development/runs/RUN-20260827-377.md"
+      - "docs/visual/screenshots/CANONICAL_CAPTURE_MIGRATION.md"
+      - ".github/workflows/canonical-audit-screenshot.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:dtmo@127.0.0.1:5432/dtmo
+      DTMO_REDIS_URL: redis://127.0.0.1:6379/0
+      DTMO_OPENSEARCH_URL: http://127.0.0.1:9200
+      DTMO_MINIO_ENDPOINT: 127.0.0.1:9000
+      DTMO_FEATURE_LIVE_CONNECTORS: "false"
+      DTMO_FRONTEND_DIST: ${{ github.workspace }}/frontend/dist
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact-head checkout
+        run: |
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          test "$(git rev-parse HEAD)" = "$expected"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build canonical workbench
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install DTMO test dependencies
+        run: python -m pip install -e '.[test]'
+      - name: Verify UI-10 contract
+        run: python -m pytest -q backend/tests/test_canonical_audit_screenshot_contract.py
+      - name: Install Chromium for Playwright
+        run: python -m playwright install --with-deps chromium
+      - name: Start bounded canonical documentation target
+        run: |
+          mkdir -p artifacts/canonical-ui10
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/canonical-ui10/server.log 2>&1 &
+          echo $! > artifacts/canonical-ui10/server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/canonical-ui10/health.json; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8765/health > /dev/null || {
+            cat artifacts/canonical-ui10/server.log
+            exit 1
+          }
+      - name: Capture canonical UI-10 candidate
+        run: |
+          python tools/capture_canonical_audit_screenshot.py \
+            --base-url http://127.0.0.1:8765 \
+            --output artifacts/canonical-ui10/generated
+      - name: Validate UI-10 artifact and claim boundaries
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("artifacts/canonical-ui10/generated")
+          image = root / "audit-correlation-workbench.png"
+          if not image.is_file():
+              raise SystemExit("missing canonical UI-10 screenshot candidate")
+          if image.stat().st_size < 5_000:
+              raise SystemExit(f"canonical UI-10 screenshot unexpectedly small: {image.stat().st_size} bytes")
+
+          metadata = json.loads((root / "canonical-audit-capture-metadata.json").read_text(encoding="utf-8"))
+          if metadata.get("canonical_route") != "/workbench/administration":
+              raise SystemExit("canonical UI-10 capture must use /workbench/administration")
+          if metadata.get("canonical_section") != "security-audit/read-only-audit-evidence":
+              raise SystemExit("canonical UI-10 capture must target the read-only audit evidence section")
+          if metadata.get("capture_mode") != "actual-runtime-ui-with-synthetic-fixture-data":
+              raise SystemExit("unexpected UI-10 capture mode")
+          if metadata.get("evidence_classification") != "documentation-illustration-only":
+              raise SystemExit("unexpected UI-10 evidence classification")
+          if metadata.get("fixture_backed") is not True:
+              raise SystemExit("UI-10 documentation capture must be explicitly fixture-backed")
+          if metadata.get("audit_read_only") is not True:
+              raise SystemExit("UI-10 documentation capture must remain read-only")
+          if metadata.get("audit_fixture_rendered") is not True:
+              raise SystemExit("UI-10 documentation capture must render deterministic audit evidence")
+          if metadata.get("request_id_correlation_rendered") is not True:
+              raise SystemExit("UI-10 documentation capture must render request correlation attributes")
+          if metadata.get("mutation_executed") is not False:
+              raise SystemExit("UI-10 documentation capture must not execute mutations")
+          if metadata.get("token_revocation_executed") is not False:
+              raise SystemExit("UI-10 documentation capture must not execute token revocation")
+          for claim in ("production_activity_proven", "owner_acceptance_proven", "production_equivalent_proven", "independent_assurance_proven"):
+              if metadata.get(claim) is not False:
+                  raise SystemExit(f"UI-10 fixture capture must not assert {claim}")
+          for claim in ("review_authority_proven", "share_authority_proven", "publication_authority_proven"):
+              if metadata.get(claim) is not False:
+                  raise SystemExit(f"UI-10 documentation capture must not assert {claim}")
+          print("PASS: canonical UI-10 screenshot candidate is correctly bounded")
+          PY
+      - name: Stop documentation target
+        if: always()
+        run: |
+          if test -f artifacts/canonical-ui10/server.pid; then
+            kill "$(cat artifacts/canonical-ui10/server.pid)" || true
+          fi
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: dtmo-canonical-ui10-audit
+          path: artifacts/canonical-ui10/
+          retention-days: 30
+          if-no-files-found: error
+
+  gate:
+    if: always()
+    needs: [capture]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Fail closed on missing or failed UI-10 capture
+        env:
+          CAPTURE_RESULT: ${{ needs.capture.result }}
+        run: test "$CAPTURE_RESULT" = "success"
