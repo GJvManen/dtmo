@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from time import perf_counter
 from typing import Annotated
+from uuid import uuid4
 
 from fastapi import Depends, FastAPI, Request, Response
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Gauge, Histogram, generate_latest
@@ -13,7 +15,7 @@ from dtmo.admin_sources import router as admin_sources_router
 from dtmo.admin_ui import router as admin_ui_router
 from dtmo.alerts import connector_alerts
 from dtmo.analytics_experience import router as analytics_experience_router
-from dtmo.api.routes import close_services, ingest_connector_record, router as intelligence_router
+from dtmo.api.routes import close_services, database, ingest_connector_record, router as intelligence_router
 from dtmo.api_alerts import api_error_alerts
 from dtmo.auditor_ui import router as auditor_ui_router
 from dtmo.auth.dependencies import require_permission
@@ -24,6 +26,7 @@ from dtmo.connectors.ail import AilReadConnector
 from dtmo.connectors.cisa_kev import CisaKevConnector
 from dtmo.connectors.misp import MispReadConnector
 from dtmo.connectors.opencve import OpenCVEConnector
+from dtmo.connectors.state import ConnectorStateStore
 from dtmo.connectors.taranis import TaranisReadConnector
 from dtmo.connectors.vulnerability_lookup import VulnerabilityLookupConnector
 from dtmo.dashboards import router as dashboards_router
@@ -78,6 +81,7 @@ def _route_template(request: Request) -> str:
 async def _persist_connector_result(
     connector: CisaKevConnector | OpenCVEConnector | VulnerabilityLookupConnector | MispReadConnector | AilReadConnector | TaranisReadConnector,
 ) -> dict[str, object]:
+    started = datetime.now(UTC)
     result = await connector.run()
     inserted = 0
     indexed = 0
@@ -86,6 +90,27 @@ async def _persist_connector_result(
             receipt = await ingest_connector_record(result.connector_id, record)
             inserted += int(receipt.inserted)
             indexed += int(receipt.indexed)
+    duration = max((datetime.now(UTC) - started).total_seconds(), 0.0)
+    async for session in database.session():
+        await session.run_sync(
+            lambda sync_session: ConnectorStateStore(sync_session).record_run(
+                connector_id=result.connector_id,
+                run_id=uuid4(),
+                succeeded=result.status == "completed",
+                duration_seconds=duration,
+                record_count=len(result.records),
+                quarantined=[],
+                error_code=None if result.status == "completed" else "connector_execution_failed",
+                details={
+                    "trigger": "server-owned-connector-path",
+                    "inserted": inserted,
+                    "indexed": indexed,
+                    "attempts": result.attempts,
+                    "error": result.error,
+                },
+            )
+        )
+        break
     alert = connector_alerts.record(result)
     log.info("connector_run_finished", connector_id=result.connector_id, status=result.status, records=len(result.records), inserted=inserted, indexed=indexed, attempts=result.attempts, alert_state=alert.state, correlation_id=alert.correlation_id)
     return {"connector_id": result.connector_id, "status": result.status, "records": len(result.records), "inserted": inserted, "indexed": indexed, "attempts": result.attempts, "error": result.error, "alert_state": alert.state, "correlation_id": alert.correlation_id}
