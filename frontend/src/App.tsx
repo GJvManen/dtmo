@@ -14,6 +14,7 @@ import { MispSharingWorkspace } from './MispSharingWorkspace';
 import { OpenCTIGraphWorkspace } from './OpenCTIGraphWorkspace';
 import { OperationsWorkspace } from './OperationsWorkspace';
 import { UnifiedIntelligenceWorkspace } from './UnifiedIntelligenceWorkspace';
+import { VisualAnalyticsWorkspace } from './VisualAnalyticsWorkspace';
 
 type Health = {
   status: string;
@@ -99,6 +100,7 @@ const workspaces: WorkspaceDefinition[] = [
   { path: '/exposure', label: 'Exposure', group: 'Exposure', icon: '△', title: 'Exposure', description: 'Vulnerability, asset and prioritization workspace foundation.', delivery: 'Exposure feature content is delivered in Phase 11.10i.' },
   { path: '/investigations', label: 'Investigations', group: 'Investigations', icon: '▣', title: 'Investigations', description: 'Cases, alerts, tasks and timeline workspace foundation.', delivery: 'TheHive investigation and case content is delivered in Phase 11.10h.' },
   { path: '/analysis', label: 'Analysis & Enrichment', group: 'Analysis', icon: '⌁', title: 'Analysis & Enrichment', description: 'Governed IntelOwl enrichment and Cortex analyzer workspace.', delivery: 'IntelOwl and Cortex analysis content is delivered in Phase 11.10e.' },
+  { path: '/analytics', label: 'Visual Analytics', group: 'Analysis', icon: '▥', title: 'Visual Analytics', description: 'Accessible canonical trends and distributions from attributable DTMO API data.', delivery: 'Visual Analytics is delivered by the Phase 11.10q FQ-06 recovery slice.' },
   { path: '/sharing', label: 'Sharing & Exchange', group: 'Sharing', icon: '⇄', title: 'Sharing & Exchange', description: 'Human-governed MISP review, approval and unpublished export workflow.', delivery: 'MISP exchange content is delivered in Phase 11.10g.' },
   { path: '/automation', label: 'Automation & Playbooks', group: 'Automation', icon: '↯', title: 'Automation & Playbooks', description: 'Playbooks, jobs, schedules and approval workspace foundation.', delivery: 'Automation feature content is delivered in Phase 11.10k.' },
   { path: '/collection', label: 'Collection', group: 'Collection', icon: '↓', title: 'Collection', description: 'Sources, connectors, catalog and collection-run workspace foundation.', delivery: 'Collection control-center content is delivered in Phase 11.10j.' },
@@ -402,7 +404,8 @@ export function App() {
             <Route path="/intelligence/iocs" element={<IocExplorerWorkspace />} />
             <Route path="/intelligence/graph" element={<OpenCTIGraphWorkspace />} />
             <Route path="/analysis/*" element={<AnalysisWorkspace />} />
-            {workspaces.filter((workspace) => !['/command-center', '/intelligence', '/intelligence/iocs', '/intelligence/graph', '/analysis'].includes(workspace.path)).map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
+            <Route path="analytics" element={<VisualAnalyticsWorkspace />} />
+            {workspaces.filter((workspace) => !['/command-center', '/intelligence', '/intelligence/iocs', '/intelligence/graph', '/analysis', '/analytics'].includes(workspace.path)).map((workspace) => <Route key={workspace.path} path={`${workspace.path}/*`} element={<WorkspaceFoundation workspace={workspace} />} />)}
             <Route path="*" element={<Navigate to="/command-center" replace />} />
           </Routes>
         </main>
