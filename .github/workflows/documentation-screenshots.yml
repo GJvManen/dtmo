@@ -55,28 +55,46 @@ jobs:
         run: python -m pip install -e '.[test]'
       - name: Install Chromium for Playwright
         run: python -m playwright install --with-deps chromium
-      - name: Start bounded DTMO documentation target
+      - name: Start bounded canonical DTMO documentation target
         run: |
           mkdir -p artifacts/documentation-screenshots
-          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/documentation-screenshots/server.log 2>&1 &
-          echo $! > artifacts/documentation-screenshots/server.pid
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8765 > artifacts/documentation-screenshots/canonical-server.log 2>&1 &
+          echo $! > artifacts/documentation-screenshots/canonical-server.pid
           for attempt in $(seq 1 30); do
-            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/documentation-screenshots/health.json; then
-              exit 0
+            if curl --fail --silent http://127.0.0.1:8765/health > artifacts/documentation-screenshots/canonical-health.json; then
+              break
             fi
             sleep 1
           done
-          cat artifacts/documentation-screenshots/server.log
-          exit 1
+          curl --fail --silent http://127.0.0.1:8765/health > /dev/null || {
+            cat artifacts/documentation-screenshots/canonical-server.log
+            exit 1
+          }
+      - name: Start bounded legacy DTMO documentation target
+        env:
+          DTMO_FRONTEND_DIST: ${{ github.workspace }}/artifacts/no-frontend-dist
+        run: |
+          python -m uvicorn dtmo.main:app --host 127.0.0.1 --port 8766 > artifacts/documentation-screenshots/legacy-server.log 2>&1 &
+          echo $! > artifacts/documentation-screenshots/legacy-server.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8766/health > artifacts/documentation-screenshots/legacy-health.json; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8766/health > /dev/null || {
+            cat artifacts/documentation-screenshots/legacy-server.log
+            exit 1
+          }
       - name: Capture deterministic legacy product documentation screenshots
         run: |
           python tools/capture_documentation_screenshots.py \
-            --base-url http://127.0.0.1:8765/ui/console \
+            --base-url http://127.0.0.1:8766 \
             --output artifacts/documentation-screenshots/generated
       - name: Capture deterministic investigation documentation screenshots
         run: |
           python tools/capture_documentation_investigation_screenshots.py \
-            --base-url http://127.0.0.1:8765 \
+            --base-url http://127.0.0.1:8766 \
             --output artifacts/documentation-screenshots/generated
       - name: Capture canonical Command Center candidate
         run: |
@@ -128,12 +146,14 @@ jobs:
                   raise SystemExit(f"canonical fixture capture must not assert {claim}")
           print("PASS: documentation screenshot artifacts are complete and correctly classified")
           PY
-      - name: Stop documentation target
+      - name: Stop documentation targets
         if: always()
         run: |
-          if test -f artifacts/documentation-screenshots/server.pid; then
-            kill "$(cat artifacts/documentation-screenshots/server.pid)" || true
-          fi
+          for pidfile in artifacts/documentation-screenshots/canonical-server.pid artifacts/documentation-screenshots/legacy-server.pid; do
+            if test -f "$pidfile"; then
+              kill "$(cat "$pidfile")" || true
+            fi
+          done
       - uses: actions/upload-artifact@v7
         if: always()
         with:
