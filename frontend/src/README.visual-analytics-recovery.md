@@ -1,0 +1,1 @@
+This branch introduces the canonical Visual Analytics workspace component for Phase 11.10q FQ-06 recovery. Runtime route integration is intentionally tracked in the same PR and must be completed before exact-head acceptance.
