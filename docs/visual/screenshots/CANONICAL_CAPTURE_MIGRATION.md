@@ -23,7 +23,7 @@ The candidate **must not replace `overview-dashboard.png` until** its exact-head
 
 ## Canonical Threat Intelligence replacement candidate
 
-This slice adds the independent UI-02 candidate `threat-intelligence-workbench.png` from the actual canonical route `/workbench/intelligence`.
+The UI-02 migration adds the independent candidate `threat-intelligence-workbench.png` from the actual canonical route `/workbench/intelligence`.
 
 The capture deliberately exercises a useful read-only operator journey rather than a heading-only state:
 
@@ -41,6 +41,29 @@ It uses sanitized deterministic canonical intelligence and provenance fixtures. 
 - `share_authority_proven = false`.
 
 The candidate **must not replace `intelligence-workspace.png` until** its exact-head screenshot artifact has been visually reviewed for current navigation, complete detail/provenance rendering, absence of transient/error state, safe disclosure and representative operator context. Review and promotion are separate bounded changes.
+
+## Canonical Sources & Collection replacement candidate
+
+This slice adds the independent UI-03 candidate `sources-collection-workbench.png` from the actual canonical route `/workbench/collection`.
+
+The capture exercises a bounded inspection journey without triggering connector execution or source activation:
+
+`source catalog -> built-in readiness -> provenance boundary`
+
+It uses the real Collection workspace with sanitized deterministic catalog, source-registry and source-center fixtures. A public source identity may be displayed as provenance context, but no upstream call is made and no credential value is exposed. The metadata preserves these boundaries:
+
+- `canonical_route = /workbench/collection`;
+- `capture_mode = actual-runtime-ui-with-synthetic-fixture-data`;
+- `evidence_classification = documentation-illustration-only`;
+- `live_connectivity_proven = false`;
+- `owner_acceptance_proven = false`;
+- `production_equivalent_proven = false`;
+- `connector_execution_proven = false`;
+- `source_activation_authority_proven = false`;
+- `publication_authority_proven = false`;
+- `credential_value_exposed = false`.
+
+The candidate **must not replace `sources-catalogue.png` until** its exact-head screenshot artifact has been visually reviewed for canonical navigation, source/readiness rendering, provenance context, absence of transient/error state, safe disclosure and representative operator context. Review and promotion are separate bounded changes.
 
 ## Migration rule
 
