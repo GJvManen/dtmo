@@ -153,7 +153,7 @@ export function ThreatIntelligencePopulation({
       </div>}
       {message && <div className="panel-state"><strong>Canonical ingestion completed</strong><span>{message}</span><button type="button" onClick={onPopulated}>{reloadLabel}</button></div>}
       {error && <div className="panel-state error-state"><strong>Population failed closed</strong><span>{error}. No success, source-health or data-absence conclusion is inferred.</span></div>}
-      <p className="boundary-copy">Running a source invokes an existing audited same-origin execution contract. A successful collection only records attributable canonical data and does not approve intelligence for review, publication or external sharing; it does not prove exploitation, local compromise or any downstream human-authority decision.</p>
+      <p className="boundary-copy">Running a source invokes an existing audited same-origin execution contract. A successful collection only records attributable canonical data and does not approve intelligence for review, publication or external sharing. Successful collection does not prove exploitation, local compromise, review approval, publication or external sharing authority.</p>
     </section>
   );
 }
