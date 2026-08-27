@@ -18,10 +18,21 @@ jobs:
       DTMO_MINIO_ENDPOINT: 127.0.0.1:9000
       DTMO_FEATURE_LIVE_CONNECTORS: "false"
       DTMO_E2E_BASE_URL: http://127.0.0.1:8765
+      DTMO_FRONTEND_DIST: ${{ github.workspace }}/frontend/dist
     steps:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build canonical workbench
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -34,7 +45,7 @@ jobs:
       - name: Contract tests
         run: pytest -q backend/tests/test_e8_9a_ail_correlation.py backend/tests/test_e8_9b_ail_correlation_workspace.py
       - name: Ruff
-        run: python -m ruff check backend/dtmo/ail_correlation.py backend/dtmo/ail_correlation_workspace.py backend/dtmo/connectors/ail.py backend/tests/test_e8_9b_ail_correlation_workspace.py backend/tests/test_e8_9b_ail_correlation_browser_e2e.py
+        run: python -m ruff check backend/dtmo/ail_correlation.py backend/dtmo/ail_correlation_workspace.py backend/dtmo/connectors/ail.py backend/tests/test_e8_9b_ail_correlation_workspace.py backend/tests/test_e8_9b_ail_correlation_browser_e2e.py backend/tests/test_canonical_ail_correlation_browser_e2e.py
       - name: Mypy
         run: python -m mypy backend/dtmo/ail_correlation.py backend/dtmo/ail_correlation_workspace.py backend/dtmo/connectors/ail.py
       - name: Compile
@@ -52,8 +63,10 @@ jobs:
           done
           cat artifacts/e8-ail-correlation-server.log
           exit 1
-      - name: Chromium investigation journey
+      - name: Chromium legacy investigation journey
         run: pytest -q backend/tests/test_e8_9b_ail_correlation_browser_e2e.py --junitxml=artifacts/e8-ail-correlation-browser.xml
+      - name: Chromium canonical IOC to AIL journey
+        run: pytest -q backend/tests/test_canonical_ail_correlation_browser_e2e.py --junitxml=artifacts/canonical-ail-correlation-browser.xml
       - name: Record repository evidence boundary
         if: success()
         env:
@@ -64,9 +77,10 @@ jobs:
           from pathlib import Path
           Path('artifacts/e8-ail-correlation-evidence.json').write_text(json.dumps({
             'decision': 'pass', 'exact_head': os.environ['EXACT_HEAD'], 'browser': 'chromium',
-            'synthetic_repository_fixtures_only': True, 'raw_leak_content_exposed': False,
-            'live_ail_misp_connectivity_proven': False, 'owner_acceptance_proven': False,
-            'production_deployment_proven': False, 'pentest_acceptance_proven': False
+            'canonical_route': '/workbench/ioc-explorer', 'synthetic_repository_fixtures_only': True,
+            'raw_leak_content_exposed': False, 'live_ail_misp_connectivity_proven': False,
+            'owner_acceptance_proven': False, 'production_deployment_proven': False,
+            'pentest_acceptance_proven': False, 'review_share_case_publication_authority_proven': False
           }, indent=2) + '\n', encoding='utf-8')
           PY
       - name: Stop workspace target
