@@ -1,0 +1,103 @@
+name: Governed Documentation Screenshot Promotion
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: "Documentation Screenshot Artifact Gate run id"
+        required: true
+        type: string
+      expected_head_sha:
+        description: "Exact source commit SHA that produced the reviewed artifact"
+        required: true
+        type: string
+      expected_artifact_digest:
+        description: "Exact artifact digest, including sha256: prefix"
+        required: true
+        type: string
+      expected_image_sha256:
+        description: "Reviewed command-center-workbench.png SHA-256"
+        required: true
+        type: string
+      reviewer:
+        description: "Reviewer identity recorded in the promotion record"
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+jobs:
+  prepare-promotion-pr:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Validate immutable source run and artifact identity
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.source_run_id }}
+          EXPECTED_HEAD: ${{ inputs.expected_head_sha }}
+          EXPECTED_DIGEST: ${{ inputs.expected_artifact_digest }}
+        run: |
+          case "$RUN_ID" in (*[!0-9]*|'') echo "invalid run id"; exit 1;; esac
+          case "$EXPECTED_HEAD" in (*[!0-9a-f]*|'') echo "invalid expected head"; exit 1;; esac
+          test "${#EXPECTED_HEAD}" -eq 40
+          case "$EXPECTED_DIGEST" in (sha256:[0-9a-f][0-9a-f]*) ;; (*) echo "invalid artifact digest"; exit 1;; esac
+
+          run_head="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}" --jq '.head_sha')"
+          test "$run_head" = "$EXPECTED_HEAD"
+
+          artifact_json="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts" --jq '.artifacts[] | select(.name == "dtmo-documentation-screenshots") | {id,digest,expired}')"
+          test -n "$artifact_json"
+          test "$(jq -r '.expired' <<<"$artifact_json")" = "false"
+          test "$(jq -r '.digest' <<<"$artifact_json")" = "$EXPECTED_DIGEST"
+      - name: Download exact reviewed artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.source_run_id }}
+        run: |
+          mkdir -p artifacts/source
+          gh run download "$RUN_ID" --name dtmo-documentation-screenshots --dir artifacts/source
+      - name: Validate and stage canonical UI-01 promotion
+        run: |
+          python tools/promote_canonical_screenshot.py \
+            --artifact-root artifacts/source \
+            --repository-root . \
+            --expected-image-sha256 '${{ inputs.expected_image_sha256 }}' \
+            --source-run-id '${{ inputs.source_run_id }}' \
+            --source-head-sha '${{ inputs.expected_head_sha }}' \
+            --source-artifact-digest '${{ inputs.expected_artifact_digest }}' \
+            --reviewer '${{ inputs.reviewer }}'
+      - name: Open reviewable promotion pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.source_run_id }}
+          SOURCE_HEAD: ${{ inputs.expected_head_sha }}
+          ARTIFACT_DIGEST: ${{ inputs.expected_artifact_digest }}
+          IMAGE_SHA256: ${{ inputs.expected_image_sha256 }}
+        run: |
+          branch="docs/ui01-command-center-promotion-${RUN_ID}"
+          if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+            echo "promotion branch already exists; refusing to overwrite"
+            exit 1
+          fi
+          git switch -c "$branch"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/visual/screenshots/overview-dashboard.png docs/visual/screenshots/reviews/UI-01-current.json
+          git diff --cached --quiet && { echo "promotion produced no change"; exit 1; }
+          git commit -m "Docs: promote reviewed canonical Command Center screenshot"
+          git push origin "$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "Docs: promote reviewed canonical Command Center screenshot" \
+            --body "Promotes only UI-01 from reviewed Documentation Screenshot Artifact Gate run ${RUN_ID}.\n\nSource exact head: \`${SOURCE_HEAD}\`\nArtifact digest: \`${ARTIFACT_DIGEST}\`\nImage SHA-256: \`${IMAGE_SHA256}\`\n\nThe source metadata classifies this as documentation illustration only and explicitly denies live-connectivity, owner-acceptance and production-equivalent claims. This PR must pass fresh exact-head CI and still requires normal review/merge; this workflow never merges the promotion automatically."
