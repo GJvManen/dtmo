@@ -112,19 +112,25 @@ The canonical product is the **Unified Operations Workbench**. Its operator surf
 
 `/ui/*` compatibility views are migration paths, not a second product architecture. Browser visibility never grants server-side mutation authority.
 
-### 3.6 Identity, authorization and human authority
+### 3.6 Identity and authentication
 
-Bearer tokens are cryptographically validated according to configured identity constraints. Server-side RBAC remains authoritative. Human and service identities remain separate, and privileged Administration safeguards remain enforced.
+Bearer tokens are cryptographically validated according to configured identity constraints. Human and service identities remain separate.
+
+### 3.7 Authorization and Administration
+
+Server-side RBAC remains authoritative. Privileged Administration safeguards remain enforced, and browser visibility never substitutes for server-side authorization.
+
+### 3.8 Human authority
 
 Human review/share, case handoff and publication decisions are distinct authorities. Service accounts, connectors, CI, analytics, Administration, Governance and external services cannot manufacture those decisions.
 
-### 3.7 Observability and operations
+### 3.9 Observability and operations
 
 Prometheus and Grafana provide operational observability. The supported default topology must make bundled core-service readiness actionable to operators, while external framework services may legitimately remain in configure/connect states until their prerequisites exist.
 
 An external service outage must be isolated from unrelated DTMO functions where the integration contract permits. Runtime tokens, raw secrets and unnecessarily sensitive payloads are not observability data.
 
-### 3.8 Governance knowledge
+### 3.10 Governance knowledge and framework mapping
 
 DTMO exposes explicit, versioned and provenance-backed governance relationships for Normenkader IBP, MITRE ATT&CK and NIST CSF, with CVSS retained as vulnerability-scoring context rather than a compliance framework. Mappings never imply blanket compliance, certification, maturity, local exploitability or remediation completion.
 
