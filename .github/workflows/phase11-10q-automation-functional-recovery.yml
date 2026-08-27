@@ -1,0 +1,247 @@
+name: Phase 11.10q Automation Functional Recovery Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'backend/dtmo/**'
+      - 'backend/tests/test_owner_functional_recovery_automation.py'
+      - '.github/workflows/phase11-10q-automation-functional-recovery.yml'
+      - 'docs/qa/CANONICAL_FUNCTIONAL_BROWSER_MATRIX.md'
+      - 'docs/user/AUTOMATION_PLAYBOOKS_WORKSPACE.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  automation-functional-recovery:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: dtmo
+          POSTGRES_USER: dtmo
+          POSTGRES_PASSWORD: dtmo-automation-recovery
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dtmo -d dtmo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DTMO_ENVIRONMENT: development
+      DTMO_DATABASE_URL: postgresql+psycopg://dtmo:dtmo-automation-recovery@127.0.0.1:5432/dtmo
+      DTMO_OPENSEARCH_URL: http://127.0.0.1:1
+      DTMO_FEATURE_LIVE_CONNECTORS: 'false'
+      DTMO_FEATURE_OPENCVE_CONNECTOR: 'false'
+      DTMO_FEATURE_VULNERABILITY_LOOKUP_CONNECTOR: 'false'
+      DTMO_FEATURE_MISP_CONNECTOR: 'false'
+      DTMO_FEATURE_MISP_EXPORT: 'false'
+      DTMO_FEATURE_AIL_CONNECTOR: 'false'
+      DTMO_FEATURE_TARANIS_CONNECTOR: 'false'
+      DTMO_FEATURE_INTELOWL_ENRICHMENT: 'false'
+      DTMO_FEATURE_CORTEX_ANALYSIS: 'false'
+      DTMO_FEATURE_OPENCTI_READ: 'false'
+      DTMO_FEATURE_THEHIVE_HANDOFF: 'false'
+      DTMO_CONNECTOR_MAX_ATTEMPTS: '1'
+      DTMO_CONNECTOR_TIMEOUT_SECONDS: '5'
+      DTMO_E2E_BASE_URL: http://127.0.0.1:8766
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$expected"
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build exact-head canonical workbench
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install backend test dependencies
+        run: python -m pip install -e '.[test]'
+
+      - name: Create exact-head database schema
+        run: alembic upgrade head
+
+      - name: Install Chromium
+        run: python -m playwright install chromium
+
+      - name: Start repository-controlled CISA KEV emulator
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          python - <<'PY' > artifacts/phase11-10q-automation-cisa-emulator.log 2>&1 &
+          import json
+          from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+          PAYLOAD = {
+              "title": "CISA Catalog of Known Exploited Vulnerabilities",
+              "catalogVersion": "repository-controlled-functional-recovery",
+              "dateReleased": "2026-08-27T00:00:00Z",
+              "count": 1,
+              "vulnerabilities": [{
+                  "cveID": "CVE-2026-99999",
+                  "vendorProject": "Repository fixture",
+                  "product": "Automation recovery",
+                  "vulnerabilityName": "Repository-controlled KEV automation fixture",
+                  "dateAdded": "2026-08-27",
+                  "shortDescription": "Bounded repository-controlled CISA KEV payload for exact-head automation recovery.",
+                  "requiredAction": "No real-world action; repository test fixture only.",
+                  "dueDate": "2026-09-17",
+                  "knownRansomwareCampaignUse": "Unknown",
+                  "notes": "Repository-controlled functional recovery evidence only.",
+              }],
+          }
+
+          class Handler(BaseHTTPRequestHandler):
+              def do_GET(self):
+                  if self.path == "/health":
+                      self.send_response(200); self.end_headers(); self.wfile.write(b"ok"); return
+                  if self.path != "/known_exploited_vulnerabilities.json":
+                      self.send_response(404); self.end_headers(); return
+                  body = json.dumps(PAYLOAD).encode()
+                  self.send_response(200)
+                  self.send_header("Content-Type", "application/json")
+                  self.send_header("Content-Length", str(len(body)))
+                  self.end_headers()
+                  self.wfile.write(body)
+
+              def log_message(self, format, *args):
+                  print(format % args, flush=True)
+
+          ThreadingHTTPServer(("127.0.0.1", 8775), Handler).serve_forever()
+          PY
+          echo $! > artifacts/phase11-10q-automation-cisa-emulator.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8775/health >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat artifacts/phase11-10q-automation-cisa-emulator.log
+          exit 1
+
+      - name: Prepare repository-controlled raw evidence store and connector patch
+        shell: bash
+        run: |
+          mkdir -p artifacts/pythonpatch artifacts/raw-lake
+          cat > artifacts/pythonpatch/sitecustomize.py <<'PY'
+          from pathlib import Path
+          from dtmo.api import routes
+          from dtmo.connectors.cisa_kev import CisaKevConnector
+          from dtmo.lake.service import IntelligenceLake
+
+          class RepositoryFilesystemStore:
+              def __init__(self, root: str) -> None:
+                  self.root = Path(root)
+                  self.root.mkdir(parents=True, exist_ok=True)
+
+              async def put_bytes(self, bucket: str, key: str, data: bytes, content_type: str) -> None:
+                  del content_type
+                  target = self.root / bucket / key
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(data)
+
+              async def get_bytes(self, bucket: str, key: str) -> bytes:
+                  return (self.root / bucket / key).read_bytes()
+
+          CisaKevConnector.url = "http://127.0.0.1:8775/known_exploited_vulnerabilities.json"
+          routes.lake = IntelligenceLake(RepositoryFilesystemStore("artifacts/raw-lake"))
+          PY
+
+      - name: Start exact-head DTMO with built workbench
+        shell: bash
+        run: |
+          mkdir -p artifacts
+          PYTHONPATH="$PWD/artifacts/pythonpatch:$PWD/backend" \
+            DTMO_FRONTEND_DIST="$PWD/frontend/dist" \
+            uvicorn dtmo.main:app --app-dir backend --host 127.0.0.1 --port 8766 \
+            > artifacts/phase11-10q-automation-server.log 2>&1 &
+          echo $! > artifacts/phase11-10q-automation-server.pid
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:8766/health > artifacts/phase11-10q-automation-health.json; then exit 0; fi
+            sleep 1
+          done
+          cat artifacts/phase11-10q-automation-server.log
+          exit 1
+
+      - name: Execute governed automation trigger and rollback browser journey
+        run: |
+          python -m pytest -q backend/tests/test_owner_functional_recovery_automation.py \
+            --junitxml=artifacts/phase11-10q-automation-browser.xml
+
+      - name: Record bounded evidence claim
+        if: always()
+        env:
+          EXACT_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          evidence = {
+              "workflow": "Phase 11.10q Automation Functional Recovery Gate",
+              "exact_head": os.environ["EXACT_HEAD"],
+              "same_origin_http": True,
+              "real_dtmo_postgresql_persistence": True,
+              "repository_controlled_cisa_emulator": True,
+              "repository_controlled_ephemeral_raw_store": True,
+              "built_in_trigger_executed": True,
+              "built_in_runtime_state_persisted": True,
+              "registered_source_pause_and_rollback": True,
+              "rollback_scope": "registered-source-enabled-state-only",
+              "rollback_deletes_canonical_evidence": False,
+              "rollback_reverses_upstream_side_effects": False,
+              "remediation_authority": False,
+              "case_creation_authority": False,
+              "external_share_authority": False,
+              "publication_authority": False,
+              "live_upstream_validation": False,
+              "owner_functional_acceptance": False,
+              "staging_evidence": False,
+              "production_equivalent_evidence": False,
+              "external_assurance_evidence": False,
+              "claim_boundary": "Exact-head repository-controlled browser proof of a real DTMO bounded CISA trigger, canonical persistence, durable connector observation, and reversible registered-source enabled-state control. Rollback cannot erase evidence or undo upstream effects and this is not live upstream, remediation, owner acceptance, staging, production-equivalent or independent-assurance evidence."
+          }
+          Path("artifacts/phase11-10q-automation-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Stop exact-head services
+        if: always()
+        run: |
+          if test -f artifacts/phase11-10q-automation-server.pid; then kill "$(cat artifacts/phase11-10q-automation-server.pid)" || true; fi
+          if test -f artifacts/phase11-10q-automation-cisa-emulator.pid; then kill "$(cat artifacts/phase11-10q-automation-cisa-emulator.pid)" || true; fi
+
+      - name: Upload Automation recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: phase11-10q-automation-functional-recovery-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/
+          retention-days: 30
+          if-no-files-found: error

@@ -84,6 +84,14 @@ Only after both durable decisions are present may the second principal invoke th
 
 This slice grants no MISP publication or synchronization authority. It does not prove live MISP health or upstream truth, and the emulator is not owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence or independent assurance. Server-side RBAC, separate human review/share authority and replay protection remain authoritative.
 
+## Slice 10 — Automation & Playbooks real trigger and reversible control-plane rollback
+
+The canonical Automation & Playbooks workspace must prove a real bounded trigger rather than the existing route-intercepted browser fixture. A human-authorized `admin` principal selects the built-in CISA KEV playbook and invokes the existing same-origin `/connectors/cisa-kev/run` path. The exact-head gate supplies a repository-controlled loopback CISA KEV payload while DTMO executes its real connector, canonical ingestion and persistence path. The trigger must create attributable canonical intelligence and record the built-in connector's latest durable runtime state so Source Center observation reports the successful run after the browser refreshes state.
+
+The same workspace must expose supported governed registered sources from Source Center without creating a second orchestration plane. For one enabled repository-controlled registered source, the browser must use the existing server-authorized source update API to pause its `enabled` state and then expose a bounded rollback for that pause. Rollback restores only the enabled state changed by the current browser session. Only one unresolved rollback may exist in the workspace at a time, and the rollback token must not disappear merely because the operator selects another playbook.
+
+The rollback is intentionally narrow: it cannot delete canonical intelligence, immutable/raw evidence, audit records or connector health history, cannot reverse an upstream side effect that already happened, and cannot mutate the scheduler. Trigger or rollback success grants no remediation, case-creation, review, external-share, publication or production authority. The loopback source and ephemeral repository-controlled raw store are exact-head integration evidence only and are not live upstream, staging, production-equivalent, penetration-test or independent-assurance evidence.
+
 ## Evidence boundary
 
 Passing these slices is repository-controlled browser evidence only. It is **not** owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, production authorization, or independent external assurance.
@@ -92,4 +100,4 @@ The following controls remain authoritative and must not be weakened by recovery
 
 ## Remaining recovery
 
-These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After the governed Sharing & Exchange slice, the next bounded functional recovery priority is **Automation & Playbooks real trigger/rollback execution**, unless exact-head CI exposes an earlier blocker.
+These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After the Automation & Playbooks trigger/rollback slice, the next bounded functional recovery priority is **Governance & Evidence + Operations deep evidence/runtime journeys**, unless exact-head CI exposes an earlier blocker.

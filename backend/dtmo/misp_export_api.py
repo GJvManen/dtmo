@@ -109,6 +109,10 @@ async def export_intelligence_to_misp(
             misp_event_id=misp_event_id,
         )
     )
+    # The response promises finalized delivery evidence. Persist that transition
+    # before returning so an immediate same-origin read cannot observe the older
+    # durable pending replay reservation after MISP already accepted the event.
+    await session.commit()
     return {
         "id": str(result.item_id),
         "replay_key": result.replay_key,

@@ -23,6 +23,26 @@ def _record(external_id: str) -> ConnectorRecord:
     )
 
 
+class _NoopConnectorStateStore:
+    """Keep this unit contract scoped to connector -> canonical ingest behavior.
+
+    Built-in runtime-state persistence is integration-tested against PostgreSQL by the
+    dedicated Automation recovery journey. These legacy unit tests intentionally run
+    without a database service and therefore replace only that additional observability
+    store while retaining the real connector result aggregation path.
+    """
+
+    def __init__(self, session: object) -> None:
+        del session
+
+    def record_run(self, **kwargs: object) -> None:
+        del kwargs
+
+
+def _isolate_runtime_state_persistence(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(main_module, "ConnectorStateStore", _NoopConnectorStateStore)
+
+
 @pytest.mark.asyncio
 async def test_cisa_run_persists_and_indexes_every_fetched_record(monkeypatch: pytest.MonkeyPatch) -> None:
     records = [_record("CVE-2026-0001"), _record("CVE-2026-0002")]
@@ -55,6 +75,7 @@ async def test_cisa_run_persists_and_indexes_every_fetched_record(monkeypatch: p
 
     monkeypatch.setattr(main_module.CisaKevConnector, "run", fake_run)
     monkeypatch.setattr(main_module, "ingest_connector_record", fake_ingest)
+    _isolate_runtime_state_persistence(monkeypatch)
 
     result = await main_module.run_cisa_kev()
 
@@ -89,6 +110,7 @@ async def test_failed_connector_run_never_ingests_records(monkeypatch: pytest.Mo
 
     monkeypatch.setattr(main_module.CisaKevConnector, "run", fake_run)
     monkeypatch.setattr(main_module, "ingest_connector_record", unexpected_ingest)
+    _isolate_runtime_state_persistence(monkeypatch)
 
     result = await main_module.run_cisa_kev()
 

@@ -228,7 +228,7 @@ def test_runtime_export_settings_fail_closed_without_lowering_security_requireme
 
 
 @pytest.mark.asyncio
-async def test_export_api_commits_replay_reservation_and_returns_unpublished_delivery_evidence(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_export_api_commits_replay_reservation_and_finalization_before_returning_delivery_evidence(monkeypatch: pytest.MonkeyPatch) -> None:
     item_id = uuid4()
     audit_event_id = uuid4()
     prepared = object()
@@ -260,7 +260,9 @@ async def test_export_api_commits_replay_reservation_and_returns_unpublished_del
         "tlp:amber",
     )
 
-    assert session.commits == 1
+    # One durability boundary reserves replay protection before the external side effect;
+    # the second makes successful delivery evidence visible before the API returns.
+    assert session.commits == 2
     assert response == {
         "id": str(item_id),
         "replay_key": "replay-key",
