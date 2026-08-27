@@ -18,7 +18,7 @@ def test_ail_is_documented_across_architecture_integration_and_operator_domains(
         "Credentials remain server-side",
         "fail-closed",
         "does not prove live AIL connectivity",
-        "does not establish owner acceptance",
+        "do not establish owner acceptance",
     ):
         assert marker.lower() in operator.lower(), marker
 
