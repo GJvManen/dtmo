@@ -140,7 +140,7 @@ export function ThreatIntelligencePopulation({
   return (
     <section className="detail-section" aria-labelledby="population-title">
       <h3 id="population-title">{title}</h3>
-      <p>Only already-enabled governed sources can be executed here. Registered sources must already be enabled. Supported built-in sources are treated as governed executable sources only when the Source Center reports <code>manual_run_available</code>; they are not auto-enabled registry entries. {'Activation, endpoint changes and credentials stay in Sources & Collection'}.</p>
+      <p>Only server-authorized source paths can be executed here. Only already-enabled governed sources can be executed here. Registered sources must already be enabled. Supported built-in sources are treated as governed executable sources only when the Source Center reports <code>manual_run_available</code>; they are not auto-enabled registry entries. {'Activation, endpoint changes and credentials stay in Sources & Collection'}.</p>
       {!allowed && <p className="panel-state">This principal cannot execute sources. Open <a href="/workbench/collection">Sources &amp; Collection</a> to inspect available operator actions.</p>}
       {allowed && availableCount === 0 && <p className="panel-state">No governed population path is currently available. Open <a href="/workbench/collection">Sources &amp; Collection</a> to inspect built-in readiness or validate, test and explicitly activate a supported registry source.</p>}
       {allowed && availableCount > 0 && <div className="quick-grid" aria-label={enabledSourcesLabel}>
