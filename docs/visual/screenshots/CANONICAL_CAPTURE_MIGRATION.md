@@ -116,6 +116,32 @@ It uses the real Sharing & Exchange workspace with sanitized deterministic canon
 
 The candidate **must not replace `misp-governed-workflow.png` until** its exact-head screenshot artifact has been visually reviewed for canonical navigation, independent review/separate approval rendering, unpublished export evidence, handling restrictions, replay evidence, authority boundaries, absence of transient/error state and safe disclosure. Review and promotion are separate bounded changes.
 
+## Canonical AIL correlation replacement candidate
+
+The UI-06 migration adds the independent candidate `ail-correlation-workbench.png` from the actual canonical IOC Explorer route `/workbench/intelligence/iocs`.
+
+The capture exercises the bounded read-only investigation journey made available by the accepted canonical AIL recovery:
+
+`persisted IOC -> read-only AIL correlation context -> evidence boundary`
+
+It uses the real canonical IOC Explorer with sanitized deterministic IOC and AIL-correlation fixtures. Correlation evidence can show matched canonical context and investigation references, but raw AIL content is never rendered and no upstream credential is exposed. The capture does not execute AIL, create a case, approve review/share decisions or publish anything. The metadata preserves these boundaries:
+
+- `canonical_route = /workbench/intelligence/iocs`;
+- `capture_mode = actual-runtime-ui-with-synthetic-fixture-data`;
+- `evidence_classification = documentation-illustration-only`;
+- `raw_content_exposed = false`;
+- `analysis_only = true`;
+- `credential_value_exposed = false`;
+- `live_connectivity_proven = false`;
+- `owner_acceptance_proven = false`;
+- `production_equivalent_proven = false`;
+- `review_authority_proven = false`;
+- `share_authority_proven = false`;
+- `case_authority_proven = false`;
+- `publication_authority_proven = false`.
+
+The candidate **must not replace `ail-correlation-workspace.png` until** its exact-head screenshot artifact has been visually reviewed for canonical navigation, complete correlation/reference rendering, explicit raw-content and analysis-only boundaries, absence of transient/error state, safe disclosure and representative analyst context. Review and promotion are separate bounded changes.
+
 ## Migration rule
 
 Each remaining published screenshot is migrated independently to an attributable `/workbench/*` route. Legacy console navigation is not accepted as proof that a screenshot represents the current canonical product. Existing historical review records remain intact until their images are explicitly superseded.
