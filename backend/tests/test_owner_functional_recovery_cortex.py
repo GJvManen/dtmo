@@ -101,7 +101,10 @@ async def test_cortex_executes_allowlisted_analyzer_and_persists_history_without
                 cortex_history.get_by_text("External share: no · Local compromise proven: no", exact=True)
             ).to_be_visible()
             await cortex_history.get_by_text("Persisted result", exact=True).click()
-            await expect(cortex_history.get_by_text('"classification": "repository-controlled"', exact=True)).to_be_visible()
+            persisted_result = cortex_history.locator("pre")
+            await expect(persisted_result).to_contain_text('"classification": "repository-controlled"')
+            await expect(persisted_result).to_contain_text('"analyzer_only": true')
+            await expect(persisted_result).to_contain_text('"responder_action": false')
 
             await page.reload()
             cortex_history = page.locator(".analysis-history-panel").filter(has_text="Cortex history")
