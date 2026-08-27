@@ -49,7 +49,6 @@ async def _seed_registered_source() -> None:
                 secret_ref=None,
                 actor="functional-recovery-automation-fixture",
             )
-        break
     await database.close()
 
 
@@ -94,7 +93,6 @@ async def _cleanup() -> None:
         await session.execute(
             delete(SourceDefinition).where(SourceDefinition.id == REGISTERED_SOURCE_ID)
         )
-        break
     await database.close()
 
 
