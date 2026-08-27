@@ -211,7 +211,7 @@ export function AutomationWorkspace() {
           <header className="panel-heading"><div><p className="eyebrow">Playbook catalog</p><h2>Bounded collection runs</h2></div><span className="evidence-label">Human invocation only</span></header>
           <p className="boundary-copy">These playbooks reuse accepted connector and governed registered-source execution paths. They collect and ingest attributable intelligence only; they cannot create cases, remediate assets, approve sharing or publish intelligence.</p>
           <div className="integration-list">
-            {playbooks.map((connector) => <button type="button" className="integration-row" key={connector.id} onClick={() => { setSelected(connector.id); setResult(null); setPauseRollback(null); }} aria-pressed={selected === connector.id}>
+            {playbooks.map((connector) => <button type="button" className="integration-row" key={connector.id} onClick={() => { setSelected(connector.id); setResult(null); }} aria-pressed={selected === connector.id}>
               <span className={`integration-state state-${connector.enabled ? 'enabled' : 'disabled'}`} aria-hidden="true" />
               <div><strong>{connector.name ?? connector.id}</strong><span>{connector.id} · {connector.reliability} · {connector.registered_source ? 'registered source' : jobIds.has(connector.id) ? 'scheduled built-in' : 'built-in not scheduled'} · {connector.manual_run_available ? 'manual run available' : 'manual run unavailable'} · {connector.mode ?? 'bounded collection'}</span></div>
               <time>{connector.schedule_seconds}s</time>
@@ -223,16 +223,17 @@ export function AutomationWorkspace() {
           <header className="panel-heading"><div><p className="eyebrow">Execution authority</p><h2>{selected ?? 'Select a playbook'}</h2></div><span className="evidence-label">Server RBAC authoritative</span></header>
           {!session.isPending && !allowed && <p className="panel-state error-state">This principal lacks <code>manage:connectors</code>; execution is unavailable.</p>}
           {!session.isPending && allowed && !human && <p className="panel-state error-state">Service-account sessions are not exposed as human playbook execution authority in this workspace.</p>}
-          {selectedConnector && !selectedConnector.manual_run_available && <p className="panel-state error-state">This connector does not advertise manual-run availability. The browser fails closed and will not invoke it.</p>}
-          {selectedConnector && <button type="button" disabled={!executable || !selectedConnector.manual_run_available || execution.isPending} onClick={() => execution.mutate({ id: selectedConnector.id, registeredSource: selectedConnector.registered_source })}>Run bounded collection playbook</button>}
+          {selectedConnector && !selectedConnector?.manual_run_available && <p className="panel-state error-state">This connector does not advertise manual-run availability. The browser fails closed and will not invoke it.</p>}
+          {selectedConnector && <button type="button" disabled={!executable || !selectedConnector?.manual_run_available || execution.isPending} onClick={() => execution.mutate({ id: selectedConnector.id, registeredSource: selectedConnector.registered_source })}>Run bounded collection playbook</button>}
           {execution.isError && <p className="panel-state error-state">{execution.error.message}</p>}
           {result && <div className="panel-state"><strong>Observed bounded execution result</strong><span>Connector: {result.connector_id ?? result.id ?? selected ?? 'not returned'} · status: {result.status ?? 'not returned'} · attempts: {result.attempts ?? '—'}</span><span>Records: {result.records ?? '—'} · inserted: {result.inserted ?? '—'} · indexed: {result.indexed ?? '—'} · alert: {result.alert_state ?? 'not returned'}</span><span>{result.error ? `Error: ${result.error}` : result.reason ?? `Correlation: ${result.correlation_id ?? 'not returned'}`}</span></div>}
 
           {selectedConnector?.registered_source && <div className="panel-state" data-automation-control="reversible-source-pause">
             <strong>Reversible registered-source pause</strong>
             <span>Pause prevents new governed source execution through its enabled-state gate. Rollback is offered only for a pause initiated in this browser session.</span>
+            {pauseRollback && pauseRollback.sourceId !== selectedConnector.id && <span className="error-state">Rollback is still pending for {pauseRollback.sourceId}. Complete that rollback before pausing another source.</span>}
             <div className="button-row">
-              <button type="button" className="button secondary" disabled={!executable || !selectedConnector.enabled || pauseSource.isPending || rollbackPause.isPending || pauseRollback?.sourceId === selectedConnector.id} onClick={() => pauseSource.mutate(selectedConnector.id)}>Pause registered source</button>
+              <button type="button" className="button secondary" disabled={!executable || !selectedConnector.enabled || pauseSource.isPending || rollbackPause.isPending || pauseRollback !== null} onClick={() => pauseSource.mutate(selectedConnector.id)}>Pause registered source</button>
               {pauseRollback?.sourceId === selectedConnector.id && <button type="button" className="button secondary" disabled={!executable || pauseSource.isPending || rollbackPause.isPending} onClick={() => rollbackPause.mutate({ id: selectedConnector.id, enabled: pauseRollback.restoreEnabled })}>Rollback this pause</button>}
             </div>
             {pauseSource.isError && <span className="error-state">Pause failed: {pauseSource.error.message}</span>}
