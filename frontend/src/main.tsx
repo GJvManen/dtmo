@@ -3,10 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
-import { AdministrationSecurityAudit } from './AdministrationSecurityAudit';
-import { AdministrationWorkspace } from './AdministrationWorkspace';
-import { BundledPlatformReadiness } from './BundledPlatformReadiness';
-import { FrameworkIntegrationReadiness } from './FrameworkIntegrationReadiness';
+import { AdministrationConsole } from './AdministrationConsole';
 import { App } from './App';
 import './styles.css';
 import './command-center.css';
@@ -55,7 +52,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter basename="/workbench">
         <Routes>
-          <Route path="/administration" element={<><AdministrationWorkspace /><BundledPlatformReadiness /><FrameworkIntegrationReadiness /><AdministrationSecurityAudit /></>} />
+          <Route path="/administration" element={<AdministrationConsole />} />
           <Route path="*" element={<App />} />
         </Routes>
       </BrowserRouter>
