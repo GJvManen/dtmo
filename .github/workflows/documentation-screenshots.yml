@@ -11,6 +11,7 @@ on:
       - "tools/capture_documentation_screenshots.py"
       - "tools/capture_documentation_investigation_screenshots.py"
       - "tools/capture_canonical_workbench_screenshots.py"
+      - "tools/capture_canonical_threat_intelligence_screenshot.py"
       - ".github/workflows/documentation-screenshots.yml"
   workflow_dispatch:
 
@@ -101,6 +102,11 @@ jobs:
           python tools/capture_canonical_workbench_screenshots.py \
             --base-url http://127.0.0.1:8765 \
             --output artifacts/documentation-screenshots/generated
+      - name: Capture canonical Threat Intelligence candidate
+        run: |
+          python tools/capture_canonical_threat_intelligence_screenshot.py \
+            --base-url http://127.0.0.1:8765 \
+            --output artifacts/documentation-screenshots/generated
       - name: Validate screenshot artifact contract
         run: |
           python - <<'PY'
@@ -112,7 +118,7 @@ jobs:
               "overview-dashboard.png", "intelligence-workspace.png", "sources-catalogue.png",
               "vulnerability-analytics.png", "misp-governed-workflow.png", "ail-correlation-workspace.png",
               "audit-correlation.png", "visual-analytics.png", "governance-frameworks.png",
-              "administration-rbac.png", "command-center-workbench.png",
+              "administration-rbac.png", "command-center-workbench.png", "threat-intelligence-workbench.png",
           }
           present = {path.name for path in root.glob("*.png")}
           missing = sorted(required - present)
@@ -126,7 +132,8 @@ jobs:
           base_metadata = json.loads((root / "capture-metadata.json").read_text(encoding="utf-8"))
           investigation_metadata = json.loads((root / "investigation-capture-metadata.json").read_text(encoding="utf-8"))
           canonical_metadata = json.loads((root / "canonical-capture-metadata.json").read_text(encoding="utf-8"))
-          for metadata in (base_metadata, investigation_metadata, canonical_metadata):
+          threat_metadata = json.loads((root / "canonical-threat-intelligence-capture-metadata.json").read_text(encoding="utf-8"))
+          for metadata in (base_metadata, investigation_metadata, canonical_metadata, threat_metadata):
               if metadata.get("capture_mode") != "actual-runtime-ui-with-synthetic-fixture-data":
                   raise SystemExit("unexpected screenshot capture mode")
               if metadata.get("evidence_classification") != "documentation-illustration-only":
@@ -141,9 +148,17 @@ jobs:
               raise SystemExit("fixture-backed MISP capture must not claim live connectivity")
           if canonical_metadata.get("canonical_route") != "/workbench/command-center":
               raise SystemExit("canonical Command Center capture must use /workbench/command-center")
-          for claim in ("live_connectivity_proven", "owner_acceptance_proven", "production_equivalent_proven"):
-              if canonical_metadata.get(claim) is not False:
-                  raise SystemExit(f"canonical fixture capture must not assert {claim}")
+          if threat_metadata.get("canonical_route") != "/workbench/intelligence":
+              raise SystemExit("canonical Threat Intelligence capture must use /workbench/intelligence")
+          if threat_metadata.get("journey") != "recent canonical intelligence -> object detail -> provenance chain":
+              raise SystemExit("canonical Threat Intelligence capture must prove the bounded detail/provenance journey")
+          for metadata in (canonical_metadata, threat_metadata):
+              for claim in ("live_connectivity_proven", "owner_acceptance_proven", "production_equivalent_proven"):
+                  if metadata.get(claim) is not False:
+                      raise SystemExit(f"canonical fixture capture must not assert {claim}")
+          for claim in ("review_authority_proven", "share_authority_proven"):
+              if threat_metadata.get(claim) is not False:
+                  raise SystemExit(f"Threat Intelligence documentation capture must not assert {claim}")
           print("PASS: documentation screenshot artifacts are complete and correctly classified")
           PY
       - name: Stop documentation targets
