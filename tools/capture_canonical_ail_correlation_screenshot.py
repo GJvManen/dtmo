@@ -111,7 +111,7 @@ async def run(base_url: str, output: Path) -> None:
         await panel.wait_for(state="visible")
         await panel.get_by_text("MISP phishing event — documentation fixture", exact=True).wait_for(state="visible")
         await panel.get_by_text("Synthetic affected product context", exact=True).wait_for(state="visible")
-        await panel.get_by_text("case-docs-42", exact=True).wait_for(state="visible")
+        await panel.get_by_text("AIL investigation references: case-docs-42.", exact=False).wait_for(state="visible")
         await panel.get_by_text("Raw content exposed", exact=True).wait_for(state="visible")
         await panel.get_by_text("no", exact=True).first.wait_for(state="visible")
 
