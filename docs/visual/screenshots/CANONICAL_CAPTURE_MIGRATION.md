@@ -67,7 +67,7 @@ The candidate **must not replace `sources-catalogue.png` until** its exact-head 
 
 ## Canonical Vulnerability & Exposure replacement candidate
 
-This slice adds the independent UI-04 candidate `vulnerability-exposure-workbench.png` from the actual canonical route `/workbench/exposure`.
+The UI-04 migration adds the independent candidate `vulnerability-exposure-workbench.png` from the actual canonical route `/workbench/exposure`.
 
 The capture exercises a bounded read-only prioritization journey:
 
@@ -90,6 +90,31 @@ It uses the real Vulnerability & Exposure Center with sanitized deterministic CV
 - `share_authority_proven = false`.
 
 The candidate **must not replace `vulnerability-analytics.png` until** its exact-head screenshot artifact has been visually reviewed for canonical navigation, complete CVSS/EPSS/KEV and provenance rendering, absence of transient/error state, safe disclosure and representative operator context. Review and promotion are separate bounded changes.
+
+## Canonical Sharing & Exchange replacement candidate
+
+The UI-05 migration adds the independent candidate `sharing-exchange-workbench.png` from the actual canonical route `/workbench/sharing`.
+
+The capture renders the governed decision and evidence chain without performing a mutation:
+
+`independent review -> separate share approval -> unpublished MISP export evidence -> authority boundary`
+
+It uses the real Sharing & Exchange workspace with sanitized deterministic canonical-intelligence, restriction and persisted export-history fixtures. The fixture shows that independent review and separate share approval are distinct human authority steps and that any MISP export evidence remains unpublished. No review, approval or export action is executed by the capture itself. Publication authority and synchronization authority remain absent. The metadata preserves these boundaries:
+
+- `canonical_route = /workbench/sharing`;
+- `capture_mode = actual-runtime-ui-with-synthetic-fixture-data`;
+- `evidence_classification = documentation-illustration-only`;
+- `live_connectivity_proven = false`;
+- `owner_acceptance_proven = false`;
+- `production_equivalent_proven = false`;
+- `human_review_executed = false`;
+- `share_approval_executed = false`;
+- `misp_export_executed = false`;
+- `publication_authority_proven = false`;
+- `synchronization_authority_proven = false`;
+- `credential_value_exposed = false`.
+
+The candidate **must not replace `misp-governed-workflow.png` until** its exact-head screenshot artifact has been visually reviewed for canonical navigation, independent review/separate approval rendering, unpublished export evidence, handling restrictions, replay evidence, authority boundaries, absence of transient/error state and safe disclosure. Review and promotion are separate bounded changes.
 
 ## Migration rule
 
