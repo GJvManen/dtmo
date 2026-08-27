@@ -12,6 +12,7 @@ on:
       - "tools/capture_documentation_investigation_screenshots.py"
       - "tools/capture_canonical_workbench_screenshots.py"
       - "tools/capture_canonical_threat_intelligence_screenshot.py"
+      - "tools/capture_canonical_sources_collection_screenshot.py"
       - ".github/workflows/documentation-screenshots.yml"
   workflow_dispatch:
 
@@ -107,6 +108,11 @@ jobs:
           python tools/capture_canonical_threat_intelligence_screenshot.py \
             --base-url http://127.0.0.1:8765 \
             --output artifacts/documentation-screenshots/generated
+      - name: Capture canonical Sources and Collection candidate
+        run: |
+          python tools/capture_canonical_sources_collection_screenshot.py \
+            --base-url http://127.0.0.1:8765 \
+            --output artifacts/documentation-screenshots/generated
       - name: Validate screenshot artifact contract
         run: |
           python - <<'PY'
@@ -119,6 +125,7 @@ jobs:
               "vulnerability-analytics.png", "misp-governed-workflow.png", "ail-correlation-workspace.png",
               "audit-correlation.png", "visual-analytics.png", "governance-frameworks.png",
               "administration-rbac.png", "command-center-workbench.png", "threat-intelligence-workbench.png",
+              "sources-collection-workbench.png",
           }
           present = {path.name for path in root.glob("*.png")}
           missing = sorted(required - present)
@@ -133,7 +140,8 @@ jobs:
           investigation_metadata = json.loads((root / "investigation-capture-metadata.json").read_text(encoding="utf-8"))
           canonical_metadata = json.loads((root / "canonical-capture-metadata.json").read_text(encoding="utf-8"))
           threat_metadata = json.loads((root / "canonical-threat-intelligence-capture-metadata.json").read_text(encoding="utf-8"))
-          for metadata in (base_metadata, investigation_metadata, canonical_metadata, threat_metadata):
+          collection_metadata = json.loads((root / "canonical-sources-collection-capture-metadata.json").read_text(encoding="utf-8"))
+          for metadata in (base_metadata, investigation_metadata, canonical_metadata, threat_metadata, collection_metadata):
               if metadata.get("capture_mode") != "actual-runtime-ui-with-synthetic-fixture-data":
                   raise SystemExit("unexpected screenshot capture mode")
               if metadata.get("evidence_classification") != "documentation-illustration-only":
@@ -152,13 +160,22 @@ jobs:
               raise SystemExit("canonical Threat Intelligence capture must use /workbench/intelligence")
           if threat_metadata.get("journey") != "recent canonical intelligence -> object detail -> provenance chain":
               raise SystemExit("canonical Threat Intelligence capture must prove the bounded detail/provenance journey")
-          for metadata in (canonical_metadata, threat_metadata):
+          if collection_metadata.get("canonical_route") != "/workbench/collection":
+              raise SystemExit("canonical Sources & Collection capture must use /workbench/collection")
+          if collection_metadata.get("journey") != "source catalog -> built-in readiness -> provenance boundary":
+              raise SystemExit("canonical Sources & Collection capture must prove the bounded readiness/provenance journey")
+          for metadata in (canonical_metadata, threat_metadata, collection_metadata):
               for claim in ("live_connectivity_proven", "owner_acceptance_proven", "production_equivalent_proven"):
                   if metadata.get(claim) is not False:
                       raise SystemExit(f"canonical fixture capture must not assert {claim}")
           for claim in ("review_authority_proven", "share_authority_proven"):
               if threat_metadata.get(claim) is not False:
                   raise SystemExit(f"Threat Intelligence documentation capture must not assert {claim}")
+          for claim in ("connector_execution_proven", "source_activation_authority_proven", "publication_authority_proven"):
+              if collection_metadata.get(claim) is not False:
+                  raise SystemExit(f"Sources & Collection documentation capture must not assert {claim}")
+          if collection_metadata.get("credential_value_exposed") is not False:
+              raise SystemExit("Sources & Collection documentation capture must not expose credential values")
           print("PASS: documentation screenshot artifacts are complete and correctly classified")
           PY
       - name: Stop documentation targets
