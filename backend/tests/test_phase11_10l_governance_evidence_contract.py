@@ -33,6 +33,10 @@ def test_governance_framework_claims_use_explicit_crosswalk_and_fail_closed() ->
         assert marker in crosswalk
     assert "no inferred crosswalks" in workspace
     assert "mapping visibility ≠ compliance approval" in workspace
+    assert "typed control crosswalk" in workspace
+    assert "provenance:" in workspace
+    assert "implementation:" in workspace
+    assert "data-governance-control" in workspace
     assert "normenkader ibp" in architecture
     assert "mitre att&ck" in architecture
     assert "nist csf" in architecture
