@@ -8,7 +8,9 @@ The canonical operator experience remains **browser → same-origin DTMO API →
 
 ## Where operators encounter AIL
 
-AIL-derived context is surfaced through the canonical Intelligence/investigation experience when an attributable DTMO record has supported AIL correlation. Operators use that context to inspect supported indicators and investigation references while preserving the originating DTMO record, provenance and evidence boundaries.
+The canonical read/correlation entry point is **IOC Explorer at `/workbench/ioc-explorer`**. For a persisted governed observable, **Inspect AIL correlation** loads `/api/v1/intelligence/{item_id}/ail-correlations` through the same-origin DTMO API and renders bounded correlation context, investigation references, degraded reasons and the server-provided claim boundary.
+
+AIL-derived context is read-only. The canonical surface keeps the originating IOC and intelligence item attributable and does not expose arbitrary AIL raw bodies. A failed or unavailable lookup remains visibly unavailable; it is not converted into a zero-correlation, upstream-health or local-compromise conclusion.
 
 AIL is not a separate primary DTMO application. Legacy or upstream AIL interfaces may still exist for AIL-native administration, but they are not required for the supported DTMO read/correlation journey.
 
@@ -35,7 +37,7 @@ Credentials remain server-side. An enabled switch without a valid endpoint, key 
 
 ## Operator interpretation
 
-A successful AIL lookup proves only that DTMO recorded the bounded read/correlation result for the configured object. It does not prove:
+A successful AIL lookup proves only that DTMO returned the bounded read/correlation result for the selected canonical item. It does not prove:
 
 - live-source completeness;
 - local compromise or exposure;
@@ -51,7 +53,7 @@ AIL-derived indicators remain subject to normal DTMO provenance, review and shar
 - `docs/architecture/SYSTEM_ARCHITECTURE.md` — AIL as a governed external service boundary.
 - `docs/integrations/AIL_READ_ENRICHMENT.md` — API/read, configuration and data-minimisation contract.
 - `docs/integrations/AIL_CORRELATION_EXPERIENCE.md` — canonical correlation experience and claim boundaries.
-- `docs/visual/screenshots/ail-correlation-workspace.png` — governed documentation illustration only; synthetic fixture data does not prove live AIL connectivity.
+- `docs/visual/screenshots/ail-correlation-workspace.png` — historical governed documentation illustration pending canonical UI-06 migration; synthetic fixture data does not prove live AIL connectivity.
 
 ## Evidence boundary
 
