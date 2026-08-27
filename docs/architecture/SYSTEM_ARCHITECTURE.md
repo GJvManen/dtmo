@@ -151,11 +151,23 @@ Important boundaries are:
 
 ### 4.1 TheHive mutation trust boundary
 
-The supported mutation path is:
+The supported mutation path is rendered explicitly below so the authority, durable-state and ambiguous-delivery boundaries remain visible in Markdown documentation surfaces.
 
-`Authorized human → DTMO API/RBAC → provenance and restriction validation → durable reservation → TheHive API → durable delivered/ambiguous outcome`.
+```mermaid
+flowchart LR
+    H[Authorized human] --> A[DTMO API + server-side RBAC]
+    A --> V[Provenance + restriction validation]
+    V -->|valid| R[(Durable reservation)]
+    V -->|invalid / unrepresentable| B[Fail closed: blocked]
+    R --> T[TheHive API]
+    T -->|confirmed identity| D[(Durable delivered outcome)]
+    T -->|timeout / network failure / malformed success identity| X[(Durable ambiguous outcome)]
+    X --> N[No blind replay]
+```
 
 Invalid or unrepresentable restrictions fail closed before mutation. A timeout, network failure or malformed success identity becomes `ambiguous`; DTMO does not blindly replay a potentially delivered case. Known MISP sharing restrictions that cannot be safely projected into TheHive access membership remain blocked rather than inferred.
+
+The diagram describes the supported mutation trust boundary only. It does not grant TheHive, a service identity or repository CI human case-handoff authority, and it does not prove external delivery, owner acceptance or production authorization.
 
 ## 5. Deployment architecture
 
