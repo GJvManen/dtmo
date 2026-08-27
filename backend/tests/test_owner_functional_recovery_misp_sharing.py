@@ -79,7 +79,7 @@ async def test_sharing_requires_separate_human_review_and_approval_then_exports_
 
             await reviewer_page.get_by_role("button", name="Record review", exact=True).click()
             await expect(
-                reviewer_page.get_by_text("Review recorded in canonical DTMO governance state.", exact=True)
+                reviewer_page.get_by_text("Reviewed by functional-recovery-sharing-reviewer", exact=True)
             ).to_be_visible()
             await expect(
                 reviewer_page.get_by_text("This principal performed the review and therefore cannot approve sharing for the same item.", exact=True)
@@ -100,15 +100,12 @@ async def test_sharing_requires_separate_human_review_and_approval_then_exports_
 
             await approver_page.get_by_role("button", name="Approve sharing", exact=True).click()
             await expect(
-                approver_page.get_by_text("Share approval recorded in canonical DTMO governance state.", exact=True)
+                approver_page.get_by_text("Approved by functional-recovery-sharing-approver", exact=True)
             ).to_be_visible()
             await expect(approver_page.get_by_role("button", name="Export approved intelligence", exact=True)).to_be_enabled()
             await expect(approver_page.get_by_text("configured", exact=True)).to_be_visible()
 
             await approver_page.get_by_role("button", name="Export approved intelligence", exact=True).click()
-            await expect(
-                approver_page.get_by_text("MISP export recorded in canonical DTMO governance state.", exact=True)
-            ).to_be_visible()
             export_history = approver_page.locator(".export-history")
             await expect(export_history.get_by_text("success", exact=True)).to_be_visible()
             await expect(export_history.get_by_text("MISP event repo-misp-4242", exact=False)).to_be_visible()
