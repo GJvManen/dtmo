@@ -56,7 +56,7 @@ def test_browser_matrix_covers_every_owner_rejected_canonical_surface() -> None:
 
 
 def test_retest_readiness_document_fails_closed_on_external_acceptance_boundary() -> None:
-    text = READINESS.read_text(encoding="utf-8")
+    text = READINESS.read_text(encoding="utf-8").lower()
     for marker in (
         "clean supported installation",
         "external owner retest",
