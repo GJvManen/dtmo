@@ -1,6 +1,6 @@
 # DTMO Documentation Portal
 
-This portal is the primary entry point for DTMO product, administration, operations, architecture, security, governance, quality and release documentation. It is organized around what readers need to do rather than around internal delivery chronology.
+This portal is the primary entry point for DTMO product, installation, administration, operations, architecture, security, governance, quality and release documentation. It is organized around what readers need to do rather than around internal delivery chronology.
 
 > **Release position:** DTMO remains **not production authorized**. Repository CI is engineering evidence for an exact source revision; it does not by itself prove production-equivalent operation, independent assurance or production approval. Use [Current State](project/CURRENT_STATE.md) and [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) for authoritative lifecycle decisions.
 
@@ -8,6 +8,7 @@ This portal is the primary entry point for DTMO product, administration, operati
 
 | Audience | Recommended entry points |
 |---|---|
+| New installer / evaluator | [Authoritative Installation Guide](installation/INSTALLATION_GUIDE.md) · [Clean-install Owner Retest Runbook](operations/CLEAN_INSTALL_OWNER_RETEST_RUNBOOK.md) |
 | Executive / sponsor | [Executive Status](project/EXECUTIVE_STATUS.md) · [Current State](project/CURRENT_STATE.md) · [Production Readiness Report](project/PRODUCTION_READINESS_REPORT.md) |
 | Security analyst / reviewer | [User Guide](user/USER_GUIDE.md) · [Unified Intelligence](user/UNIFIED_INTELLIGENCE_WORKSPACE.md) · [Integrated Analysis](user/INTEGRATED_ANALYSIS_WORKSPACE.md) · [Vulnerability & Exposure](user/VULNERABILITY_EXPOSURE_WORKSPACE.md) |
 | Administrator | [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md) · [Kubernetes Runtime Configuration](administration/KUBERNETES_RUNTIME_CONFIGURATION.md) · [Security Overview](security/SECURITY_OVERVIEW.md) |
@@ -16,6 +17,12 @@ This portal is the primary entry point for DTMO product, administration, operati
 | Governance / compliance | [Governance Mapping Registry](governance/GOVERNANCE_MAPPING_REGISTRY.md) · [Framework Governance](governance/FRAMEWORK_GOVERNANCE.md) · [Data Classification & Retention](governance/DATA_CLASSIFICATION_RETENTION.md) |
 | QA / release | [QA and Release Gates](qa/QA_AND_RELEASE_GATES.md) · [Evidence Index](evidence/EVIDENCE_INDEX.md) |
 | Product / delivery | [Product Guide](product/PRODUCT_GUIDE.md) · [Unified Operations Workbench](ux/UNIFIED_OPERATIONS_WORKBENCH.md) · [Roadmaps](roadmap/) |
+
+## Installation
+
+Use [DTMO Installation Guide](installation/INSTALLATION_GUIDE.md) as the single authoritative local/reference installation procedure. It covers prerequisites, clean checkout, `tools/bootstrap_local.py`, generated local credentials, external AIStor image/license inputs, `docker compose up --build`, service entry points, first Administration checks, first-data collection, restart/persistence behavior and troubleshooting.
+
+The installation guide deliberately preserves fail-closed external integration readiness and server-side credential boundaries. A successful installation is not owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, independent assurance or production authorization. For the current recovery lifecycle, follow it with the [Clean-install Owner Retest Runbook](operations/CLEAN_INSTALL_OWNER_RETEST_RUNBOOK.md).
 
 ## Product and user documentation
 
@@ -42,9 +49,11 @@ Administration and operations material is separated from analyst guidance so ope
 
 Primary references include:
 
+- [Authoritative Installation Guide](installation/INSTALLATION_GUIDE.md)
 - [Administrator Guide](administration/ADMINISTRATOR_GUIDE.md)
 - [Kubernetes Runtime Configuration](administration/KUBERNETES_RUNTIME_CONFIGURATION.md)
 - [Operations Manual](operations/OPERATIONS_MANUAL.md)
+- [Clean-install Owner Retest Runbook](operations/CLEAN_INSTALL_OWNER_RETEST_RUNBOOK.md)
 - [IntelOwl Enrichment Runbook](operations/INTELOWL_ENRICHMENT_RUNBOOK.md)
 - [OpenCTI Integration Runbook](operations/OPENCTI_INTEGRATION_RUNBOOK.md)
 - [TheHive Handoff Runbook](operations/THEHIVE_HANDOFF_RUNBOOK.md)
