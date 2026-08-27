@@ -57,6 +57,10 @@ class IntelOwlEnrichmentRepository:
         )
         self.session.add(record)
         await self.session.flush()
+        # The API returns this record as persisted and immediately supports a
+        # canonical history read from a separate request/session. Commit before
+        # success so that the returned durability claim cannot race that read.
+        await self.session.commit()
         return record
 
     async def list_for_item(self, item_id: UUID) -> list[IntelOwlEnrichmentRecord]:
