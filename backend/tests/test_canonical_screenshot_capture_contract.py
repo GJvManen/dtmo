@@ -3,7 +3,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CAPTURE = ROOT / "tools/capture_canonical_workbench_screenshots.py"
 WORKFLOW = ROOT / ".github/workflows/documentation-screenshots.yml"
-CATALOGUE = ROOT / "docs/visual/screenshots/README.md"
+MIGRATION = ROOT / "docs/visual/screenshots/CANONICAL_CAPTURE_MIGRATION.md"
 
 
 def test_command_center_capture_uses_canonical_workbench_route():
@@ -23,8 +23,8 @@ def test_screenshot_gate_requires_canonical_command_center_artifact():
     assert 'canonical_metadata.get("canonical_route") != "/workbench/command-center"' in workflow
 
 
-def test_catalogue_keeps_candidate_unpromoted_until_review():
-    catalogue = CATALOGUE.read_text(encoding="utf-8")
-    assert "Canonical Command Center replacement candidate" in catalogue
-    assert "generated / review required before promotion" in catalogue
-    assert "must not replace `overview-dashboard.png` until" in catalogue
+def test_migration_record_keeps_candidate_unpromoted_until_review():
+    migration = MIGRATION.read_text(encoding="utf-8")
+    assert "Canonical Command Center replacement candidate" in migration
+    assert "generated / review required before promotion" in migration
+    assert "must not replace `overview-dashboard.png` until" in migration
