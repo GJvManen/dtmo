@@ -15,6 +15,7 @@ on:
       - "tools/capture_canonical_sources_collection_screenshot.py"
       - "tools/capture_canonical_vulnerability_exposure_screenshot.py"
       - "tools/capture_canonical_sharing_exchange_screenshot.py"
+      - "tools/capture_canonical_ail_correlation_screenshot.py"
       - ".github/workflows/documentation-screenshots.yml"
   workflow_dispatch:
 
@@ -125,6 +126,11 @@ jobs:
           python tools/capture_canonical_sharing_exchange_screenshot.py \
             --base-url http://127.0.0.1:8765 \
             --output artifacts/documentation-screenshots/generated
+      - name: Capture canonical UI-06 AIL correlation candidate
+        run: |
+          python tools/capture_canonical_ail_correlation_screenshot.py \
+            --base-url http://127.0.0.1:8765 \
+            --output artifacts/documentation-screenshots/generated
       - name: Validate screenshot artifact contract
         run: |
           python - <<'PY'
@@ -138,7 +144,7 @@ jobs:
               "audit-correlation.png", "visual-analytics.png", "governance-frameworks.png",
               "administration-rbac.png", "command-center-workbench.png", "threat-intelligence-workbench.png",
               "sources-collection-workbench.png", "vulnerability-exposure-workbench.png",
-              "sharing-exchange-workbench.png",
+              "sharing-exchange-workbench.png", "ail-correlation-workbench.png",
           }
           present = {path.name for path in root.glob("*.png")}
           missing = sorted(required - present)
@@ -156,7 +162,8 @@ jobs:
           collection_metadata = json.loads((root / "canonical-sources-collection-capture-metadata.json").read_text(encoding="utf-8"))
           exposure_metadata = json.loads((root / "canonical-vulnerability-exposure-capture-metadata.json").read_text(encoding="utf-8"))
           sharing_metadata = json.loads((root / "canonical-sharing-exchange-capture-metadata.json").read_text(encoding="utf-8"))
-          for metadata in (base_metadata, investigation_metadata, canonical_metadata, threat_metadata, collection_metadata, exposure_metadata, sharing_metadata):
+          ail_metadata = json.loads((root / "canonical-ail-correlation-capture-metadata.json").read_text(encoding="utf-8"))
+          for metadata in (base_metadata, investigation_metadata, canonical_metadata, threat_metadata, collection_metadata, exposure_metadata, sharing_metadata, ail_metadata):
               if metadata.get("capture_mode") != "actual-runtime-ui-with-synthetic-fixture-data":
                   raise SystemExit("unexpected screenshot capture mode")
               if metadata.get("evidence_classification") != "documentation-illustration-only":
@@ -187,7 +194,11 @@ jobs:
               raise SystemExit("canonical Sharing & Exchange capture must use /workbench/sharing")
           if sharing_metadata.get("journey") != "independent review -> separate share approval -> unpublished MISP export evidence -> authority boundary":
               raise SystemExit("canonical Sharing & Exchange capture must prove the bounded governance/evidence journey")
-          for metadata in (canonical_metadata, threat_metadata, collection_metadata, exposure_metadata, sharing_metadata):
+          if ail_metadata.get("canonical_route") != "/workbench/intelligence/iocs":
+              raise SystemExit("canonical UI-06 capture must use /workbench/intelligence/iocs")
+          if ail_metadata.get("journey") != "persisted IOC -> read-only AIL correlation context -> evidence boundary":
+              raise SystemExit("canonical UI-06 capture must prove the bounded IOC/correlation journey")
+          for metadata in (canonical_metadata, threat_metadata, collection_metadata, exposure_metadata, sharing_metadata, ail_metadata):
               for claim in ("live_connectivity_proven", "owner_acceptance_proven", "production_equivalent_proven"):
                   if metadata.get(claim) is not False:
                       raise SystemExit(f"canonical fixture capture must not assert {claim}")
@@ -207,6 +218,15 @@ jobs:
                   raise SystemExit(f"Sharing & Exchange documentation capture must not assert {claim}")
           if sharing_metadata.get("credential_value_exposed") is not False:
               raise SystemExit("Sharing & Exchange documentation capture must not expose credential values")
+          if ail_metadata.get("raw_content_exposed") is not False:
+              raise SystemExit("canonical UI-06 documentation capture must not expose raw AIL content")
+          if ail_metadata.get("analysis_only") is not True:
+              raise SystemExit("canonical UI-06 documentation capture must remain analysis-only")
+          if ail_metadata.get("credential_value_exposed") is not False:
+              raise SystemExit("canonical UI-06 documentation capture must not expose credential values")
+          for claim in ("review_authority_proven", "share_authority_proven", "case_authority_proven", "publication_authority_proven"):
+              if ail_metadata.get(claim) is not False:
+                  raise SystemExit(f"canonical UI-06 documentation capture must not assert {claim}")
           print("PASS: documentation screenshot artifacts are complete and correctly classified")
           PY
       - name: Stop documentation targets
