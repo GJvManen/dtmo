@@ -1,6 +1,6 @@
 # DTMO Current Project State
 
-Last reconciled: **2026-08-26**  
+Last reconciled: **2026-08-27**  
 Software baseline: **16.0.0rc12 plus accepted post-RC13, E8 and Phase 11 repository enhancements**
 
 ## Executive summary
@@ -132,7 +132,7 @@ Repository hygiene is part of the recovery programme but must not be mixed into 
 
 - GitHub currently contains a very large number of historical working branches. A dedicated repository-hygiene slice must inventory branches, retain protected/current/release/evidence-relevant refs, and delete only branches that are demonstrably merged or obsolete. No branch is deleted solely because it is old.
 - Stable documentation must be separated from transient delivery/run history and organised around installation, architecture, operation, security, user workflows, governance and assurance.
-- A single authoritative installation guide must cover prerequisites, local/reference startup, generated/local credentials, required licensed/external prerequisites, service URLs, first-login/admin workflow, health checks, first-data workflow and troubleshooting.
+- The single authoritative local/reference installation procedure is now `docs/installation/INSTALLATION_GUIDE.md`; it covers prerequisites, supported startup, generated/local credentials, required licensed/external prerequisites, service entry points, first administration checks, health, first-data workflow and troubleshooting. The external whole-product acceptance still requires the separate clean-install owner retest.
 - User-guide screenshots must be regenerated from the current canonical UI; obsolete screenshots must not remain presented as current product behavior.
 - AIL must be made discoverable as a first-class framework building block in architecture, integration and operator documentation.
 - `docs/architecture/SYSTEM_ARCHITECTURE.md` section **4.1 TheHive mutation trust boundary** must be corrected so the diagram/rich display renders reliably in the supported documentation surface.
