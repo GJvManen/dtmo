@@ -49,7 +49,9 @@ The helper:
 - validates `docker compose config`;
 - fails closed when required external AIStor image/license inputs are not real and usable.
 
-The helper does **not** manufacture external licenses, production credentials or upstream service authorization.
+The local/reference profile intentionally enables the server-owned live connector scheduler together with the credentialless **CISA KEV** path and **CIRCL Vulnerability-Lookup**. These are public read sources intended to make a clean local installation useful without requiring a secret. Their successful execution is attributable connector evidence only; it is not proof of upstream completeness, local exposure, compromise, remediation or production readiness.
+
+OpenCVE remains disabled by default because its supported API path requires an organization token. MISP, AIL, Taranis AI, IntelOwl, Cortex, OpenCTI and TheHive also remain disabled until their server-side endpoint, credential and any required scope/allowlist/organization prerequisites are configured. The helper does **not** manufacture external licenses, production credentials or upstream service authorization.
 
 ### AIStor image
 
@@ -118,7 +120,7 @@ Open canonical Administration and verify:
 
 1. integration readiness is visible;
 2. bundled/core service state is understandable;
-3. external integrations without complete configuration show actionable blockers;
+3. the local/reference public-source profile identifies CISA KEV and CIRCL Vulnerability-Lookup as usable without a credential while external framework integrations retain truthful blockers;
 4. credentials are never rendered back in plaintext;
 5. a permitted configuration change survives page reload;
 6. server-side RBAC remains authoritative regardless of which controls are visible in the browser.
@@ -130,15 +132,16 @@ Do not enable external integrations merely to remove a warning. Required endpoin
 Use **Sources & Collection** in the canonical workbench. The supported operator sequence is:
 
 1. inspect/bootstrap supported sources;
-2. register or select an attributable source;
-3. inspect validation/readiness;
-4. activate only when configuration and authority allow it;
-5. run the supported collection action;
-6. inspect durable source/connector runtime state;
-7. open the resulting canonical intelligence and verify source identity and provenance;
-8. reload/revisit to confirm the result is persisted rather than transient UI state.
+2. confirm the safe public default sources and their attributable readiness/runtime state;
+3. register or select an additional attributable source when required;
+4. inspect validation/readiness;
+5. activate only when configuration and authority allow it;
+6. run the supported collection action;
+7. inspect durable source/connector runtime state;
+8. open the resulting canonical intelligence and verify source identity and provenance;
+9. reload/revisit to confirm the result is persisted rather than transient UI state.
 
-Repository-controlled sample/bootstrap content must remain visibly labelled. It is useful local data, not proof of live upstream truth.
+Repository-controlled sample/bootstrap content must remain visibly labelled. Public connector results must retain their actual source identity and runtime observation. Neither category is proof of production-equivalent behavior.
 
 ## 9. External framework configuration
 
