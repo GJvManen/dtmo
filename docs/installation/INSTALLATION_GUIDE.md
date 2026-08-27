@@ -4,7 +4,7 @@
 
 This is the single authoritative installation guide for the DTMO repository-controlled local/reference deployment. It covers prerequisites, clean startup, generated local credentials, external licensed prerequisites, service entry points, first administration checks, first-data workflow, health verification and troubleshooting.
 
-DTMO remains **not production authorized**. A successful local installation is installation evidence only; it is not staging acceptance, production-equivalent validation, penetration-test evidence, independent assurance or production authorization.
+DTMO remains **not production authorized**. A successful local installation is installation evidence only; it is not staging acceptance, it is not production-equivalent validation, it is not penetration-test evidence, and it is not independent assurance or production authorization.
 
 ## 1. Prerequisites
 
