@@ -1,0 +1,6 @@
+Canonical route integration target for PR #373:
+- import VisualAnalyticsWorkspace in frontend/src/App.tsx
+- add workspace navigation entry path '/analytics' labelled 'Visual Analytics'
+- add nested route path="analytics" rendering <VisualAnalyticsWorkspace />
+
+This marker is temporary implementation evidence for the bounded recovery branch and does not grant runtime functionality by itself.
