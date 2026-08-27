@@ -1,0 +1,1 @@
+Initial implementation head prepared for pull-request review. Route wiring remains an explicit acceptance item; the red-first contract is expected to keep the branch unaccepted until that work is complete.
