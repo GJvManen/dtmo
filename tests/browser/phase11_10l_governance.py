@@ -40,6 +40,25 @@ def main() -> None:
                 {"id": "dtmo-governance", "name": "DTMO security & release governance", "kind": "internal-governance", "coverage": "mapped_internal", "coverage_label": "Repository-backed", "mapping_ids": ["identity-access"], "note": "Internal governance is repository-backed.", "provenance": ["docs/security/SECURITY_OVERVIEW.md"]},
             ],
             "mappings": [{"id": "identity-access", "title": "Identity & access control", "statement": "RBAC and least privilege remain mandatory.", "source": "docs/security/SECURITY_OVERVIEW.md", "section": "Identity and access control"}],
+            "control_crosswalk": {
+                "status": "explicit_partial",
+                "verified_on": "2026-08-27",
+                "controls": [
+                    {
+                        "dtmo_control_id": "DTMO-TVM-01",
+                        "title": "Threat and vulnerability management",
+                        "implementation_refs": ["backend/dtmo/connectors/"],
+                        "mappings": [
+                            {"framework_id": "normenkader-ibp", "object_type": "control", "object_id": "SM.07", "object_title": "Threat and vulnerability management", "relationship": "implements-partially", "rationale": "Explicit repository-backed relationship.", "source_url": "https://www.normenkaderibp.nl/"},
+                            {"framework_id": "mitre-attack", "object_type": "technique", "object_id": "T1087", "object_title": "Account Discovery", "relationship": "detection-context", "rationale": "Threat-behavior context only.", "source_url": "https://attack.mitre.org/techniques/T1087/"},
+                            {"framework_id": "cvss", "object_type": "scoring-standard", "object_id": "CVSS:4.0", "object_title": "Common Vulnerability Scoring System 4.0", "relationship": "context-only", "rationale": "Scoring context only; no compliance equivalence.", "source_url": "https://www.first.org/cvss/v4.0/"},
+                        ],
+                    }
+                ],
+                "mapping_count": 3,
+                "mapping_count_by_framework": {"normenkader-ibp": 1, "mitre-attack": 1, "cvss": 1},
+                "claim_boundary": "Only explicit repository-backed relationships are shown; mapping visibility does not establish compliance or authority.",
+            },
             "authority_boundaries": ["Human review and external share approval remain separate authorities."],
             "claim_boundary": "External framework relationships are shown only when explicitly recorded; typed partial mappings do not constitute certification or full compliance.",
         }))
