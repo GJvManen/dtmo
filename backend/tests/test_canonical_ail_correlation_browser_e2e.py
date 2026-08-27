@@ -45,7 +45,7 @@ async def test_canonical_ioc_explorer_exposes_read_only_ail_correlation_context(
 
         await page.route("**/api/v1/iocs?*", inventory_route)
         await page.route(f"**/api/v1/intelligence/{ITEM_ID}/ail-correlations", correlation_route)
-        await page.goto(f"{BASE_URL}/workbench/ioc-explorer", wait_until="networkidle")
+        await page.goto(f"{BASE_URL}/workbench/intelligence/iocs", wait_until="networkidle")
 
         await expect(page.get_by_role("heading", name="IOC Explorer")).to_be_visible()
         await expect(page.get_by_text("login.example", exact=True)).to_be_visible()
