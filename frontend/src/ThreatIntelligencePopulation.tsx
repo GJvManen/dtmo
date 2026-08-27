@@ -31,8 +31,8 @@ async function readJson<T>(url: string): Promise<T> {
   return body as T;
 }
 
-async function runRegisteredSource(sourceId: string): Promise<RunResult> {
-  const response = await fetch(`/api/v1/admin/sources/${encodeURIComponent(sourceId)}/run`, {
+async function postSource(url: string): Promise<RunResult> {
+  const response = await fetch(url, {
     method: 'POST',
     credentials: 'same-origin',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-Request-ID': crypto.randomUUID() },
@@ -45,18 +45,12 @@ async function runRegisteredSource(sourceId: string): Promise<RunResult> {
   return body as RunResult;
 }
 
-async function runBuiltInSource(sourceId: string): Promise<RunResult> {
-  const response = await fetch(`/connectors/${encodeURIComponent(sourceId)}/run`, {
-    method: 'POST',
-    credentials: 'same-origin',
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json', 'X-Request-ID': crypto.randomUUID() },
-  });
-  const body = await response.json().catch(() => null);
-  if (!response.ok) {
-    const detail = typeof body === 'object' && body && 'detail' in body ? String((body as { detail: unknown }).detail) : `HTTP ${response.status}`;
-    throw new Error(detail);
-  }
-  return body as RunResult;
+function registeredSourceRunUrl(sourceId: string): string {
+  return `/api/v1/admin/sources/${encodeURIComponent(sourceId)}/run`;
+}
+
+function builtInSourceRunUrl(sourceId: string): string {
+  return `/connectors/${encodeURIComponent(sourceId)}/run`;
 }
 
 export function ThreatIntelligencePopulation({
@@ -104,12 +98,14 @@ export function ThreatIntelligencePopulation({
 
   async function executeRegistered(source: Source) {
     if (!source.enabled) return;
-    await execute(source.id, source.name, () => runRegisteredSource(source.id));
+    const runUrl = `/api/v1/admin/sources/${encodeURIComponent(source.id)}/run`;
+    await execute(source.id, source.name, () => postSource(runUrl));
   }
 
   async function executeBuiltIn(source: SourceCenterStatus) {
     if (!source.manual_run_available) return;
-    await execute(source.id, source.name, () => runBuiltInSource(source.id));
+    const runUrl = `/connectors/${encodeURIComponent(source.id)}/run`;
+    await execute(source.id, source.name, () => postSource(runUrl));
   }
 
   async function execute(sourceId: string, sourceName: string, runner: () => Promise<RunResult>) {
