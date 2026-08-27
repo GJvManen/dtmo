@@ -27,8 +27,10 @@ def test_documentation_information_architecture_separates_stable_and_lifecycle_d
         assert marker in text, marker
 
 
-def test_documentation_portal_surfaces_information_architecture_without_reclassifying_evidence():
+def test_documentation_portal_preserves_stable_vs_history_boundary():
     text = PORTAL.read_text(encoding="utf-8")
-    assert "DOCUMENTATION_INFORMATION_ARCHITECTURE.md" in text
+    assert "organized around what readers need to do rather than around internal delivery chronology" in text
+    assert "Detailed project chronology belongs" in text
+    assert "exact run history belongs in evidence records rather than product-facing navigation" in text
     assert "Repository CI is engineering evidence" in text
     assert "not production authorized" in text
