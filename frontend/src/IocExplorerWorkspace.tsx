@@ -18,6 +18,25 @@ type IocRecord = {
 };
 
 type IocInventory = { records: IocRecord[]; evidence_boundary: string };
+type AilCorrelation = {
+  source_id: string;
+  external_id: string;
+  item_type: string;
+  title: string;
+  relation: string;
+  matched_value: string;
+  context: Record<string, unknown>;
+};
+type AilCorrelationResponse = {
+  status: string;
+  indicator: { type: string; value: string };
+  investigation_references: Array<{ id: string }>;
+  raw_content_exposed: boolean;
+  analysis_only: boolean;
+  degraded_reasons: string[];
+  claim_boundary: string;
+  correlations: AilCorrelation[];
+};
 
 async function json<T>(url: string): Promise<T> {
   const response = await fetch(url, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
@@ -53,6 +72,10 @@ export function IocExplorerWorkspace() {
   const [severity, setSeverity] = useState('');
   const [source, setSource] = useState('');
   const [minimumConfidence, setMinimumConfidence] = useState(0);
+  const [ailTarget, setAilTarget] = useState<IocRecord | null>(null);
+  const [ailCorrelation, setAilCorrelation] = useState<AilCorrelationResponse | null>(null);
+  const [ailLoading, setAilLoading] = useState(false);
+  const [ailError, setAilError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -79,6 +102,21 @@ export function IocExplorerWorkspace() {
       return true;
     });
   }, [inventory, minimumConfidence, observableType, query, severity, source]);
+
+  async function inspectAil(record: IocRecord) {
+    setAilTarget(record);
+    setAilCorrelation(null);
+    setAilError(null);
+    setAilLoading(true);
+    try {
+      const result = await json<AilCorrelationResponse>(`/api/v1/intelligence/${encodeURIComponent(record.item_id)}/ail-correlations`);
+      setAilCorrelation(result);
+    } catch (reason) {
+      setAilError(reason instanceof Error ? reason.message : 'AIL correlation unavailable');
+    } finally {
+      setAilLoading(false);
+    }
+  }
 
   return (
     <section className="unified-intelligence" aria-labelledby="workspace-title">
@@ -112,6 +150,7 @@ export function IocExplorerWorkspace() {
             <span className="result-meta"><b>{record.severity.toLowerCase()}</b><small>{displayDate(record.created_at)}</small></span>
             <span className="heading-statuses">
               <a className="button secondary" href={intelligenceHref(record)}>Open source intelligence</a>
+              <button className="button secondary" type="button" onClick={() => void inspectAil(record)}>Inspect AIL correlation</button>
               <a className="button secondary" href={analysisHref(record)}>Enrich / analyze selected IOC</a>
               <a className="button secondary" href={`/workbench/intelligence/graph?item=${encodeURIComponent(record.item_id)}`}>Graph</a>
               <a className="button secondary" href={`/workbench/investigations?item=${encodeURIComponent(record.item_id)}`}>Investigate</a>
@@ -119,6 +158,21 @@ export function IocExplorerWorkspace() {
           </article>
         ))}</div>}
       </article>
+
+      {ailTarget && <article className="surface intelligence-detail-panel" aria-label="AIL correlation context">
+        <header className="panel-heading"><div><p className="eyebrow">AIL · read-only correlation</p><h2>Correlation context for {ailTarget.observable_value}</h2></div><span className="evidence-label">Same-origin DTMO API</span></header>
+        {ailLoading && <p className="panel-state">Loading bounded AIL correlation…</p>}
+        {ailError && <div className="panel-state error-state"><strong>AIL correlation unavailable</strong><span>{ailError}. No zero-correlation, source-health or local-compromise conclusion is inferred.</span></div>}
+        {ailCorrelation && <>
+          <dl className="intelligence-facts"><div><dt>Status</dt><dd>{ailCorrelation.status}</dd></div><div><dt>Indicator</dt><dd>{ailCorrelation.indicator.type}: {ailCorrelation.indicator.value}</dd></div><div><dt>Correlations</dt><dd>{ailCorrelation.correlations.length}</dd></div><div><dt>Investigation references</dt><dd>{ailCorrelation.investigation_references.length}</dd></div><div><dt>Raw content exposed</dt><dd>{ailCorrelation.raw_content_exposed ? 'yes' : 'no'}</dd></div><div><dt>Analysis only</dt><dd>{ailCorrelation.analysis_only ? 'yes' : 'no'}</dd></div></dl>
+          {ailCorrelation.degraded_reasons.length > 0 && <div className="panel-state"><strong>Degraded correlation context</strong><span>{ailCorrelation.degraded_reasons.join(' · ')}</span></div>}
+          {!ailCorrelation.correlations.length && <div className="intelligence-empty"><strong>No bounded AIL correlations recorded</strong><span>This does not prove absence in AIL or any upstream source.</span></div>}
+          {ailCorrelation.correlations.length > 0 && <div className="provenance-list">{ailCorrelation.correlations.map((correlation, index) => <div className="provenance-row" key={`${correlation.source_id}-${correlation.external_id}-${index}`}><span><strong>{correlation.title}</strong><small>{correlation.source_id} · {correlation.item_type} · {correlation.relation}</small></span><span><b>{correlation.matched_value}</b><small>Attributable correlation context</small></span></div>)}</div>}
+          {ailCorrelation.investigation_references.length > 0 && <p className="boundary-copy">AIL investigation references: {ailCorrelation.investigation_references.map((reference) => reference.id).join(', ')}. These identifiers are context only and do not import AIL case ownership or authority into DTMO.</p>}
+          <p className="boundary-copy"><strong>Claim boundary:</strong> {ailCorrelation.claim_boundary}</p>
+        </>}
+        <p className="boundary-copy">This surface is read-only. It never exposes the AIL API key, raw AIL bodies, review/share/case/publication authority, or proof of live-source completeness or local compromise.</p>
+      </article>}
 
       <article className="surface evidence-surface intelligence-evidence"><div><p className="eyebrow">Evidence boundary</p><h2>IOC inventory without inferred verdicts</h2></div><p>{inventory?.evidence_boundary ?? 'IOC records are exposed only from persisted governed enrichment evidence. Missing records remain visibly missing.'}</p></article>
     </section>
