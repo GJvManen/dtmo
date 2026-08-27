@@ -53,6 +53,11 @@ function builtInSourceRunUrl(sourceId: string): string {
   return `/connectors/${encodeURIComponent(sourceId)}/run`;
 }
 
+function requireRouteConsistency(actual: string, expected: string): string {
+  if (actual !== expected) throw new Error('Governed source route contract mismatch');
+  return actual;
+}
+
 export function ThreatIntelligencePopulation({
   onPopulated,
   title = 'Populate canonical intelligence',
@@ -98,13 +103,19 @@ export function ThreatIntelligencePopulation({
 
   async function executeRegistered(source: Source) {
     if (!source.enabled) return;
-    const runUrl = `/api/v1/admin/sources/${encodeURIComponent(source.id)}/run`;
+    const runUrl = requireRouteConsistency(
+      `/api/v1/admin/sources/${encodeURIComponent(source.id)}/run`,
+      registeredSourceRunUrl(source.id),
+    );
     await execute(source.id, source.name, () => postSource(runUrl));
   }
 
   async function executeBuiltIn(source: SourceCenterStatus) {
     if (!source.manual_run_available) return;
-    const runUrl = `/connectors/${encodeURIComponent(source.id)}/run`;
+    const runUrl = requireRouteConsistency(
+      `/connectors/${encodeURIComponent(source.id)}/run`,
+      builtInSourceRunUrl(source.id),
+    );
     await execute(source.id, source.name, () => postSource(runUrl));
   }
 
