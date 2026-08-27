@@ -1,6 +1,6 @@
 # Phase 11 Functional UX Recovery Plan
 
-Status: **ACTIVE — owner functional feedback 2026-08-27**
+Status: **ACTIVE — R2 Administration information architecture**
 
 ## Purpose
 
@@ -25,6 +25,8 @@ Repository-controlled bootstrap/sample content must be labelled as such and must
 
 ### R1 — Usable-by-default open-source bootstrap and integration readiness
 
+Repository status: **MERGED / REPOSITORY-COMPLETE — #379**.
+
 Goal: reduce unnecessary setup while remaining fail-closed.
 
 - classify integrations as `ready-by-default`, `configuration-required`, `credential-required`, `disabled-by-policy`, `reachable`, `ingesting` or `degraded` as applicable;
@@ -36,6 +38,8 @@ Goal: reduce unnecessary setup while remaining fail-closed.
 Acceptance: a clean repository-controlled local/reference bootstrap exposes useful safe defaults and truthful blockers without secret material in the browser.
 
 ### R2 — Administration information architecture
+
+Repository status: **ACTIVE / CURRENT BOUNDED RECOVERY SLICE**.
 
 Goal: make Administration behave as one coherent console rather than a long mixed control page.
 

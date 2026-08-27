@@ -2,6 +2,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 MAIN = ROOT / "frontend/src/main.tsx"
+CONSOLE = ROOT / "frontend/src/AdministrationConsole.tsx"
 WORKSPACE = ROOT / "frontend/src/AdministrationSecurityAudit.tsx"
 ROUTES = ROOT / "backend/dtmo/api/routes.py"
 AUDITOR = ROOT / "backend/dtmo/auditor_ui.py"
@@ -9,11 +10,13 @@ AUDITOR = ROOT / "backend/dtmo/auditor_ui.py"
 
 def test_canonical_administration_renders_security_and_audit_without_legacy_navigation() -> None:
     main = MAIN.read_text(encoding="utf-8")
+    console = CONSOLE.read_text(encoding="utf-8")
     workspace = WORKSPACE.read_text(encoding="utf-8")
-    assert "AdministrationSecurityAudit" in main
+    assert "AdministrationConsole" in main
     assert '<Route path="/administration"' in main
-    assert "<AdministrationWorkspace />" in main
-    assert "<AdministrationSecurityAudit />" in main
+    assert "AdministrationSecurityAudit" in console
+    assert "<AdministrationWorkspace />" in console
+    assert "<AdministrationSecurityAudit />" in console
     assert "/ui/ciso-security" not in workspace
     assert "/ui/auditor" not in workspace
     assert "No legacy security administration dependency" in workspace
