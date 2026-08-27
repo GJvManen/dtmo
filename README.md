@@ -58,7 +58,9 @@ The platform uses provenance-aware records, server-side authorization, controlle
 
 ## Getting started
 
-For deployment and operation, start with the documentation portal rather than the development roadmap:
+For a new installation, start with the [Authoritative Installation Guide](docs/installation/INSTALLATION_GUIDE.md). It covers prerequisites, `tools/bootstrap_local.py`, generated local credentials, required AIStor image/license inputs, supported Compose startup, service entry points, first administration checks, first-data collection and troubleshooting.
+
+Then use the documentation portal for operation and product guidance:
 
 1. Read the [Documentation Portal](docs/README.md) for audience-oriented navigation.
 2. Review the [Product Guide](docs/product/PRODUCT_GUIDE.md) and [User Guide](docs/user/USER_GUIDE.md) for functional use.
@@ -72,6 +74,7 @@ The professional documentation set is organized by audience and responsibility:
 
 | Area | Entry point |
 |---|---|
+| Installation | [Installation Guide](docs/installation/INSTALLATION_GUIDE.md) |
 | Product and user experience | [Product Guide](docs/product/PRODUCT_GUIDE.md) · [User Guide](docs/user/USER_GUIDE.md) |
 | Administration | [Administrator Guide](docs/administration/ADMINISTRATOR_GUIDE.md) |
 | Operations | [Operations Manual](docs/operations/OPERATIONS_MANUAL.md) |
