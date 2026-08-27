@@ -28,8 +28,25 @@ jobs:
       DTMO_MINIO_ENDPOINT: 127.0.0.1:9000
       DTMO_FEATURE_LIVE_CONNECTORS: "false"
       DTMO_E2E_BASE_URL: http://127.0.0.1:8765
+      DTMO_FRONTEND_DIST: ${{ github.workspace }}/frontend/dist
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact-head checkout
+        run: |
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          test "$(git rev-parse HEAD)" = "$expected"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build canonical workbench
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
@@ -74,17 +91,10 @@ jobs:
 
           root = Path("artifacts/documentation-screenshots/generated")
           required = {
-              "overview-dashboard.png",
-              "intelligence-workspace.png",
-              "sources-catalogue.png",
-              "vulnerability-analytics.png",
-              "misp-governed-workflow.png",
-              "ail-correlation-workspace.png",
-              "audit-correlation.png",
-              "visual-analytics.png",
-              "governance-frameworks.png",
-              "administration-rbac.png",
-              "command-center-workbench.png",
+              "overview-dashboard.png", "intelligence-workspace.png", "sources-catalogue.png",
+              "vulnerability-analytics.png", "misp-governed-workflow.png", "ail-correlation-workspace.png",
+              "audit-correlation.png", "visual-analytics.png", "governance-frameworks.png",
+              "administration-rbac.png", "command-center-workbench.png",
           }
           present = {path.name for path in root.glob("*.png")}
           missing = sorted(required - present)
