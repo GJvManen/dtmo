@@ -115,7 +115,8 @@ async def run(base_url: str, output: Path) -> None:
         await panel.get_by_text("Raw content exposed", exact=True).wait_for(state="visible")
         await panel.get_by_text("no", exact=True).first.wait_for(state="visible")
 
-        await page.screenshot(path=str(output / "ail-correlation-workspace.png"), full_page=True)
+        candidate_filename = "ail-correlation-workbench.png"
+        await page.screenshot(path=str(output / candidate_filename), full_page=True)
 
         metadata = {
             "generated_at": datetime.now(UTC).isoformat(),
@@ -136,7 +137,7 @@ async def run(base_url: str, output: Path) -> None:
             "share_authority_proven": False,
             "case_authority_proven": False,
             "publication_authority_proven": False,
-            "files": ["ail-correlation-workspace.png"],
+            "files": [candidate_filename],
         }
         (output / "canonical-ail-correlation-capture-metadata.json").write_text(
             json.dumps(metadata, indent=2) + "\n", encoding="utf-8"
