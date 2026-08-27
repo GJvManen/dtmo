@@ -83,7 +83,7 @@ async def test_governance_and_operations_deep_same_origin_journeys() -> None:
         await page.get_by_role("button", name="Refresh runtime observation", exact=True).click()
         await expect(page.get_by_text("Canonical pivots", exact=True)).to_be_visible()
         await expect(page.get_by_role("link", name="Sources & Collection", exact=False)).to_be_visible()
-        await expect(page.get_by_role("link", name="Administration", exact=False)).to_be_visible()
+        await expect(page.get_by_role("link", name="Administration", exact=True)).to_be_visible()
         await expect(page.get_by_role("link", name="Automation", exact=False)).to_be_visible()
         assert await page.locator('a[href^="/ui/"]').count() == 0
 
