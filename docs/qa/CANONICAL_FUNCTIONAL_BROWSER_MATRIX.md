@@ -76,6 +76,14 @@ The dedicated exact-head gate provides a loopback Cortex API emulator solely to 
 
 Cortex responders, analyzer discovery and other side-effect actions remain outside this approved boundary. `external_share_authorized=false` and `local_compromise_proven=false` remain authoritative. Passing the emulator-backed journey does not prove live Cortex deployment health, upstream truth, compromise, owner acceptance, staging, production-equivalent validation or independent assurance.
 
+## Slice 9 — Sharing & Exchange separate-human approval and unpublished MISP delivery
+
+The canonical Sharing & Exchange workspace must prove the complete governed browser decision chain rather than only mocked API rendering. One repository-controlled canonical intelligence item begins as an unreviewed, unapproved candidate. A first human-authorized browser principal records the review through the real same-origin API and must then be blocked from approving sharing for that same item. A second human-authorized principal performs the separate share approval.
+
+Only after both durable decisions are present may the second principal invoke the real server-side MISP export path. The dedicated exact-head gate supplies a loopback MISP API emulator that validates the server-side API key and the bounded event payload, including `published=false`, distribution, TLP, deterministic UUID and non-IDS canonical evidence link. DTMO must persist successful delivery evidence and replay protection; after a full page reload the export history must remain visible and the same canonical revision must no longer be exportable automatically.
+
+This slice grants no MISP publication or synchronization authority. It does not prove live MISP health or upstream truth, and the emulator is not owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence or independent assurance. Server-side RBAC, separate human review/share authority and replay protection remain authoritative.
+
 ## Evidence boundary
 
 Passing these slices is repository-controlled browser evidence only. It is **not** owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, production authorization, or independent external assurance.
@@ -84,4 +92,4 @@ The following controls remain authoritative and must not be weakened by recovery
 
 ## Remaining recovery
 
-These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After the Cortex analyzer-only slice, the next functional recovery priority returns to **Sharing & Exchange + Automation & Playbooks**, unless exact-head CI exposes an earlier blocker.
+These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After the governed Sharing & Exchange slice, the next bounded functional recovery priority is **Automation & Playbooks real trigger/rollback execution**, unless exact-head CI exposes an earlier blocker.
