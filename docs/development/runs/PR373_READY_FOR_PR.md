@@ -1,0 +1,1 @@
+PR branch now contains attributable implementation, tests, CI and operator documentation. Open the bounded recovery pull request against `main`; do not merge until route integration and fresh exact-head CI are complete.
