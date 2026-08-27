@@ -73,7 +73,7 @@ The capture exercises a bounded read-only prioritization journey:
 
 `vulnerability evidence -> prioritization attributes -> provenance boundary`
 
-It uses the real Vulnerability & Exposure Center with sanitized deterministic CVSS, EPSS, KEV, vendor, product, CWE and provenance fixtures. These attributes are prioritization evidence only. They do not establish that a local asset is affected, reachable, exploitable, compromised or remediated, and the capture grants no scanner, publication or sharing authority. The metadata preserves these boundaries:
+It uses the real Vulnerability & Exposure Center with sanitized deterministic CVSS, EPSS, KEV, vendor, product, CWE and provenance fixtures. These attributes are prioritization evidence only. They do not establish local exposure and do not establish that a local asset is affected, reachable, exploitable, compromised or remediated. The capture grants no scanner, publication or sharing authority. The metadata preserves these boundaries:
 
 - `canonical_route = /workbench/exposure`;
 - `capture_mode = actual-runtime-ui-with-synthetic-fixture-data`;
