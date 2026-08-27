@@ -7,6 +7,7 @@ on:
       - 'frontend/**'
       - 'backend/dtmo/**'
       - 'backend/tests/test_phase11_10q_same_origin_browser_acceptance.py'
+      - 'backend/tests/test_phase11_10q_whole_product_retest_readiness.py'
       - 'backend/tests/test_owner_functional_recovery_browser_matrix.py'
       - 'backend/tests/test_owner_functional_recovery_threat_intelligence.py'
       - 'backend/tests/test_owner_functional_recovery_ioc_explorer.py'
@@ -14,10 +15,13 @@ on:
       - 'backend/tests/test_owner_functional_recovery_exposure.py'
       - 'backend/tests/test_owner_functional_recovery_investigations.py'
       - 'backend/tests/test_owner_functional_recovery_analysis.py'
+      - 'backend/tests/test_owner_functional_recovery_governance.py'
+      - 'backend/tests/test_owner_functional_recovery_operations.py'
       - 'database/migrations/**'
       - '.github/workflows/phase11-10q-same-origin-browser-acceptance.yml'
       - 'docs/roadmap/FUNCTIONAL_RECOVERY_ACCEPTANCE.md'
       - 'docs/qa/CANONICAL_FUNCTIONAL_BROWSER_MATRIX.md'
+      - 'docs/qa/WHOLE_PRODUCT_OWNER_RETEST_READINESS.md'
   workflow_dispatch:
 
 permissions:
@@ -241,6 +245,9 @@ jobs:
           cat artifacts/phase11-10q-same-origin-server.log
           exit 1
 
+      - name: Validate whole-product retest composition
+        run: python -m pytest -q backend/tests/test_phase11_10q_whole_product_retest_readiness.py
+
       - name: Execute unmocked same-origin browser journeys
         run: |
           python -m pytest -q \
@@ -252,6 +259,8 @@ jobs:
             backend/tests/test_owner_functional_recovery_exposure.py \
             backend/tests/test_owner_functional_recovery_investigations.py \
             backend/tests/test_owner_functional_recovery_analysis.py \
+            backend/tests/test_owner_functional_recovery_governance.py \
+            backend/tests/test_owner_functional_recovery_operations.py \
             --junitxml=artifacts/phase11-10q-same-origin-browser.xml
 
       - name: Record bounded evidence claim
@@ -269,15 +278,19 @@ jobs:
               "same_origin_http": True,
               "real_dtmo_persistence": True,
               "real_object_store": True,
+              "governance_deep_evidence_included": True,
+              "operations_runtime_evidence_included": True,
               "repository_controlled_thehive_emulator": True,
               "repository_controlled_intelowl_emulator": True,
               "live_external_connector_execution": False,
               "repository_controlled_environment": True,
+              "whole_product_retest_preparation": True,
               "owner_functional_acceptance": False,
+              "clean_external_installation_evidence": False,
               "staging_evidence": False,
               "production_equivalent_evidence": False,
               "external_assurance_evidence": False,
-              "claim_boundary": "Exact-head repository-controlled browser acceptance against the real built DTMO workbench, same-origin APIs, temporary PostgreSQL/object storage and loopback TheHive/IntelOwl emulators. Emulator-backed adapter execution is repository integration evidence only; it is not live upstream, owner acceptance, staging, production-equivalent, production authorization or independent external assurance."
+              "claim_boundary": "Exact-head repository-controlled whole-product retest preparation against the real built DTMO workbench, same-origin APIs, temporary PostgreSQL/object storage and bounded loopback integration emulators. The composed journey includes Governance deep evidence and Operations persisted runtime evidence. It does not replace the required external owner retest from a clean supported installation and is not staging, production-equivalent, production authorization or independent external assurance."
           }
           Path("artifacts/phase11-10q-same-origin-evidence.json").write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
           PY
