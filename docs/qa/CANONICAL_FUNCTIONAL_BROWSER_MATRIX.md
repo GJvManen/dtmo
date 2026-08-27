@@ -1,8 +1,8 @@
 # Canonical Functional Browser Matrix
 
-Status: **IN PROGRESS / OWNER FUNCTIONAL RECOVERY REOPENED**
+Status: **IN PROGRESS / WHOLE-PRODUCT OWNER RETEST PREPARATION**
 
-This QA contract exists because repository-green route/source contracts did not by themselves demonstrate a workable canonical product. Candidate freeze and Phase 11.10p remain blocked until required canonical functions are re-exercised and owner-observed blockers are closed.
+This QA contract exists because repository-green route/source contracts did not by themselves demonstrate a workable canonical product. Candidate freeze and Phase 11.10p remain blocked until required canonical functions are re-exercised from a clean supported installation and the external owner explicitly accepts the whole-product retest.
 
 ## Slice 1 — route coverage and Administration persistence
 
@@ -92,12 +92,30 @@ The same workspace must expose supported governed registered sources from Source
 
 The rollback is intentionally narrow: it cannot delete canonical intelligence, immutable/raw evidence, audit records or connector health history, cannot reverse an upstream side effect that already happened, and cannot mutate the scheduler. Trigger or rollback success grants no remediation, case-creation, review, external-share, publication or production authority. The loopback source and ephemeral repository-controlled raw store are exact-head integration evidence only and are not live upstream, staging, production-equivalent, penetration-test or independent-assurance evidence.
 
+## Slice 11 — Governance & Evidence deep traceability
+
+The canonical Governance & Evidence workspace must expose repository-backed framework provenance, explicit typed DTMO control mappings and implementation references through the same-origin governance contract. The browser journey must prove a framework → DTMO control → repository evidence drill-down including Normenkader IBP, MITRE ATT&CK and CVSS context where explicit mappings exist.
+
+No missing relationship may be inferred. CVSS remains context-only, and framework visibility must not be rendered as certification, blanket compliance, control effectiveness or production assurance. Governance visibility grants no review, case, connector, sharing, publication, administration or production authority.
+
+## Slice 12 — Operations deep persisted runtime evidence
+
+The canonical Operations workspace must distinguish connector capability from actual DTMO-observed runtime evidence. A PostgreSQL-backed browser journey must render persisted connector runtime state and recent connector health events, including last run identity, success/failure timing, degraded/isolated state, record counts and quarantine counts.
+
+Raw quarantined evidence, credentials and execution payloads must not be exposed. Operations remains read-only and grants no connector execution, configuration, review, sharing, publication or responder authority. Persisted DTMO runtime state is operational evidence only; it is not proof of live upstream health or production readiness.
+
+## Slice 13 — composed whole-product owner retest preparation
+
+The central same-origin workflow must execute the route matrix and all deep recovery journeys together on one exact PR head, including the Governance and Operations journeys added after the earlier owner rejection. The composed run must use real same-origin DTMO HTTP, temporary PostgreSQL/object-store state and only bounded repository-controlled integration emulators where live external services are deliberately outside repository CI.
+
+This composed run is a regression-prevention prerequisite for the **whole-product owner retest**. It does not replace that retest. The external owner retest must still start from a clean supported installation and explicitly determine whether the integrated product is professionally usable.
+
 ## Evidence boundary
 
-Passing these slices is repository-controlled browser evidence only. It is **not** owner acceptance, staging evidence, production-equivalent validation, penetration-test evidence, production authorization, or independent external assurance.
+Passing these slices is repository-controlled browser evidence only. It is **not** owner acceptance, clean external installation evidence, staging evidence, production-equivalent validation, penetration-test evidence, production authorization, or independent external assurance.
 
 The following controls remain authoritative and must not be weakened by recovery work: server-side RBAC, provenance, fail-closed behavior, separate human review/share authority, responder/publication separation, and server-side credential boundaries.
 
 ## Remaining recovery
 
-These slices do not claim that every function on every page has been proven. Recovery continues page-by-page with real read/mutation/filter/pivot/persistence/error-path journeys, fixing only verified failures one bounded change at a time. After the Automation & Playbooks trigger/rollback slice, the next bounded functional recovery priority is **Governance & Evidence + Operations deep evidence/runtime journeys**, unless exact-head CI exposes an earlier blocker.
+Governance & Evidence and Operations deep journeys are now part of the required composed repository gate. The next lifecycle step after that exact-head gate is green is the **whole-product owner retest from a clean supported installation**. Candidate freeze and Phase 11.10p production-equivalent validation remain blocked until that external owner retest is explicitly accepted. Any defect found by the retest must be fixed as a bounded root-cause slice and requires fresh exact-head repository evidence before repeating the retest.
