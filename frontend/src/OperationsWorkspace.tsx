@@ -9,6 +9,7 @@ type HealthSnapshot = {
 };
 
 type OperationsSummary = {
+  metric_source: string;
   request_count: number;
   average_latency_ms: number;
   active_alerts: number;
@@ -27,6 +28,38 @@ type OperationsSummary = {
 type ConnectorCapability = {
   id: string;
   enabled: boolean;
+};
+
+type ConnectorRuntimeState = {
+  connector_id: string;
+  health_status: string;
+  last_run_id: string | null;
+  last_success_at: string | null;
+  last_failure_at: string | null;
+  consecutive_failures: number;
+  circuit_open_until: string | null;
+  updated_at: string | null;
+};
+
+type ConnectorRunEvidence = {
+  connector_id: string;
+  run_id: string;
+  observed_at: string | null;
+  status: string;
+  duration_seconds: number;
+  record_count: number;
+  quarantine_count: number;
+  error_code: string | null;
+  publish_approved: boolean;
+};
+
+type RuntimeEvidence = {
+  evidence_source: string;
+  state_table: string;
+  history_table: string;
+  connector_states: ConnectorRuntimeState[];
+  recent_runs: ConnectorRunEvidence[];
+  claim_boundary: string;
 };
 
 async function readJson<T>(url: string): Promise<T> {
@@ -48,6 +81,12 @@ function finite(value: number | undefined, suffix = '') {
   return typeof value === 'number' && Number.isFinite(value) ? `${value.toLocaleString()}${suffix}` : '—';
 }
 
+function timestamp(value: string | null | undefined) {
+  if (!value) return 'not observed';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+}
+
 export function OperationsWorkspace() {
   const health = useQuery({
     queryKey: ['operations', 'health'],
@@ -67,17 +106,26 @@ export function OperationsWorkspace() {
     retry: false,
     refetchInterval: 30_000,
   });
+  const runtimeEvidence = useQuery({
+    queryKey: ['operations', 'runtime-evidence'],
+    queryFn: () => readJson<RuntimeEvidence>('/api/v1/operations/runtime-evidence'),
+    retry: false,
+    refetchInterval: 30_000,
+  });
 
   const refresh = () => {
     void health.refetch();
     void summary.refetch();
     void connectors.refetch();
+    void runtimeEvidence.refetch();
   };
   const data = summary.data;
   const healthObserved = !health.isError && Boolean(health.data);
   const summaryObserved = !summary.isError && Boolean(data);
   const connectorRows = connectors.data ?? [];
   const enabledConnectors = connectorRows.filter((connector) => connector.enabled).length;
+  const stateRows = runtimeEvidence.data?.connector_states ?? [];
+  const recentRuns = runtimeEvidence.data?.recent_runs ?? [];
   const alertRows = data ? [
     ['API errors', data.alerts.api_error],
     ['Connector failures', data.alerts.connector],
@@ -91,7 +139,7 @@ export function OperationsWorkspace() {
         <div>
           <p className="eyebrow">Unified Operations Workbench</p>
           <h1 id="workspace-title">Operations</h1>
-          <p>Canonical runtime health, telemetry, connector capability and alert observation from same-origin DTMO contracts.</p>
+          <p>Canonical runtime health, telemetry, persisted connector execution evidence and alert observation from same-origin DTMO contracts.</p>
         </div>
         <div className="heading-statuses">
           <span className="phase-badge">11.10m Operations · 11.10q recovery</span>
@@ -102,7 +150,7 @@ export function OperationsWorkspace() {
       <article className="surface command-panel">
         <header className="panel-heading">
           <div><p className="eyebrow">Observation controls</p><h2>Operational snapshot</h2></div>
-          <button type="button" onClick={refresh} disabled={health.isFetching || summary.isFetching || connectors.isFetching}>Refresh runtime observation</button>
+          <button type="button" onClick={refresh} disabled={health.isFetching || summary.isFetching || connectors.isFetching || runtimeEvidence.isFetching}>Refresh runtime observation</button>
         </header>
         <p className="boundary-copy">Values below are read-only observations from this DTMO process and its persisted connector state. Missing telemetry stays unavailable; it is never converted into a healthy or zero-risk claim.</p>
       </article>
@@ -126,7 +174,7 @@ export function OperationsWorkspace() {
         </article>
 
         <article className="surface command-panel">
-          <header className="panel-heading"><div><p className="eyebrow">Signals</p><h2>Alert state</h2></div><span className="evidence-label">Prometheus registry</span></header>
+          <header className="panel-heading"><div><p className="eyebrow">Signals</p><h2>Alert state</h2></div><span className="evidence-label">{data?.metric_source ?? 'Prometheus registry'}</span></header>
           {summary.isError && <p className="panel-state error-state">Operational metrics unavailable: {summary.error.message}</p>}
           {summary.isPending && <p className="panel-state">Loading alert gauges…</p>}
           {summaryObserved && <div className="integration-list">{alertRows.map(([label, active]) => <div className="integration-row" key={label}><span className={`integration-state ${active ? 'state-configuration-required' : 'state-ready'}`} aria-hidden="true" /><div><strong>{label}</strong><span>{active ? 'active' : 'clear at observation time'}</span></div></div>)}</div>}
@@ -151,6 +199,38 @@ export function OperationsWorkspace() {
           <p className="boundary-copy">Connector enablement is capability state, not proof of successful collection or upstream health.</p>
         </article>
       </div>
+
+      <article className="surface command-panel" data-operations-section="connector-runtime-evidence">
+        <header className="panel-heading">
+          <div><p className="eyebrow">Persisted execution evidence</p><h2>Connector runtime state</h2></div>
+          <span className="evidence-label">{runtimeEvidence.data?.evidence_source ?? 'runtime evidence unavailable'}</span>
+        </header>
+        {runtimeEvidence.isError && <p className="panel-state error-state">Persisted connector runtime evidence unavailable: {runtimeEvidence.error.message}</p>}
+        {runtimeEvidence.isPending && <p className="panel-state">Loading persisted connector runtime evidence…</p>}
+        {!runtimeEvidence.isError && !runtimeEvidence.isPending && stateRows.length === 0 && <p className="panel-state">No connector runtime state has been persisted yet. This is not interpreted as healthy.</p>}
+        {stateRows.length > 0 && <div className="integration-list">{stateRows.map((state) => <div className="integration-row" key={state.connector_id} data-connector-runtime={state.connector_id}>
+          <span className={`integration-state ${state.health_status === 'healthy' ? 'state-ready' : state.health_status === 'unknown' ? 'state-disabled' : 'state-configuration-required'}`} aria-hidden="true" />
+          <div>
+            <strong>{state.connector_id} · {state.health_status}</strong>
+            <span>last success {timestamp(state.last_success_at)} · last failure {timestamp(state.last_failure_at)} · consecutive failures {state.consecutive_failures}</span>
+            <small>last run {state.last_run_id ?? 'not observed'} · state updated {timestamp(state.updated_at)}{state.circuit_open_until ? ` · isolated until ${timestamp(state.circuit_open_until)}` : ''}</small>
+          </div>
+        </div>)}</div>}
+        <p className="boundary-copy">Source: {runtimeEvidence.data?.state_table ?? 'connector_runtime_states'} + {runtimeEvidence.data?.history_table ?? 'connector_health_events'}. {runtimeEvidence.data?.claim_boundary ?? 'Persisted runtime evidence does not establish live upstream availability or production assurance.'}</p>
+      </article>
+
+      <article className="surface command-panel" data-operations-section="recent-connector-runs">
+        <header className="panel-heading"><div><p className="eyebrow">Durable history</p><h2>Recent connector runs</h2></div><span className="evidence-label">Latest 25 persisted observations</span></header>
+        {recentRuns.length === 0 && !runtimeEvidence.isPending && <p className="panel-state">No persisted connector run history is currently available.</p>}
+        {recentRuns.length > 0 && <div className="integration-list">{recentRuns.map((run) => <div className="integration-row" key={`${run.connector_id}-${run.run_id}`}>
+          <span className={`integration-state ${run.status === 'success' ? 'state-ready' : 'state-configuration-required'}`} aria-hidden="true" />
+          <div>
+            <strong>{run.connector_id} · {run.status}</strong>
+            <span>{timestamp(run.observed_at)} · {run.record_count} records · {run.quarantine_count} quarantined · {run.duration_seconds.toFixed(2)}s</span>
+            <small>run {run.run_id}{run.error_code ? ` · error ${run.error_code}` : ''} · publication approved: {run.publish_approved ? 'yes' : 'no'}</small>
+          </div>
+        </div>)}</div>}
+      </article>
 
       <article className="surface evidence-surface">
         <div><p className="eyebrow">Canonical pivots</p><h2>Act without legacy fallback</h2></div>
