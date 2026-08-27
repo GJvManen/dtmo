@@ -19,7 +19,7 @@ The candidate uses the real current DTMO frontend with sanitized deterministic A
 - `owner_acceptance_proven = false`;
 - `production_equivalent_proven = false`.
 
-The reviewed source artifact is governed by the separate screenshot-promotion mechanism introduced after capture. Promotion remains exact-run, exact-head, artifact-digest and image-digest bound and cannot auto-merge.
+The candidate **must not replace `overview-dashboard.png` until** its exact-head screenshot artifact has completed the governed visual-review and promotion path. The reviewed source artifact is governed by the separate screenshot-promotion mechanism introduced after capture. Promotion remains exact-run, exact-head, artifact-digest and image-digest bound and cannot auto-merge.
 
 ## Canonical Threat Intelligence replacement candidate
 
