@@ -113,6 +113,7 @@ async def test_canonical_store_failure_never_synthesizes_zero_metrics_or_trends(
         "type_distribution": [],
         "enrichment_status_distribution": [],
         "collection_volume_distribution": [],
+        "collection_observation_age": [],
     }
     assert all(metric["value"] is None for metric in snapshot["metrics"])
     assert "rather than synthesized" in snapshot["evidence_boundary"]
@@ -150,6 +151,7 @@ def test_frontend_command_center_uses_governed_api_graphs_pivots_and_explicit_bo
     assert '"type_distribution"' in model_source
     assert '"enrichment_status_distribution"' in model_source
     assert '"collection_volume_distribution"' in model_source
+    assert '"collection_observation_age"' in model_source
     assert ".kpi-grid" in styles
     assert ".integration-list" in styles
     assert ".trend-chart" in styles

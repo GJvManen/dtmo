@@ -6,6 +6,7 @@ type SourcePoint = { source_id: string; count: number };
 type IntelligenceTypePoint = { item_type: string; count: number };
 type EnrichmentStatusPoint = { status: string; count: number };
 type CollectionVolumePoint = { connector_id: string; inserted: number };
+type CollectionObservationAgePoint = { connector_id: string; last_started_at: string; age_hours: number };
 type CommandCenterSnapshot = {
   data_state: 'available' | 'unavailable';
   trends?: {
@@ -15,6 +16,7 @@ type CommandCenterSnapshot = {
     type_distribution: IntelligenceTypePoint[];
     enrichment_status_distribution: EnrichmentStatusPoint[];
     collection_volume_distribution: CollectionVolumePoint[];
+    collection_observation_age: CollectionObservationAgePoint[];
   };
 };
 type VulnerabilityAnalytics = {
@@ -37,7 +39,7 @@ async function fetchJson<T>(url: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-function AccessibleBars({ title, points, labelKey }: { title: string; points: Array<{ label: string; value: number }>; labelKey: string }) {
+function AccessibleBars({ title, points, labelKey, valueKey = 'Count' }: { title: string; points: Array<{ label: string; value: number }>; labelKey: string; valueKey?: string }) {
   const max = Math.max(1, ...points.map((point) => point.value));
   return (
     <section className="surface command-panel" aria-label={title}>
@@ -54,7 +56,7 @@ function AccessibleBars({ title, points, labelKey }: { title: string; points: Ar
             ))}
           </div>
           <table aria-label={`${title} table`}>
-            <thead><tr><th scope="col">{labelKey}</th><th scope="col">Count</th></tr></thead>
+            <thead><tr><th scope="col">{labelKey}</th><th scope="col">{valueKey}</th></tr></thead>
             <tbody>{points.map((point) => <tr key={point.label}><td>{point.label}</td><td>{point.value}</td></tr>)}</tbody>
           </table>
         </>
@@ -93,6 +95,9 @@ export function VisualAnalyticsWorkspace() {
   const collectionVolume = commandCenter.data?.data_state === 'available'
     ? (commandCenter.data.trends?.collection_volume_distribution ?? []).map((point) => ({ label: point.connector_id, value: point.inserted }))
     : [];
+  const collectionObservationAge = commandCenter.data?.data_state === 'available'
+    ? (commandCenter.data.trends?.collection_observation_age ?? []).map((point) => ({ label: point.connector_id, value: point.age_hours }))
+    : [];
   const vulnerabilityTrend = vulnerability.data?.status === 'ok'
     ? (vulnerability.data.trend ?? []).map((point) => ({ label: point.date, value: point.count }))
     : [];
@@ -120,13 +125,14 @@ export function VisualAnalyticsWorkspace() {
         <AccessibleBars title="Intelligence type distribution" points={intelligenceTypes} labelKey="Type" />
         <AccessibleBars title="Enrichment status" points={enrichmentStatuses} labelKey="Status" />
         <AccessibleBars title="Collection volume" points={collectionVolume} labelKey="Connector" />
+        <AccessibleBars title="Collection observation age" points={collectionObservationAge} labelKey="Connector" valueKey="Hours since latest persisted run start" />
         <AccessibleBars title="Severity distribution" points={severity} labelKey="Severity" />
         <AccessibleBars title="Vulnerability observations" points={vulnerabilityTrend} labelKey="Date" />
       </div>
 
       <section className="surface command-panel" aria-label="Analytics evidence boundary">
         <h2>Evidence boundary</h2>
-        <p>Source contribution, intelligence type distribution, enrichment status and collection volume are counted directly from persisted canonical records. Collection volume is the sum of persisted inserted-record counts by connector and is historical execution evidence only. Persisted analytics does not prove live connectivity. It does not prove local exposure, does not prove source reachability, connector health, freshness or current upstream availability, and does not grant review authority, sharing approval or publication authority. It also does not prove compromise or analyzer correctness.</p>
+        <p>Source contribution, intelligence type distribution, enrichment status, collection volume and collection observation age are derived directly from persisted canonical records. Collection volume is the sum of persisted inserted-record counts by connector and is historical execution evidence only. Collection observation age is calculated from the latest persisted connector-run start timestamp and is historical observation evidence only. Persisted analytics does not prove live connectivity. It does not prove local exposure, does not prove source reachability, connector health, operational freshness or current upstream availability, and does not grant review authority, sharing approval or publication authority. It also does not prove compromise or analyzer correctness.</p>
         {vulnerability.data?.claim_boundary && <p>{vulnerability.data.claim_boundary}</p>}
       </section>
     </section>

@@ -82,6 +82,10 @@ def _severity_value(value: object) -> str:
     return str(getattr(value, "value", value))
 
 
+def _as_utc(value: datetime) -> datetime:
+    return value.replace(tzinfo=UTC) if value.tzinfo is None else value.astimezone(UTC)
+
+
 def _empty_trends() -> dict[str, list[dict[str, Any]]]:
     return {
         "intelligence_7d": [],
@@ -90,6 +94,7 @@ def _empty_trends() -> dict[str, list[dict[str, Any]]]:
         "type_distribution": [],
         "enrichment_status_distribution": [],
         "collection_volume_distribution": [],
+        "collection_observation_age": [],
     }
 
 
@@ -256,6 +261,13 @@ async def build_command_center_snapshot(
                 .order_by(desc(func.sum(ConnectorRun.inserted)), ConnectorRun.connector_id)
             )
         ).all()
+        freshness_rows = (
+            await session.execute(
+                select(ConnectorRun.connector_id, func.max(ConnectorRun.started_at))
+                .group_by(ConnectorRun.connector_id)
+                .order_by(ConnectorRun.connector_id)
+            )
+        ).all()
 
         trends = {
             "intelligence_7d": [
@@ -281,6 +293,18 @@ async def build_command_center_snapshot(
             "collection_volume_distribution": [
                 {"connector_id": str(connector_id), "inserted": int(inserted or 0)}
                 for connector_id, inserted in collection_rows
+            ],
+            "collection_observation_age": [
+                {
+                    "connector_id": str(connector_id),
+                    "last_started_at": _as_utc(last_started_at).isoformat(),
+                    "age_hours": round(
+                        max(0.0, (now - _as_utc(last_started_at)).total_seconds() / 3600),
+                        1,
+                    ),
+                }
+                for connector_id, last_started_at in freshness_rows
+                if last_started_at is not None
             ],
         }
 
