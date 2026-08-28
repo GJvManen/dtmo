@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from dtmo.config import Settings
 from dtmo.integration_readiness import integration_readiness
-from dtmo.intelligence.model import IntelligenceSeverity
+from dtmo.intelligence.model import IntelligenceSeverity, IntelligenceType
 from dtmo.persistence.models import ConnectorRun, IntelligenceItem
 
 
@@ -87,6 +87,7 @@ def _empty_trends() -> dict[str, list[dict[str, Any]]]:
         "intelligence_7d": [],
         "severity_distribution": [],
         "source_distribution": [],
+        "type_distribution": [],
     }
 
 
@@ -228,6 +229,16 @@ async def build_command_center_snapshot(
             )
         ).all()
 
+        type_rows = (
+            await session.execute(
+                select(IntelligenceItem.item_type, func.count())
+                .group_by(IntelligenceItem.item_type)
+            )
+        ).all()
+        type_counts = {item_type.value: 0 for item_type in IntelligenceType}
+        for item_type, count in type_rows:
+            type_counts[_severity_value(item_type)] = int(count or 0)
+
         trends = {
             "intelligence_7d": [
                 {"date": day.isoformat(), "count": count}
@@ -240,6 +251,10 @@ async def build_command_center_snapshot(
             "source_distribution": [
                 {"source_id": str(source_id), "count": int(count or 0)}
                 for source_id, count in source_rows
+            ],
+            "type_distribution": [
+                {"item_type": item_type.value, "count": type_counts.get(item_type.value, 0)}
+                for item_type in IntelligenceType
             ],
         }
 
