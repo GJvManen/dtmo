@@ -29,7 +29,7 @@ def test_threat_intelligence_exposes_direct_governed_sharing_pivot():
     source = INTELLIGENCE.read_text(encoding="utf-8")
     assert "/workbench/sharing?item=${encodeURIComponent(detail.id)}" in source
     assert "Review &amp; share" in source
-    assert "Sharing reloads server-authorized governance state" in source
+    assert "Each destination reloads server-authorized persisted context" in source
     assert "grants no review, share approval, export, publication or synchronization authority" in source
 
 
