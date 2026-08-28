@@ -77,7 +77,7 @@ Acceptance: authorized enrichment is launchable and reviewable from canonical ob
 
 ### R5 — Cross-workspace statistics and trends
 
-Repository status: **ACTIVE — source contribution merged in #383; intelligence type distribution merged in #384; enrichment status merged in #385; collection volume merged in #386; collection observation age merged in #388; IOC type distribution merged in #389; KEV status distribution is the current bounded slice**.
+Repository status: **ACTIVE — source contribution merged in #383; intelligence type distribution merged in #384; enrichment status merged in #385; collection volume merged in #386; collection observation age merged in #388; IOC type distribution merged in #389; KEV status distribution merged in #390; CVSS score distribution is the current bounded slice**.
 
 Goal: turn the existing visualization foundation into useful operational analytics.
 
@@ -100,7 +100,9 @@ Completed bounded slice: collection observation age per connector from the lates
 
 Completed bounded slice: IOC type distribution from persisted canonical `IntelOwlEnrichmentRecord.observable_type` values already used by the server-authorized IOC inventory. This is persisted observable evidence only and does not infer maliciousness, verdict, local compromise, review completion or sharing/publication authority.
 
-Current bounded slice: add KEV evidence-status distribution from canonical vulnerability API rows after the existing raw-evidence integrity verification boundary. The distribution distinguishes known exploited, not-known-exploited and unknown evidence states; KEV evidence does not prove local deployment, exploitability, compromise, remediation authority or external-share approval.
+Completed bounded slice: KEV evidence-status distribution from canonical vulnerability API rows after the existing raw-evidence integrity verification boundary. The distribution distinguishes known exploited, not-known-exploited and unknown evidence states; KEV evidence does not prove local deployment, exploitability, compromise, remediation authority or external-share approval.
+
+Current bounded slice: add CVSS score-band distribution from the same canonical vulnerability API rows after raw-evidence integrity verification. The distribution uses explicit critical, high, medium, low, none and unknown bands. CVSS is prioritization evidence only and does not prove exploitability, local deployment, local exposure, compromise, remediation authority or external-share approval.
 
 Acceptance: charts are sourced from canonical APIs/persistence and never synthesize values merely to populate a dashboard.
 
