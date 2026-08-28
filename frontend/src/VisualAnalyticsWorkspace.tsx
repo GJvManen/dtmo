@@ -126,7 +126,7 @@ export function VisualAnalyticsWorkspace() {
 
       <section className="surface command-panel" aria-label="Analytics evidence boundary">
         <h2>Evidence boundary</h2>
-        <p>Source contribution, intelligence type distribution, enrichment status and collection volume are counted directly from persisted canonical records. Collection volume is the sum of persisted inserted-record counts by connector and is historical execution evidence only. Persisted analytics does not prove live connectivity, freshness, connector health, current upstream availability or local exposure; it does not grant review authority, sharing approval or publication authority and does not prove compromise or analyzer correctness.</p>
+        <p>Source contribution, intelligence type distribution, enrichment status and collection volume are counted directly from persisted canonical records. Collection volume is the sum of persisted inserted-record counts by connector and is historical execution evidence only. Persisted analytics does not prove live connectivity. It does not prove local exposure, does not prove source reachability, connector health, freshness or current upstream availability, and does not grant review authority, sharing approval or publication authority. It also does not prove compromise or analyzer correctness.</p>
         {vulnerability.data?.claim_boundary && <p>{vulnerability.data.claim_boundary}</p>}
       </section>
     </section>
