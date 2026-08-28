@@ -95,6 +95,7 @@ def _empty_trends() -> dict[str, list[dict[str, Any]]]:
         "enrichment_status_distribution": [],
         "collection_volume_distribution": [],
         "collection_observation_age": [],
+        "ioc_type_distribution": [],
     }
 
 
@@ -253,6 +254,13 @@ async def build_command_center_snapshot(
                 .order_by(desc(func.count()), IntelOwlEnrichmentRecord.status)
             )
         ).all()
+        ioc_type_rows = (
+            await session.execute(
+                select(IntelOwlEnrichmentRecord.observable_type, func.count())
+                .group_by(IntelOwlEnrichmentRecord.observable_type)
+                .order_by(desc(func.count()), IntelOwlEnrichmentRecord.observable_type)
+            )
+        ).all()
 
         collection_rows = (
             await session.execute(
@@ -289,6 +297,10 @@ async def build_command_center_snapshot(
             "enrichment_status_distribution": [
                 {"status": str(status), "count": int(count or 0)}
                 for status, count in enrichment_rows
+            ],
+            "ioc_type_distribution": [
+                {"observable_type": str(observable_type), "count": int(count or 0)}
+                for observable_type, count in ioc_type_rows
             ],
             "collection_volume_distribution": [
                 {"connector_id": str(connector_id), "inserted": int(inserted or 0)}

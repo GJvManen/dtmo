@@ -77,7 +77,7 @@ Acceptance: authorized enrichment is launchable and reviewable from canonical ob
 
 ### R5 — Cross-workspace statistics and trends
 
-Repository status: **ACTIVE — source contribution merged in #383; intelligence type distribution merged in #384; enrichment status merged in #385; collection volume merged in #386; collection observation age is the current bounded slice**.
+Repository status: **ACTIVE — source contribution merged in #383; intelligence type distribution merged in #384; enrichment status merged in #385; collection volume merged in #386; collection observation age merged in #388; IOC type distribution is the current bounded slice**.
 
 Goal: turn the existing visualization foundation into useful operational analytics.
 
@@ -96,7 +96,9 @@ Completed bounded slice: enrichment status distribution grouped directly from pe
 
 Completed bounded slice: persisted collection volume grouped by `ConnectorRun.connector_id` using canonical `ConnectorRun.inserted` counts, rendered in Visual Analytics with both chart and table equivalents. This is historical execution evidence only and does not establish live connector health, freshness, current upstream availability, or successful present-time collection.
 
-Current bounded slice: add collection observation age per connector from the latest persisted `ConnectorRun.started_at`, rendered in Visual Analytics with chart and table equivalents. Observation age is historical evidence only and must not be labelled as connector health, operational freshness, reachability or current upstream availability.
+Completed bounded slice: collection observation age per connector from the latest persisted `ConnectorRun.started_at`, rendered in Visual Analytics with chart and table equivalents. Observation age is historical evidence only and is not labelled as connector health, operational freshness, reachability or current upstream availability.
+
+Current bounded slice: add IOC type distribution from persisted canonical `IntelOwlEnrichmentRecord.observable_type` values already used by the server-authorized IOC inventory. This is persisted observable evidence only and must not infer maliciousness, verdict, local compromise, review completion or sharing/publication authority.
 
 Acceptance: charts are sourced from canonical APIs/persistence and never synthesize values merely to populate a dashboard.
 

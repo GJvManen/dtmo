@@ -5,6 +5,7 @@ type SeverityPoint = { severity: string; count: number };
 type SourcePoint = { source_id: string; count: number };
 type IntelligenceTypePoint = { item_type: string; count: number };
 type EnrichmentStatusPoint = { status: string; count: number };
+type IocTypePoint = { observable_type: string; count: number };
 type CollectionVolumePoint = { connector_id: string; inserted: number };
 type CollectionObservationAgePoint = { connector_id: string; last_started_at: string; age_hours: number };
 type CommandCenterSnapshot = {
@@ -15,6 +16,7 @@ type CommandCenterSnapshot = {
     source_distribution: SourcePoint[];
     type_distribution: IntelligenceTypePoint[];
     enrichment_status_distribution: EnrichmentStatusPoint[];
+    ioc_type_distribution: IocTypePoint[];
     collection_volume_distribution: CollectionVolumePoint[];
     collection_observation_age: CollectionObservationAgePoint[];
   };
@@ -92,6 +94,9 @@ export function VisualAnalyticsWorkspace() {
   const enrichmentStatuses = commandCenter.data?.data_state === 'available'
     ? (commandCenter.data.trends?.enrichment_status_distribution ?? []).map((point) => ({ label: point.status, value: point.count }))
     : [];
+  const iocTypes = commandCenter.data?.data_state === 'available'
+    ? (commandCenter.data.trends?.ioc_type_distribution ?? []).map((point) => ({ label: point.observable_type, value: point.count }))
+    : [];
   const collectionVolume = commandCenter.data?.data_state === 'available'
     ? (commandCenter.data.trends?.collection_volume_distribution ?? []).map((point) => ({ label: point.connector_id, value: point.inserted }))
     : [];
@@ -123,6 +128,7 @@ export function VisualAnalyticsWorkspace() {
         <AccessibleBars title="Intelligence arrivals · 7 days" points={intelligenceTrend} labelKey="Date" />
         <AccessibleBars title="Source contribution" points={sourceContribution} labelKey="Source" />
         <AccessibleBars title="Intelligence type distribution" points={intelligenceTypes} labelKey="Type" />
+        <AccessibleBars title="IOC type distribution" points={iocTypes} labelKey="Observable type" />
         <AccessibleBars title="Enrichment status" points={enrichmentStatuses} labelKey="Status" />
         <AccessibleBars title="Collection volume" points={collectionVolume} labelKey="Connector" />
         <AccessibleBars title="Collection observation age" points={collectionObservationAge} labelKey="Connector" valueKey="Hours since latest persisted run start" />
@@ -132,7 +138,7 @@ export function VisualAnalyticsWorkspace() {
 
       <section className="surface command-panel" aria-label="Analytics evidence boundary">
         <h2>Evidence boundary</h2>
-        <p>Source contribution, intelligence type distribution, enrichment status, collection volume and collection observation age are derived directly from persisted canonical records. Collection volume is the sum of persisted inserted-record counts by connector and is historical execution evidence only. Collection observation age is calculated from the latest persisted connector-run start timestamp and is historical observation evidence only. Persisted analytics does not prove live connectivity. It does not prove local exposure, does not prove source reachability, connector health, operational freshness or current upstream availability, and does not grant review authority, sharing approval or publication authority. It also does not prove compromise or analyzer correctness.</p>
+        <p>Source contribution, intelligence type distribution, IOC type distribution, enrichment status, collection volume and collection observation age are derived directly from persisted canonical records. IOC type distribution counts persisted observable types from canonical enrichment records and does not infer maliciousness or local compromise. Collection volume is the sum of persisted inserted-record counts by connector and is historical execution evidence only. Collection observation age is calculated from the latest persisted connector-run start timestamp and is historical observation evidence only. Persisted analytics does not prove live connectivity. It does not prove local exposure, does not prove source reachability, connector health, operational freshness or current upstream availability, and does not grant review authority, sharing approval or publication authority. It also does not prove compromise or analyzer correctness.</p>
         {vulnerability.data?.claim_boundary && <p>{vulnerability.data.claim_boundary}</p>}
       </section>
     </section>
