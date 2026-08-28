@@ -10,7 +10,7 @@ def read(path: str) -> str:
 
 def test_visual_analytics_uses_canonical_vulnerability_rows_for_kev_distribution() -> None:
     frontend = read("frontend/src/VisualAnalyticsWorkspace.tsx")
-    assert "type VulnerabilityItem = { kev?: boolean | null };" in frontend
+    assert "type VulnerabilityItem = { kev?: boolean | null;" in frontend
     assert "const vulnerabilityItems = vulnerability.data?.items ?? [];" in frontend
     assert "item.kev === true" in frontend
     assert "item.kev === false" in frontend
