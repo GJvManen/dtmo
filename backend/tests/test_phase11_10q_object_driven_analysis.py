@@ -60,10 +60,19 @@ def test_analysis_exposes_persisted_history_and_cortex_result_without_inferred_a
     assert '"/api/v1/analysis/items/{item_id}/cortex"' in api
 
 
+def test_successful_cortex_mutation_commits_before_history_reload() -> None:
+    api = read("backend/dtmo/intelowl_execution.py")
+    persist = api.index("record = await CortexAnalysisRepository(session).persist(")
+    commit = api.index("await session.commit()", persist)
+    response = api.index("return _cortex_response(record)", commit)
+    assert persist < commit < response
+
+
 def test_analysis_recovery_documentation_matches_functional_boundary() -> None:
     guide = read("docs/user/INTEGRATED_ANALYSIS_WORKSPACE.md")
     assert "without requiring opaque UUID copy/paste as the primary workflow" in guide
     assert "Threat Intelligence object detail" in guide
     assert "does not execute an analyzer automatically" in guide
     assert "stored Cortex result payloads" in guide
+    assert "committed before the successful 201 response" in guide
     assert "Phase 11.10q remains blocked until the owner functional retest" in guide
