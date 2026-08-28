@@ -21,6 +21,7 @@ type CommandCenterSnapshot = {
     collection_observation_age: CollectionObservationAgePoint[];
   };
 };
+type VulnerabilityItem = { kev?: boolean | null };
 type VulnerabilityAnalytics = {
   status: string;
   trend?: TrendPoint[];
@@ -29,6 +30,7 @@ type VulnerabilityAnalytics = {
     kev?: number;
     with_sightings?: number;
   };
+  items?: VulnerabilityItem[];
   claim_boundary?: string;
 };
 
@@ -106,6 +108,14 @@ export function VisualAnalyticsWorkspace() {
   const vulnerabilityTrend = vulnerability.data?.status === 'ok'
     ? (vulnerability.data.trend ?? []).map((point) => ({ label: point.date, value: point.count }))
     : [];
+  const vulnerabilityItems = vulnerability.data?.items ?? [];
+  const kevDistribution = vulnerabilityItems.length
+    ? [
+        { label: 'known_exploited', value: vulnerabilityItems.filter((item) => item.kev === true).length },
+        { label: 'not_known_exploited', value: vulnerabilityItems.filter((item) => item.kev === false).length },
+        { label: 'unknown', value: vulnerabilityItems.filter((item) => item.kev !== true && item.kev !== false).length },
+      ]
+    : [];
 
   return (
     <section className="command-center" aria-labelledby="workspace-title">
@@ -134,11 +144,12 @@ export function VisualAnalyticsWorkspace() {
         <AccessibleBars title="Collection observation age" points={collectionObservationAge} labelKey="Connector" valueKey="Hours since latest persisted run start" />
         <AccessibleBars title="Severity distribution" points={severity} labelKey="Severity" />
         <AccessibleBars title="Vulnerability observations" points={vulnerabilityTrend} labelKey="Date" />
+        <AccessibleBars title="KEV status distribution" points={kevDistribution} labelKey="KEV evidence status" />
       </div>
 
       <section className="surface command-panel" aria-label="Analytics evidence boundary">
         <h2>Evidence boundary</h2>
-        <p>Source contribution, intelligence type distribution, IOC type distribution, enrichment status, collection volume and collection observation age are derived directly from persisted canonical records. IOC type distribution counts persisted observable types from canonical enrichment records and does not infer maliciousness or local compromise. Collection volume is the sum of persisted inserted-record counts by connector and is historical execution evidence only. Collection observation age is calculated from the latest persisted connector-run start timestamp and is historical observation evidence only. Persisted analytics does not prove live connectivity. It does not prove local exposure, does not prove source reachability, connector health, operational freshness or current upstream availability, and does not grant review authority, sharing approval or publication authority. It also does not prove compromise or analyzer correctness.</p>
+        <p>Source contribution, intelligence type distribution, IOC type distribution, enrichment status, collection volume and collection observation age are derived directly from persisted canonical records. IOC type distribution counts persisted observable types from canonical enrichment records and does not infer maliciousness or local compromise. Collection volume is the sum of persisted inserted-record counts by connector and is historical execution evidence only. Collection observation age is calculated from the latest persisted connector-run start timestamp and is historical observation evidence only. KEV status distribution is derived only from the canonical vulnerability API rows that passed the existing raw-evidence integrity boundary; KEV evidence does not prove local deployment, exploitability or compromise. Persisted analytics does not prove live connectivity. It does not prove local exposure, does not prove source reachability, connector health, operational freshness or current upstream availability, and does not grant review authority, sharing approval or publication authority. It also does not prove compromise or analyzer correctness.</p>
         {vulnerability.data?.claim_boundary && <p>{vulnerability.data.claim_boundary}</p>}
       </section>
     </section>
