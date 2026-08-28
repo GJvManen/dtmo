@@ -21,7 +21,7 @@ type CommandCenterSnapshot = {
     collection_observation_age: CollectionObservationAgePoint[];
   };
 };
-type VulnerabilityItem = { kev?: boolean | null; cvss?: number | null };
+type VulnerabilityItem = { kev?: boolean | null; cvss?: number | null; epss?: number | null };
 type VulnerabilityAnalytics = {
   status: string;
   trend?: TrendPoint[];
@@ -126,6 +126,15 @@ export function VisualAnalyticsWorkspace() {
         { label: 'unknown', value: vulnerabilityItems.filter((item) => typeof item.cvss !== 'number').length },
       ]
     : [];
+  const epssDistribution = vulnerabilityItems.length
+    ? [
+        { label: 'very high (0.75–1.00)', value: vulnerabilityItems.filter((item) => typeof item.epss === 'number' && item.epss >= 0.75).length },
+        { label: 'high (0.50–0.74)', value: vulnerabilityItems.filter((item) => typeof item.epss === 'number' && item.epss >= 0.5 && item.epss < 0.75).length },
+        { label: 'moderate (0.25–0.49)', value: vulnerabilityItems.filter((item) => typeof item.epss === 'number' && item.epss >= 0.25 && item.epss < 0.5).length },
+        { label: 'low (0.00–0.24)', value: vulnerabilityItems.filter((item) => typeof item.epss === 'number' && item.epss >= 0 && item.epss < 0.25).length },
+        { label: 'unknown', value: vulnerabilityItems.filter((item) => typeof item.epss !== 'number').length },
+      ]
+    : [];
 
   return (
     <section className="command-center" aria-labelledby="workspace-title">
@@ -156,11 +165,12 @@ export function VisualAnalyticsWorkspace() {
         <AccessibleBars title="Vulnerability observations" points={vulnerabilityTrend} labelKey="Date" />
         <AccessibleBars title="KEV status distribution" points={kevDistribution} labelKey="KEV evidence status" />
         <AccessibleBars title="CVSS score distribution" points={cvssDistribution} labelKey="CVSS score band" />
+        <AccessibleBars title="EPSS probability distribution" points={epssDistribution} labelKey="EPSS probability band" />
       </div>
 
       <section className="surface command-panel" aria-label="Analytics evidence boundary">
         <h2>Evidence boundary</h2>
-        <p>Source contribution, intelligence type distribution, IOC type distribution, enrichment status, collection volume and collection observation age are derived directly from persisted canonical records. IOC type distribution counts persisted observable types from canonical enrichment records and does not infer maliciousness or local compromise. Collection volume is the sum of persisted inserted-record counts by connector and is historical execution evidence only. Collection observation age is calculated from the latest persisted connector-run start timestamp and is historical observation evidence only. KEV status distribution and CVSS score distribution are derived only from canonical vulnerability API rows that passed the existing raw-evidence integrity boundary. CVSS scores are prioritization evidence and do not prove exploitability, local deployment or local exposure. KEV evidence does not prove local deployment, exploitability or compromise. Persisted analytics does not prove live connectivity. It does not prove local exposure, does not prove source reachability, connector health, operational freshness or current upstream availability, and does not grant review authority, sharing approval or publication authority. It also does not prove compromise or analyzer correctness.</p>
+        <p>Source contribution, intelligence type distribution, IOC type distribution, enrichment status, collection volume and collection observation age are derived directly from persisted canonical records. IOC type distribution counts persisted observable types from canonical enrichment records and does not infer maliciousness or local compromise. Collection volume is the sum of persisted inserted-record counts by connector and is historical execution evidence only. Collection observation age is calculated from the latest persisted connector-run start timestamp and is historical observation evidence only. KEV status distribution, CVSS score distribution and EPSS probability distribution are derived only from canonical vulnerability API rows that passed the existing raw-evidence integrity boundary. CVSS scores and EPSS probabilities are prioritization evidence and do not prove exploitability, local deployment or local exposure. KEV evidence does not prove local deployment, exploitability or compromise. Persisted analytics does not prove live connectivity. It does not prove local exposure, does not prove source reachability, connector health, operational freshness or current upstream availability, and does not grant review authority, sharing approval or publication authority. It also does not prove compromise or analyzer correctness.</p>
         {vulnerability.data?.claim_boundary && <p>{vulnerability.data.claim_boundary}</p>}
       </section>
     </section>
