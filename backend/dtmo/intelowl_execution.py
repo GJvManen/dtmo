@@ -303,6 +303,7 @@ async def execute_cortex_analysis(
             tlp=request.tlp,
             requested_by=principal.subject,
         )
+        await session.commit()
     except KeyError as exc:
         raise HTTPException(status_code=404, detail="canonical intelligence item not found") from exc
     except CortexPolicyError as exc:

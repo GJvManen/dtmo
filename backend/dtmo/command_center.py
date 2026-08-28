@@ -89,6 +89,7 @@ def _empty_trends() -> dict[str, list[dict[str, Any]]]:
         "source_distribution": [],
         "type_distribution": [],
         "enrichment_status_distribution": [],
+        "collection_volume_distribution": [],
     }
 
 
@@ -248,6 +249,14 @@ async def build_command_center_snapshot(
             )
         ).all()
 
+        collection_rows = (
+            await session.execute(
+                select(ConnectorRun.connector_id, func.sum(ConnectorRun.inserted))
+                .group_by(ConnectorRun.connector_id)
+                .order_by(desc(func.sum(ConnectorRun.inserted)), ConnectorRun.connector_id)
+            )
+        ).all()
+
         trends = {
             "intelligence_7d": [
                 {"date": day.isoformat(), "count": count}
@@ -268,6 +277,10 @@ async def build_command_center_snapshot(
             "enrichment_status_distribution": [
                 {"status": str(status), "count": int(count or 0)}
                 for status, count in enrichment_rows
+            ],
+            "collection_volume_distribution": [
+                {"connector_id": str(connector_id), "inserted": int(inserted or 0)}
+                for connector_id, inserted in collection_rows
             ],
         }
 

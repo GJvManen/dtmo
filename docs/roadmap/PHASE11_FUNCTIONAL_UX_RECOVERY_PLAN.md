@@ -77,7 +77,7 @@ Acceptance: authorized enrichment is launchable and reviewable from canonical ob
 
 ### R5 — Cross-workspace statistics and trends
 
-Repository status: **ACTIVE — source contribution merged in #383; intelligence type distribution merged in #384; enrichment status is the current bounded slice**.
+Repository status: **ACTIVE — source contribution merged in #383; intelligence type distribution merged in #384; enrichment status merged in #385; collection volume is the current bounded slice**.
 
 Goal: turn the existing visualization foundation into useful operational analytics.
 
@@ -92,7 +92,9 @@ Completed bounded slice: attributable canonical intelligence source contribution
 
 Completed bounded slice: canonical intelligence type distribution grouped directly from persisted `IntelligenceItem.item_type`, rendered in Visual Analytics with both chart and table equivalents. Zero-count canonical types remain explicit when the datastore is available; datastore failure remains unavailable/empty and never synthesizes evidence.
 
-Current bounded slice: add enrichment status distribution grouped directly from persisted `IntelOwlEnrichmentRecord.status`, rendered in Visual Analytics with both chart and table equivalents. This is historical persisted execution evidence only and does not prove analyzer correctness, current upstream availability, compromise, review completion or sharing/publication authority.
+Completed bounded slice: enrichment status distribution grouped directly from persisted `IntelOwlEnrichmentRecord.status`, rendered in Visual Analytics with both chart and table equivalents. This is historical persisted execution evidence only and does not prove analyzer correctness, current upstream availability, compromise, review completion or sharing/publication authority.
+
+Current bounded slice: add persisted collection volume grouped by `ConnectorRun.connector_id` using canonical `ConnectorRun.inserted` counts, rendered in Visual Analytics with both chart and table equivalents. This is historical execution evidence only and does not establish live connector health, freshness, current upstream availability, or successful present-time collection.
 
 Acceptance: charts are sourced from canonical APIs/persistence and never synthesize values merely to populate a dashboard.
 
