@@ -2,11 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 
 type TrendPoint = { date: string; count: number };
 type SeverityPoint = { severity: string; count: number };
+type SourcePoint = { source_id: string; count: number };
 type CommandCenterSnapshot = {
   data_state: 'available' | 'unavailable';
   trends?: {
     intelligence_7d: TrendPoint[];
     severity_distribution: SeverityPoint[];
+    source_distribution: SourcePoint[];
   };
 };
 type VulnerabilityAnalytics = {
@@ -73,6 +75,9 @@ export function VisualAnalyticsWorkspace() {
   const severity = commandCenter.data?.data_state === 'available'
     ? (commandCenter.data.trends?.severity_distribution ?? []).map((point) => ({ label: point.severity, value: point.count }))
     : [];
+  const sourceContribution = commandCenter.data?.data_state === 'available'
+    ? (commandCenter.data.trends?.source_distribution ?? []).map((point) => ({ label: point.source_id, value: point.count }))
+    : [];
   const vulnerabilityTrend = vulnerability.data?.status === 'ok'
     ? (vulnerability.data.trend ?? []).map((point) => ({ label: point.date, value: point.count }))
     : [];
@@ -85,7 +90,7 @@ export function VisualAnalyticsWorkspace() {
           <h1 id="workspace-title">Visual Analytics</h1>
           <p>Accessible, attributable trend and distribution views over canonical DTMO data.</p>
         </div>
-        <span className="phase-badge">11.10q · FQ-06 recovery</span>
+        <span className="phase-badge">R5 cross-workspace analytics</span>
       </header>
 
       {(commandCenter.isError || vulnerability.isError) && (
@@ -96,13 +101,14 @@ export function VisualAnalyticsWorkspace() {
 
       <div className="command-grid">
         <AccessibleBars title="Intelligence arrivals · 7 days" points={intelligenceTrend} labelKey="Date" />
+        <AccessibleBars title="Source contribution" points={sourceContribution} labelKey="Source" />
         <AccessibleBars title="Severity distribution" points={severity} labelKey="Severity" />
         <AccessibleBars title="Vulnerability observations" points={vulnerabilityTrend} labelKey="Date" />
       </div>
 
       <section className="surface command-panel" aria-label="Analytics evidence boundary">
         <h2>Evidence boundary</h2>
-        <p>This view does not prove live connectivity. It does not prove local exposure. It does not grant review, sharing or publication authority.</p>
+        <p>Source contribution is counted directly from persisted canonical intelligence records grouped by source identifier. This view does not prove source reachability, live connectivity, local exposure, compromise, review completion, sharing approval or publication authority.</p>
         {vulnerability.data?.claim_boundary && <p>{vulnerability.data.claim_boundary}</p>}
       </section>
     </section>
