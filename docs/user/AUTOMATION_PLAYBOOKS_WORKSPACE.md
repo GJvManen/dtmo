@@ -14,7 +14,7 @@ For the selected playbook, the workspace surfaces the latest persisted connector
 
 Select a playbook and use **Run bounded collection playbook** only when you are an authorized human principal. Built-in connectors use their existing server-owned `/connectors/{id}/run` path. Governed registered sources use `/api/v1/admin/sources/{id}/run`. `manage:connectors` remains the authoritative execution permission and the server remains authoritative even when the browser disables a control.
 
-The browser fails closed when a playbook does not advertise `manual_run_available`. Registered sources therefore cannot be executed from this workspace while disabled. The returned execution evidence includes connector, status, attempts, record count, inserted/indexed counts, alert state and correlation identifier when returned by DTMO.
+The browser fails closed when a playbook does not advertise `manual_run_available` and, independently, when a registered source is disabled. A paused source can still advertise that it has a manual-run capability in the canonical model; capability does not override the source enabled-state gate. The browser therefore disables **Run bounded collection playbook** while the source is paused, matching the server-side enabled-state boundary. The returned execution evidence includes connector, status, attempts, record count, inserted/indexed counts, alert state and correlation identifier when returned by DTMO.
 
 A successful collection run may persist attributable canonical intelligence and raw evidence. It does not prove source truth, compromise or containment and does not create a case, remediate an asset, complete intelligence review, approve external sharing, publish intelligence or grant production authorization.
 

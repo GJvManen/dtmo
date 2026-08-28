@@ -134,7 +134,8 @@ async def test_automation_executes_real_bounded_trigger_persists_state_and_rolls
             await expect(page.get_by_role("button", name="Pause registered source", exact=True)).to_be_enabled()
             await page.get_by_role("button", name="Pause registered source", exact=True).click()
 
-            await expect(page.get_by_text("This connector does not advertise manual-run availability.", exact=False)).to_be_visible()
+            await expect(page.get_by_text("This registered source is paused.", exact=False)).to_be_visible()
+            await expect(page.get_by_role("button", name="Run bounded collection playbook", exact=True)).to_be_disabled()
             await expect(page.get_by_role("button", name="Rollback this pause", exact=True)).to_be_enabled()
             await page.get_by_role("button", name="Rollback this pause", exact=True).click()
 
