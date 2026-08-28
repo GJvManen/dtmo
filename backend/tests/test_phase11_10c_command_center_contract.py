@@ -106,7 +106,11 @@ async def test_canonical_store_failure_never_synthesizes_zero_metrics_or_trends(
     )
     assert snapshot["data_state"] == "unavailable"
     assert snapshot["recent_intelligence"] == []
-    assert snapshot["trends"] == {"intelligence_7d": [], "severity_distribution": []}
+    assert snapshot["trends"] == {
+        "intelligence_7d": [],
+        "severity_distribution": [],
+        "source_distribution": [],
+    }
     assert all(metric["value"] is None for metric in snapshot["metrics"])
     assert "rather than synthesized" in snapshot["evidence_boundary"]
 

@@ -30,7 +30,7 @@ def test_visual_analytics_preserves_evidence_boundaries():
     for marker in (
         "does not prove live connectivity",
         "does not prove local exposure",
-        "does not grant review, sharing or publication authority",
+        "does not grant review authority, sharing approval or publication authority",
     ):
         assert marker in text
 

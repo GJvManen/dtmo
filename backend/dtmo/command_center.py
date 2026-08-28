@@ -38,9 +38,6 @@ def build_integration_capabilities(
     for readiness in integration_readiness(settings):
         run_id = _RUNTIME_RUN_IDS.get(readiness.id, "")
         run = latest_runs.get(run_id) if run_id else None
-        # Command Center intentionally uses an action-oriented coarse vocabulary.
-        # A capability that is disabled still needs governed operator action in
-        # Administration, so it must not appear as an unexplained dead-end state.
         if readiness.enabled and readiness.activation_blockers:
             state = "configuration-required"
         elif readiness.enabled:
@@ -86,7 +83,11 @@ def _severity_value(value: object) -> str:
 
 
 def _empty_trends() -> dict[str, list[dict[str, Any]]]:
-    return {"intelligence_7d": [], "severity_distribution": []}
+    return {
+        "intelligence_7d": [],
+        "severity_distribution": [],
+        "source_distribution": [],
+    }
 
 
 async def build_command_center_snapshot(
@@ -215,12 +216,17 @@ async def build_command_center_snapshot(
                 .group_by(IntelligenceItem.severity)
             )
         ).all()
-        severity_counts = {
-            severity.value: 0
-            for severity in IntelligenceSeverity
-        }
+        severity_counts = {severity.value: 0 for severity in IntelligenceSeverity}
         for severity, count in severity_rows:
             severity_counts[_severity_value(severity)] = int(count or 0)
+
+        source_rows = (
+            await session.execute(
+                select(IntelligenceItem.source_id, func.count())
+                .group_by(IntelligenceItem.source_id)
+                .order_by(desc(func.count()), IntelligenceItem.source_id)
+            )
+        ).all()
 
         trends = {
             "intelligence_7d": [
@@ -230,6 +236,10 @@ async def build_command_center_snapshot(
             "severity_distribution": [
                 {"severity": severity.value, "count": severity_counts.get(severity.value, 0)}
                 for severity in IntelligenceSeverity
+            ],
+            "source_distribution": [
+                {"source_id": str(source_id), "count": int(count or 0)}
+                for source_id, count in source_rows
             ],
         }
 

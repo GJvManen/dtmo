@@ -1,6 +1,6 @@
 # Phase 11 Functional UX Recovery Plan
 
-Status: **ACTIVE — R4 Integrated enrichment**
+Status: **ACTIVE — R5 Cross-workspace statistics and trends**
 
 ## Purpose
 
@@ -64,7 +64,7 @@ Acceptance: an analyst can follow one persisted object across the supported inve
 
 ### R4 — Integrated enrichment
 
-Repository status: **ACTIVE / CURRENT BOUNDED RECOVERY SLICE**.
+Repository status: **MERGED / REPOSITORY-COMPLETE — #382**.
 
 Goal: make IntelOwl/Cortex enrichment part of the intelligence journey.
 
@@ -77,6 +77,8 @@ Acceptance: authorized enrichment is launchable and reviewable from canonical ob
 
 ### R5 — Cross-workspace statistics and trends
 
+Repository status: **ACTIVE / CURRENT BOUNDED RECOVERY SLICE**.
+
 Goal: turn the existing visualization foundation into useful operational analytics.
 
 - collection volume/freshness and source contribution;
@@ -85,6 +87,8 @@ Goal: turn the existing visualization foundation into useful operational analyti
 - CVSS/EPSS/KEV distributions and vulnerability trends;
 - investigation, connector and operational state trends;
 - accessible table/text equivalents and non-colour cues.
+
+Current bounded slice: add attributable canonical intelligence source contribution grouped directly from persisted `IntelligenceItem.source_id`, rendered in Visual Analytics with both chart and table equivalents. This is persisted-content evidence only and is not a source-health or reachability claim.
 
 Acceptance: charts are sourced from canonical APIs/persistence and never synthesize values merely to populate a dashboard.
 
