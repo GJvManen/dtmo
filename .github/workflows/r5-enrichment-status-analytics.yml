@@ -1,0 +1,54 @@
+name: R5 Enrichment Status Analytics Gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/dtmo/command_center.py'
+      - 'backend/tests/test_phase11_10c_command_center_contract.py'
+      - 'frontend/src/VisualAnalyticsWorkspace.tsx'
+      - 'tests/test_r5_enrichment_status_analytics.py'
+      - 'docs/roadmap/PHASE11_FUNCTIONAL_UX_RECOVERY_PLAN.md'
+      - 'docs/development/runs/RUN-20260828-385.md'
+      - '.github/workflows/r5-enrichment-status-analytics.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact PR head
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify exact-head checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          test "$(git rev-parse HEAD)" = "$expected"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install exact frontend dependency graph
+        working-directory: frontend
+        run: npm ci
+      - name: Build canonical workbench
+        working-directory: frontend
+        run: npm run build
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install gate test dependency
+        run: python -m pip install pytest
+      - name: Verify R5 enrichment status contract
+        run: python -m pytest -q tests/test_r5_enrichment_status_analytics.py
+      - name: Record evidence boundary
+        if: always()
+        run: |
+          printf '%s\n' 'Repository-controlled R5 enrichment status evidence only; no analyzer-correctness, live-connectivity, local-exposure, staging, production-equivalent, penetration-test, independent-assurance, or production-authorization claim.'
