@@ -3,12 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 type TrendPoint = { date: string; count: number };
 type SeverityPoint = { severity: string; count: number };
 type SourcePoint = { source_id: string; count: number };
+type IntelligenceTypePoint = { item_type: string; count: number };
 type CommandCenterSnapshot = {
   data_state: 'available' | 'unavailable';
   trends?: {
     intelligence_7d: TrendPoint[];
     severity_distribution: SeverityPoint[];
     source_distribution: SourcePoint[];
+    type_distribution: IntelligenceTypePoint[];
   };
 };
 type VulnerabilityAnalytics = {
@@ -78,6 +80,9 @@ export function VisualAnalyticsWorkspace() {
   const sourceContribution = commandCenter.data?.data_state === 'available'
     ? (commandCenter.data.trends?.source_distribution ?? []).map((point) => ({ label: point.source_id, value: point.count }))
     : [];
+  const intelligenceTypes = commandCenter.data?.data_state === 'available'
+    ? (commandCenter.data.trends?.type_distribution ?? []).map((point) => ({ label: point.item_type, value: point.count }))
+    : [];
   const vulnerabilityTrend = vulnerability.data?.status === 'ok'
     ? (vulnerability.data.trend ?? []).map((point) => ({ label: point.date, value: point.count }))
     : [];
@@ -102,13 +107,14 @@ export function VisualAnalyticsWorkspace() {
       <div className="command-grid">
         <AccessibleBars title="Intelligence arrivals · 7 days" points={intelligenceTrend} labelKey="Date" />
         <AccessibleBars title="Source contribution" points={sourceContribution} labelKey="Source" />
+        <AccessibleBars title="Intelligence type distribution" points={intelligenceTypes} labelKey="Type" />
         <AccessibleBars title="Severity distribution" points={severity} labelKey="Severity" />
         <AccessibleBars title="Vulnerability observations" points={vulnerabilityTrend} labelKey="Date" />
       </div>
 
       <section className="surface command-panel" aria-label="Analytics evidence boundary">
         <h2>Evidence boundary</h2>
-        <p>Source contribution is counted directly from persisted canonical intelligence records grouped by source identifier. Persisted analytics does not prove live connectivity and does not prove local exposure; it does not grant review authority, sharing approval or publication authority and also does not prove source reachability, connector health, current upstream availability, compromise or review completion.</p>
+        <p>Source contribution and intelligence type distribution are counted directly from persisted canonical intelligence records. Persisted analytics does not prove live connectivity and does not prove local exposure; it does not grant review authority, sharing approval or publication authority and also does not prove source reachability, connector health, current upstream availability, compromise or review completion.</p>
         {vulnerability.data?.claim_boundary && <p>{vulnerability.data.claim_boundary}</p>}
       </section>
     </section>
