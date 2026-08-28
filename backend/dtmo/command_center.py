@@ -11,6 +11,7 @@ from dtmo.config import Settings
 from dtmo.integration_readiness import integration_readiness
 from dtmo.intelligence.model import IntelligenceSeverity, IntelligenceType
 from dtmo.persistence.models import ConnectorRun, IntelOwlEnrichmentRecord, IntelligenceItem
+from dtmo.persistence.thehive import TheHiveHandoffState
 
 
 _RUNTIME_RUN_IDS: dict[str, str] = {
@@ -96,6 +97,7 @@ def _empty_trends() -> dict[str, list[dict[str, Any]]]:
         "collection_volume_distribution": [],
         "collection_observation_age": [],
         "ioc_type_distribution": [],
+        "investigation_handoff_status_distribution": [],
     }
 
 
@@ -261,6 +263,13 @@ async def build_command_center_snapshot(
                 .order_by(desc(func.count()), IntelOwlEnrichmentRecord.observable_type)
             )
         ).all()
+        investigation_handoff_rows = (
+            await session.execute(
+                select(TheHiveHandoffState.status, func.count())
+                .group_by(TheHiveHandoffState.status)
+                .order_by(TheHiveHandoffState.status)
+            )
+        ).all()
 
         collection_rows = (
             await session.execute(
@@ -301,6 +310,10 @@ async def build_command_center_snapshot(
             "ioc_type_distribution": [
                 {"observable_type": str(observable_type), "count": int(count or 0)}
                 for observable_type, count in ioc_type_rows
+            ],
+            "investigation_handoff_status_distribution": [
+                {"status": str(status), "count": int(count or 0)}
+                for status, count in investigation_handoff_rows
             ],
             "collection_volume_distribution": [
                 {"connector_id": str(connector_id), "inserted": int(inserted or 0)}
@@ -346,8 +359,8 @@ async def build_command_center_snapshot(
             "Command Center values and trends are canonical DTMO read models. Integration readiness "
             "reuses the governed Administration contract; capabilities requiring configuration or explicit "
             "activation remain configuration-required in the Command Center so the operator receives an "
-            "actionable Administration path. Persisted runtime observations are historical evidence only and "
-            "are never labelled healthy. Missing canonical-store evidence is reported as unavailable rather "
-            "than synthesized."
+            "actionable Administration path. Persisted runtime observations and TheHive handoff statuses are "
+            "historical evidence only and are never labelled healthy or treated as proof of upstream case state. "
+            "Missing canonical-store evidence is reported as unavailable rather than synthesized."
         ),
     }

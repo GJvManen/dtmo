@@ -77,7 +77,7 @@ Acceptance: authorized enrichment is launchable and reviewable from canonical ob
 
 ### R5 — Cross-workspace statistics and trends
 
-Repository status: **ACTIVE — source contribution merged in #383; intelligence type distribution merged in #384; enrichment status merged in #385; collection volume merged in #386; collection observation age merged in #388; IOC type distribution merged in #389; KEV status distribution merged in #390; CVSS score distribution merged in #391; EPSS probability distribution merged in #392; latest connector execution-state distribution is the current bounded slice**.
+Repository status: **ACTIVE — source contribution merged in #383; intelligence type distribution merged in #384; enrichment status merged in #385; collection volume merged in #386; collection observation age merged in #388; IOC type distribution merged in #389; KEV status distribution merged in #390; CVSS score distribution merged in #391; EPSS probability distribution merged in #392; latest connector execution-state distribution merged in #393; investigation handoff-status distribution is the current bounded slice**.
 
 Goal: turn the existing visualization foundation into useful operational analytics.
 
@@ -106,13 +106,14 @@ Completed bounded slice: CVSS score-band distribution from canonical vulnerabili
 
 Completed bounded slice: EPSS probability-band distribution from the same canonical vulnerability API rows after raw-evidence integrity verification. The distribution uses explicit very-high, high, moderate, low and unknown bands. EPSS is prioritization evidence only and does not prove exploitability, local deployment, local exposure, compromise, remediation authority or external-share approval.
 
-Current bounded slice: expose a latest connector execution-state distribution from non-empty canonical Command Center `runtime_observation` values. Those observations are projected from persisted connector runs only for integrations with attributable run evidence; missing observations remain absent rather than being synthesized. The distribution is historical latest-observation evidence only and does not establish connector health, reachability, operational freshness or current upstream availability.
+Completed bounded slice: latest connector execution-state distribution from non-empty canonical Command Center `runtime_observation` values. Those observations are projected from persisted connector runs only for integrations with attributable run evidence; missing observations remain absent rather than being synthesized. The distribution is historical latest-observation evidence only and does not establish connector health, reachability, operational freshness or current upstream availability.
+
+Current bounded slice: investigation handoff-status distribution grouped directly from persisted governed `TheHiveHandoffState.status` records. The distribution exposes durable DTMO handoff lifecycle evidence only; it does not infer upstream TheHive case completeness, responder execution, local compromise, external-share authority or publication authority.
 
 Planned R5 queue after the current slice:
 
-1. investigation handoff-status distribution from persisted governed TheHive handoff evidence;
-2. operational/integration readiness-state distribution from the canonical Command Center readiness contract;
-3. R5 close-out contract confirming the planned analytics surfaces are attributable, accessible and empty-safe before advancing to R6.
+1. operational/integration readiness-state distribution from the canonical Command Center readiness contract;
+2. R5 close-out contract confirming the planned analytics surfaces are attributable, accessible and empty-safe before advancing to R6.
 
 Acceptance: charts are sourced from canonical APIs/persistence and never synthesize values merely to populate a dashboard.
 
