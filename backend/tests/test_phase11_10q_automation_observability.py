@@ -17,11 +17,14 @@ def test_automation_recovery_refreshes_runtime_state_after_execution():
     assert "await refreshRuntimeObservation()" in source
 
 
-def test_manual_execution_fails_closed_when_capability_is_not_advertised():
+def test_manual_execution_fails_closed_when_capability_is_not_advertised_or_registered_source_is_paused():
     source = WORKSPACE.read_text(encoding="utf-8")
     assert "manual_run_available" in source
-    assert "!selectedConnector?.manual_run_available" in source
+    assert "selectedConnector && !selectedConnector.manual_run_available" in source
     assert "does not advertise manual-run availability" in source
+    assert "selectedConnector?.registered_source && !selectedConnector.enabled" in source
+    assert "This registered source is paused." in source
+    assert "(selectedConnector.registered_source && !selectedConnector.enabled)" in source
     assert "manage:connectors" in source
     assert "service_account" in source
 
