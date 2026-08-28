@@ -108,7 +108,7 @@ export function VisualAnalyticsWorkspace() {
 
       <section className="surface command-panel" aria-label="Analytics evidence boundary">
         <h2>Evidence boundary</h2>
-        <p>Source contribution is counted directly from persisted canonical intelligence records grouped by source identifier. This view does not prove source reachability, live connectivity, local exposure, compromise, review completion, sharing approval or publication authority.</p>
+        <p>Source contribution is counted directly from persisted canonical intelligence records grouped by source identifier. Persisted analytics does not prove live connectivity and does not prove local exposure; it also does not prove source reachability, connector health, current upstream availability, compromise, review completion, sharing approval or publication authority.</p>
         {vulnerability.data?.claim_boundary && <p>{vulnerability.data.claim_boundary}</p>}
       </section>
     </section>
