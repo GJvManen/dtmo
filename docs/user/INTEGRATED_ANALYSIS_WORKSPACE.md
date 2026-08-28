@@ -41,6 +41,8 @@ For an authorized reviewer:
 5. start the chosen engine explicitly;
 6. review the persisted job/history and result in the corresponding history panel.
 
+A successful Cortex analyzer record is committed before the successful 201 response is returned, so the canonical history reload that follows that response can observe the durable record immediately. This changes only transaction visibility; it does not relax analyzer allowlists, RBAC, responder restrictions, sharing authority or compromise-evidence boundaries.
+
 There is no automatic IntelOwl-to-Cortex fallback, no automatic analyzer discovery, and no automatic execution merely because a user follows a pivot.
 
 ## Interpretation
