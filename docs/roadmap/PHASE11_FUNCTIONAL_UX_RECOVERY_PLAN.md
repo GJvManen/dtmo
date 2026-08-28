@@ -77,7 +77,7 @@ Acceptance: authorized enrichment is launchable and reviewable from canonical ob
 
 ### R5 — Cross-workspace statistics and trends
 
-Repository status: **ACTIVE — source contribution merged in #383; intelligence type distribution is the current bounded slice**.
+Repository status: **ACTIVE — source contribution merged in #383; intelligence type distribution merged in #384; enrichment status is the current bounded slice**.
 
 Goal: turn the existing visualization foundation into useful operational analytics.
 
@@ -90,7 +90,9 @@ Goal: turn the existing visualization foundation into useful operational analyti
 
 Completed bounded slice: attributable canonical intelligence source contribution grouped directly from persisted `IntelligenceItem.source_id`, rendered in Visual Analytics with both chart and table equivalents. This is persisted-content evidence only and is not a source-health or reachability claim.
 
-Current bounded slice: add canonical intelligence type distribution grouped directly from persisted `IntelligenceItem.item_type`, rendered in Visual Analytics with both chart and table equivalents. Zero-count canonical types remain explicit when the datastore is available; datastore failure remains unavailable/empty and never synthesizes evidence.
+Completed bounded slice: canonical intelligence type distribution grouped directly from persisted `IntelligenceItem.item_type`, rendered in Visual Analytics with both chart and table equivalents. Zero-count canonical types remain explicit when the datastore is available; datastore failure remains unavailable/empty and never synthesizes evidence.
+
+Current bounded slice: add enrichment status distribution grouped directly from persisted `IntelOwlEnrichmentRecord.status`, rendered in Visual Analytics with both chart and table equivalents. This is historical persisted execution evidence only and does not prove analyzer correctness, current upstream availability, compromise, review completion or sharing/publication authority.
 
 Acceptance: charts are sourced from canonical APIs/persistence and never synthesize values merely to populate a dashboard.
 

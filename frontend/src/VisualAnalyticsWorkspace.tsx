@@ -4,6 +4,7 @@ type TrendPoint = { date: string; count: number };
 type SeverityPoint = { severity: string; count: number };
 type SourcePoint = { source_id: string; count: number };
 type IntelligenceTypePoint = { item_type: string; count: number };
+type EnrichmentStatusPoint = { status: string; count: number };
 type CommandCenterSnapshot = {
   data_state: 'available' | 'unavailable';
   trends?: {
@@ -11,6 +12,7 @@ type CommandCenterSnapshot = {
     severity_distribution: SeverityPoint[];
     source_distribution: SourcePoint[];
     type_distribution: IntelligenceTypePoint[];
+    enrichment_status_distribution: EnrichmentStatusPoint[];
   };
 };
 type VulnerabilityAnalytics = {
@@ -83,6 +85,9 @@ export function VisualAnalyticsWorkspace() {
   const intelligenceTypes = commandCenter.data?.data_state === 'available'
     ? (commandCenter.data.trends?.type_distribution ?? []).map((point) => ({ label: point.item_type, value: point.count }))
     : [];
+  const enrichmentStatuses = commandCenter.data?.data_state === 'available'
+    ? (commandCenter.data.trends?.enrichment_status_distribution ?? []).map((point) => ({ label: point.status, value: point.count }))
+    : [];
   const vulnerabilityTrend = vulnerability.data?.status === 'ok'
     ? (vulnerability.data.trend ?? []).map((point) => ({ label: point.date, value: point.count }))
     : [];
@@ -108,13 +113,14 @@ export function VisualAnalyticsWorkspace() {
         <AccessibleBars title="Intelligence arrivals · 7 days" points={intelligenceTrend} labelKey="Date" />
         <AccessibleBars title="Source contribution" points={sourceContribution} labelKey="Source" />
         <AccessibleBars title="Intelligence type distribution" points={intelligenceTypes} labelKey="Type" />
+        <AccessibleBars title="Enrichment status" points={enrichmentStatuses} labelKey="Status" />
         <AccessibleBars title="Severity distribution" points={severity} labelKey="Severity" />
         <AccessibleBars title="Vulnerability observations" points={vulnerabilityTrend} labelKey="Date" />
       </div>
 
       <section className="surface command-panel" aria-label="Analytics evidence boundary">
         <h2>Evidence boundary</h2>
-        <p>Source contribution and intelligence type distribution are counted directly from persisted canonical intelligence records. Persisted analytics does not prove live connectivity and does not prove local exposure; it does not grant review authority, sharing approval or publication authority and also does not prove source reachability, connector health, current upstream availability, compromise or review completion.</p>
+        <p>Source contribution, intelligence type distribution and enrichment status are counted directly from persisted canonical records. Persisted analytics does not prove live connectivity and does not prove local exposure; it does not grant review authority, sharing approval or publication authority and also does not prove source reachability, connector health, current upstream availability, compromise, analyzer correctness or review completion.</p>
         {vulnerability.data?.claim_boundary && <p>{vulnerability.data.claim_boundary}</p>}
       </section>
     </section>

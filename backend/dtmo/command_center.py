@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from dtmo.config import Settings
 from dtmo.integration_readiness import integration_readiness
 from dtmo.intelligence.model import IntelligenceSeverity, IntelligenceType
-from dtmo.persistence.models import ConnectorRun, IntelligenceItem
+from dtmo.persistence.models import ConnectorRun, IntelOwlEnrichmentRecord, IntelligenceItem
 
 
 _RUNTIME_RUN_IDS: dict[str, str] = {
@@ -88,6 +88,7 @@ def _empty_trends() -> dict[str, list[dict[str, Any]]]:
         "severity_distribution": [],
         "source_distribution": [],
         "type_distribution": [],
+        "enrichment_status_distribution": [],
     }
 
 
@@ -239,6 +240,14 @@ async def build_command_center_snapshot(
         for item_type, count in type_rows:
             type_counts[_severity_value(item_type)] = int(count or 0)
 
+        enrichment_rows = (
+            await session.execute(
+                select(IntelOwlEnrichmentRecord.status, func.count())
+                .group_by(IntelOwlEnrichmentRecord.status)
+                .order_by(desc(func.count()), IntelOwlEnrichmentRecord.status)
+            )
+        ).all()
+
         trends = {
             "intelligence_7d": [
                 {"date": day.isoformat(), "count": count}
@@ -255,6 +264,10 @@ async def build_command_center_snapshot(
             "type_distribution": [
                 {"item_type": item_type.value, "count": type_counts.get(item_type.value, 0)}
                 for item_type in IntelligenceType
+            ],
+            "enrichment_status_distribution": [
+                {"status": str(status), "count": int(count or 0)}
+                for status, count in enrichment_rows
             ],
         }
 
