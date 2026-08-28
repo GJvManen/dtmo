@@ -110,6 +110,7 @@ async def test_canonical_store_failure_never_synthesizes_zero_metrics_or_trends(
         "intelligence_7d": [],
         "severity_distribution": [],
         "source_distribution": [],
+        "type_distribution": [],
     }
     assert all(metric["value"] is None for metric in snapshot["metrics"])
     assert "rather than synthesized" in snapshot["evidence_boundary"]
@@ -144,6 +145,7 @@ def test_frontend_command_center_uses_governed_api_graphs_pivots_and_explicit_bo
     assert '"detail"' in model_source
     assert '"intelligence_7d"' in model_source
     assert '"severity_distribution"' in model_source
+    assert '"type_distribution"' in model_source
     assert ".kpi-grid" in styles
     assert ".integration-list" in styles
     assert ".trend-chart" in styles
