@@ -5,6 +5,7 @@ type SeverityPoint = { severity: string; count: number };
 type SourcePoint = { source_id: string; count: number };
 type IntelligenceTypePoint = { item_type: string; count: number };
 type EnrichmentStatusPoint = { status: string; count: number };
+type KevPoint = { status: string; count: number };
 type CommandCenterSnapshot = {
   data_state: 'available' | 'unavailable';
   trends?: {
@@ -22,6 +23,9 @@ type VulnerabilityAnalytics = {
     total?: number;
     kev?: number;
     with_sightings?: number;
+  };
+  distributions?: {
+    kev?: KevPoint[];
   };
   claim_boundary?: string;
 };
@@ -91,6 +95,9 @@ export function VisualAnalyticsWorkspace() {
   const vulnerabilityTrend = vulnerability.data?.status === 'ok'
     ? (vulnerability.data.trend ?? []).map((point) => ({ label: point.date, value: point.count }))
     : [];
+  const kevDistribution = vulnerability.data?.status === 'ok'
+    ? (vulnerability.data.distributions?.kev ?? []).map((point) => ({ label: point.status, value: point.count }))
+    : [];
 
   return (
     <section className="command-center" aria-labelledby="workspace-title">
@@ -116,11 +123,13 @@ export function VisualAnalyticsWorkspace() {
         <AccessibleBars title="Enrichment status" points={enrichmentStatuses} labelKey="Status" />
         <AccessibleBars title="Severity distribution" points={severity} labelKey="Severity" />
         <AccessibleBars title="Vulnerability observations" points={vulnerabilityTrend} labelKey="Date" />
+        <AccessibleBars title="KEV status distribution" points={kevDistribution} labelKey="KEV status" />
       </div>
 
       <section className="surface command-panel" aria-label="Analytics evidence boundary">
         <h2>Evidence boundary</h2>
         <p>Source contribution, intelligence type distribution and enrichment status are counted directly from persisted canonical records. Persisted analytics does not prove live connectivity and does not prove local exposure; it does not grant review authority, sharing approval or publication authority and also does not prove source reachability, connector health, current upstream availability, compromise, analyzer correctness or review completion.</p>
+        <p>KEV distribution is derived only from canonical vulnerability evidence whose raw object passed the existing integrity boundary. KEV status does not prove local deployment, exploitability, compromise or remediation authority.</p>
         {vulnerability.data?.claim_boundary && <p>{vulnerability.data.claim_boundary}</p>}
       </section>
     </section>
