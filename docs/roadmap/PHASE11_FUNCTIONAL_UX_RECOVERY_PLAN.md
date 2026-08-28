@@ -1,6 +1,6 @@
 # Phase 11 Functional UX Recovery Plan
 
-Status: **ACTIVE — R3 Unified intelligence object context and workplace**
+Status: **ACTIVE — R4 Integrated enrichment**
 
 ## Purpose
 
@@ -52,7 +52,7 @@ Acceptance: an administrator can find and complete an authorized task without na
 
 ### R3 — Unified intelligence object context and workplace
 
-Repository status: **ACTIVE / CURRENT BOUNDED RECOVERY SLICE**.
+Repository status: **MERGED / REPOSITORY-COMPLETE — #381**.
 
 Goal: make the canonical workbench an analyst workplace rather than a collection of pages.
 
@@ -63,6 +63,8 @@ Goal: make the canonical workbench an analyst workplace rather than a collection
 Acceptance: an analyst can follow one persisted object across the supported investigation journey without manual identifier transfer.
 
 ### R4 — Integrated enrichment
+
+Repository status: **ACTIVE / CURRENT BOUNDED RECOVERY SLICE**.
 
 Goal: make IntelOwl/Cortex enrichment part of the intelligence journey.
 
